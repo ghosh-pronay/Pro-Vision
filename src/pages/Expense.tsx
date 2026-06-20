@@ -493,46 +493,47 @@ export default function Expense() {
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="glass rounded-xl p-3">
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-              <ArrowDownLeft className="size-4 text-[var(--pv-green)]" />
-              <span className="text-xs text-muted-foreground">
-                {t("expense.totalIncome", lang)}
-              </span>
+            <div className="glass rounded-xl p-3">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <ArrowDownLeft className="size-4 text-[var(--pv-green)]" />
+                <span className="text-xs text-muted-foreground">
+                  {t("expense.totalIncome", lang)}
+                </span>
+              </div>
+              <div className="text-lg font-bold text-[var(--pv-green)]">
+                ৳
+                {lang === "bn"
+                  ? toBanglaNumber(totalIncome)
+                  : totalIncome.toLocaleString()}
+              </div>
             </div>
-            <div className="text-lg font-bold text-[var(--pv-green)]">
-              ৳
-              {lang === "bn"
-                ? toBanglaNumber(totalIncome)
-                : totalIncome.toLocaleString()}
+            <div className="glass rounded-xl p-3">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <ArrowUpRight className="size-4 text-[var(--pv-red)]" />
+                <span className="text-xs text-muted-foreground">
+                  {t("expense.totalExpense", lang)}
+                </span>
+              </div>
+              <div className="text-lg font-bold text-[var(--pv-red)]">
+                ৳
+                {lang === "bn"
+                  ? toBanglaNumber(totalExpense)
+                  : totalExpense.toLocaleString()}
+              </div>
             </div>
-          </div>
-          <div className="glass rounded-xl p-3">
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-              <ArrowUpRight className="size-4 text-[var(--pv-red)]" />
-              <span className="text-xs text-muted-foreground">
-                {t("expense.totalExpense", lang)}
-              </span>
-            </div>
-            <div className="text-lg font-bold text-[var(--pv-red)]">
-              ৳
-              {lang === "bn"
-                ? toBanglaNumber(totalExpense)
-                : totalExpense.toLocaleString()}
-            </div>
-          </div>
-          <div className="glass rounded-xl p-3">
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-              <Wallet className="size-4 text-[var(--pv-blue)]" />
-              <span className="text-xs text-muted-foreground">
-                {t("expense.netBalance", lang)}
-              </span>
-            </div>
-            <div className="text-lg font-bold text-[var(--pv-blue)]">
-              ৳
-              {lang === "bn"
-                ? toBanglaNumber(netBalance)
-                : netBalance.toLocaleString()}
+            <div className="glass rounded-xl p-3">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <Wallet className="size-4 text-[var(--pv-blue)]" />
+                <span className="text-xs text-muted-foreground">
+                  {t("expense.netBalance", lang)}
+                </span>
+              </div>
+              <div className="text-lg font-bold text-[var(--pv-blue)]">
+                ৳
+                {lang === "bn"
+                  ? toBanglaNumber(netBalance)
+                  : netBalance.toLocaleString()}
+              </div>
             </div>
           </div>
         )}
