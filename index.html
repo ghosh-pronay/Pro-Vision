@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- Favicons -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <!-- Mobile-first viewport with safe areas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5" />
+  <!-- Performance: preconnect to key external origins -->
+  <link rel="preconnect" href="https://cdn.onesignal.com" crossorigin />
+  <meta name="theme-color" content="#1A6FB5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>Pro-Vision: Plan Focus Achieve</title>
+  <link rel="canonical" href="https://pro-visions.web.app/" />
+  <meta name="description" content="All-in-one productivity app. Track tasks, habits, expenses, mood, and more — with an AI Coach that speaks Bengali and English." />
+  <meta property="og:title" content="Pro-Vision: Plan Focus Achieve" />
+  <meta property="og:url" content="https://pro-visions.web.app/" />
+  <meta property="og:description" content="All-in-one productivity app with habit tracker, expense tracker, focus timer, AI Coach and well-being tools." />
+  <meta property="og:image" content="/og-image.png" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="/og-image.png" />
+  <!-- OneSignal loaded async after page render -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" async defer></script>
+</head>
+
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  const banner = document.createElement('div');
+                  banner.id = 'pv-update-banner';
+                  banner.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:#1A6FB5;color:#fff;padding:12px 20px;border-radius:12px;font-family:sans-serif;font-size:14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+                  banner.innerHTML = '🔄 New version available &nbsp;<button onclick="window.location.reload()" style="background:rgba(255,255,255,0.25);border:none;color:#fff;padding:4px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Refresh</button><button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:18px;line-height:1;padding:0 4px;">×</button>';
+                  document.body.appendChild(banner);
+                }
+              });
+            }
+          });
+        }).catch(() => {});
+      });
+    }
+    // Apply saved theme
+    (function() {
+      var t = localStorage.getItem('pv-theme');
+      if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.add('light');
+      }
+    })();
+  </script>
+  </body>
+
+</html>
