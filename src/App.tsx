@@ -147,7 +147,7 @@ export default function App() {
     <ErrorBoundary>
       <Toaster position="top-right" richColors />
       <Suspense fallback={<RouteLoading />}>
-        <Routes>
+        <Routes key={location.pathname}>
           <Route path="/" element={<Landing />} />
           <Route
             path="/auth"
