@@ -1,6 +1,6 @@
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import type { Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHzCxlnrx_-fX68FkigYsqt9MxXci-v28",
@@ -12,11 +12,20 @@ const firebaseConfig = {
   measurementId: "G-C6FC4FJXWX",
 };
 
-const app =
+const app: FirebaseApp =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const auth: Auth = getAuth(app);
+
+let dbInstance: Firestore | null = null;
+
+export async function getDb(): Promise<Firestore> {
+  if (!dbInstance) {
+    const { getFirestore } = await import("firebase/firestore");
+    dbInstance = getFirestore(app);
+  }
+  return dbInstance;
+}
 
 let messaging: unknown = null;
 

@@ -48,6 +48,8 @@ export default defineConfig({
             "@radix-ui/react-tooltip",
           ],
           "framer-motion": ["framer-motion"],
+          "lucide-react": ["lucide-react"],
+          "ui-libs": ["sonner", "zustand", "zustand/middleware"],
           charts: ["recharts"],
           forms: ["react-hook-form", "@hookform/resolvers", "zod"],
         },

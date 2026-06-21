@@ -10,7 +10,7 @@ import {
   onAuthStateChanged,
   type User,
 } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
+import { auth, getDb } from "@/lib/firebase";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -31,6 +31,7 @@ export function useAuth() {
       if (firebaseUser?.emailVerified && firebaseUser.email) {
         try {
           const { doc, getDoc, setDoc } = await import("firebase/firestore");
+          const db = await getDb();
           const userRef = doc(db, "users", firebaseUser.uid);
           const snap = await getDoc(userRef);
           if (!snap.exists() || !snap.data().emailVerified) {

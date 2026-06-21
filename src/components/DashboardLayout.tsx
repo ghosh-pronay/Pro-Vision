@@ -3,10 +3,11 @@ import { useLang } from "@/i18n/LanguageContext";
 import { t, type TranslationKey } from "@/i18n/translations";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, lazy, Suspense } from "react";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
-import AdManager from "@/components/ads/AdManager";
 import { getTimeBasedGreeting } from "@/lib/bangla-greetings";
+
+const AdManager = lazy(() => import("@/components/ads/AdManager"));
 import {
   LayoutDashboard,
   CheckSquare,
@@ -541,7 +542,9 @@ export default function DashboardLayout() {
 
           {/* Sidebar ad */}
           <div className="px-3 pb-3">
-            <AdManager positions={["sidebar"]} />
+            <Suspense fallback={null}>
+              <AdManager positions={["sidebar"]} />
+            </Suspense>
           </div>
         </div>
       </aside>
@@ -642,7 +645,9 @@ export default function DashboardLayout() {
 
             {/* Sidebar ad (tablet) */}
             <div className="p-2 flex flex-col items-center">
-              <AdManager positions={["sidebar"]} />
+              <Suspense fallback={null}>
+                <AdManager positions={["sidebar"]} />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -841,14 +846,18 @@ export default function DashboardLayout() {
         className="flex-1 md:ml-[68px] lg:ml-[260px] min-h-screen overflow-x-hidden"
       >
         <div className="md:p-6 p-4 pt-[calc(env(safe-area-inset-top,0px)+52px)] md:pt-6 pb-24 md:pb-6">
-          <AdManager positions={["header"]} className="mb-4" />
+          <Suspense fallback={null}>
+            <AdManager positions={["header"]} className="mb-4" />
+          </Suspense>
           <div className="mb-4 p-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5">
             <p className="text-sm font-medium">
               {lang === "bn" ? greeting.bn : greeting.en}
             </p>
           </div>
           <Outlet />
-          <AdManager positions={["footer"]} className="mt-4" />
+          <Suspense fallback={null}>
+            <AdManager positions={["footer"]} className="mt-4" />
+          </Suspense>
         </div>
       </main>
 
