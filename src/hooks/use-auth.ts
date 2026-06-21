@@ -81,7 +81,10 @@ export function useAuth() {
       password,
     );
     try {
-      await sendEmailVerification(credential.user);
+      await sendEmailVerification(credential.user, {
+        url: window.location.origin,
+        handleCodeInApp: true,
+      });
     } catch (emailErr) {
       console.error("[auth] sendEmailVerification failed:", emailErr);
     }
@@ -91,7 +94,10 @@ export function useAuth() {
   const sendVerificationEmail = useCallback(async () => {
     if (!auth.currentUser) throw new Error("No user logged in");
     try {
-      await sendEmailVerification(auth.currentUser);
+      await sendEmailVerification(auth.currentUser, {
+        url: window.location.origin,
+        handleCodeInApp: true,
+      });
     } catch (emailErr) {
       console.error("[auth] sendVerificationEmail failed:", emailErr);
       throw emailErr;
