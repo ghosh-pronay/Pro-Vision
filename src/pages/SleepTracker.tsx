@@ -198,7 +198,7 @@ export default function SleepTracker() {
                 key={log._id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass rounded-2xl p-4 hover-row"
+                className="glass rounded-2xl p-4 hover-row hover-teal"
               >
                 <div className="flex items-center gap-4">
                   <div className={`rounded-xl p-3 ${qualityConfig.bg}`}>

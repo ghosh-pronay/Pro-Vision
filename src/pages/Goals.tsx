@@ -280,7 +280,7 @@ export default function Goals() {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              className="glass rounded-2xl p-5 space-y-3 hover-lift"
+              className="glass rounded-2xl p-5 space-y-3 hover-lift hover-green"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3 flex-1 min-w-0">

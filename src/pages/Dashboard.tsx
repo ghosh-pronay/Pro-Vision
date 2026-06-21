@@ -818,7 +818,7 @@ export default function Dashboard() {
       </motion.div>
 
       <motion.div variants={item} className="grid gap-4 sm:grid-cols-2">
-        <div className="glass rounded-2xl p-4 hover-lift">
+        <div className="glass rounded-2xl p-4 hover-lift hover-blue">
           <div className="flex items-center gap-2 mb-3">
             <div className="rounded-lg bg-orange-500/10 p-1.5">
               <Flame className="h-4 w-4 text-orange-500" />
@@ -845,7 +845,7 @@ export default function Dashboard() {
             <SectionSuggestion type="tip" text={t.dash.suggest.tipAllModules} />
           )}
         </div>
-        <div className="glass rounded-2xl p-4 hover-lift">
+        <div className="glass rounded-2xl p-4 hover-lift hover-blue">
           <div className="flex items-center gap-2 mb-3">
             <div className="rounded-lg bg-blue-500/10 p-1.5">
               <Clock className="h-4 w-4 text-blue-500" />
@@ -870,7 +870,7 @@ export default function Dashboard() {
       </motion.div>
 
       <motion.div variants={item} className="grid gap-4 sm:grid-cols-2">
-        <div className="glass rounded-2xl p-4 hover-lift">
+        <div className="glass rounded-2xl p-4 hover-lift hover-orange">
           <div className="flex items-center gap-2 mb-3">
             <div className="rounded-lg bg-yellow-500/10 p-1.5">
               <Wallet className="h-4 w-4 text-yellow-500" />
@@ -904,7 +904,7 @@ export default function Dashboard() {
             />
           )}
         </div>
-        <div className="glass rounded-2xl p-4 hover-lift">
+        <div className="glass rounded-2xl p-4 hover-lift hover-teal">
           <div className="flex items-center gap-2 mb-3">
             <div className="rounded-lg bg-pink-500/10 p-1.5">
               <Moon className="h-4 w-4 text-pink-500" />

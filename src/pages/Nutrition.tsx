@@ -295,7 +295,7 @@ export default function Nutrition() {
                   key={meal._id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="glass rounded-xl p-3 flex items-center gap-3 hover-row"
+                  className="glass rounded-xl p-3 flex items-center gap-3 hover-row hover-green"
                 >
                   <div
                     className={`rounded-lg p-2 bg-foreground/5 ${getMealColor(meal.mealType)}`}

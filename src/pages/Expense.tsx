@@ -978,7 +978,7 @@ export default function Expense() {
           {filtered.map((tx: ExpenseTransaction) => (
             <div
               key={tx._id}
-              className="flex items-center gap-3 px-4 py-3 group hover-row"
+              className="flex items-center gap-3 px-4 py-3 group hover-row hover-orange"
             >
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium"

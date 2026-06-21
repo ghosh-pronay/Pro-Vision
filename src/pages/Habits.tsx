@@ -1532,7 +1532,7 @@ export default function Habits() {
                 return (
                   <motion.div
                     key={habit._id}
-                    className={`glass rounded-xl px-4 py-3 flex items-center gap-3 group hover-row ${habit.archived ? "opacity-60" : ""}`}
+                    className={`glass rounded-xl px-4 py-3 flex items-center gap-3 group hover-row hover-green ${habit.archived ? "opacity-60" : ""}`}
                   >
                     <button
                       onClick={() => toggleCheckIn(habit._id)}

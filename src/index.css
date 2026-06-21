@@ -584,7 +584,8 @@
 .hover-lift {
   transition:
     transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 .hover-lift:hover {
   transform: translateY(-2px);
@@ -604,10 +605,11 @@
   transition: background-color 0.15s ease;
 }
 .hover-row:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: var(--pv-blue);
+  background-color: color-mix(in srgb, var(--pv-blue) 8%, transparent);
 }
 .dark .hover-row:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: color-mix(in srgb, var(--pv-blue) 12%, transparent);
 }
 
 .hover-chip {
@@ -617,11 +619,12 @@
     color 0.15s ease;
 }
 .hover-chip:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.2);
+  background-color: color-mix(in srgb, var(--pv-blue) 10%, transparent);
+  border-color: color-mix(in srgb, var(--pv-blue) 30%, transparent);
 }
 .dark .hover-chip:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: color-mix(in srgb, var(--pv-blue) 15%, transparent);
+  border-color: color-mix(in srgb, var(--pv-blue) 25%, transparent);
 }
 
 .hover-tab {
@@ -630,10 +633,10 @@
     color 0.15s ease;
 }
 .hover-tab:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: color-mix(in srgb, var(--pv-blue) 10%, transparent);
 }
 .dark .hover-tab:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: color-mix(in srgb, var(--pv-blue) 15%, transparent);
 }
 
 .hover-scale {
@@ -644,4 +647,80 @@
 }
 .hover-scale:active {
   transform: scale(0.98);
+}
+
+/* Colored hover variants */
+.hover-blue:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-blue) 10%,
+    transparent
+  ) !important;
+}
+.dark .hover-blue:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-blue) 15%,
+    transparent
+  ) !important;
+}
+
+.hover-green:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-green) 10%,
+    transparent
+  ) !important;
+}
+.dark .hover-green:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-green) 15%,
+    transparent
+  ) !important;
+}
+
+.hover-orange:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-orange) 10%,
+    transparent
+  ) !important;
+}
+.dark .hover-orange:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-orange) 15%,
+    transparent
+  ) !important;
+}
+
+.hover-teal:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-teal) 10%,
+    transparent
+  ) !important;
+}
+.dark .hover-teal:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-teal) 15%,
+    transparent
+  ) !important;
+}
+
+.hover-lavender:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-lavender) 10%,
+    transparent
+  ) !important;
+}
+.dark .hover-lavender:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--pv-lavender) 15%,
+    transparent
+  ) !important;
 }

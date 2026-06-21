@@ -613,26 +613,29 @@ function Hero() {
                     value: "12",
                     subKey: "hero.preview.tasks" as TranslationKey,
                     color: "var(--pv-blue)",
+                    hoverClass: "hover-blue",
                   },
                   {
                     icon: Target,
                     value: "87%",
                     subKey: "hero.preview.habits" as TranslationKey,
                     color: "var(--pv-green)",
+                    hoverClass: "hover-green",
                   },
                   {
                     icon: Wallet,
                     value: "৳4.2K",
                     subKey: "hero.preview.saved" as TranslationKey,
                     color: "var(--pv-orange)",
+                    hoverClass: "hover-orange",
                   },
-                ].map(({ icon: Icon, value, subKey, color }, i) => (
+                ].map(({ icon: Icon, value, subKey, color, hoverClass }, i) => (
                   <motion.div
                     key={subKey}
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 + i * 0.12 }}
-                    className="glass glass-card-hover rounded-2xl p-4 text-center"
+                    className={`glass glass-card-hover ${hoverClass} rounded-2xl p-4 text-center`}
                   >
                     <Icon className="size-5 mx-auto mb-2" style={{ color }} />
                     <div className="text-2xl font-bold text-foreground">

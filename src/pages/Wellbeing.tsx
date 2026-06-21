@@ -656,7 +656,7 @@ export default function Wellbeing() {
                 key={entry._id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass rounded-xl px-4 py-3 group hover-row"
+                className="glass rounded-xl px-4 py-3 group hover-row hover-lavender"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
