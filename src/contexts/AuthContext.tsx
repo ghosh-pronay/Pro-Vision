@@ -4,12 +4,16 @@ import { useAuth } from "@/hooks/use-auth";
 interface AuthContextValue {
   isLoading: boolean;
   isAuthenticated: boolean;
+  isEmailVerified: boolean;
+  hasEmail: boolean;
   userId: string | null;
 }
 
 const AuthContext = createContext<AuthContextValue>({
   isLoading: true,
   isAuthenticated: false,
+  isEmailVerified: false,
+  hasEmail: false,
   userId: null,
 });
 
@@ -18,7 +22,12 @@ export function useAuthContext() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { isLoading: authLoading, isAuthenticated, user } = useAuth();
+  const {
+    isLoading: authLoading,
+    isAuthenticated,
+    isEmailVerified,
+    user,
+  } = useAuth();
 
   if (authLoading) {
     return (
@@ -36,6 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         isLoading: false,
         isAuthenticated,
+        isEmailVerified,
+        hasEmail: !!user?.email,
         userId: user?.uid ?? null,
       }}
     >

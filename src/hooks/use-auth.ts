@@ -5,6 +5,7 @@ import {
   signInAnonymously,
   sendSignInLinkToEmail,
   signInWithEmailLink,
+  sendEmailVerification,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   type User,
@@ -16,8 +17,17 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser && !firebaseUser.emailVerified && firebaseUser.email) {
+        try {
+          await firebaseUser.reload();
+          setUser({ ...firebaseUser });
+        } catch {
+          setUser(firebaseUser);
+        }
+      } else {
+        setUser(firebaseUser);
+      }
       setIsLoading(false);
     });
     return unsubscribe;
@@ -65,19 +75,49 @@ export function useAuth() {
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
+    const actionCodeSettings = {
+      url: `${window.location.origin}/auth`,
+      handleCodeInApp: false,
+    };
+    await sendEmailVerification(credential.user, actionCodeSettings);
+    return credential;
+  }, []);
+
+  const sendVerificationEmail = useCallback(async () => {
+    if (!auth.currentUser) throw new Error("No user logged in");
+    const actionCodeSettings = {
+      url: `${window.location.origin}/auth`,
+      handleCodeInApp: false,
+    };
+    await sendEmailVerification(auth.currentUser, actionCodeSettings);
+  }, []);
+
+  const reloadUser = useCallback(async () => {
+    if (!auth.currentUser) return;
+    await auth.currentUser.reload();
+    setUser({ ...auth.currentUser });
   }, []);
 
   const signOut = useCallback(async () => {
     return firebaseSignOut(auth);
   }, []);
 
+  const isEmailVerified = user?.emailVerified ?? false;
+
   return {
     isLoading,
     isAuthenticated: !!user,
+    isEmailVerified,
     user,
     signIn,
     signUp,
     signOut,
+    sendVerificationEmail,
+    reloadUser,
   };
 }

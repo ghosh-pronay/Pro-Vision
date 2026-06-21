@@ -23,31 +23,75 @@ import {
   UserX,
   Eye,
   EyeOff,
+  CheckCircle2,
+  Send,
 } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 interface AuthProps {
   redirectAfterAuth?: string;
 }
 
 function Auth({ redirectAfterAuth }: AuthProps = {}) {
-  const { isLoading: authLoading, isAuthenticated, signIn, signUp } = useAuth();
+  const {
+    isLoading: authLoading,
+    isAuthenticated,
+    isEmailVerified,
+    signIn,
+    signUp,
+    sendVerificationEmail,
+    reloadUser,
+  } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { lang } = useLang();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "verify">(
+    searchParams.get("mode") === "verify" ? "verify" : "signin",
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
+    if (searchParams.get("mode") === "verify") {
+      setMode("verify");
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && isEmailVerified) {
       const redirect = redirectAfterAuth || "/dashboard";
       navigate(redirect);
     }
-  }, [authLoading, isAuthenticated, navigate, redirectAfterAuth]);
+  }, [
+    authLoading,
+    isAuthenticated,
+    isEmailVerified,
+    navigate,
+    redirectAfterAuth,
+  ]);
+
+  useEffect(() => {
+    if (mode !== "verify" || !isAuthenticated) return;
+    const interval = setInterval(async () => {
+      try {
+        await reloadUser();
+      } catch {
+        // ignore
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [mode, isAuthenticated, reloadUser]);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
 
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,11 +100,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     try {
       if (mode === "signin") {
         await signIn("password", { email, password });
+        const redirect = redirectAfterAuth || "/dashboard";
+        navigate(redirect);
       } else {
         await signUp(email, password);
+        setMode("verify");
       }
-      const redirect = redirectAfterAuth || "/dashboard";
-      navigate(redirect);
     } catch (err) {
       console.error("Auth error:", err);
       let message = "Authentication failed. Please try again.";
@@ -113,6 +158,110 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       setIsLoading(false);
     }
   };
+
+  const handleResendVerification = async () => {
+    if (resendCooldown > 0) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      await sendVerificationEmail();
+      setResendCooldown(60);
+    } catch (err) {
+      console.error("Resend error:", err);
+      setError(
+        lang === "bn"
+          ? "ইমেইল পুনরায় পাঠাতে ব্যর্থ।"
+          : "Failed to resend verification email.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (mode === "verify") {
+    return (
+      <div className="bg-mesh min-h-screen flex flex-col">
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <div className="mesh-orb mesh-orb-1 -top-32 -left-32" />
+          <div className="mesh-orb mesh-orb-2 bottom-0 -right-24" />
+          <div className="mesh-orb mesh-orb-4 top-1/3 left-1/2" />
+        </div>
+        <div className="flex-1 flex items-center justify-center relative z-10 px-4">
+          <div className="flex items-center justify-center h-full flex-col">
+            <Card className="min-w-[380px] pb-0 border-0 shadow-none bg-transparent">
+              <CardHeader className="text-center">
+                <div className="flex justify-center">
+                  <div className="relative">
+                    <img
+                      src={logo}
+                      alt="Pro-Vision"
+                      width={64}
+                      height={64}
+                      className="rounded-xl cursor-pointer transition-transform hover:scale-105"
+                      onClick={() => navigate("/")}
+                    />
+                    <div className="absolute -inset-3 rounded-2xl bg-[var(--pv-blue)] opacity-15 blur-lg -z-10" />
+                  </div>
+                </div>
+                <CardTitle className="text-xl mt-2">
+                  {lang === "bn" ? "ইমেইল যাচাই করুন" : "Verify Your Email"}
+                </CardTitle>
+                <CardDescription>
+                  {lang === "bn"
+                    ? `আমরা ${email || "আপনার ইমেইল"}-এ একটি যাচাইকরণ লিংক পাঠিয়েছি।`
+                    : `We sent a verification link to ${email || "your email"}.`}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="text-center space-y-4">
+                <div className="flex justify-center">
+                  <CheckCircle2 className="h-16 w-16 text-green-500 animate-pulse" />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {lang === "bn"
+                    ? "ইমেইলে লিংকে ক্লিক করুন। যাচাই হলে এখানে স্বয়ংক্রিয়ভাবে পুনঃনির্দেশিত হবে।"
+                    : "Click the link in your email. You'll be redirected here automatically once verified."}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {lang === "bn"
+                    ? "ইমেইল পাননি? স্প্যাম ফোল্ডার চেক করুন।"
+                    : "Didn't receive it? Check your spam folder."}
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full glass"
+                  onClick={handleResendVerification}
+                  disabled={isLoading || resendCooldown > 0}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Send className="h-4 w-4 mr-2" />
+                  )}
+                  {resendCooldown > 0
+                    ? lang === "bn"
+                      ? `${resendCooldown}সেকেন্ড অপেক্ষা করুন`
+                      : `Resend in ${resendCooldown}s`
+                    : lang === "bn"
+                      ? "ইমেইল পুনরায় পাঠান"
+                      : "Resend Verification Email"}
+                </Button>
+                {error && <p className="text-sm text-red-500">{error}</p>}
+                <button
+                  onClick={() => {
+                    setMode("signin");
+                    setError(null);
+                  }}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {lang === "bn" ? "← সাইন ইনে ফিরে যান" : "← Back to Sign In"}
+                </button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-mesh min-h-screen flex flex-col">
