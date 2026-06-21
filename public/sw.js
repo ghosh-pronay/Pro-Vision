@@ -1,4 +1,4 @@
-const CACHE_NAME = "pro-vision-v5";
+const CACHE_NAME = "pro-vision-v6";
 const OFFLINE_PAGE = "/offline.html";
 
 const STATIC_ASSETS = [
@@ -13,8 +13,8 @@ const STATIC_ASSETS = [
   "/logo-192.png",
 ];
 
-const STATIC_CACHE = "pro-vision-static-v5";
-const DYNAMIC_CACHE = "pro-vision-dynamic-v5";
+const STATIC_CACHE = "pro-vision-static-v6";
+const DYNAMIC_CACHE = "pro-vision-dynamic-v6";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -44,7 +44,6 @@ self.addEventListener("fetch", (event) => {
 
   if (request.method !== "GET") return;
 
-  // Network-first for API calls
   if (url.pathname.startsWith("/api") || url.pathname.includes("convex")) {
     event.respondWith(
       fetch(request)
@@ -58,7 +57,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first for static assets
   if (
     url.pathname.match(
       /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|avif|webp)$/,
@@ -77,7 +75,24 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Stale-while-revalidate for pages
+  if (request.mode === "navigate") {
+    event.respondWith(
+      Promise.race([
+        fetch(request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches
+              .open(DYNAMIC_CACHE)
+              .then((cache) => cache.put(request, clone));
+          }
+          return response;
+        }),
+        caches.match(request),
+      ]).catch(() => caches.match(OFFLINE_PAGE)),
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => {
       const fetched = fetch(request)
@@ -90,18 +105,12 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => {
-          if (request.mode === "navigate") {
-            return caches.match(OFFLINE_PAGE);
-          }
-          return cached;
-        });
+        .catch(() => cached);
       return cached || fetched;
     }),
   );
 });
 
-// Background sync for pending actions
 self.addEventListener("sync", (event) => {
   if (event.tag === "pending-actions") {
     event.waitUntil(syncPendingActions());
