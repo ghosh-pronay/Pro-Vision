@@ -188,7 +188,7 @@ export default function MoodCorrelation() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="glass rounded-xl p-4"
+                className="glass rounded-xl p-4 hover-lift"
               >
                 <div className="flex items-start gap-4">
                   <div

@@ -97,7 +97,7 @@ const PWARegister = memo(function PWARegister() {
             </button>
             <button
               onClick={() => setShowInstall(false)}
-              className="text-muted-foreground hover:text-foreground shrink-0"
+              className="text-muted-foreground hover:text-foreground hover:bg-foreground/5 rounded transition-colors shrink-0"
             >
               <X className="size-4" />
             </button>
@@ -132,7 +132,7 @@ const PWARegister = memo(function PWARegister() {
             </button>
             <button
               onClick={() => setShowUpdate(false)}
-              className="text-muted-foreground hover:text-foreground shrink-0"
+              className="text-muted-foreground hover:text-foreground hover:bg-foreground/5 rounded transition-colors shrink-0"
             >
               <X className="size-4" />
             </button>

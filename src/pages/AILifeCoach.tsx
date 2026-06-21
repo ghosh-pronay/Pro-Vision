@@ -437,7 +437,10 @@ export default function AILifeCoach() {
         </p>
         <div className="space-y-4">
           {goals.map((goal) => (
-            <div key={goal.id} className="glass rounded-xl p-4">
+            <div
+              key={goal.id}
+              className="glass rounded-xl p-4 hover-lift hover-teal"
+            >
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-lg font-bold text-primary">
                   {goal.id}

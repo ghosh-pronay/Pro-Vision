@@ -939,7 +939,10 @@ export default function Dashboard() {
       </motion.div>
 
       {recentActivity.length > 0 && (
-        <motion.div variants={item} className="glass rounded-2xl p-4">
+        <motion.div
+          variants={item}
+          className="glass rounded-2xl p-4 hover-lift"
+        >
           <div className="flex items-center gap-2 mb-3">
             <div className="rounded-lg bg-primary/10 p-1.5">
               <Clock className="h-4 w-4 text-primary" />
@@ -962,7 +965,10 @@ export default function Dashboard() {
         </motion.div>
       )}
       {recentActivity.length === 0 && (
-        <motion.div variants={item} className="glass rounded-2xl p-4">
+        <motion.div
+          variants={item}
+          className="glass rounded-2xl p-4 hover-lift"
+        >
           <div className="flex items-center gap-2 mb-3">
             <div className="rounded-lg bg-primary/10 p-1.5">
               <Clock className="h-4 w-4 text-primary" />

@@ -326,7 +326,7 @@ export default function DailyCheckin() {
                 key={checkin._id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass rounded-xl p-4"
+                className="glass rounded-xl p-4 hover-lift"
               >
                 <div className="flex items-center gap-4">
                   <span className="text-3xl">{moodConfig.emoji}</span>

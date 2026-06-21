@@ -608,7 +608,7 @@ export default function Reading() {
                       <button
                         key={i}
                         onClick={() => setRating(rating === i + 1 ? 0 : i + 1)}
-                        className="cursor-pointer"
+                        className="cursor-pointer hover:text-[var(--pv-orange)] transition-colors"
                       >
                         <Star
                           className={`h-6 w-6 ${

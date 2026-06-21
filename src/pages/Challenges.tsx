@@ -30,7 +30,8 @@ export default function Challenges() {
     useState<Id<"challenges"> | null>(null);
 
   const leaderboardChallengeId =
-    selectedChallengeId ?? (myChallenges?.[0]?._id as Id<"challenges"> | undefined);
+    selectedChallengeId ??
+    (myChallenges?.[0]?._id as Id<"challenges"> | undefined);
 
   const leaderboard = useQuery(
     api.challenges.getLeaderboard,
@@ -95,7 +96,7 @@ export default function Challenges() {
             className={`cursor-pointer flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === tab
                 ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground hover-tab"
             }`}
           >
             {tab === "active"
@@ -312,7 +313,13 @@ export default function Challenges() {
                 {leaderboard.map((entry, idx) => {
                   const rank = idx + 1;
                   const badge =
-                    rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "";
+                    rank === 1
+                      ? "🥇"
+                      : rank === 2
+                        ? "🥈"
+                        : rank === 3
+                          ? "🥉"
+                          : "";
                   return (
                     <div
                       key={entry.userId}
@@ -323,10 +330,12 @@ export default function Challenges() {
                       </span>
                       <div className="flex-1">
                         <p className="font-medium">
-                          {entry.name || (lang === "bn" ? "ব্যবহারকারী" : "User")}
+                          {entry.name ||
+                            (lang === "bn" ? "ব্যবহারকারী" : "User")}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {entry.progress} {lang === "bn" ? "পয়েন্ট" : "points"}
+                          {entry.progress}{" "}
+                          {lang === "bn" ? "পয়েন্ট" : "points"}
                         </p>
                       </div>
                       {rank <= 3 && (

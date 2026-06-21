@@ -320,7 +320,10 @@ export default function Focus() {
           },
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
         ].map(({ icon: Icon, value, labelKey, color }, i) => (
-          <div key={labelKey} className="glass rounded-xl p-4 text-center">
+          <div
+            key={labelKey}
+            className="glass rounded-xl p-4 text-center hover-lift hover-blue"
+          >
             <Icon className="size-5 mx-auto mb-1" style={{ color }} />
             <div className="text-xl font-extrabold text-foreground">
               {value}

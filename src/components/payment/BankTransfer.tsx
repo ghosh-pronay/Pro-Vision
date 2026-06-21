@@ -404,7 +404,7 @@ export default function BankTransfer({
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
-                className="glass rounded-xl p-4"
+                className="glass rounded-xl p-4 hover-lift"
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium">

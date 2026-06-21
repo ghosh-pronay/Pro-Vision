@@ -1334,7 +1334,7 @@ export default function SocialChallenges() {
                 <motion.div
                   key={badge.id}
                   variants={fadeUp}
-                  className={`glass rounded-2xl p-4 text-center ${!badge.unlocked ? "opacity-50" : ""}`}
+                  className={`glass rounded-2xl p-4 text-center hover-lift hover-lavender ${!badge.unlocked ? "opacity-50" : ""}`}
                 >
                   <div className="text-3xl mb-2">{badge.icon}</div>
                   <h4 className="text-xs font-medium mb-1">

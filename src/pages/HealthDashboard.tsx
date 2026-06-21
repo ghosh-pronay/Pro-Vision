@@ -602,7 +602,7 @@ export default function HealthDashboard() {
             </h4>
             <button
               onClick={() => setQuickLogType(null)}
-              className="cursor-pointer text-sm text-muted-foreground hover:text-foreground"
+              className="cursor-pointer text-sm text-muted-foreground hover:text-foreground hover:text-[var(--pv-blue)] transition-colors"
             >
               {lang === "bn" ? "বন্ধ করুন" : "Close"}
             </button>

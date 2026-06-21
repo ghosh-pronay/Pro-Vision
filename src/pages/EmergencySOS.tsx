@@ -878,7 +878,7 @@ export default function EmergencySOS() {
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 1, repeat: Infinity }}
               onClick={stopFakeCall}
-              className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center cursor-pointer
+              className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center cursor-pointer hover:bg-red-600 transition-colors
                 shadow-lg shadow-red-500/50 mb-8"
             >
               <Phone className="h-8 w-8 text-white rotate-[135deg]" />
@@ -891,7 +891,7 @@ export default function EmergencySOS() {
       <motion.div variants={fadeUp} className="glass rounded-2xl p-5">
         <button
           onClick={() => setExpandedTips(!expandedTips)}
-          className="w-full flex items-center justify-between cursor-pointer"
+          className="w-full flex items-center justify-between cursor-pointer hover:bg-foreground/5 rounded-xl p-3 transition-colors"
         >
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Lightbulb className="h-5 w-5 text-yellow-500" />
@@ -1021,7 +1021,7 @@ export default function EmergencySOS() {
                 </h3>
                 <button
                   onClick={() => setShowAddContact(false)}
-                  className="p-1 cursor-pointer"
+                  className="p-1 cursor-pointer hover:bg-foreground/10 rounded transition-colors"
                 >
                   <X className="h-5 w-5 text-muted-foreground" />
                 </button>

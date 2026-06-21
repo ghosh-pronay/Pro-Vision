@@ -297,7 +297,7 @@ export default function MobileBanking({
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
-                className="glass rounded-xl p-4 space-y-2"
+                className="glass rounded-xl p-4 space-y-2 hover-lift"
               >
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">

@@ -544,7 +544,7 @@ export default function Journal() {
                           {tag}
                           <button
                             onClick={() => toggleTag(tag)}
-                            className="cursor-pointer"
+                            className="cursor-pointer hover:text-red-500 transition-colors"
                           >
                             <X className="h-3 w-3" />
                           </button>

@@ -210,7 +210,7 @@ export default function NotificationsPanel() {
               </h4>
               <button
                 onClick={() => setShowSettings(false)}
-                className="cursor-pointer text-muted-foreground hover:text-foreground"
+                className="cursor-pointer text-muted-foreground hover:text-foreground hover-tab"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -306,7 +306,7 @@ export default function NotificationsPanel() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className={`glass rounded-xl p-3 ${
+              className={`glass rounded-xl p-3 hover-row hover-blue ${
                 !notification.read ? "border-l-2 border-primary" : ""
               }`}
             >

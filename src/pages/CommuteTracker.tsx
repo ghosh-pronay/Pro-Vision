@@ -630,7 +630,7 @@ export default function CommuteTracker() {
                     key={i}
                     variants={fadeUp}
                     custom={i}
-                    className="glass rounded-xl p-4"
+                    className="glass rounded-xl p-4 hover-lift hover-teal"
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <stat.icon className={`w-4 h-4 ${stat.color}`} />
@@ -850,7 +850,7 @@ export default function CommuteTracker() {
                     key={i}
                     variants={fadeUp}
                     custom={i}
-                    className="glass rounded-xl p-4"
+                    className="glass rounded-xl p-4 hover-lift hover-teal"
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <stat.icon className={`w-4 h-4 ${stat.color}`} />
@@ -864,7 +864,7 @@ export default function CommuteTracker() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                <div className="glass rounded-xl p-4">
+                <div className="glass rounded-xl p-4 hover-lift hover-teal">
                   <div className="flex items-center gap-2 mb-2">
                     <Leaf className="w-4 h-4 text-emerald-500" />
                     <span className="text-xs text-muted-foreground">
@@ -875,7 +875,7 @@ export default function CommuteTracker() {
                     {weeklyStats.totalCarbon.toFixed(2)} kg
                   </p>
                 </div>
-                <div className="glass rounded-xl p-4">
+                <div className="glass rounded-xl p-4 hover-lift hover-teal">
                   <div className="flex items-center gap-2 mb-2">
                     <BarChart3 className="w-4 h-4 text-indigo-500" />
                     <span className="text-xs text-muted-foreground">
@@ -890,7 +890,7 @@ export default function CommuteTracker() {
                       : "-"}
                   </p>
                 </div>
-                <div className="glass rounded-xl p-4">
+                <div className="glass rounded-xl p-4 hover-lift hover-teal">
                   <div className="flex items-center gap-2 mb-2">
                     <DollarSign className="w-4 h-4 text-yellow-500" />
                     <span className="text-xs text-muted-foreground">
@@ -906,7 +906,7 @@ export default function CommuteTracker() {
                       : 0}
                   </p>
                 </div>
-                <div className="glass rounded-xl p-4">
+                <div className="glass rounded-xl p-4 hover-lift hover-teal">
                   <div className="flex items-center gap-2 mb-2">
                     <Timer className="w-4 h-4 text-red-500" />
                     <span className="text-xs text-muted-foreground">
@@ -952,7 +952,7 @@ export default function CommuteTracker() {
                           key={c.id}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className="glass-subtle rounded-xl p-3 flex items-center gap-3"
+                          className="glass-subtle rounded-xl p-3 flex items-center gap-3 hover-row"
                         >
                           <span className="text-xl">{mode?.icon}</span>
                           <div className="flex-1 min-w-0">
@@ -1126,7 +1126,7 @@ export default function CommuteTracker() {
                     key={i}
                     variants={fadeUp}
                     custom={i}
-                    className="glass rounded-xl p-4"
+                    className="glass rounded-xl p-4 hover-lift hover-teal"
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <stat.icon className={`w-4 h-4 ${stat.color}`} />
@@ -1167,7 +1167,7 @@ export default function CommuteTracker() {
                           key={c.id}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className="glass-subtle rounded-xl p-3 flex items-center gap-3"
+                          className="glass-subtle rounded-xl p-3 flex items-center gap-3 hover-row"
                         >
                           <span className="text-xl">{mode?.icon}</span>
                           <div className="flex-1 min-w-0">
@@ -1297,7 +1297,7 @@ export default function CommuteTracker() {
                       .map((mode, i) => (
                         <div
                           key={mode.id}
-                          className="flex items-center gap-3 glass-subtle rounded-lg p-2"
+                          className="flex items-center gap-3 glass-subtle rounded-lg p-2 hover-row"
                         >
                           <span className="text-sm font-bold text-muted-foreground w-5">
                             {i + 1}
@@ -1325,7 +1325,7 @@ export default function CommuteTracker() {
                       .map((mode, i) => (
                         <div
                           key={mode.id}
-                          className="flex items-center gap-3 glass-subtle rounded-lg p-2"
+                          className="flex items-center gap-3 glass-subtle rounded-lg p-2 hover-row"
                         >
                           <span className="text-sm font-bold text-muted-foreground w-5">
                             {i + 1}

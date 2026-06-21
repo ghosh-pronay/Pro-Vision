@@ -203,7 +203,7 @@ export default function InternationalPayment({
             className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
               activeTab === tab
                 ? "bg-primary/20 text-primary"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground hover-tab"
             }`}
           >
             {tab === "card"
@@ -368,7 +368,7 @@ export default function InternationalPayment({
             {activeTab === "paypal" && (
               <motion.div
                 variants={fadeUp}
-                className="glass rounded-xl p-6 text-center"
+                className="glass rounded-xl p-6 text-center hover-lift"
               >
                 <div className="text-4xl mb-4">🅿️</div>
                 <p className="text-muted-foreground mb-4">
@@ -395,7 +395,7 @@ export default function InternationalPayment({
             {activeTab === "stripe" && (
               <motion.div
                 variants={fadeUp}
-                className="glass rounded-xl p-6 text-center"
+                className="glass rounded-xl p-6 text-center hover-lift"
               >
                 <div className="text-4xl mb-4">⚡</div>
                 <p className="text-muted-foreground mb-4">

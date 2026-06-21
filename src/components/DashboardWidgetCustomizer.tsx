@@ -119,21 +119,21 @@ export default function DashboardWidgetCustomizer() {
             layout
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass rounded-xl p-3"
+            className="glass rounded-xl p-3 hover-row"
           >
             <div className="flex items-center gap-3">
               <div className="flex flex-col gap-0.5">
                 <button
                   onClick={() => moveUp(index)}
                   disabled={index === 0}
-                  className="cursor-pointer text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="cursor-pointer text-muted-foreground hover:text-foreground hover:bg-foreground/5 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <GripVertical className="h-3 w-3 rotate-180" />
                 </button>
                 <button
                   onClick={() => moveDown(index)}
                   disabled={index === widgets.length - 1}
-                  className="cursor-pointer text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="cursor-pointer text-muted-foreground hover:text-foreground hover:bg-foreground/5 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <GripVertical className="h-3 w-3" />
                 </button>

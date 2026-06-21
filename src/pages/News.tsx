@@ -168,7 +168,7 @@ export default function News() {
       >
         {categories.map((c) => (
           <button
-            className={`shrink-0 glass rounded-xl px-3 py-2 min-h-[44px] text-xs font-medium transition-all ${category === c ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground"}`}
+            className={`shrink-0 glass rounded-xl px-3 py-2 min-h-[44px] text-xs font-medium transition-all ${category === c ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground hover-tab"}`}
           >
             {c === "all" ? t("news.all", lang) : c}
           </button>

@@ -1485,7 +1485,7 @@ export default function Habits() {
           const totalActive = allHabits.filter((h) => !h.archived).length;
           if (completedCount === 0 || totalActive === 0) return null;
           return (
-            <div className="glass rounded-xl p-3 flex items-center gap-3">
+            <div className="glass rounded-xl p-3 flex items-center gap-3 hover-blue">
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-medium text-foreground">

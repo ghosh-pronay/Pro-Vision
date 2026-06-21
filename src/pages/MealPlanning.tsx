@@ -801,7 +801,7 @@ export default function MealPlanning() {
                       setSelectedMealType(mt.key);
                       setShowRecipeBrowser(true);
                     }}
-                    className="glass-subtle rounded-xl p-3 flex items-center gap-3 cursor-pointer"
+                    className="glass-subtle rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-foreground/5 transition-colors"
                   >
                     <Icon
                       className={`w-5 h-5 ${

@@ -395,7 +395,10 @@ export default function QRProfile() {
       </motion.div>
 
       {showHistory && (
-        <motion.div variants={fadeUp} className="glass rounded-xl p-4">
+        <motion.div
+          variants={fadeUp}
+          className="glass rounded-xl p-4 hover-lift"
+        >
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold flex items-center gap-2">
               <History className="h-4 w-4 text-indigo-400" />

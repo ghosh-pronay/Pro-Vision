@@ -323,7 +323,7 @@ export default function Admin() {
                 color: "text-pink-500",
               },
             ].map((stat) => (
-              <div key={stat.label} className="glass rounded-xl p-4">
+              <div key={stat.label} className="glass rounded-xl p-4 hover-lift">
                 <div className="flex items-center justify-between">
                   <stat.icon className={cn("h-5 w-5", stat.color)} />
                 </div>
@@ -665,7 +665,7 @@ export default function Admin() {
                   </div>
                   <button
                     onClick={() => handleToggleConfig(key, !value)}
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-foreground/5 rounded transition-colors"
                   >
                     {value ? (
                       <ToggleRight className="h-8 w-8 text-green-500" />
@@ -701,7 +701,7 @@ export default function Admin() {
                   </div>
                   <button
                     onClick={() => handleToggleConfig(key, !value)}
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-foreground/5 rounded transition-colors"
                   >
                     {value ? (
                       <ToggleRight className="h-8 w-8 text-green-500" />
@@ -809,7 +809,7 @@ export default function Admin() {
                           isActive: !c.isActive,
                         })
                       }
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:bg-foreground/5 rounded transition-colors"
                     >
                       {c.isActive ? (
                         <ToggleRight className="h-6 w-6 text-green-500" />
@@ -891,7 +891,7 @@ export default function Admin() {
                       !system["system.maintenanceMode"],
                     )
                   }
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-foreground/5 rounded transition-colors"
                 >
                   {system["system.maintenanceMode"] ? (
                     <ToggleRight className="h-8 w-8 text-yellow-500" />
@@ -1037,7 +1037,7 @@ export default function Admin() {
                       !(config as any)?.["settings.requireEmailVerification"],
                     )
                   }
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-foreground/5 rounded transition-colors"
                 >
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {(config as any)?.["settings.requireEmailVerification"] ? (
@@ -1064,7 +1064,7 @@ export default function Admin() {
                       !(config as any)?.["settings.enableOnboarding"],
                     )
                   }
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-foreground/5 rounded transition-colors"
                 >
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {(config as any)?.["settings.enableOnboarding"] !== false ? (

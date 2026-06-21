@@ -210,7 +210,7 @@ export default function SmartInsights({
             key={insight.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass rounded-xl p-3"
+            className="glass rounded-xl p-3 hover-lift hover-blue"
           >
             <div className="flex items-center gap-2 mb-2">
               <insight.icon className={`h-4 w-4 ${insight.color}`} />

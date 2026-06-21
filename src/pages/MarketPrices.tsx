@@ -659,7 +659,7 @@ export default function MarketPrices() {
                   : "name",
             )
           }
-          className="cursor-pointer flex items-center gap-1 px-3 py-2 rounded-lg glass text-sm"
+          className="cursor-pointer flex items-center gap-1 px-3 py-2 rounded-lg glass text-sm hover:bg-foreground/5 transition-colors"
         >
           <ArrowUpDown className="h-4 w-4" />
           {sortBy === "name"
@@ -676,7 +676,7 @@ export default function MarketPrices() {
         </button>
         <button
           onClick={() => setShowAddPrice(true)}
-          className="cursor-pointer flex items-center gap-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm"
+          className="cursor-pointer flex items-center gap-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:bg-primary/90 transition-colors"
         >
           <Plus className="h-4 w-4" />
           {lang === "bn" ? "মূল্য যোগ" : "Add Price"}
@@ -840,7 +840,7 @@ export default function MarketPrices() {
                       onClick={() =>
                         updateShoppingQuantity(item.id, item.quantity - 1)
                       }
-                      className="cursor-pointer w-6 h-6 rounded bg-foreground/10 flex items-center justify-center text-xs"
+                      className="cursor-pointer w-6 h-6 rounded bg-foreground/10 flex items-center justify-center text-xs hover:bg-foreground/20 transition-colors"
                     >
                       -
                     </button>
@@ -851,7 +851,7 @@ export default function MarketPrices() {
                       onClick={() =>
                         updateShoppingQuantity(item.id, item.quantity + 1)
                       }
-                      className="cursor-pointer w-6 h-6 rounded bg-foreground/10 flex items-center justify-center text-xs"
+                      className="cursor-pointer w-6 h-6 rounded bg-foreground/10 flex items-center justify-center text-xs hover:bg-foreground/20 transition-colors"
                     >
                       +
                     </button>
@@ -1092,7 +1092,7 @@ export default function MarketPrices() {
                           "text-primary-foreground",
                         );
                     }}
-                    className="cursor-pointer flex-1 px-3 py-2 rounded-lg glass text-sm font-medium bg-primary text-primary-foreground"
+                    className="cursor-pointer flex-1 px-3 py-2 rounded-lg glass text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                   >
                     {lang === "bn" ? "বেশি হলে" : "Above"}
                   </button>
@@ -1112,7 +1112,7 @@ export default function MarketPrices() {
                           "text-primary-foreground",
                         );
                     }}
-                    className="cursor-pointer flex-1 px-3 py-2 rounded-lg glass text-sm font-medium"
+                    className="cursor-pointer flex-1 px-3 py-2 rounded-lg glass text-sm font-medium hover:bg-foreground/10 transition-colors"
                   >
                     {lang === "bn" ? "কম হলে" : "Below"}
                   </button>

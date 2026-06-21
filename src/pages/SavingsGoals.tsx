@@ -244,7 +244,7 @@ export default function SavingsGoals() {
                 key={goal._id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`glass rounded-2xl p-4 ${goal.status === "completed" ? "opacity-75" : ""}`}
+                className={`glass rounded-2xl p-4 hover-lift hover-green ${goal.status === "completed" ? "opacity-75" : ""}`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">

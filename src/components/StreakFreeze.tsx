@@ -180,7 +180,7 @@ export default function StreakFreeze() {
               </h4>
               <button
                 onClick={() => setShowForm(false)}
-                className="cursor-pointer text-muted-foreground hover:text-foreground"
+                className="cursor-pointer text-muted-foreground hover:text-foreground hover-tab"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -243,7 +243,7 @@ export default function StreakFreeze() {
               key={freeze.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass rounded-xl p-3"
+              className="glass rounded-xl p-3 hover-lift"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-cyan-500/10 p-2">

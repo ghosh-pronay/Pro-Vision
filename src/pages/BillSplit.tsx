@@ -957,7 +957,7 @@ export default function BillSplit() {
                                   e.target.value = "";
                                 }
                               }}
-                              className="cursor-pointer appearance-none rounded-lg glass px-3 py-1 text-xs focus:outline-none"
+                              className="cursor-pointer appearance-none rounded-lg glass px-3 py-1 text-xs focus:outline-none hover:bg-foreground/5 transition-colors"
                               defaultValue=""
                             >
                               <option value="" disabled>
@@ -1123,7 +1123,7 @@ export default function BillSplit() {
                     className="glass rounded-2xl overflow-hidden"
                   >
                     <div
-                      className="p-4 cursor-pointer"
+                      className="p-4 cursor-pointer hover:bg-foreground/5 rounded-xl transition-colors"
                       onClick={() =>
                         setExpandedBill(isExpanded ? null : bill._id)
                       }

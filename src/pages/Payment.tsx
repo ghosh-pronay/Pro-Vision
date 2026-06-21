@@ -398,7 +398,7 @@ export default function Payment() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className={`glass rounded-2xl p-6 ${currentPlanData.glow}`}
+          className={`glass rounded-2xl p-6 hover-lift hover-blue ${currentPlanData.glow}`}
         >
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
@@ -491,7 +491,7 @@ export default function Payment() {
                 className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
                   pricingCurrency === "BDT"
                     ? "bg-[var(--pv-blue)] text-white"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover-tab"
                 }`}
               >
                 BDT
@@ -501,7 +501,7 @@ export default function Payment() {
                 className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
                   pricingCurrency === "USD"
                     ? "bg-[var(--pv-blue)] text-white"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover-tab"
                 }`}
               >
                 USD

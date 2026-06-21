@@ -331,7 +331,7 @@ export default function TransactionHistory({
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="glass rounded-xl p-4 space-y-3">
+              <div className="glass rounded-xl p-4 space-y-3 hover-row">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-medium mb-1 text-muted-foreground">

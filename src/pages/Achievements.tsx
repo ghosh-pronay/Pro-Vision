@@ -174,7 +174,10 @@ export default function Achievements() {
         </p>
       </motion.div>
 
-      <motion.div variants={fadeUp} className="glass rounded-xl p-4">
+      <motion.div
+        variants={fadeUp}
+        className="glass rounded-xl p-4 hover-lift hover-lavender"
+      >
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium">
             {lang === "bn" ? "সমগ্র অগ্রগতি" : "Overall Progress"}
@@ -250,7 +253,7 @@ export default function Achievements() {
                   key={achievement.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="glass rounded-xl p-4"
+                  className="glass rounded-xl p-4 hover-lift hover-lavender"
                 >
                   <div className="flex items-center gap-4 mb-3">
                     <div

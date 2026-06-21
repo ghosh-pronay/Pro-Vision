@@ -1304,7 +1304,7 @@ export default function DailyStreaks() {
                         : "Get notified at set time"}
                     </p>
                   </div>
-                  <div className="w-12 h-6 rounded-full bg-purple-500 relative cursor-pointer">
+                  <div className="w-12 h-6 rounded-full bg-purple-500 relative cursor-pointer hover:bg-purple-600 transition-colors">
                     <div className="w-5 h-5 rounded-full bg-white absolute top-0.5 right-0.5 transition-all" />
                   </div>
                 </div>
