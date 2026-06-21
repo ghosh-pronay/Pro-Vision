@@ -5,7 +5,7 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   ArrowRight,
   CheckCircle2,
@@ -159,10 +159,7 @@ function Navbar() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-4">
         <div className="glass-strong rounded-2xl px-5 py-3 flex items-center justify-between">
           {/* Logo */}
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="flex items-center gap-2.5"
-          >
+          <Link to="/" className="flex items-center gap-2.5">
             <div className="relative">
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[var(--pv-blue)]/20 to-[var(--pv-teal)]/10 dark:from-white/10 dark:to-white/5" />
               <img
@@ -181,9 +178,7 @@ function Navbar() {
                 Plan · Focus · Achieve
               </span>
             </div>
-          </button>
-
-          {/* Nav Links (desktop) */}
+          </Link>
           <div className="hidden md:flex items-center gap-1">
             {navLinkKeys.map((key) => {
               const id = key.split(".")[1];
@@ -1405,7 +1400,7 @@ function Footer() {
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2.5">
-            <div className="relative">
+            <Link to="/" className="relative">
               <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[var(--pv-blue)]/20 to-[var(--pv-teal)]/10 dark:from-white/10 dark:to-white/5" />
               <img
                 src={logo}
@@ -1414,10 +1409,13 @@ function Footer() {
                 height={28}
                 className="relative rounded-lg"
               />
-            </div>
-            <span className="text-sm font-semibold text-foreground">
+            </Link>
+            <Link
+              to="/"
+              className="text-sm font-semibold text-foreground hover:opacity-80 transition-opacity"
+            >
               Pro-Vision
-            </span>
+            </Link>
             <span className="text-xs text-muted-foreground">
               · Plan · Focus · Achieve
             </span>
