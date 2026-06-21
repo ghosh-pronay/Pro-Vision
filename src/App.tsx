@@ -2,14 +2,17 @@ import { Routes, Route, useLocation } from "react-router";
 import { lazy, Suspense, useState, memo, useMemo } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Toaster } from "sonner";
-import CoachFloating from "@/components/coach/CoachFloating";
 import { Mic } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import VoiceCommands from "@/components/voice/VoiceCommands";
-import PWARegister from "@/components/PWARegister";
-import PushNotificationBanner from "@/components/PushNotificationBanner";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useNavigate } from "react-router";
+
+const CoachFloating = lazy(() => import("@/components/coach/CoachFloating"));
+const VoiceCommands = lazy(() => import("@/components/voice/VoiceCommands"));
+const PWARegister = lazy(() => import("@/components/PWARegister"));
+const PushNotificationBanner = lazy(
+  () => import("@/components/PushNotificationBanner"),
+);
 
 const Landing = lazy(() => import("@/pages/Landing"));
 const AuthPage = lazy(() => import("@/pages/Auth"));
@@ -122,10 +125,12 @@ const VoiceButton = memo(function VoiceButton() {
       </button>
       <AnimatePresence>
         {showVoice && (
-          <VoiceCommands
-            onCommand={handleCommand}
-            onClose={() => setShowVoice(false)}
-          />
+          <Suspense fallback={null}>
+            <VoiceCommands
+              onCommand={handleCommand}
+              onClose={() => setShowVoice(false)}
+            />
+          </Suspense>
         )}
       </AnimatePresence>
     </>
@@ -233,10 +238,18 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-      {showCoach && <CoachFloating />}
+      {showCoach && (
+        <Suspense fallback={null}>
+          <CoachFloating />
+        </Suspense>
+      )}
       {showCoach && <VoiceButton />}
-      <PWARegister />
-      <PushNotificationBanner />
+      <Suspense fallback={null}>
+        <PWARegister />
+      </Suspense>
+      <Suspense fallback={null}>
+        <PushNotificationBanner />
+      </Suspense>
     </ErrorBoundary>
   );
 }

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "react-router";
 
 import { useAuth } from "@/hooks/use-auth";
-import logo from "@/assets/logo.svg";
+import logo from "@/assets/logo.png";
 import { useLang } from "@/i18n/LanguageContext";
 
 import {

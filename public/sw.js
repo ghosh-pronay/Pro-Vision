@@ -1,4 +1,4 @@
-const CACHE_NAME = "pro-vision-v3";
+const CACHE_NAME = "pro-vision-v4";
 const OFFLINE_PAGE = "/offline.html";
 
 const STATIC_ASSETS = [

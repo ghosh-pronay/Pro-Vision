@@ -30,7 +30,7 @@ import {
   X,
   Languages,
 } from "lucide-react";
-import logo from "@/assets/logo.svg";
+import logo from "@/assets/logo.png";
 import { useLang } from "@/i18n/LanguageContext";
 import { t, type TranslationKey } from "@/i18n/translations";
 

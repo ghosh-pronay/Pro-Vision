@@ -43,7 +43,7 @@ import {
   ChevronRight,
   CreditCard,
 } from "lucide-react";
-import logo from "@/assets/logo.svg";
+import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Tooltip,
