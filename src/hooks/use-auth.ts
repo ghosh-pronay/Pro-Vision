@@ -80,11 +80,15 @@ export function useAuth() {
       email,
       password,
     );
-    const actionCodeSettings = {
-      url: `${window.location.origin}/auth`,
-      handleCodeInApp: false,
-    };
-    await sendEmailVerification(credential.user, actionCodeSettings);
+    try {
+      const actionCodeSettings = {
+        url: `${window.location.origin}/auth`,
+        handleCodeInApp: false,
+      };
+      await sendEmailVerification(credential.user, actionCodeSettings);
+    } catch (emailErr) {
+      console.error("[auth] sendEmailVerification failed:", emailErr);
+    }
     return credential;
   }, []);
 
@@ -94,7 +98,12 @@ export function useAuth() {
       url: `${window.location.origin}/auth`,
       handleCodeInApp: false,
     };
-    await sendEmailVerification(auth.currentUser, actionCodeSettings);
+    try {
+      await sendEmailVerification(auth.currentUser, actionCodeSettings);
+    } catch (emailErr) {
+      console.error("[auth] sendVerificationEmail failed:", emailErr);
+      throw emailErr;
+    }
   }, []);
 
   const reloadUser = useCallback(async () => {
