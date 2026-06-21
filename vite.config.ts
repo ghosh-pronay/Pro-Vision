@@ -19,7 +19,11 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       external: (id) => {
-        if (id.includes("src/convex/") && !id.includes("_generated") && !id.includes("react")) {
+        if (
+          id.includes("src/convex/") &&
+          !id.includes("_generated") &&
+          !id.includes("react")
+        ) {
           return true;
         }
         return false;

@@ -1,13 +1,6 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import {
-  getMessaging,
-  getToken,
-  onMessage,
-  isSupported,
-} from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHzCxlnrx_-fX68FkigYsqt9MxXci-v28",
@@ -24,19 +17,23 @@ const app =
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const storage = getStorage(app);
 
-let messaging: ReturnType<typeof getMessaging> | null = null;
+let messaging: unknown = null;
+
+async function loadMessaging() {
+  return import("firebase/messaging");
+}
 
 export async function getMessagingInstance() {
   if (typeof window === "undefined") return null;
 
   try {
-    const supported = await isSupported();
+    const fm = await loadMessaging();
+    const supported = await fm.isSupported();
     if (!supported) return null;
 
     if (!messaging) {
-      messaging = getMessaging(app);
+      messaging = fm.getMessaging(app);
     }
     return messaging;
   } catch {
@@ -59,12 +56,16 @@ export async function requestNotificationPermission(): Promise<boolean> {
 
 export async function getFirebaseToken(): Promise<string | null> {
   try {
-    const messagingInstance = await getMessagingInstance();
-    if (!messagingInstance) return null;
+    const m = await getMessagingInstance();
+    if (!m) return null;
 
-    const currentToken = await getToken(messagingInstance, {
-      vapidKey: "BNxR...your-vapid-key...", // Replace with actual VAPID key
-    });
+    const fm = await loadMessaging();
+    const currentToken = await fm.getToken(
+      m as Parameters<typeof fm.getToken>[0],
+      {
+        vapidKey: "BNxR...your-vapid-key...",
+      },
+    );
 
     if (currentToken) {
       localStorage.setItem("pv-fcm-token", currentToken);
@@ -82,9 +83,10 @@ export function onMessageListener(
     data?: Record<string, string>;
   }) => void,
 ) {
-  getMessagingInstance().then((messagingInstance) => {
-    if (messagingInstance) {
-      onMessage(messagingInstance, callback);
+  getMessagingInstance().then(async (m) => {
+    if (m) {
+      const fm = await loadMessaging();
+      fm.onMessage(m as Parameters<typeof fm.onMessage>[0], callback);
     }
   });
 }

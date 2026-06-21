@@ -1,4 +1,4 @@
-const CACHE_NAME = "pro-vision-v4";
+const CACHE_NAME = "pro-vision-v5";
 const OFFLINE_PAGE = "/offline.html";
 
 const STATIC_ASSETS = [
@@ -8,10 +8,13 @@ const STATIC_ASSETS = [
   "/favicon.ico",
   "/favicon-192x192.png",
   "/favicon-512x512.png",
+  "/logo-256.avif",
+  "/logo-256.webp",
+  "/logo-192.png",
 ];
 
-const STATIC_CACHE = "pro-vision-static-v3";
-const DYNAMIC_CACHE = "pro-vision-dynamic-v3";
+const STATIC_CACHE = "pro-vision-static-v5";
+const DYNAMIC_CACHE = "pro-vision-dynamic-v5";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -57,7 +60,9 @@ self.addEventListener("fetch", (event) => {
 
   // Cache-first for static assets
   if (
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/)
+    url.pathname.match(
+      /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|avif|webp)$/,
+    )
   ) {
     event.respondWith(
       caches.match(request).then((cached) => {
