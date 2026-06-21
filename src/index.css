@@ -580,7 +580,7 @@
   display: none;
 }
 
-/* Global hover effects */
+/* Global hover effects - must be outside @layer to override .glass (unlayered) */
 .hover-lift {
   transition:
     transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
@@ -588,8 +588,8 @@
     border-color 0.2s ease;
 }
 .hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px -4px var(--pv-shadow-strong);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px -4px var(--pv-shadow-strong) !important;
 }
 
 .hover-glass {
@@ -605,11 +605,18 @@
   transition: background-color 0.15s ease;
 }
 .hover-row:hover {
-  background-color: var(--pv-blue);
-  background-color: color-mix(in srgb, var(--pv-blue) 8%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--pv-blue) 15%,
+    transparent
+  ) !important;
 }
 .dark .hover-row:hover {
-  background-color: color-mix(in srgb, var(--pv-blue) 12%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--pv-blue) 22%,
+    transparent
+  ) !important;
 }
 
 .hover-chip {
@@ -619,12 +626,20 @@
     color 0.15s ease;
 }
 .hover-chip:hover {
-  background-color: color-mix(in srgb, var(--pv-blue) 10%, transparent);
-  border-color: color-mix(in srgb, var(--pv-blue) 30%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--pv-blue) 18%,
+    transparent
+  ) !important;
+  border-color: color-mix(in srgb, var(--pv-blue) 45%, transparent) !important;
 }
 .dark .hover-chip:hover {
-  background-color: color-mix(in srgb, var(--pv-blue) 15%, transparent);
-  border-color: color-mix(in srgb, var(--pv-blue) 25%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--pv-blue) 25%,
+    transparent
+  ) !important;
+  border-color: color-mix(in srgb, var(--pv-blue) 40%, transparent) !important;
 }
 
 .hover-tab {
@@ -633,34 +648,42 @@
     color 0.15s ease;
 }
 .hover-tab:hover {
-  background-color: color-mix(in srgb, var(--pv-blue) 10%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--pv-blue) 15%,
+    transparent
+  ) !important;
 }
 .dark .hover-tab:hover {
-  background-color: color-mix(in srgb, var(--pv-blue) 15%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--pv-blue) 22%,
+    transparent
+  ) !important;
 }
 
 .hover-scale {
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hover-scale:hover {
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 .hover-scale:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
-/* Colored hover variants */
+/* Colored hover variants - !important to override .glass background shorthand */
 .hover-blue:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-blue) 10%,
+    var(--pv-blue) 18%,
     transparent
   ) !important;
 }
 .dark .hover-blue:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-blue) 15%,
+    var(--pv-blue) 25%,
     transparent
   ) !important;
 }
@@ -668,14 +691,14 @@
 .hover-green:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-green) 10%,
+    var(--pv-green) 18%,
     transparent
   ) !important;
 }
 .dark .hover-green:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-green) 15%,
+    var(--pv-green) 25%,
     transparent
   ) !important;
 }
@@ -683,14 +706,14 @@
 .hover-orange:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-orange) 10%,
+    var(--pv-orange) 18%,
     transparent
   ) !important;
 }
 .dark .hover-orange:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-orange) 15%,
+    var(--pv-orange) 25%,
     transparent
   ) !important;
 }
@@ -698,14 +721,14 @@
 .hover-teal:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-teal) 10%,
+    var(--pv-teal) 18%,
     transparent
   ) !important;
 }
 .dark .hover-teal:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-teal) 15%,
+    var(--pv-teal) 25%,
     transparent
   ) !important;
 }
@@ -713,14 +736,14 @@
 .hover-lavender:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-lavender) 10%,
+    var(--pv-lavender) 18%,
     transparent
   ) !important;
 }
 .dark .hover-lavender:hover {
   background-color: color-mix(
     in srgb,
-    var(--pv-lavender) 15%,
+    var(--pv-lavender) 25%,
     transparent
   ) !important;
 }
