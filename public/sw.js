@@ -1,4 +1,4 @@
-const CACHE_NAME = "pro-vision-v2";
+const CACHE_NAME = "pro-vision-v3";
 const OFFLINE_PAGE = "/offline.html";
 
 const STATIC_ASSETS = [
@@ -10,8 +10,8 @@ const STATIC_ASSETS = [
   "/favicon-512x512.png",
 ];
 
-const STATIC_CACHE = "pro-vision-static-v2";
-const DYNAMIC_CACHE = "pro-vision-dynamic-v2";
+const STATIC_CACHE = "pro-vision-static-v3";
+const DYNAMIC_CACHE = "pro-vision-dynamic-v3";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

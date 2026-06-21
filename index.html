@@ -1,73 +1,202 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <!-- Mobile-first viewport with safe areas -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5"
+    />
+    <!-- Performance: preconnect to key external origins -->
+    <link rel="preconnect" href="https://cdn.onesignal.com" crossorigin />
+    <meta name="theme-color" content="#1A6FB5" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>Pro-Vision: Plan Focus Achieve</title>
+    <link rel="canonical" href="https://pro-visions.web.app/" />
+    <meta
+      name="description"
+      content="All-in-one productivity app. Track tasks, habits, expenses, mood, and more — with an AI Coach that speaks Bengali and English."
+    />
+    <meta property="og:title" content="Pro-Vision: Plan Focus Achieve" />
+    <meta property="og:url" content="https://pro-visions.web.app/" />
+    <meta
+      property="og:description"
+      content="All-in-one productivity app with habit tracker, expense tracker, focus timer, AI Coach and well-being tools."
+    />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/og-image.png" />
+    <!-- OneSignal loaded async after page render -->
+    <script
+      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+      async
+      defer
+    ></script>
+    <style id="pv-hover-effects">
+      .hover-lift {
+        transition:
+          transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow 0.2s ease,
+          border-color 0.2s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px -4px rgba(26, 111, 181, 0.15);
+      }
+      .dark .hover-lift:hover {
+        box-shadow: 0 12px 32px -4px rgba(26, 111, 181, 0.4);
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <!-- Favicons -->
-  <link rel="icon" href="/favicon.ico" sizes="any" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="manifest" href="/manifest.json" />
-  <!-- Mobile-first viewport with safe areas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5" />
-  <!-- Performance: preconnect to key external origins -->
-  <link rel="preconnect" href="https://cdn.onesignal.com" crossorigin />
-  <meta name="theme-color" content="#1A6FB5" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="format-detection" content="telephone=no" />
-  <title>Pro-Vision: Plan Focus Achieve</title>
-  <link rel="canonical" href="https://pro-visions.web.app/" />
-  <meta name="description" content="All-in-one productivity app. Track tasks, habits, expenses, mood, and more — with an AI Coach that speaks Bengali and English." />
-  <meta property="og:title" content="Pro-Vision: Plan Focus Achieve" />
-  <meta property="og:url" content="https://pro-visions.web.app/" />
-  <meta property="og:description" content="All-in-one productivity app with habit tracker, expense tracker, focus timer, AI Coach and well-being tools." />
-  <meta property="og:image" content="/og-image.png" />
-  <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="/og-image.png" />
-  <!-- OneSignal loaded async after page render -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" async defer></script>
-</head>
+      .hover-glass {
+        transition:
+          background-color 0.2s ease,
+          border-color 0.2s ease;
+      }
+      .hover-glass:hover {
+        background-color: rgba(255, 255, 255, 0.45);
+      }
+      .dark .hover-glass:hover {
+        background-color: rgba(18, 24, 32, 0.55);
+      }
 
+      .hover-row {
+        transition: background-color 0.15s ease;
+      }
+      .hover-row:hover {
+        background-color: rgba(26, 111, 181, 0.15);
+      }
+      .dark .hover-row:hover {
+        background-color: rgba(26, 111, 181, 0.22);
+      }
 
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(reg => {
-          reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  const banner = document.createElement('div');
-                  banner.id = 'pv-update-banner';
-                  banner.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:#1A6FB5;color:#fff;padding:12px 20px;border-radius:12px;font-family:sans-serif;font-size:14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
-                  banner.innerHTML = '🔄 New version available &nbsp;<button onclick="window.location.reload()" style="background:rgba(255,255,255,0.25);border:none;color:#fff;padding:4px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Refresh</button><button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:18px;line-height:1;padding:0 4px;">×</button>';
-                  document.body.appendChild(banner);
+      .hover-chip {
+        transition:
+          background-color 0.15s ease,
+          border-color 0.15s ease,
+          color 0.15s ease;
+      }
+      .hover-chip:hover {
+        background-color: rgba(26, 111, 181, 0.18);
+        border-color: rgba(26, 111, 181, 0.45);
+      }
+      .dark .hover-chip:hover {
+        background-color: rgba(26, 111, 181, 0.25);
+        border-color: rgba(26, 111, 181, 0.4);
+      }
+
+      .hover-tab {
+        transition:
+          background-color 0.15s ease,
+          color 0.15s ease;
+      }
+      .hover-tab:hover {
+        background-color: rgba(26, 111, 181, 0.15);
+      }
+      .dark .hover-tab:hover {
+        background-color: rgba(26, 111, 181, 0.22);
+      }
+
+      .hover-scale {
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .hover-scale:hover {
+        transform: scale(1.03);
+      }
+      .hover-scale:active {
+        transform: scale(0.97);
+      }
+
+      .hover-blue:hover {
+        background-color: rgba(26, 111, 181, 0.18) !important;
+      }
+      .dark .hover-blue:hover {
+        background-color: rgba(26, 111, 181, 0.25) !important;
+      }
+      .hover-green:hover {
+        background-color: rgba(61, 170, 92, 0.18) !important;
+      }
+      .dark .hover-green:hover {
+        background-color: rgba(61, 170, 92, 0.25) !important;
+      }
+      .hover-orange:hover {
+        background-color: rgba(245, 166, 35, 0.18) !important;
+      }
+      .dark .hover-orange:hover {
+        background-color: rgba(245, 166, 35, 0.25) !important;
+      }
+      .hover-teal:hover {
+        background-color: rgba(42, 191, 191, 0.18) !important;
+      }
+      .dark .hover-teal:hover {
+        background-color: rgba(42, 191, 191, 0.25) !important;
+      }
+      .hover-lavender:hover {
+        background-color: rgba(155, 142, 196, 0.18) !important;
+      }
+      .dark .hover-lavender:hover {
+        background-color: rgba(155, 142, 196, 0.25) !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((reg) => {
+              reg.addEventListener("updatefound", () => {
+                const newWorker = reg.installing;
+                if (newWorker) {
+                  newWorker.addEventListener("statechange", () => {
+                    if (
+                      newWorker.state === "installed" &&
+                      navigator.serviceWorker.controller
+                    ) {
+                      const banner = document.createElement("div");
+                      banner.id = "pv-update-banner";
+                      banner.style.cssText =
+                        "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:#1A6FB5;color:#fff;padding:12px 20px;border-radius:12px;font-family:sans-serif;font-size:14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,0.3);";
+                      banner.innerHTML =
+                        '🔄 New version available &nbsp;<button onclick="window.location.reload()" style="background:rgba(255,255,255,0.25);border:none;color:#fff;padding:4px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Refresh</button><button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:18px;line-height:1;padding:0 4px;">×</button>';
+                      document.body.appendChild(banner);
+                    }
+                  });
                 }
               });
-            }
-          });
-        }).catch(() => {});
-      });
-    }
-    // Apply saved theme
-    (function() {
-      var t = localStorage.getItem('pv-theme');
-      if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.add('light');
+            })
+            .catch(() => {});
+        });
       }
-    })();
-  </script>
+      // Apply saved theme
+      (function () {
+        var t = localStorage.getItem("pv-theme");
+        if (
+          t === "dark" ||
+          (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.add("light");
+        }
+      })();
+    </script>
   </body>
-
 </html>
