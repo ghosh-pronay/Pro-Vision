@@ -10,7 +10,8 @@ import {
   onAuthStateChanged,
   type User,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -27,6 +28,28 @@ export function useAuth() {
         }
       } else {
         setUser(firebaseUser);
+      }
+      if (firebaseUser?.emailVerified && firebaseUser.email) {
+        try {
+          const userRef = doc(db, "users", firebaseUser.uid);
+          const snap = await getDoc(userRef);
+          if (!snap.exists() || !snap.data().emailVerified) {
+            await setDoc(
+              userRef,
+              {
+                email: firebaseUser.email,
+                emailVerified: true,
+                updatedAt: Date.now(),
+              },
+              { merge: true },
+            );
+          }
+        } catch (err) {
+          console.error(
+            "[auth] Failed to write emailVerified to Firestore:",
+            err,
+          );
+        }
       }
       setIsLoading(false);
     });
