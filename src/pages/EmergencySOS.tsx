@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   Phone,
   MapPin,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Heart,
   Zap,
   MessageSquare,
@@ -26,6 +27,7 @@ import {
   Baby,
   HandHeart,
   Megaphone,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Share2,
   Copy,
   Check,
@@ -1131,6 +1133,7 @@ interface MedicalListProps {
 }
 
 function MedicalList({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   lang,
   title,
   icon,

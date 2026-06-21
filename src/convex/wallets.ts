@@ -101,6 +101,7 @@ export const update = mutation({
 
     if (!user || wallet.userId !== user._id) throw new Error("Unauthorized");
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updates: Record<string, any> = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
     if (args.type !== undefined) updates.type = args.type;

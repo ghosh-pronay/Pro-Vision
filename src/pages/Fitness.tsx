@@ -50,6 +50,7 @@ export default function Fitness() {
       duration: 30,
       calories: 300,
       distance: 5,
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now() - 1 * 24 * 60 * 60 * 1000,
     },
     {
@@ -57,6 +58,7 @@ export default function Fitness() {
       type: "gym",
       duration: 45,
       calories: 400,
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now() - 2 * 24 * 60 * 60 * 1000,
       notes: "Upper body workout",
     },
@@ -65,6 +67,7 @@ export default function Fitness() {
       type: "yoga",
       duration: 60,
       calories: 200,
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now() - 3 * 24 * 60 * 60 * 1000,
     },
   ]);

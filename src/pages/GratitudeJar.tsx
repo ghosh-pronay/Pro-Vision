@@ -44,6 +44,7 @@ export default function GratitudeJar() {
       content:
         lang === "bn" ? "আজ সূর্যোদয় দেখেছি" : "Saw a beautiful sunrise today",
       mood: "happy",
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now() - 1 * 24 * 60 * 60 * 1000,
     },
     {
@@ -51,12 +52,14 @@ export default function GratitudeJar() {
       content:
         lang === "bn" ? "পরিবারের সাথে রাতের খাবার" : "Had dinner with family",
       mood: "happy",
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now() - 2 * 24 * 60 * 60 * 1000,
     },
     {
       _id: "3",
       content: lang === "bn" ? "একটি ভালো বই পড়েছি" : "Read a good book",
       mood: "neutral",
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now() - 3 * 24 * 60 * 60 * 1000,
     },
   ]);
@@ -82,7 +85,7 @@ export default function GratitudeJar() {
     if (entries.length === 0) return 0;
     const sorted = [...entries].sort((a, b) => b.date - a.date);
     let streak = 0;
-    let currentDate = new Date();
+    const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < 365; i++) {

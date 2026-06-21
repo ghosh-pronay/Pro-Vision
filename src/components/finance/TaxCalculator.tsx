@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Calculator, Info, ChevronDown, ChevronUp } from "lucide-react";
+import { Calculator, Info, ChevronUp } from "lucide-react";
 
 interface TaxCalculatorProps {
   onCalculate?: (result: TaxResult) => void;

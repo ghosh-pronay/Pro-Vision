@@ -94,6 +94,7 @@ export const update = mutation({
 
     if (!user || goal.userId !== user._id) throw new Error("Unauthorized");
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updates: Record<string, any> = { updatedAt: Date.now() };
     if (args.title !== undefined) updates.title = args.title;
     if (args.description !== undefined) updates.description = args.description;

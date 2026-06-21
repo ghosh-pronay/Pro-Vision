@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Calculator, X, Delete } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Calculator, X } from "lucide-react";
+import { motion } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { t, type TranslationKey } from "@/i18n/translations";
 
 interface FloatingCalculatorProps {

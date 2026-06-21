@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   CardFooter,
   CardHeader,
   CardTitle,
@@ -12,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import logo from "@/assets/logo.svg";
 import { useLang } from "@/i18n/LanguageContext";
-import { t } from "@/i18n/translations";
+
 import {
   ArrowRight,
   Loader2,

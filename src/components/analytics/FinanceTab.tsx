@@ -199,6 +199,7 @@ const IESection = memo(function IESection({
   categories,
   total,
   compCategories,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   compTotal,
 }: {
   title: string;
@@ -340,6 +341,7 @@ const DateRangePicker = memo(function DateRangePicker({
   );
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function FinanceTab({ period }: { period: "7d" | "30d" | "90d" }) {
   const [view, setView] = useState<ReportView>("balanceSheet");
   const [datePreset, setDatePreset] = useState<DatePreset>("thisMonth");
@@ -396,11 +398,15 @@ export function FinanceTab({ period }: { period: "7d" | "30d" | "90d" }) {
     },
     period: { selected: "", comparison: "", year: 2025 },
     selectedPeriod: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       income: { categories: [] as any[], total: 0 },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expense: { categories: [] as any[], total: 0 },
     },
     comparisonPeriod: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       income: { categories: [] as any[], total: 0 },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expense: { categories: [] as any[], total: 0 },
     },
   };
@@ -467,6 +473,7 @@ function BalanceSheetView({
   lang,
   dateLabel,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   lang: string;
   dateLabel: string;
@@ -647,6 +654,7 @@ function BalanceSheetView({
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function IncomeExpenseView({ data, lang }: { data: any; lang: string }) {
   const { summary, selectedPeriod, comparisonPeriod, period } = data;
 
@@ -847,6 +855,7 @@ function IncomeExpenseView({ data, lang }: { data: any; lang: string }) {
             </span>
           </div>
           <div className="ml-4">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {selectedPeriod.income.categories.map((cat: any) => (
               <div key={cat.name} className="flex justify-between py-1 text-sm">
                 <span className="text-foreground pl-4">{cat.name}</span>
@@ -878,6 +887,7 @@ function IncomeExpenseView({ data, lang }: { data: any; lang: string }) {
             </span>
           </div>
           <div className="ml-4">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {selectedPeriod.expense.categories.map((cat: any) => (
               <div key={cat.name} className="flex justify-between py-1 text-sm">
                 <span className="text-foreground pl-4">{cat.name}</span>

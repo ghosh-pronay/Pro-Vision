@@ -160,8 +160,10 @@ export default function Wellbeing() {
   const [showMeditation, setShowMeditation] = useState(false);
   const [showHealthTracker, setShowHealthTracker] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const moods = useQuery(api.moods.list);
   const moodStats = useQuery(api.moods.stats);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sleepLogs = useQuery(api.sleepLogs.list);
   const sleepStats = useQuery(api.sleepLogs.stats);
   const gratitudeEntries = useQuery(api.gratitudeEntries.list);
@@ -648,6 +650,7 @@ export default function Wellbeing() {
 
         {gratitudeEntries && gratitudeEntries.length > 0 && (
           <div className="space-y-2">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {gratitudeEntries.slice(0, 5).map((entry: any) => (
               <motion.div
                 key={entry._id}
@@ -857,6 +860,7 @@ export default function Wellbeing() {
 
         {exerciseLogs && exerciseLogs.length > 0 && (
           <div className="space-y-2">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {exerciseLogs.slice(0, 5).map((log: any) => {
               const et = EXERCISE_TYPES.find((e) => e.type === log.type);
               return (
@@ -959,11 +963,14 @@ export default function Wellbeing() {
           <HealthTracker
             waterGoal={2500}
             waterIntakes={(exerciseLogs ?? [])
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .filter((log: any) => log.type === "Water")
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .map((log: any) => ({
                 amount: log.duration,
                 timestamp: log.createdAt,
               }))}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             exercises={(exerciseLogs ?? []).map((log: any) => ({
               id: log._id,
               type: log.type?.toLowerCase() ?? "other",

@@ -13,14 +13,16 @@ import {
   Share2,
   Calculator,
   BarChart3,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Filter,
   Trash2,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Check,
   Search,
   ArrowUpDown,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+
 import { toastSuccess } from "@/lib/toast-helpers";
 
 interface MarketItem {

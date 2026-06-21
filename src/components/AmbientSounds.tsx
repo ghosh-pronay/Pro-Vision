@@ -160,7 +160,7 @@ function startSound(
     return f;
   };
 
-  let stopFns: (() => void)[] = [];
+  const stopFns: (() => void)[] = [];
 
   const stopAll = () => stopFns.forEach((fn) => fn());
 
@@ -176,7 +176,7 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
 
       const drip = () => {
@@ -206,7 +206,7 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
 
       const chirp = () => {
@@ -245,7 +245,7 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
 
       const lfo = ctx.createOscillator();
@@ -258,7 +258,7 @@ function startSound(
       stopFns.push(() => {
         try {
           lfo.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
       return stopAll;
     }
@@ -272,7 +272,7 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
 
       const crackle = () => {
@@ -346,7 +346,7 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
 
       const rumble = () => {
@@ -376,7 +376,7 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
       return stopAll;
     }
@@ -406,7 +406,7 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
       return stopAll;
     }
@@ -417,7 +417,7 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
       return stopAll;
     }
@@ -456,7 +456,7 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {}
+        } catch {/* ignore */ }
       });
 
       const pad = () => {

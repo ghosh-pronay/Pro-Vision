@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 module.exports.query = undefined;
 module.exports.internalQuery = undefined;
 module.exports.mutation = undefined;

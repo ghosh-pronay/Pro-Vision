@@ -1,5 +1,5 @@
 import { useMemo, memo } from "react";
-import { format, startOfYear, eachDayOfInterval, getDay, getWeek } from "date-fns";
+import { format, startOfYear, eachDayOfInterval, getWeek } from "date-fns";
 
 interface HeatmapData {
   date: string;

@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { query, internalAction } from "./_generated/server";
+
+import { query } from "./_generated/server";
 
 export interface MoodInsight {
   type: "pattern" | "correlation" | "suggestion" | "trend";

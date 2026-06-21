@@ -416,6 +416,7 @@ export default function CommuteTracker() {
   const handleSaveCommute = () => {
     if (!selectedMode || !formData.from || !formData.to) return;
     const newCommute: Commute = {
+      // eslint-disable-next-line react-hooks/purity
       id: Date.now().toString(),
       mode: selectedMode,
       from: formData.from,

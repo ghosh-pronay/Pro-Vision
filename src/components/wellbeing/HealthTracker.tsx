@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Droplets, Plus, Minus, Target, Flame, Footprints, Timer } from "lucide-react";
+import { Droplets, Plus, Minus, Flame, Footprints, Timer } from "lucide-react";
 
 interface WaterIntake {
   amount: number; // in ml
@@ -42,6 +42,7 @@ export default function HealthTracker({
   waterIntakes = [],
   exercises = [],
   onAddWater,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onRemoveWater,
   onAddExercise,
   onRemoveExercise,

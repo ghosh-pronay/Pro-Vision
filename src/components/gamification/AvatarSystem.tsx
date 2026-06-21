@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Check, ChevronLeft, ChevronRight, Shirt, Palette } from "lucide-react";
+
+import { Check, Palette } from "lucide-react";
 
 interface AvatarConfig {
   skinTone: string;
@@ -87,6 +87,7 @@ function AvatarPreview({ config, size = "lg" }: { config: AvatarConfig; size?: s
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function AvatarSystem({ config, onChange, size = "lg" }: AvatarSystemProps) {
   const [activeTab, setActiveTab] = useState<"skin" | "hair" | "outfit" | "accessory" | "background">("skin");
 

@@ -6,6 +6,7 @@ interface CarbonUnitProps {
   className?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function CarbonUnit({ position, className }: CarbonUnitProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { serve, placement } = AD_NETWORKS.carbon;

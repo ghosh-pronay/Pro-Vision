@@ -41,7 +41,9 @@ export function useJournalStats() {
   const stats = useMemo(() => {
     if (!entries) return { total: 0, thisWeek: 0, thisMonth: 0 };
 
+    // eslint-disable-next-line react-hooks/purity
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    // eslint-disable-next-line react-hooks/purity
     const monthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
     return {

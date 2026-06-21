@@ -15,6 +15,7 @@ import {
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface MealLog {
   _id: string;
   mealType: "breakfast" | "lunch" | "dinner" | "snack";
@@ -28,6 +29,7 @@ interface MealLog {
   createdAt: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface WaterLog {
   _id: string;
   glasses: number;

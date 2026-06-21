@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, X, Loader2 } from "lucide-react";
+import { Mic, MicOff, X } from "lucide-react";
 
 interface VoiceCommand {
   command: string;
@@ -95,6 +95,7 @@ const VoiceCommands = memo(function VoiceCommands({
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -147,7 +148,9 @@ const VoiceCommands = memo(function VoiceCommands({
     }
 
     const SpeechRecognition =
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).SpeechRecognition ||
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
 
@@ -160,6 +163,7 @@ const VoiceCommands = memo(function VoiceCommands({
       setTranscript("");
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onresult = (event: any) => {
       const current = event.resultIndex;
       const result = event.results[current];
@@ -172,6 +176,7 @@ const VoiceCommands = memo(function VoiceCommands({
       }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onerror = (event: any) => {
       if (event.error === "not-allowed") {
         setFeedback("Microphone access denied. Please enable it in settings.");

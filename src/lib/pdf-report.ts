@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import { EXPENSE_CATEGORIES, CURRENCY_SYMBOL } from "./categories";
+import { CURRENCY_SYMBOL } from "./categories";
 
 interface ReportData {
   period: string;

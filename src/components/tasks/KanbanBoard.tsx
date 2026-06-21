@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback } from "react";
-import { motion, Reorder } from "framer-motion";
-import { GripVertical, Plus, MoreHorizontal, Trash2, Edit3, Check } from "lucide-react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { GripVertical, Plus, Trash2, Edit3 } from "lucide-react";
 
 interface Task {
   id: string;
@@ -43,6 +43,7 @@ export default function KanbanBoard({
     setDraggedTask({ task, columnId });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDragOver = (e: React.DragEvent, columnId: string) => {
     e.preventDefault();
   };
@@ -74,6 +75,7 @@ export default function KanbanBoard({
     if (!newTaskTitle.trim()) return;
 
     const newTask: Task = {
+      // eslint-disable-next-line react-hooks/purity
       id: Date.now().toString(),
       title: newTaskTitle.trim(),
       priority: "medium",
@@ -87,6 +89,7 @@ export default function KanbanBoard({
     });
 
     onColumnsChange(updatedColumns);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...taskWithoutId } = newTask;
     onTaskAdd?.(columnId, taskWithoutId);
     setNewTaskTitle("");

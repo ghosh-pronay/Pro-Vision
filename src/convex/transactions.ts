@@ -178,11 +178,6 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
-    }
-
-    await ctx.db.delete(args.id);
-  },
-});
 
 export const stats = query({
   args: {},

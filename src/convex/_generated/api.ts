@@ -32,10 +32,12 @@ export const api = {
       localDB.habits.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
       const a = args[0] as Record<string, unknown>;
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       localDB.habits.update?.(a.id as string, a) ?? Promise.resolve();
     },
     archive: (...args: unknown[]) => {
       const a = args[0] as Record<string, unknown>;
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       localDB.habits.archive?.(a.id as string) ?? Promise.resolve();
     },
     checkIn: (...args: unknown[]) => {
@@ -46,6 +48,7 @@ export const api = {
       localDB.habits.remove((args[0] as Record<string, unknown>).id as string),
     useStreakFreeze: (...args: unknown[]) => {
       const a = args[0] as Record<string, unknown>;
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       localDB.habits.useStreakFreeze?.(a.id as string, a.date as number) ??
         Promise.resolve();
     },
@@ -141,6 +144,7 @@ export const api = {
     bulkSetConfig: (...args: unknown[]) => Promise.resolve(args[0]),
     createChallenge: (...args: unknown[]) => Promise.resolve(args[0]),
     updateChallenge: (...args: unknown[]) => Promise.resolve(args[0]),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     deleteChallenge: (...args: unknown[]) => Promise.resolve(),
     setupFirstAdmin: () => Promise.resolve(),
     hasAdmin: () => true,

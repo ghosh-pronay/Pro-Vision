@@ -7,7 +7,6 @@ import { useState, useMemo } from "react";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import AdManager from "@/components/ads/AdManager";
 import { getTimeBasedGreeting } from "@/lib/bangla-greetings";
-import { toBanglaNumber } from "@/lib/bangla-numbers";
 import {
   LayoutDashboard,
   CheckSquare,

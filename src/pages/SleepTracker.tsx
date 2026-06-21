@@ -36,6 +36,7 @@ export default function SleepTracker() {
       quality: "good",
       bedTime: "23:00",
       wakeTime: "06:30",
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now() - 1 * 24 * 60 * 60 * 1000,
     },
     {
@@ -44,6 +45,7 @@ export default function SleepTracker() {
       quality: "okay",
       bedTime: "00:30",
       wakeTime: "06:30",
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now() - 2 * 24 * 60 * 60 * 1000,
     },
     {
@@ -52,6 +54,7 @@ export default function SleepTracker() {
       quality: "great",
       bedTime: "22:30",
       wakeTime: "06:30",
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now() - 3 * 24 * 60 * 60 * 1000,
     },
   ]);

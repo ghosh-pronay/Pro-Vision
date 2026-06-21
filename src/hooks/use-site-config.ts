@@ -20,6 +20,7 @@ const DEFAULT_LIMITS: Record<string, number> = {
   "limits.freeTierWallets": 3,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DEFAULT_SYSTEM: Record<string, any> = {
   "system.maintenanceMode": false,
   "system.announcementBanner": "",
@@ -35,6 +36,7 @@ const DEFAULT_ADS: Record<string, boolean> = {
 };
 
 export function useSiteConfig() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const config = useQuery((api as any).siteConfig.getAll);
 
   const features = { ...DEFAULT_FEATURES };

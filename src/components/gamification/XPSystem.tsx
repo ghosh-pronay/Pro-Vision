@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Star, Trophy, TrendingUp } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface UserStats {
   tasksCompleted: number;

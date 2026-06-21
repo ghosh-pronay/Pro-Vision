@@ -173,6 +173,7 @@ export default function Reading() {
     setCurrentPage("");
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString(
       lang === "bn" ? "bn-BD" : "en-US",

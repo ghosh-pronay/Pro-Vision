@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, RotateCcw, X, Clock, Volume2 } from "lucide-react";
+import { Play, Pause, RotateCcw, X, Clock } from "lucide-react";
 
 interface MeditationSession {
   id: string;

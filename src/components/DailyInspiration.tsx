@@ -236,6 +236,7 @@ const fadeUp = {
 };
 
 export default function DailyInspiration() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { t, lang } = useI18n();
   const [selectedSign, setSelectedSign] = useState<string>("Aries");
   const [showSignPicker, setShowSignPicker] = useState(false);

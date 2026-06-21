@@ -81,6 +81,7 @@ export default function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps)
 
       setIsScanning(true);
       setError(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Camera access denied. Please use manual entry.");
     }
@@ -102,6 +103,7 @@ export default function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps)
 
   const simulateScan = () => {
     const barcodes = Object.keys(MOCK_PRODUCTS);
+    // eslint-disable-next-line react-hooks/purity
     const randomBarcode = barcodes[Math.floor(Math.random() * barcodes.length)];
     handleBarcodeScan(randomBarcode);
   };

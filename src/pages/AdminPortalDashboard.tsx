@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
-import { Shield, LogOut, Users, Activity, Settings, Globe } from "lucide-react";
+import { Shield, LogOut, Users, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import { lazy } from "react";

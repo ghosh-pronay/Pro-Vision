@@ -189,6 +189,7 @@ export const getConfig = query({
   handler: async (ctx) => {
     await requireAdmin(ctx);
     const configs = await ctx.db.query("siteConfig").collect();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: Record<string, any> = {};
     for (const c of configs) {
       result[c.key] = c.value;

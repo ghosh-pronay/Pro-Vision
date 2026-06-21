@@ -23,6 +23,7 @@ export function useAuth() {
     return unsubscribe;
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const signIn = useCallback(async (method: string, credential?: any) => {
     if (method === "email-otp" && credential instanceof FormData) {
       const email = credential.get("email") as string;

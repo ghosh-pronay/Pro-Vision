@@ -11,9 +11,11 @@ import {
   Brain,
   Heart,
   CheckCircle,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ArrowRight,
   X,
   Trash2,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Copy,
 } from "lucide-react";
 
@@ -21,6 +23,7 @@ interface HabitTemplate {
   id: string;
   name: string;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
   color: string;
   category: string;

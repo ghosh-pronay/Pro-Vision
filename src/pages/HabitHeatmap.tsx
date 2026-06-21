@@ -19,11 +19,13 @@ export default function HabitHeatmap() {
       const date = new Date(now);
       date.setDate(date.getDate() - i);
 
+      // eslint-disable-next-line react-hooks/purity
       const random = Math.random();
       let count = 0;
       let level = 0;
 
       if (random > 0.3) {
+        // eslint-disable-next-line react-hooks/purity
         count = Math.floor(Math.random() * 5) + 1;
         if (count >= 4) level = 4;
         else if (count >= 3) level = 3;

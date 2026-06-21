@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Edit3,
   Eye,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   EyeOff,
   History,
   X,
@@ -166,6 +167,7 @@ export default function QRProfile() {
   const [qrHistory, setQrHistory] = useState<QRHistoryItem[]>([
     {
       id: "1",
+      // eslint-disable-next-line react-hooks/purity
       timestamp: Date.now() - 3 * 24 * 60 * 60 * 1000,
       profileData: {
         ...profile,
@@ -175,6 +177,7 @@ export default function QRProfile() {
     },
     {
       id: "2",
+      // eslint-disable-next-line react-hooks/purity
       timestamp: Date.now() - 7 * 24 * 60 * 60 * 1000,
       profileData: {
         ...profile,

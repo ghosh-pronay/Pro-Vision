@@ -1,5 +1,5 @@
 import { query, mutation, internalQuery } from "./_generated/server";
-import { v } from "convex/values";
+
 
 export const currentUser = query({
   args: {},

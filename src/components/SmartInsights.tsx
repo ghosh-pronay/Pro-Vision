@@ -22,12 +22,12 @@ interface Insight {
 }
 
 interface SmartInsightsProps {
-  tasks: any[] | undefined;
-  habits: any[] | undefined;
-  transactions: any[] | undefined;
-  focusSessions: any[] | undefined;
-  moods: any[] | undefined;
-  sleepLogs: any[] | undefined;
+  tasks: unknown[] | undefined;
+  habits: unknown[] | undefined;
+  transactions: unknown[] | undefined;
+  focusSessions: unknown[] | undefined;
+  moods: unknown[] | undefined;
+  sleepLogs: unknown[] | undefined;
 }
 
 const fadeUp = {
