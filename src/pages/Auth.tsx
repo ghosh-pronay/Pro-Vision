@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "react-router";
 
 import { useAuth } from "@/hooks/use-auth";
+import { sendWelcomeEmail } from "@/lib/welcome-email";
 import logo from "@/assets/logo.svg";
 import { useLang } from "@/i18n/LanguageContext";
 
@@ -26,7 +27,7 @@ import {
   CheckCircle2,
   Send,
 } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 interface AuthProps {
@@ -38,6 +39,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     isLoading: authLoading,
     isAuthenticated,
     isEmailVerified,
+    user,
     signIn,
     signUp,
     sendVerificationEmail,
@@ -55,6 +57,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const welcomeEmailSent = useRef(false);
 
   useEffect(() => {
     if (searchParams.get("mode") === "verify") {
@@ -64,6 +67,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated && isEmailVerified) {
+      if (user?.email && !welcomeEmailSent.current) {
+        welcomeEmailSent.current = true;
+        sendWelcomeEmail(user.email);
+      }
       const redirect = redirectAfterAuth || "/dashboard";
       navigate(redirect);
     }
@@ -73,6 +80,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     isEmailVerified,
     navigate,
     redirectAfterAuth,
+    user,
   ]);
 
   useEffect(() => {
