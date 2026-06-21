@@ -579,3 +579,69 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Global hover effects */
+.hover-lift {
+  transition:
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -4px var(--pv-shadow-strong);
+}
+
+.hover-glass {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+.hover-glass:hover {
+  background-color: var(--pv-glass-strong);
+}
+
+.hover-row {
+  transition: background-color 0.15s ease;
+}
+.hover-row:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.dark .hover-row:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.hover-chip {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+.hover-chip:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.dark .hover-chip:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.hover-tab {
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.hover-tab:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.dark .hover-tab:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.hover-scale {
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+.hover-scale:active {
+  transform: scale(0.98);
+}

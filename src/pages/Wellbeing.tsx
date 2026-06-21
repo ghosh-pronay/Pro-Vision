@@ -656,7 +656,7 @@ export default function Wellbeing() {
                 key={entry._id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass rounded-xl px-4 py-3 group"
+                className="glass rounded-xl px-4 py-3 group hover-row"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
@@ -868,7 +868,7 @@ export default function Wellbeing() {
                   key={log._id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="glass rounded-xl px-4 py-3"
+                  className="glass rounded-xl px-4 py-3 hover-row"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{et?.emoji ?? "🏃"}</span>

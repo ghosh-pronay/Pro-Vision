@@ -706,7 +706,7 @@ export default function Habits() {
       setNewDescription("");
       setNewCategory("other");
       setShowAdd(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toastError(
         lang === "bn" ? "অভ্যাস যোগ করতে ব্যর্থ হয়েছে" : "Failed to add habit",
@@ -852,7 +852,7 @@ export default function Habits() {
                         ? `"${habit.name[lang]}" যোগ হয়েছে!`
                         : `"${habit.name[lang]}" added!`,
                     );
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   } catch (error) {
                     toastError(
                       lang === "bn"
@@ -938,7 +938,7 @@ export default function Habits() {
                   className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
                     newCategory === cat.id
                       ? "border-[var(--pv-green)] text-[var(--pv-green)] bg-[var(--pv-green)]/10"
-                      : "border-border/40 text-muted-foreground"
+                      : "border-border/40 text-muted-foreground hover-chip"
                   }`}
                 >
                   {cat.icon} {cat.label[lang]}
@@ -953,7 +953,7 @@ export default function Habits() {
                   className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                     newFrequency === opt.value
                       ? "border-[var(--pv-green)] text-[var(--pv-green)] bg-[var(--pv-green)]/10"
-                      : "border-border/40 text-muted-foreground"
+                      : "border-border/40 text-muted-foreground hover-chip"
                   }`}
                 >
                   {lang === "bn"
@@ -1024,7 +1024,7 @@ export default function Habits() {
                   className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
                     editCategory === cat.id
                       ? "border-[var(--pv-blue)] text-[var(--pv-blue)] bg-[var(--pv-blue)]/10"
-                      : "border-border/40 text-muted-foreground"
+                      : "border-border/40 text-muted-foreground hover-chip"
                   }`}
                 >
                   {cat.icon} {cat.label[lang]}
@@ -1039,7 +1039,7 @@ export default function Habits() {
                   className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                     editFrequency === opt.value
                       ? "border-[var(--pv-blue)] text-[var(--pv-blue)] bg-[var(--pv-blue)]/10"
-                      : "border-border/40 text-muted-foreground"
+                      : "border-border/40 text-muted-foreground hover-chip"
                   }`}
                 >
                   {lang === "bn"
@@ -1157,7 +1157,7 @@ export default function Habits() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortKey)}
-            className="appearance-none rounded-lg px-3 py-1.5 text-xs font-medium border border-border/40 text-muted-foreground bg-transparent pr-6 outline-none cursor-pointer"
+            className="appearance-none rounded-lg px-3 py-1.5 text-xs font-medium border border-border/40 text-muted-foreground hover-chip bg-transparent pr-6 outline-none cursor-pointer"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -1198,7 +1198,7 @@ export default function Habits() {
                     className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
                       !filterCategory
                         ? "border-[var(--pv-blue)] text-[var(--pv-blue)] bg-[var(--pv-blue)]/10"
-                        : "border-border/40 text-muted-foreground"
+                        : "border-border/40 text-muted-foreground hover-chip"
                     }`}
                   >
                     {lang === "bn" ? "সব" : "All"}
@@ -1210,7 +1210,7 @@ export default function Habits() {
                       className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
                         filterCategory === cat.id
                           ? "border-[var(--pv-blue)] text-[var(--pv-blue)] bg-[var(--pv-blue)]/10"
-                          : "border-border/40 text-muted-foreground"
+                          : "border-border/40 text-muted-foreground hover-chip"
                       }`}
                     >
                       {cat.icon} {cat.label[lang]}
@@ -1228,7 +1228,7 @@ export default function Habits() {
                     className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
                       !filterFrequency
                         ? "border-[var(--pv-blue)] text-[var(--pv-blue)] bg-[var(--pv-blue)]/10"
-                        : "border-border/40 text-muted-foreground"
+                        : "border-border/40 text-muted-foreground hover-chip"
                     }`}
                   >
                     {lang === "bn" ? "সব" : "All"}
@@ -1240,7 +1240,7 @@ export default function Habits() {
                       className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
                         filterFrequency === opt.value
                           ? "border-[var(--pv-blue)] text-[var(--pv-blue)] bg-[var(--pv-blue)]/10"
-                          : "border-border/40 text-muted-foreground"
+                          : "border-border/40 text-muted-foreground hover-chip"
                       }`}
                     >
                       {lang === "bn"
@@ -1362,7 +1362,7 @@ export default function Habits() {
                     className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                       detailTab === "history"
                         ? "border-[var(--pv-blue)] text-[var(--pv-blue)] bg-[var(--pv-blue)]/10"
-                        : "border-border/40 text-muted-foreground"
+                        : "border-border/40 text-muted-foreground hover-chip"
                     }`}
                   >
                     <History className="size-3 inline mr-1" />
@@ -1373,7 +1373,7 @@ export default function Habits() {
                     className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                       detailTab === "weekly"
                         ? "border-[var(--pv-blue)] text-[var(--pv-blue)] bg-[var(--pv-blue)]/10"
-                        : "border-border/40 text-muted-foreground"
+                        : "border-border/40 text-muted-foreground hover-chip"
                     }`}
                   >
                     <Calendar className="size-3 inline mr-1" />
@@ -1532,7 +1532,7 @@ export default function Habits() {
                 return (
                   <motion.div
                     key={habit._id}
-                    className={`glass rounded-xl px-4 py-3 flex items-center gap-3 group ${habit.archived ? "opacity-60" : ""}`}
+                    className={`glass rounded-xl px-4 py-3 flex items-center gap-3 group hover-row ${habit.archived ? "opacity-60" : ""}`}
                   >
                     <button
                       onClick={() => toggleCheckIn(habit._id)}

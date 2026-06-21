@@ -197,7 +197,7 @@ export default function Focus() {
           <button
             key={m}
             onClick={() => switchMode(m)}
-            className={`flex-1 glass rounded-xl px-3 py-2.5 text-xs font-medium transition-all ${mode === m ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground"}`}
+            className={`flex-1 glass rounded-xl px-3 py-2.5 text-xs font-medium transition-all ${mode === m ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground hover-tab"}`}
           >
             {t(MODES[m].labelKey, lang)}
           </button>
@@ -318,7 +318,7 @@ export default function Focus() {
             labelKey: "focus.totalHours" as TranslationKey,
             color: "var(--pv-green)",
           },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         ].map(({ icon: Icon, value, labelKey, color }, i) => (
           <div key={labelKey} className="glass rounded-xl p-4 text-center">
             <Icon className="size-5 mx-auto mb-1" style={{ color }} />

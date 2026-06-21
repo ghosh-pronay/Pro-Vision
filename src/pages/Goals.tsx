@@ -237,7 +237,7 @@ export default function Goals() {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            className="glass rounded-2xl p-4 text-center"
+            className="glass rounded-2xl p-4 text-center hover-lift"
           >
             <Icon className="size-5 mx-auto mb-1.5" style={{ color }} />
             <div className="text-xl font-extrabold text-foreground">
@@ -280,7 +280,7 @@ export default function Goals() {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              className="glass rounded-2xl p-5 space-y-3"
+              className="glass rounded-2xl p-5 space-y-3 hover-lift"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3 flex-1 min-w-0">

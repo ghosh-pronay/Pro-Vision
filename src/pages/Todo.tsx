@@ -334,13 +334,13 @@ export default function Todo() {
           <div className="flex glass rounded-xl overflow-hidden">
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 transition-all ${viewMode === "list" ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground"}`}
+              className={`p-2 transition-all ${viewMode === "list" ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground hover-tab"}`}
             >
               <List className="size-4" />
             </button>
             <button
               onClick={() => setViewMode("kanban")}
-              className={`p-2 transition-all ${viewMode === "kanban" ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground"}`}
+              className={`p-2 transition-all ${viewMode === "kanban" ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground hover-tab"}`}
             >
               <LayoutGrid className="size-4" />
             </button>
@@ -426,7 +426,7 @@ export default function Todo() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3 py-2 text-xs font-medium transition-all ${filter === f ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground"}`}
+                className={`px-3 py-2 text-xs font-medium transition-all ${filter === f ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground hover-tab"}`}
               >
                 {FILTER_LABELS[f]}
               </button>
@@ -479,7 +479,7 @@ export default function Todo() {
                           ? `"${task.title[lang]}" যোগ হয়েছে!`
                           : `"${task.title[lang]}" added!`,
                       );
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     } catch (error) {
                       toastError(
                         lang === "bn"
@@ -610,7 +610,7 @@ export default function Todo() {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              className="glass rounded-xl px-4 py-3 flex items-center gap-3 group"
+              className="glass rounded-xl px-4 py-3 flex items-center gap-3 group hover-row"
             >
               <button
                 onClick={() => handleToggle(task._id)}

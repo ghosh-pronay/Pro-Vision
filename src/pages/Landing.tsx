@@ -299,7 +299,7 @@ function Navbar() {
               </button>
               <button
                 onClick={() => navigate("/auth")}
-                className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.97]"
+                className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all hover:brightness-110 hover:shadow-lg hover:shadow-[var(--pv-blue)]/25 active:scale-[0.97]"
                 style={{
                   background:
                     "linear-gradient(135deg, var(--pv-blue), var(--pv-blue-dark))",
@@ -384,7 +384,7 @@ function Navbar() {
                       setMobileOpen(false);
                       navigate("/auth");
                     }}
-                    className="w-full text-left px-4 py-2.5 text-sm font-semibold text-white rounded-xl transition-all hover:brightness-110 active:scale-[0.97]"
+                    className="w-full text-left px-4 py-2.5 text-sm font-semibold text-white rounded-xl transition-all hover:brightness-110 hover:shadow-lg hover:shadow-[var(--pv-blue)]/25 active:scale-[0.97]"
                     style={{
                       background:
                         "linear-gradient(135deg, var(--pv-blue), var(--pv-blue-dark))",
@@ -546,7 +546,7 @@ function Hero() {
         >
           <button
             onClick={() => navigate("/auth")}
-            className="group relative inline-flex items-center gap-2 rounded-2xl px-7 py-3.5 text-sm font-bold text-white overflow-hidden transition-all hover:scale-[1.03] active:scale-[0.98]"
+            className="group relative inline-flex items-center gap-2 rounded-2xl px-7 py-3.5 text-sm font-bold text-white overflow-hidden transition-all hover:scale-[1.03] hover:shadow-lg hover:shadow-[var(--pv-blue)]/25 active:scale-[0.98]"
           >
             <div
               className="absolute inset-0 rounded-2xl"
@@ -556,7 +556,7 @@ function Hero() {
               }}
             />
             <div
-              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               style={{
                 background:
                   "linear-gradient(135deg, var(--pv-blue-light), var(--pv-blue))",
@@ -564,7 +564,7 @@ function Hero() {
             />
             <span className="relative z-10 flex items-center gap-2">
               {t("hero.cta", lang)}
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
             </span>
           </button>
 
@@ -632,7 +632,7 @@ function Hero() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 + i * 0.12 }}
-                    className="glass rounded-2xl p-4 text-center"
+                    className="glass glass-card-hover rounded-2xl p-4 text-center"
                   >
                     <Icon className="size-5 mx-auto mb-2" style={{ color }} />
                     <div className="text-2xl font-bold text-foreground">
@@ -860,7 +860,7 @@ function CoachSection() {
             </ul>
             <button
               onClick={() => navigate("/auth")}
-              className="mt-8 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.97]"
+              className="mt-8 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110 hover:shadow-lg hover:shadow-[var(--pv-teal)]/25 active:scale-[0.97]"
               style={{
                 background:
                   "linear-gradient(135deg, var(--pv-teal), var(--pv-blue))",
@@ -1146,13 +1146,13 @@ function WellbeingSection() {
               {t("wellbeing.desc", lang)}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <div className="glass rounded-xl px-4 py-3 flex items-center gap-2.5">
+              <div className="glass glass-card-hover rounded-xl px-4 py-3 flex items-center gap-2.5">
                 <span className="text-xl">😴</span>
                 <span className="text-sm font-semibold text-foreground">
                   {t("wellbeing.sleep" as TranslationKey, lang)}
                 </span>
               </div>
-              <div className="glass rounded-xl px-4 py-3 flex items-center gap-2.5">
+              <div className="glass glass-card-hover rounded-xl px-4 py-3 flex items-center gap-2.5">
                 <span className="text-xl">🙏</span>
                 <span className="text-sm font-semibold text-foreground">
                   {t("wellbeing.gratitude" as TranslationKey, lang)}
@@ -1280,7 +1280,7 @@ function Pricing() {
                   </div>
                 )}
                 <div
-                  className={`glass-strong glass-accent-top rounded-2xl h-full flex flex-col p-6 ${highlight ? "border-[var(--pv-blue)]/30" : ""}`}
+                  className={`glass-strong glass-accent-top rounded-2xl h-full flex flex-col p-6 hover-lift ${highlight ? "border-[var(--pv-blue)]/30" : ""}`}
                 >
                   <div className="mb-4">
                     <h3 className="text-lg font-bold text-foreground">
@@ -1313,8 +1313,8 @@ function Pricing() {
                     onClick={() => navigate("/auth")}
                     className={`w-full rounded-xl py-2.5 text-sm font-semibold transition-all active:scale-[0.97] ${
                       highlight
-                        ? "text-white hover:brightness-110"
-                        : "glass text-foreground hover:bg-foreground/5"
+                        ? "text-white hover:brightness-110 hover:shadow-lg hover:shadow-[var(--pv-blue)]/25"
+                        : "glass text-foreground hover:bg-foreground/10 hover:shadow-md"
                     }`}
                     style={
                       highlight
@@ -1373,7 +1373,7 @@ function CTA() {
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
                   onClick={() => navigate("/auth")}
-                  className="group inline-flex items-center gap-2 rounded-2xl px-7 py-3.5 text-sm font-bold text-white transition-all hover:scale-[1.03] active:scale-[0.98]"
+                  className="group inline-flex items-center gap-2 rounded-2xl px-7 py-3.5 text-sm font-bold text-white transition-all hover:scale-[1.03] hover:shadow-lg hover:shadow-[var(--pv-blue)]/25 active:scale-[0.98]"
                   style={{
                     background:
                       "linear-gradient(135deg, var(--pv-blue), var(--pv-blue-dark))",
@@ -1430,7 +1430,7 @@ function Footer() {
               <a
                 key={key}
                 href="#"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground hover-lift transition-colors"
               >
                 {t(key, lang)}
               </a>

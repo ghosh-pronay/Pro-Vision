@@ -238,7 +238,7 @@ export default function Expense() {
       setCategory("");
       setShowForm(false);
       toastSuccess(lang === "bn" ? "খরচ যোগ হয়েছে!" : "Expense added!");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toastError(
         lang === "bn" ? "খরচ যোগ করতে ব্যর্থ" : "Failed to add expense",
@@ -285,7 +285,7 @@ export default function Expense() {
       toastSuccess(
         lang === "bn" ? "স্থানান্তর সম্পন্ন!" : "Transfer complete!",
       );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toastError(lang === "bn" ? "স্থানান্তর ব্যর্থ" : "Transfer failed");
     } finally {
@@ -299,7 +299,7 @@ export default function Expense() {
       toastSuccess(
         lang === "bn" ? "লেনদেন মুছে ফেলা হয়েছে" : "Transaction deleted",
       );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toastError(
         lang === "bn"
@@ -959,7 +959,7 @@ export default function Expense() {
               <button
                 key={f}
                 onClick={() => setTxFilter(f)}
-                className={`px-3 py-1.5 text-xs font-medium transition-all ${txFilter === f ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground"}`}
+                className={`px-3 py-1.5 text-xs font-medium transition-all ${txFilter === f ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground hover-tab"}`}
               >
                 {t(`expense.tab.${f}` as TranslationKey, lang)}
               </button>
@@ -978,7 +978,7 @@ export default function Expense() {
           {filtered.map((tx: ExpenseTransaction) => (
             <div
               key={tx._id}
-              className="flex items-center gap-3 px-4 py-3 group"
+              className="flex items-center gap-3 px-4 py-3 group hover-row"
             >
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium"

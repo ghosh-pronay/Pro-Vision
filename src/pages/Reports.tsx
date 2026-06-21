@@ -1,4 +1,4 @@
-﻿import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
 import { t } from "@/i18n/translations";
 import { Download, BarChart3 } from "lucide-react";
@@ -22,13 +22,25 @@ const fadeUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] as const },
+    transition: {
+      delay: i * 0.04,
+      duration: 0.4,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
   }),
 };
 
 type Period = "7d" | "30d" | "90d";
 
-type TabId = "overview" | "tasks" | "habits" | "focus" | "finance" | "wellbeing" | "goals" | "insights";
+type TabId =
+  | "overview"
+  | "tasks"
+  | "habits"
+  | "focus"
+  | "finance"
+  | "wellbeing"
+  | "goals"
+  | "insights";
 
 const TABS: { id: TabId; label: Record<string, string> }[] = [
   { id: "overview", label: { en: "Overview", bn: "সারসংক্ষেপ" } },
@@ -121,7 +133,14 @@ export default function Reports() {
       yPos += 8;
       doc.setFontSize(10);
       doc.setTextColor(107, 122, 153);
-      doc.text(lang === "bn" ? `বিশ্লেষণ রিপোর্ট — ${period}` : `Analytics Report — ${period}`, 105, yPos, { align: "center" });
+      doc.text(
+        lang === "bn"
+          ? `বিশ্লেষণ রিপোর্ট — ${period}`
+          : `Analytics Report — ${period}`,
+        105,
+        yPos,
+        { align: "center" },
+      );
       yPos += 10;
 
       if (imgHeight <= pageHeight - 20) {
@@ -131,13 +150,26 @@ export default function Reports() {
         for (let page = 0; page < totalPages; page++) {
           if (page > 0) doc.addPage();
           const sliceY = (page * (pageHeight - 20) * canvas.width) / imgWidth;
-          const sliceHeight = Math.min((pageHeight - 20) * canvas.width / imgWidth, canvas.height - sliceY);
+          const sliceHeight = Math.min(
+            ((pageHeight - 20) * canvas.width) / imgWidth,
+            canvas.height - sliceY,
+          );
           const sliceCanvas = document.createElement("canvas");
           sliceCanvas.width = canvas.width;
           sliceCanvas.height = sliceHeight;
           const sliceCtx = sliceCanvas.getContext("2d");
           if (sliceCtx) {
-            sliceCtx.drawImage(canvas, 0, sliceY, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+            sliceCtx.drawImage(
+              canvas,
+              0,
+              sliceY,
+              canvas.width,
+              sliceHeight,
+              0,
+              0,
+              canvas.width,
+              sliceHeight,
+            );
             const sliceData = sliceCanvas.toDataURL("image/png");
             const sliceImgH = (sliceHeight * imgWidth) / canvas.width;
             doc.addImage(sliceData, "PNG", 10, 10, imgWidth, sliceImgH);
@@ -160,7 +192,9 @@ export default function Reports() {
       });
       doc.setFont(undefined, "normal");
 
-      doc.save(`pro-vision-analytics-${tab}-${period}-${new Date().toISOString().slice(0, 10)}.pdf`);
+      doc.save(
+        `pro-vision-analytics-${tab}-${period}-${new Date().toISOString().slice(0, 10)}.pdf`,
+      );
     } catch (err) {
       console.error("PDF export failed:", err);
     } finally {
@@ -171,33 +205,54 @@ export default function Reports() {
   return (
     <div ref={reportRef} className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <BarChart3 className="size-6 text-[var(--pv-blue)]" />
             {t("nav.reports", lang)}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("reports.subtitle", lang)}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t("reports.subtitle", lang)}
+          </p>
         </div>
         <button
           onClick={downloadPDF}
           disabled={exporting}
           className="glass rounded-xl px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 disabled:opacity-50"
         >
-          <Download className={"size-3.5" + (exporting ? " animate-spin" : "")} />
+          <Download
+            className={"size-3.5" + (exporting ? " animate-spin" : "")}
+          />
           {exporting
-            ? (lang === "bn" ? "এক্সপোর্ট হচ্ছে..." : "Exporting...")
+            ? lang === "bn"
+              ? "এক্সপোর্ট হচ্ছে..."
+              : "Exporting..."
             : t("reports.export", lang)}
         </button>
       </motion.div>
 
       {/* Period Selector */}
-      <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
+      <motion.div
+        custom={0}
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
         <PeriodSelector value={period} onChange={handlePeriodChange} />
       </motion.div>
 
       {/* Tab Navigation */}
-      <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="overflow-x-auto scrollbar-thin -mx-1 px-1">
+      <motion.div
+        custom={1}
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+        className="overflow-x-auto scrollbar-thin -mx-1 px-1"
+      >
         <div className="flex gap-1 p-1 glass rounded-2xl min-w-max">
           {TABS.map((t) => (
             <button
@@ -206,7 +261,7 @@ export default function Reports() {
               className={`px-4 py-2 rounded-xl text-xs font-medium transition-all whitespace-nowrap ${
                 tab === t.id
                   ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)] shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                  : "text-muted-foreground hover:text-foreground hover-tab"
               }`}
             >
               {lang === "bn" ? t.label.bn : t.label.en}
@@ -230,4 +285,3 @@ export default function Reports() {
     </div>
   );
 }
-
