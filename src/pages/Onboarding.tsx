@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
 import { ChevronRight, ChevronLeft, Check, CheckCircle } from "lucide-react";
@@ -140,7 +140,11 @@ export default function Onboarding() {
                   </motion.div>
                   <h2 className="text-3xl font-bold">
                     {l("Welcome to", "স্বাগতম")}{" "}
-                    <span className="text-primary">Pro-Vision</span>
+                    <span className="text-primary">
+                      <Link to="/" className="hover:underline">
+                        Pro-Vision
+                      </Link>
+                    </span>
                   </h2>
                   <p className="text-muted-foreground text-lg max-w-xs mx-auto">
                     {l(

@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from "react-router";
+import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { useLang } from "@/i18n/LanguageContext";
 import { t, type TranslationKey } from "@/i18n/translations";
 import { SkipLink } from "@/components/ui/SkipLink";
@@ -459,7 +459,10 @@ export default function DashboardLayout() {
       <aside className="hidden lg:flex flex-col w-[260px] fixed inset-y-0 left-0 z-40">
         <div className="flex flex-col h-full glass-strong border-r border-border/30 m-3 mr-0 rounded-2xl overflow-hidden">
           {/* Logo */}
-          <div className="px-5 py-4 flex items-center gap-2.5 border-b border-border/20">
+          <Link
+            to="/"
+            className="px-5 py-4 flex items-center gap-2.5 border-b border-border/20 hover:bg-foreground/5 transition-colors"
+          >
             <div className="relative">
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[var(--pv-blue)]/20 to-[var(--pv-teal)]/10 dark:from-white/10 dark:to-white/5" />
               <img
@@ -478,7 +481,7 @@ export default function DashboardLayout() {
                 Plan · Focus · Achieve
               </div>
             </div>
-          </div>
+          </Link>
 
           {/* Nav items */}
           <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
@@ -548,7 +551,10 @@ export default function DashboardLayout() {
         <div className="hidden md:flex lg:hidden flex-col w-[68px] fixed inset-y-0 left-0 z-40">
           <div className="flex flex-col h-full glass-strong border-r border-border/30 m-3 mr-0 rounded-2xl overflow-hidden">
             {/* Logo */}
-            <div className="px-2 py-4 flex items-center justify-center border-b border-border/20">
+            <Link
+              to="/"
+              className="px-2 py-4 flex items-center justify-center border-b border-border/20 hover:bg-foreground/5 transition-colors"
+            >
               <div className="relative">
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[var(--pv-blue)]/20 to-[var(--pv-teal)]/10 dark:from-white/10 dark:to-white/5" />
                 <img
@@ -559,7 +565,7 @@ export default function DashboardLayout() {
                   className="relative rounded-lg"
                 />
               </div>
-            </div>
+            </Link>
 
             {/* Nav items — icons only */}
             <nav className="flex-1 p-2 space-y-1 overflow-y-auto flex flex-col items-center">
@@ -645,7 +651,10 @@ export default function DashboardLayout() {
       {/* Mobile top bar (<768px) */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 glass-strong border-b border-border/30">
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
+          <Link
+            to="/"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
             <div className="relative">
               <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[var(--pv-blue)]/20 to-[var(--pv-teal)]/10 dark:from-white/10 dark:to-white/5" />
               <img
@@ -659,7 +668,7 @@ export default function DashboardLayout() {
             <span className="text-sm font-bold text-foreground">
               Pro-Vision
             </span>
-          </div>
+          </Link>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="size-11 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
@@ -693,7 +702,10 @@ export default function DashboardLayout() {
             >
               <div className="flex flex-col h-full glass-strong border-r border-border/30 m-3 mr-0 rounded-2xl overflow-hidden">
                 <div className="px-5 py-4 flex items-center justify-between border-b border-border/20">
-                  <div className="flex items-center gap-2">
+                  <Link
+                    to="/"
+                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  >
                     <div className="relative">
                       <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[var(--pv-blue)]/20 to-[var(--pv-teal)]/10 dark:from-white/10 dark:to-white/5" />
                       <img
@@ -707,7 +719,7 @@ export default function DashboardLayout() {
                     <span className="text-sm font-bold text-foreground">
                       Pro-Vision
                     </span>
-                  </div>
+                  </Link>
                   <button
                     onClick={() => setSidebarOpen(false)}
                     className="size-11 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/5"

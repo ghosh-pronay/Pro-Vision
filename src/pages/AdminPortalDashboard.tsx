@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
@@ -52,7 +52,12 @@ export default function AdminPortalDashboard() {
             </div>
             <div>
               <h1 className="text-sm font-bold text-white">Admin Portal</h1>
-              <p className="text-xs text-white/40">Pro-Vision Control Panel</p>
+              <p className="text-xs text-white/40">
+                <Link to="/" className="hover:text-white/60 transition-colors">
+                  Pro-Vision
+                </Link>{" "}
+                Control Panel
+              </p>
             </div>
           </div>
 

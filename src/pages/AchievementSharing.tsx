@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
 import { useState, useRef, useCallback } from "react";
+import { Link } from "react-router";
 import {
   Share2,
   Download,
@@ -23,7 +24,7 @@ import {
   Twitter,
   Facebook,
   Linkedin,
-  Link,
+  Link as LinkIcon,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ExternalLink,
   Sparkles,
@@ -643,9 +644,12 @@ export default function AchievementSharing() {
                       {formatDate(selectedAchievement.unlockedAt)}
                     </span>
                   </div>
-                  <div className="text-xs opacity-40 pt-2">
+                  <Link
+                    to="/"
+                    className="text-xs opacity-40 pt-2 hover:opacity-70 transition-opacity"
+                  >
                     Made with Pro Vision
-                  </div>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -769,7 +773,7 @@ export default function AchievementSharing() {
 
             <div>
               <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                <Link size={16} />
+                <LinkIcon size={16} />
                 {lang === "bn" ? "শেয়ার লিংক" : "Share Link"}
               </h3>
               <div className="flex gap-2">

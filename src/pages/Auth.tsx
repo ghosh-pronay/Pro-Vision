@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router";
 
 import { useAuth } from "@/hooks/use-auth";
 import logo from "@/assets/logo.svg";
@@ -324,9 +325,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
             <div className="py-4 px-6 text-xs text-center text-muted-foreground glass-subtle rounded-b-xl mt-2">
               Secured by{" "}
-              <span className="underline hover:text-[var(--pv-blue)] transition-colors">
+              <Link
+                to="/"
+                className="underline hover:text-[var(--pv-blue)] transition-colors"
+              >
                 Pro-Vision
-              </span>
+              </Link>
             </div>
           </Card>
         </div>
