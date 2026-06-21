@@ -461,7 +461,7 @@ export default function DashboardLayout() {
           {/* Logo */}
           <Link
             to="/"
-            className="px-5 py-4 flex items-center gap-2.5 border-b border-border/20 hover:bg-foreground/5 transition-colors"
+            className="px-5 py-4 flex flex-col items-center gap-1.5 border-b border-border/20 hover:bg-foreground/5 transition-colors"
           >
             <div className="relative">
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[var(--pv-blue)]/20 to-[var(--pv-teal)]/10 dark:from-white/10 dark:to-white/5" />
@@ -473,7 +473,7 @@ export default function DashboardLayout() {
                 className="relative rounded-lg"
               />
             </div>
-            <div>
+            <div className="text-center">
               <div className="text-sm font-bold text-foreground">
                 Pro-Vision
               </div>
