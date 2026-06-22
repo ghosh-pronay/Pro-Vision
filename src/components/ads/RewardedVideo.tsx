@@ -40,10 +40,7 @@ export default function RewardedVideo({
   };
 
   const handleClaim = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const rewardExpiry = Date.now() + 24 * 60 * 60 * 1000;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await updateProfile({} as any);
+    await updateProfile({});
     onRewarded();
     onClose();
   };

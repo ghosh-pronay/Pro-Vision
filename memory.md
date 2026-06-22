@@ -34,6 +34,24 @@
 7. Added `.gitattributes` for line ending normalization
 8. Hardcoded Firebase config in `src/lib/firebase.ts` (commit `3dee3e6`)
 9. User enabled Email/Password + Anonymous sign-in in Firebase Console
+10. Expense section: Added 12 default wallets (Cash In Hand, Cash Reserve Fund, Bkash, Nagad, Rocket, Upay, Brac Bank, DBBL Bank, Credit Card DBBL/Shimanto/Meghna, Others)
+11. Expense section: 3 buttons — Add Income, Add Expense, Fund Transfer
+12. Expense section: Wallet dropdown for all transactions (income/expense/transfer)
+13. Expense section: Total Income / Total Expense accumulated across wallets
+14. Expense section: Show/hide wallets via eye icon toggle
+15. Expense section: Edit wallet names via edit modal
+16. Expense section: Merged wallet management into Expense page (add, edit, delete, set default) — removed separate /wallets page dependency
+
+## Expense Section Instructions
+
+- Default wallets auto-added: Cash (In Hand), Cash (Reserve Fund), Bkash, Nagad, Rocket, Upay, Brac Bank, DBBL Bank, Credit Card (DBBL), Credit Card (Shimanto), Credit Card (Meghna), Others
+- Users can add more wallets on demand
+- 3 buttons: Add Income, Add Expense, Fund Transfer
+- Wallet dropdown in all transaction forms
+- Income/Expense accumulated as Total Income / Total Expense across all wallets
+- Users can show/hide wallets by choice
+- Users can edit wallet names
+- Wallet management merged into Expense section (no separate wallets page)
 
 ## Relevant Files
 

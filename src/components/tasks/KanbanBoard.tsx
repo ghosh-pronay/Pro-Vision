@@ -37,13 +37,15 @@ export default function KanbanBoard({
   const [editingTask, setEditingTask] = useState<string | null>(null);
   const [addingToColumn, setAddingToColumn] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [draggedTask, setDraggedTask] = useState<{ task: Task; columnId: string } | null>(null);
+  const [draggedTask, setDraggedTask] = useState<{
+    task: Task;
+    columnId: string;
+  } | null>(null);
 
   const handleDragStart = (task: Task, columnId: string) => {
     setDraggedTask({ task, columnId });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDragOver = (e: React.DragEvent, columnId: string) => {
     e.preventDefault();
   };
@@ -75,7 +77,6 @@ export default function KanbanBoard({
     if (!newTaskTitle.trim()) return;
 
     const newTask: Task = {
-      // eslint-disable-next-line react-hooks/purity
       id: Date.now().toString(),
       title: newTaskTitle.trim(),
       priority: "medium",
@@ -89,7 +90,6 @@ export default function KanbanBoard({
     });
 
     onColumnsChange(updatedColumns);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...taskWithoutId } = newTask;
     onTaskAdd?.(columnId, taskWithoutId);
     setNewTaskTitle("");
@@ -143,7 +143,9 @@ export default function KanbanBoard({
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-sm text-foreground">{column.title}</h3>
+              <h3 className="font-semibold text-sm text-foreground">
+                {column.title}
+              </h3>
               <span className="text-xs text-muted-foreground bg-white/10 px-2 py-0.5 rounded-full">
                 {column.tasks.length}
               </span>
@@ -187,7 +189,9 @@ export default function KanbanBoard({
                       {(["low", "medium", "high"] as const).map((p) => (
                         <button
                           key={p}
-                          onClick={() => handleUpdateTask(task.id, { priority: p })}
+                          onClick={() =>
+                            handleUpdateTask(task.id, { priority: p })
+                          }
                           className={`px-2 py-0.5 text-xs rounded-full ${
                             task.priority === p
                               ? "bg-primary text-primary-foreground"

@@ -25,20 +25,19 @@ import {
   Facebook,
   Linkedin,
   Link as LinkIcon,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ExternalLink,
   Sparkles,
   TrendingUp,
   Image,
 } from "lucide-react";
+
+import type { LucideIcon } from "lucide-react";
 
 interface Achievement {
   id: string;
   name: string;
   description: string;
   type: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: any;
+  icon: LucideIcon;
   color: string;
   unlockedAt: number;
   likes: number;
@@ -96,6 +95,8 @@ const ACHIEVEMENT_TYPES = [
   },
 ];
 
+const NOW = Date.now();
+
 type CardStyle = "minimal" | "gradient" | "glass" | "dark";
 
 const CARD_STYLES: { id: CardStyle; nameEn: string; nameBn: string }[] = [
@@ -104,6 +105,27 @@ const CARD_STYLES: { id: CardStyle; nameEn: string; nameBn: string }[] = [
   { id: "glass", nameEn: "Glass", nameBn: "গ্লাস" },
   { id: "dark", nameEn: "Dark", nameBn: "ডার্ক" },
 ];
+
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+): string[] {
+  const words = text.split(" ");
+  const lines: string[] = [];
+  let line = "";
+  for (const word of words) {
+    const test = line ? line + " " + word : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
 
 export default function AchievementSharing() {
   const { lang } = useLang();
@@ -120,8 +142,7 @@ export default function AchievementSharing() {
       type: "streak",
       icon: Flame,
       color: "#ef4444",
-      // eslint-disable-next-line react-hooks/purity
-      unlockedAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      unlockedAt: NOW - 2 * 24 * 60 * 60 * 1000,
       likes: 24,
       shares: 8,
       recentSharers: ["Rahim", "Karim", "Sara"],
@@ -136,8 +157,7 @@ export default function AchievementSharing() {
       type: "financial",
       icon: Coins,
       color: "#f59e0b",
-      // eslint-disable-next-line react-hooks/purity
-      unlockedAt: Date.now() - 5 * 24 * 60 * 60 * 1000,
+      unlockedAt: NOW - 5 * 24 * 60 * 60 * 1000,
       likes: 42,
       shares: 15,
       recentSharers: ["Tanjir", "Nusrat", "Farhan"],
@@ -152,8 +172,7 @@ export default function AchievementSharing() {
       type: "learning",
       icon: BookOpen,
       color: "#3b82f6",
-      // eslint-disable-next-line react-hooks/purity
-      unlockedAt: Date.now() - 10 * 24 * 60 * 60 * 1000,
+      unlockedAt: NOW - 10 * 24 * 60 * 60 * 1000,
       likes: 31,
       shares: 5,
       recentSharers: ["Anika", "Rakib"],
@@ -169,8 +188,7 @@ export default function AchievementSharing() {
       type: "health",
       icon: Dumbbell,
       color: "#10b981",
-      // eslint-disable-next-line react-hooks/purity
-      unlockedAt: Date.now() - 15 * 24 * 60 * 60 * 1000,
+      unlockedAt: NOW - 15 * 24 * 60 * 60 * 1000,
       likes: 56,
       shares: 20,
       recentSharers: ["Sumon", "Ruma", "Babul"],
@@ -185,8 +203,7 @@ export default function AchievementSharing() {
       type: "social",
       icon: Users,
       color: "#8b5cf6",
-      // eslint-disable-next-line react-hooks/purity
-      unlockedAt: Date.now() - 20 * 24 * 60 * 60 * 1000,
+      unlockedAt: NOW - 20 * 24 * 60 * 60 * 1000,
       likes: 78,
       shares: 30,
       recentSharers: ["Zara", "Kamal", "Lily"],
@@ -204,8 +221,7 @@ export default function AchievementSharing() {
       type: "goal",
       icon: Target,
       color: "#22c55e",
-      // eslint-disable-next-line react-hooks/purity
-      unlockedAt: Date.now() - 25 * 24 * 60 * 60 * 1000,
+      unlockedAt: NOW - 25 * 24 * 60 * 60 * 1000,
       likes: 35,
       shares: 12,
       recentSharers: ["Shibli", "Meghna"],
@@ -221,9 +237,6 @@ export default function AchievementSharing() {
   const [timelineExpanded, setTimelineExpanded] = useState(true);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [customBorder, setCustomBorder] = useState("rounded-2xl");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [customBg, setCustomBg] = useState<string>("none");
 
   const toggleLike = (id: string) => {
     setLikedIds((prev) => {
@@ -315,10 +328,13 @@ export default function AchievementSharing() {
         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
         break;
       case "copy":
-        navigator.clipboard.writeText(text).then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        });
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          })
+          .catch(() => {});
         return;
       case "instagram":
         handleDownloadImage(a);
@@ -395,8 +411,6 @@ export default function AchievementSharing() {
 
       ctx.font = "18px sans-serif";
       ctx.globalAlpha = 0.8;
-      // eslint-disable-next-line react-hooks/purity
-      // eslint-disable-next-line react-hooks/immutability
       const descLines = wrapText(ctx, a.description, 600);
       descLines.forEach((line, i) => {
         ctx.fillText(line, 400, 230 + i * 26);
@@ -425,27 +439,6 @@ export default function AchievementSharing() {
     },
     [cardStyle, customMessage],
   );
-
-  function wrapText(
-    ctx: CanvasRenderingContext2D,
-    text: string,
-    maxWidth: number,
-  ): string[] {
-    const words = text.split(" ");
-    const lines: string[] = [];
-    let line = "";
-    for (const word of words) {
-      const test = line ? line + " " + word : word;
-      if (ctx.measureText(test).width > maxWidth && line) {
-        lines.push(line);
-        line = word;
-      } else {
-        line = test;
-      }
-    }
-    if (line) lines.push(line);
-    return lines;
-  }
 
   const selectedTypeName = selectedAchievement
     ? ACHIEVEMENT_TYPES.find((t) => t.id === selectedAchievement.type)
@@ -486,8 +479,6 @@ export default function AchievementSharing() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {achievements.map((a) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const TypeIcon = a.icon;
             const typeName = ACHIEVEMENT_TYPES.find((t) => t.id === a.type);
             return (
               <motion.div

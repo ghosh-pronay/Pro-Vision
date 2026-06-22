@@ -1,12 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { t, type TranslationKey } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   Mic,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  MicOff,
   Play,
   Pause,
   Square,
@@ -20,14 +17,36 @@ import {
   FileText,
   X,
   Check,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Copy,
   Globe,
   Headphones,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toastSuccess, toastError } from "@/lib/toast-helpers";
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  item(index: number): { transcript: string };
+  [index: number]: { transcript: string };
+}
+
+interface SpeechRecognitionLike {
+  start(): void;
+  stop(): void;
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: (() => void) | null;
+  onresult:
+    | ((event: {
+        resultIndex: number;
+        results: SpeechRecognitionResult[];
+      }) => void)
+    | null;
+  onerror: ((event: { error: string }) => void) | null;
+  onend: (() => void) | null;
+}
 
 interface VoiceNote {
   id: string;
@@ -71,8 +90,7 @@ export default function VoiceNotes() {
   const animationRef = useRef<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playingAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -150,11 +168,12 @@ export default function VoiceNotes() {
   }, []);
 
   const startSpeechRecognition = useCallback(() => {
+    const Win = window as unknown as {
+      SpeechRecognition?: new () => SpeechRecognitionLike;
+      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+    };
     const SpeechRecognition =
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).SpeechRecognition ||
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).webkitSpeechRecognition;
+      Win.SpeechRecognition || Win.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       toastError(t("voiceNotes.browserNotSupported", lang));
@@ -170,18 +189,13 @@ export default function VoiceNotes() {
       setIsRecognizing(true);
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event) => {
       let finalTranscript = "";
-      let interimTranscript = "";
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
           finalTranscript += transcript;
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          interimTranscript += transcript;
         }
       }
 
@@ -192,8 +206,7 @@ export default function VoiceNotes() {
       }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
       setIsRecognizing(false);
     };
@@ -353,18 +366,24 @@ export default function VoiceNotes() {
     lang,
   ]);
 
+  const stopPlayback = useCallback(() => {
+    if (playingAudioRef.current) {
+      playingAudioRef.current.pause();
+      playingAudioRef.current = null;
+    }
+    setPlayingId(null);
+  }, []);
+
   const deleteNote = useCallback(
     (id: string) => {
       setNotes((prev) => prev.filter((note) => note.id !== id));
       setDeleteId(null);
       if (playingId === id) {
-        // eslint-disable-next-line react-hooks/purity
-        // eslint-disable-next-line react-hooks/immutability
         stopPlayback();
       }
       toastSuccess(t("voiceNotes.deleted", lang));
     },
-    [playingId, lang],
+    [playingId, lang, stopPlayback],
   );
 
   const startPlayback = useCallback((note: VoiceNote) => {
@@ -383,15 +402,6 @@ export default function VoiceNotes() {
 
     audio.play();
     setPlayingId(note.id);
-  }, []);
-
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
-  const stopPlayback = useCallback(() => {
-    if (playingAudioRef.current) {
-      playingAudioRef.current.pause();
-      playingAudioRef.current = null;
-    }
-    setPlayingId(null);
   }, []);
 
   const exportNote = useCallback(

@@ -13,11 +13,7 @@ import {
   Share2,
   Calculator,
   BarChart3,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Filter,
   Trash2,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Check,
   Search,
   ArrowUpDown,
 } from "lucide-react";

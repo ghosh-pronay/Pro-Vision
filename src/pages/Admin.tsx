@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
+import type { Id } from "@/convex/_generated/dataModel";
 
 type Tab =
   | "overview"
@@ -51,6 +52,8 @@ const TABS: { id: Tab; label: string; icon: LucideIcon }[] = [
   { id: "finance", label: "admin.tab.finance", icon: DollarSign },
   { id: "settings", label: "admin.tab.settings", icon: Globe },
 ];
+
+const NOW = Date.now();
 
 const DEFAULT_FEATURES = {
   "features.habits": true,
@@ -92,41 +95,27 @@ export default function Admin() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const stats = useQuery((api as any).admin.getStats);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const users = useQuery((api as any).admin.listUsers);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const config = useQuery((api as any).admin.getConfig);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const challenges = useQuery((api as any).admin.getChallenges);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const financeStats = useQuery((api as any).admin.getFinanceStats);
+  const adminApi = api.admin;
+
+  const stats = useQuery(adminApi.getStats);
+  const users = useQuery(adminApi.listUsers);
+  const config = useQuery(adminApi.getConfig);
+  const challenges = useQuery(adminApi.getChallenges);
+  const financeStats = useQuery(adminApi.getFinanceStats);
   const userDetail = useQuery(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (api as any).admin.getUserDetail,
+    adminApi.getUserDetail,
     selectedUser ? { userId: selectedUser } : "skip",
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const grantPremium = useMutation((api as any).admin.grantPremium);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const revokePremium = useMutation((api as any).admin.revokePremium);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const deleteUser = useMutation((api as any).admin.deleteUser);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const updateUser = useMutation((api as any).admin.updateUser);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const setConfig = useMutation((api as any).admin.setConfig);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  useMutation((api as any).admin.bulkSetConfig);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const createChallenge = useMutation((api as any).admin.createChallenge);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const updateChallenge = useMutation((api as any).admin.updateChallenge);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const deleteChallenge = useMutation((api as any).admin.deleteChallenge);
+  const grantPremium = useMutation(adminApi.grantPremium);
+  const revokePremium = useMutation(adminApi.revokePremium);
+  const deleteUser = useMutation(adminApi.deleteUser);
+  const updateUser = useMutation(adminApi.updateUser);
+  const setConfig = useMutation(adminApi.setConfig);
+  useMutation(adminApi.bulkSetConfig);
+  const createChallenge = useMutation(adminApi.createChallenge);
+  const updateChallenge = useMutation(adminApi.updateChallenge);
+  const deleteChallenge = useMutation(adminApi.deleteChallenge);
 
   const [editingUser, setEditingUser] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
@@ -137,10 +126,8 @@ export default function Admin() {
     type: "habit_streak",
     goal: 7,
     unit: "days",
-    // eslint-disable-next-line react-hooks/purity
-    startDate: Date.now(),
-    // eslint-disable-next-line react-hooks/purity
-    endDate: Date.now() + 30 * 24 * 60 * 60 * 1000,
+    startDate: NOW,
+    endDate: NOW + 30 * 24 * 60 * 60 * 1000,
   });
 
   const features = { ...DEFAULT_FEATURES };
@@ -164,8 +151,7 @@ export default function Admin() {
   }
 
   const filteredUsers = (users ?? []).filter(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (u: any) =>
+    (u) =>
       u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.displayName?.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -181,8 +167,7 @@ export default function Admin() {
 
   const handleSaveUser = async (userId: string) => {
     await updateUser({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      userId: userId as any,
+      userId: userId as Id<"users">,
       name: editName,
       email: editEmail,
     });
@@ -190,21 +175,17 @@ export default function Admin() {
   };
 
   const handleGrantPremium = async (userId: string) => {
-    // eslint-disable-next-line react-hooks/purity
-    const expiresAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await grantPremium({ userId: userId as any, expiresAt });
+    const expiresAt = NOW + 30 * 24 * 60 * 60 * 1000;
+    await grantPremium({ userId: userId as Id<"users">, expiresAt });
   };
 
   const handleRevokePremium = async (userId: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await revokePremium({ userId: userId as any });
+    await revokePremium({ userId: userId as Id<"users"> });
   };
 
   const handleDeleteUser = async (userId: string) => {
     if (confirm("Are you sure you want to delete this user?")) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await deleteUser({ userId: userId as any });
+      await deleteUser({ userId: userId as Id<"users"> });
     }
   };
 
@@ -230,8 +211,7 @@ export default function Admin() {
   };
 
   const formatRole = (role?: string) => (role === "admin" ? "Admin" : "User");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const formatStatus = (user: any) => {
+  const formatStatus = (user: { isPremium?: boolean }) => {
     if (user.isPremium) return "premium";
     return "active";
   };
@@ -339,8 +319,7 @@ export default function Admin() {
                 {t("admin.recentUsers", lang)}
               </h3>
               <div className="space-y-3">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {(users ?? []).slice(0, 5).map((user: any) => (
+                {(users ?? []).slice(0, 5).map((user) => (
                   <div
                     key={user._id}
                     className="flex items-center justify-between rounded-lg bg-white/5 p-3"
@@ -468,8 +447,7 @@ export default function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {filteredUsers.map((user: any) => (
+                  {filteredUsers.map((user) => (
                     <tr
                       key={user._id}
                       className="border-b border-white/5 hover:bg-white/5"
@@ -777,8 +755,7 @@ export default function Admin() {
               </button>
             </div>
             <div className="space-y-3">
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              {(challenges ?? []).map((c: any) => (
+              {(challenges ?? []).map((c) => (
                 <div
                   key={c._id}
                   className="flex items-center justify-between p-3 rounded-lg bg-white/5"
@@ -995,9 +972,9 @@ export default function Admin() {
                     }
                     className={cn(
                       "px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      (config as any)?.["settings.defaultLanguage"] === "en" ||
-                        !config?.["settings.defaultLanguage"]
+                      (config as Record<string, unknown>)?.[
+                        "settings.defaultLanguage"
+                      ] === "en" || !config?.["settings.defaultLanguage"]
                         ? "bg-primary text-primary-foreground"
                         : "bg-white/10 hover:bg-white/20",
                     )}
@@ -1010,8 +987,9 @@ export default function Admin() {
                     }
                     className={cn(
                       "px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      (config as any)?.["settings.defaultLanguage"] === "bn"
+                      (config as Record<string, unknown>)?.[
+                        "settings.defaultLanguage"
+                      ] === "bn"
                         ? "bg-primary text-primary-foreground"
                         : "bg-white/10 hover:bg-white/20",
                     )}
@@ -1033,14 +1011,16 @@ export default function Admin() {
                   onClick={() =>
                     handleToggleConfig(
                       "settings.requireEmailVerification",
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      !(config as any)?.["settings.requireEmailVerification"],
+                      !(config as Record<string, unknown>)?.[
+                        "settings.requireEmailVerification"
+                      ],
                     )
                   }
                   className="cursor-pointer hover:bg-foreground/5 rounded transition-colors"
                 >
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {(config as any)?.["settings.requireEmailVerification"] ? (
+                  {(config as Record<string, unknown>)?.[
+                    "settings.requireEmailVerification"
+                  ] ? (
                     <ToggleRight className="h-8 w-8 text-green-500" />
                   ) : (
                     <ToggleLeft className="h-8 w-8 text-muted-foreground" />
@@ -1060,14 +1040,16 @@ export default function Admin() {
                   onClick={() =>
                     handleToggleConfig(
                       "settings.enableOnboarding",
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      !(config as any)?.["settings.enableOnboarding"],
+                      !(config as Record<string, unknown>)?.[
+                        "settings.enableOnboarding"
+                      ],
                     )
                   }
                   className="cursor-pointer hover:bg-foreground/5 rounded transition-colors"
                 >
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {(config as any)?.["settings.enableOnboarding"] !== false ? (
+                  {(config as Record<string, unknown>)?.[
+                    "settings.enableOnboarding"
+                  ] !== false ? (
                     <ToggleRight className="h-8 w-8 text-green-500" />
                   ) : (
                     <ToggleLeft className="h-8 w-8 text-muted-foreground" />

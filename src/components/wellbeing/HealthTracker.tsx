@@ -42,8 +42,6 @@ export default function HealthTracker({
   waterIntakes = [],
   exercises = [],
   onAddWater,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onRemoveWater,
   onAddExercise,
   onRemoveExercise,
 }: HealthTrackerProps) {
@@ -52,11 +50,17 @@ export default function HealthTracker({
   const [exerciseType, setExerciseType] = useState<Exercise["type"]>("walk");
   const [exerciseDuration, setExerciseDuration] = useState("30");
 
-  const totalWater = waterIntakes.reduce((sum, intake) => sum + intake.amount, 0);
+  const totalWater = waterIntakes.reduce(
+    (sum, intake) => sum + intake.amount,
+    0,
+  );
   const waterProgress = Math.min((totalWater / waterGoal) * 100, 100);
 
   const totalCalories = exercises.reduce((sum, ex) => sum + ex.calories, 0);
-  const totalExerciseMinutes = exercises.reduce((sum, ex) => sum + ex.duration, 0);
+  const totalExerciseMinutes = exercises.reduce(
+    (sum, ex) => sum + ex.duration,
+    0,
+  );
   const totalSteps = exercises
     .filter((ex) => ex.type === "walk" || ex.type === "run")
     .reduce((sum, ex) => sum + ex.duration * 100, 0);
@@ -148,7 +152,9 @@ export default function HealthTracker({
 
         {waterIntakes.length > 0 && (
           <div className="mt-4 pt-4 border-t border-white/10">
-            <p className="text-xs text-muted-foreground mb-2">Today's intake:</p>
+            <p className="text-xs text-muted-foreground mb-2">
+              Today's intake:
+            </p>
             <div className="flex flex-wrap gap-2">
               {waterIntakes.slice(-5).map((intake, i) => (
                 <span

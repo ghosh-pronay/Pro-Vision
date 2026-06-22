@@ -38,9 +38,6 @@ export default function AdSlot({
   networkOverride,
 }: AdSlotProps) {
   const [loadError, setLoadError] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_fallbackIndex, _setFallbackIndex] = useState(0);
 
   const network = networkOverride || resolveNetwork(position);
 

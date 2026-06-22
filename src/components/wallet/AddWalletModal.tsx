@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Zap } from "lucide-react";
 import { WalletForm } from "./WalletForm";
 import { WALLET_PRESETS } from "@/lib/wallet-presets";
-import type { Wallet } from "@/pages/Wallets";
+import type { Wallet } from "@/types/wallet";
 import {
   Banknote,
   PiggyBank,

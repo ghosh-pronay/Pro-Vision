@@ -12,15 +12,19 @@ import {
   TrendingUp,
   TrendingDown,
   Wallet,
-  ChevronRight,
   X,
+  Plus,
+  Edit3,
+  Star,
 } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import FloatingCalculator from "@/components/finance/FloatingCalculator";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toastSuccess, toastError } from "@/lib/toast-helpers";
-import type { Wallet as WalletType } from "@/pages/Wallets";
+import { AddWalletModal } from "@/components/wallet/AddWalletModal";
+import { WalletForm } from "@/components/wallet/WalletForm";
+import type { Wallet as WalletType } from "@/types/wallet";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -120,6 +124,9 @@ export default function Expense() {
   const stats = useQuery(api.transactions.stats);
   const createTx = useMutation(api.transactions.create);
   const removeTx = useMutation(api.transactions.remove);
+  const createWallet = useMutation(api.wallets.create);
+  const updateWallet = useMutation(api.wallets.update);
+  const removeWallet = useMutation(api.wallets.remove);
 
   const [activeTab, setActiveTab] = useState<"income" | "expense" | "transfer">(
     "income",
@@ -146,9 +153,19 @@ export default function Expense() {
   const [isTransferring, setIsTransferring] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-  const defaultWallet = useMemo(
-    () => wallets.find((w: WalletType) => w.isDefault) ?? wallets[0],
+  const [showAddWalletModal, setShowAddWalletModal] = useState(false);
+  const [editingWallet, setEditingWallet] = useState<WalletType | null>(null);
+  const [deleteWalletId, setDeleteWalletId] = useState<string | null>(null);
+
+  const visibleWallets = useMemo(
+    () => wallets.filter((w: WalletType) => !w.isHidden),
     [wallets],
+  );
+
+  const defaultWallet = useMemo(
+    () =>
+      visibleWallets.find((w: WalletType) => w.isDefault) ?? visibleWallets[0],
+    [visibleWallets],
   );
 
   const effectiveIncomeWallet = useMemo(
@@ -165,10 +182,10 @@ export default function Expense() {
   );
   const secondWallet = useMemo(
     () =>
-      wallets.length > 1
-        ? wallets.find((w: WalletType) => w._id !== defaultWallet?._id)
+      visibleWallets.length > 1
+        ? visibleWallets.find((w: WalletType) => w._id !== defaultWallet?._id)
         : undefined,
-    [wallets, defaultWallet],
+    [visibleWallets, defaultWallet],
   );
   const effectiveToWallet = useMemo(
     () => toWallet || secondWallet?._id || "",
@@ -238,8 +255,7 @@ export default function Expense() {
       setCategory("");
       setShowForm(false);
       toastSuccess(lang === "bn" ? "খরচ যোগ হয়েছে!" : "Expense added!");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch (_error) {
       toastError(
         lang === "bn" ? "খরচ যোগ করতে ব্যর্থ" : "Failed to add expense",
       );
@@ -285,8 +301,7 @@ export default function Expense() {
       toastSuccess(
         lang === "bn" ? "স্থানান্তর সম্পন্ন!" : "Transfer complete!",
       );
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch (_error) {
       toastError(lang === "bn" ? "স্থানান্তর ব্যর্থ" : "Transfer failed");
     } finally {
       setIsTransferring(false);
@@ -299,13 +314,100 @@ export default function Expense() {
       toastSuccess(
         lang === "bn" ? "লেনদেন মুছে ফেলা হয়েছে" : "Transaction deleted",
       );
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch (_error) {
       toastError(
         lang === "bn"
           ? "লেনদেন মুছে ফেলতে ব্যর্থ"
           : "Failed to delete transaction",
       );
+    }
+  };
+
+  const handleAddWallet = async (
+    data: Omit<WalletType, "_id" | "createdAt">,
+  ) => {
+    try {
+      await createWallet({
+        name: data.name,
+        type: data.type,
+        currency: data.currency,
+        balance: data.balance,
+        icon: data.icon,
+        color: data.color,
+        isDefault: data.isDefault,
+      });
+      setShowAddWalletModal(false);
+      toastSuccess(lang === "bn" ? "ওয়ালেট যোগ হয়েছে" : "Wallet added");
+    } catch {
+      toastError(
+        lang === "bn" ? "ওয়ালেট যোগ করতে ব্যর্থ" : "Failed to add wallet",
+      );
+    }
+  };
+
+  const handleEditWallet = async (
+    data: Omit<WalletType, "_id" | "createdAt">,
+  ) => {
+    if (!editingWallet) return;
+    try {
+      await updateWallet({
+        id: editingWallet._id,
+        name: data.name,
+        type: data.type,
+        balance: data.balance,
+        icon: data.icon,
+        color: data.color,
+        isDefault: data.isDefault,
+      });
+      setEditingWallet(null);
+      toastSuccess(lang === "bn" ? "ওয়ালেট আপডেট হয়েছে" : "Wallet updated");
+    } catch {
+      toastError(
+        lang === "bn" ? "ওয়ালেট আপডেট করতে ব্যর্থ" : "Failed to update wallet",
+      );
+    }
+  };
+
+  const handleDeleteWallet = async (id: string) => {
+    try {
+      await removeWallet({ id });
+      setDeleteWalletId(null);
+      toastSuccess(
+        lang === "bn" ? "ওয়ালেট মুছে ফেলা হয়েছে" : "Wallet deleted",
+      );
+    } catch {
+      toastError(
+        lang === "bn" ? "ওয়ালেট মুছে ফেলতে ব্যর্থ" : "Failed to delete wallet",
+      );
+    }
+  };
+
+  const handleToggleHide = async (wallet: WalletType) => {
+    try {
+      await updateWallet({
+        id: wallet._id,
+      });
+      toastSuccess(
+        lang === "bn"
+          ? "ওয়ালেট দৃশ্যমানতা পরিবর্তন হয়েছে"
+          : "Wallet visibility updated",
+      );
+    } catch {
+      toastError(lang === "bn" ? "পরিবর্তন করতে ব্যর্থ" : "Failed to update");
+    }
+  };
+
+  const handleSetDefault = async (wallet: WalletType) => {
+    try {
+      await updateWallet({
+        id: wallet._id,
+        isDefault: true,
+      });
+      toastSuccess(
+        lang === "bn" ? "ডিফল্ট ওয়ালেট সেট হয়েছে" : "Default wallet set",
+      );
+    } catch {
+      toastError(lang === "bn" ? "সেট করতে ব্যর্থ" : "Failed to set default");
     }
   };
 
@@ -336,7 +438,6 @@ export default function Expense() {
     return w?.color || "#6b7280";
   };
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const transferFee = useMemo(() => {
     if (
       !effectiveFromWallet ||
@@ -344,8 +445,12 @@ export default function Expense() {
       effectiveFromWallet === effectiveToWallet
     )
       return 0;
-    const from = wallets.find((w: WalletType) => w._id === effectiveFromWallet);
-    const to = wallets.find((w: WalletType) => w._id === effectiveToWallet);
+    const from = wallets.find(
+      (w: WalletType) => w._id === effectiveFromWallet && !w.isHidden,
+    );
+    const to = wallets.find(
+      (w: WalletType) => w._id === effectiveToWallet && !w.isHidden,
+    );
     if (from && to && from.type !== to.type) {
       return parseFloat(amount || "0") * 0.01;
     }
@@ -381,7 +486,7 @@ export default function Expense() {
     setToWallet("");
   };
 
-  if (wallets.length === 0) {
+  if (visibleWallets.length === 0) {
     return (
       <div className="max-w-3xl mx-auto space-y-6">
         <motion.div
@@ -581,7 +686,7 @@ export default function Expense() {
                       onChange={(e) => setIncomeWallet(e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
                     >
-                      {wallets.map((w: WalletType) => (
+                      {visibleWallets.map((w: WalletType) => (
                         <option key={w._id} value={w._id}>
                           {lang === "bn" && w.nameBn ? w.nameBn : w.name} — ৳
                           {w.balance.toLocaleString()}
@@ -703,7 +808,7 @@ export default function Expense() {
                       onChange={(e) => setExpenseWallet(e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
                     >
-                      {wallets.map((w: WalletType) => (
+                      {visibleWallets.map((w: WalletType) => (
                         <option key={w._id} value={w._id}>
                           {lang === "bn" && w.nameBn ? w.nameBn : w.name} — ৳
                           {w.balance.toLocaleString()}
@@ -825,7 +930,7 @@ export default function Expense() {
                       onChange={(e) => {
                         setFromWallet(e.target.value);
                         if (e.target.value === effectiveToWallet) {
-                          const other = wallets.find(
+                          const other = visibleWallets.find(
                             (w: WalletType) => w._id !== e.target.value,
                           );
                           if (other) setToWallet(other._id);
@@ -833,7 +938,7 @@ export default function Expense() {
                       }}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
                     >
-                      {wallets.map((w: WalletType) => (
+                      {visibleWallets.map((w: WalletType) => (
                         <option
                           key={w._id}
                           value={w._id}
@@ -862,7 +967,7 @@ export default function Expense() {
                       onChange={(e) => setToWallet(e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
                     >
-                      {wallets.map((w: WalletType) => (
+                      {visibleWallets.map((w: WalletType) => (
                         <option
                           key={w._id}
                           value={w._id}
@@ -1024,7 +1129,7 @@ export default function Expense() {
         </div>
       </motion.div>
 
-      {/* Wallet Balance Summary */}
+      {/* Wallet Management */}
       <motion.div
         custom={3}
         variants={fadeUp}
@@ -1035,41 +1140,63 @@ export default function Expense() {
           <h3 className="text-sm font-semibold text-foreground">
             {t("expense.walletBalance", lang)}
           </h3>
-          <a
-            href="/wallets"
-            className="flex items-center gap-1 text-xs text-[var(--pv-blue)] hover:underline"
+          <button
+            onClick={() => setShowAddWalletModal(true)}
+            className="flex items-center gap-1 text-xs text-[var(--pv-blue)] hover:underline cursor-pointer"
           >
-            {t("expense.viewAll", lang)}
-            <ChevronRight className="size-3" />
-          </a>
+            <Plus className="size-3" />
+            {lang === "bn" ? "ওয়ালেট যোগ" : "Add Wallet"}
+          </button>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {wallets.map((w: WalletType) => (
-            <a
+          {visibleWallets.map((w: WalletType) => (
+            <div
               key={w._id}
-              href="/wallets"
-              className="glass rounded-xl p-3 hover:bg-foreground/5 transition-all"
+              className="glass rounded-xl p-3 hover:bg-foreground/5 transition-all group"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: w.color }}
-                >
-                  <Wallet className="size-3 text-white" />
-                </div>
-                <span className="text-xs font-medium text-foreground truncate">
-                  {lang === "bn" && w.nameBn ? w.nameBn : w.name}
-                </span>
-                {w.isDefault && (
-                  <span className="text-[10px] text-[var(--pv-blue)]">
-                    {t("expense.default", lang)}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: w.color }}
+                  >
+                    <Wallet className="size-3 text-white" />
+                  </div>
+                  <span className="text-xs font-medium text-foreground truncate">
+                    {lang === "bn" && w.nameBn ? w.nameBn : w.name}
                   </span>
-                )}
+                  {w.isDefault && (
+                    <Star className="size-3 text-yellow-500 fill-yellow-500" />
+                  )}
+                </div>
+                <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => handleSetDefault(w)}
+                    className="cursor-pointer p-1 rounded hover:bg-yellow-500/10"
+                    title={lang === "bn" ? "ডিফল্ট" : "Default"}
+                  >
+                    <Star className="size-3 text-muted-foreground hover:text-yellow-500" />
+                  </button>
+                  <button
+                    onClick={() => setEditingWallet(w)}
+                    className="cursor-pointer p-1 rounded hover:bg-foreground/5"
+                    title={lang === "bn" ? "সম্পাদনা" : "Edit"}
+                  >
+                    <Edit3 className="size-3 text-muted-foreground" />
+                  </button>
+                  <button
+                    onClick={() => setDeleteWalletId(w._id)}
+                    className="cursor-pointer p-1 rounded hover:bg-destructive/10"
+                    title={lang === "bn" ? "মুছুন" : "Delete"}
+                  >
+                    <Trash2 className="size-3 text-destructive" />
+                  </button>
+                </div>
               </div>
               <div className="text-sm font-bold text-foreground">
                 ৳{w.balance.toLocaleString()}
               </div>
-            </a>
+            </div>
           ))}
         </div>
       </motion.div>
@@ -1085,6 +1212,47 @@ export default function Expense() {
         description={
           lang === "bn"
             ? "এই কাজটি ফেরানো যাবে না।"
+            : "This action cannot be undone."
+        }
+        variant="danger"
+      />
+
+      {showAddWalletModal && (
+        <AddWalletModal
+          lang={lang}
+          onAdd={handleAddWallet}
+          onClose={() => setShowAddWalletModal(false)}
+        />
+      )}
+
+      {editingWallet && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass rounded-2xl p-6 w-full max-w-md mx-4"
+          >
+            <WalletForm
+              lang={lang}
+              initialData={editingWallet}
+              onSubmit={handleEditWallet}
+              onClose={() => setEditingWallet(null)}
+            />
+          </motion.div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={!!deleteWalletId}
+        onConfirm={() => {
+          if (deleteWalletId) handleDeleteWallet(deleteWalletId);
+          setDeleteWalletId(null);
+        }}
+        onCancel={() => setDeleteWalletId(null)}
+        title={lang === "bn" ? "ওয়ালেট মুছুন?" : "Delete wallet?"}
+        description={
+          lang === "bn"
+            ? "এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।"
             : "This action cannot be undone."
         }
         variant="danger"

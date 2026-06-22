@@ -11,16 +11,14 @@ import {
   Search,
   Edit3,
   Trash2,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Heart,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  UserCheck,
   X,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { validatePhone } from "@/lib/input-sanitizer";
 import { toastSuccess, toastError } from "@/lib/toast-helpers";
+
+const NOW = Date.now();
 
 interface Contact {
   _id: string;
@@ -70,7 +68,7 @@ export default function CRM() {
     relationship: "Friend",
     birthday: "",
     notes: "",
-    strength: "friend" as const,
+    strength: "friend" as "close" | "friend" | "acquaintance" | "distant",
   });
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
@@ -81,10 +79,8 @@ export default function CRM() {
       phone: "+880 1712345678",
       email: "pronay@example.com",
       relationship: "Family",
-      // eslint-disable-next-line react-hooks/purity
-      birthday: Date.now() - 365 * 24 * 60 * 60 * 1000,
-      // eslint-disable-next-line react-hooks/purity
-      lastContacted: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      birthday: NOW - 365 * 24 * 60 * 60 * 1000,
+      lastContacted: NOW - 2 * 24 * 60 * 60 * 1000,
       strength: "close",
       tags: ["family", "important"],
     },
@@ -93,8 +89,7 @@ export default function CRM() {
       name: "Anika Rahman",
       phone: "+880 1812345678",
       relationship: "Friend",
-      // eslint-disable-next-line react-hooks/purity
-      lastContacted: Date.now() - 7 * 24 * 60 * 60 * 1000,
+      lastContacted: NOW - 7 * 24 * 60 * 60 * 1000,
       strength: "friend",
       tags: ["college"],
     },
@@ -103,8 +98,7 @@ export default function CRM() {
       name: "Kabir Ahmed",
       email: "kabir@work.com",
       relationship: "Colleague",
-      // eslint-disable-next-line react-hooks/purity
-      lastContacted: Date.now() - 14 * 24 * 60 * 60 * 1000,
+      lastContacted: NOW - 14 * 24 * 60 * 60 * 1000,
       strength: "acquaintance",
       tags: ["work"],
     },
@@ -118,8 +112,7 @@ export default function CRM() {
 
   const getDaysSinceContact = (lastContacted?: number) => {
     if (!lastContacted) return null;
-    // eslint-disable-next-line react-hooks/purity
-    const diff = Date.now() - lastContacted;
+    const diff = NOW - lastContacted;
     return Math.floor(diff / (1000 * 60 * 60 * 24));
   };
 
@@ -484,8 +477,14 @@ export default function CRM() {
               <select
                 value={formData.strength}
                 onChange={(e) =>
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  setFormData({ ...formData, strength: e.target.value as any })
+                  setFormData({
+                    ...formData,
+                    strength: e.target.value as
+                      | "close"
+                      | "friend"
+                      | "acquaintance"
+                      | "distant",
+                  })
                 }
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               >

@@ -19,6 +19,75 @@ const VIEW_TABS = [
   { id: "incomeExpense" as const, en: "Income & Expense", bn: "আয় ও ব্যয়" },
 ];
 
+interface IECategory {
+  name: string;
+  amount: number;
+  pct: number;
+}
+
+interface BalanceSheetData {
+  asOf: number;
+  assets: {
+    total: number;
+    current: number;
+    nonCurrent: number;
+    currentBreakdown: {
+      label: string;
+      amount: number;
+      breakdown?: { name: string; amount: number }[];
+    }[];
+    nonCurrentBreakdown: {
+      label: string;
+      amount: number;
+      breakdown?: { name: string; amount: number }[];
+    }[];
+  };
+  liabilities: {
+    total: number;
+    current: number;
+    nonCurrent: number;
+    currentBreakdown: {
+      label: string;
+      amount: number;
+      breakdown?: { name: string; amount: number }[];
+    }[];
+    nonCurrentBreakdown: {
+      label: string;
+      amount: number;
+      breakdown?: { name: string; amount: number }[];
+    }[];
+  };
+  netWorth: number;
+}
+
+interface IncomeExpenseData {
+  summary: {
+    totalIncome: number;
+    totalExpense: number;
+    netIncome: number;
+    periodIncome: number;
+    periodExpense: number;
+    periodNet: number;
+    compIncome: number;
+    compExpense: number;
+    compNet: number;
+    yearIncome: number;
+    yearExpense: number;
+    yearNet: number;
+    incomeChange: number;
+    expenseChange: number;
+  };
+  period: { selected: string; comparison: string; year: number };
+  selectedPeriod: {
+    income: { categories: IECategory[]; total: number };
+    expense: { categories: IECategory[]; total: number };
+  };
+  comparisonPeriod: {
+    income: { categories: IECategory[]; total: number };
+    expense: { categories: IECategory[]; total: number };
+  };
+}
+
 const PRESET_OPTIONS: { id: DatePreset; en: string; bn: string }[] = [
   { id: "thisMonth", en: "This Month", bn: "এই মাস" },
   { id: "lastMonth", en: "Last Month", bn: "গত মাস" },
@@ -199,7 +268,6 @@ const IESection = memo(function IESection({
   categories,
   total,
   compCategories,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   compTotal,
 }: {
   title: string;
@@ -341,7 +409,6 @@ const DateRangePicker = memo(function DateRangePicker({
   );
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function FinanceTab({ period }: { period: "7d" | "30d" | "90d" }) {
   const [view, setView] = useState<ReportView>("balanceSheet");
   const [datePreset, setDatePreset] = useState<DatePreset>("thisMonth");
@@ -398,16 +465,12 @@ export function FinanceTab({ period }: { period: "7d" | "30d" | "90d" }) {
     },
     period: { selected: "", comparison: "", year: 2025 },
     selectedPeriod: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      income: { categories: [] as any[], total: 0 },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expense: { categories: [] as any[], total: 0 },
+      income: { categories: [] as IECategory[], total: 0 },
+      expense: { categories: [] as IECategory[], total: 0 },
     },
     comparisonPeriod: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      income: { categories: [] as any[], total: 0 },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expense: { categories: [] as any[], total: 0 },
+      income: { categories: [] as IECategory[], total: 0 },
+      expense: { categories: [] as IECategory[], total: 0 },
     },
   };
 
@@ -473,8 +536,7 @@ function BalanceSheetView({
   lang,
   dateLabel,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
+  data: BalanceSheetData;
   lang: string;
   dateLabel: string;
 }) {
@@ -654,8 +716,13 @@ function BalanceSheetView({
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function IncomeExpenseView({ data, lang }: { data: any; lang: string }) {
+function IncomeExpenseView({
+  data,
+  lang,
+}: {
+  data: IncomeExpenseData;
+  lang: string;
+}) {
   const { summary, selectedPeriod, comparisonPeriod, period } = data;
 
   const incomeChange = formatChange(summary.incomeChange);
@@ -855,8 +922,7 @@ function IncomeExpenseView({ data, lang }: { data: any; lang: string }) {
             </span>
           </div>
           <div className="ml-4">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {selectedPeriod.income.categories.map((cat: any) => (
+            {selectedPeriod.income.categories.map((cat) => (
               <div key={cat.name} className="flex justify-between py-1 text-sm">
                 <span className="text-foreground pl-4">{cat.name}</span>
                 <span className="font-medium tabular-nums text-[var(--pv-green)]">
@@ -887,8 +953,7 @@ function IncomeExpenseView({ data, lang }: { data: any; lang: string }) {
             </span>
           </div>
           <div className="ml-4">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {selectedPeriod.expense.categories.map((cat: any) => (
+            {selectedPeriod.expense.categories.map((cat) => (
               <div key={cat.name} className="flex justify-between py-1 text-sm">
                 <span className="text-foreground pl-4">{cat.name}</span>
                 <span className="font-medium tabular-nums text-red-500">

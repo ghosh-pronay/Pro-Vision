@@ -7,8 +7,6 @@ import {
   CheckCircle,
   Target,
   Wallet,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Brain,
   Timer,
   Heart,
   Flame,
@@ -99,7 +97,6 @@ export default function Dashboard() {
 
   const taskStats = useMemo(() => {
     if (!tasks) return { total: 0, completed: 0, pending: 0, overdue: 0 };
-    // eslint-disable-next-line react-hooks/purity
     const now = Date.now();
     const completed = tasks.filter((t) => t.completed).length;
     const pending = tasks.filter((t) => !t.completed).length;
@@ -473,7 +470,6 @@ export default function Dashboard() {
           text: `Checked in: "${checkedHabit.name}"`,
           time: "Today",
           color: "text-green-500",
-          // eslint-disable-next-line react-hooks/purity
           timestamp: Date.now(),
         });
       }

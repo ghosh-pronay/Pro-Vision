@@ -283,7 +283,6 @@ export default function CarbonFootprint() {
   const [formNote, setFormNote] = useState("");
   const [formSubCategory, setFormSubCategory] = useState("");
 
-  // eslint-disable-next-line react-hooks/purity
   const today = useMemo(() => getDayStart(Date.now()), []);
 
   const getItemsForCategory = (cat: string) => {
@@ -377,15 +376,6 @@ export default function CarbonFootprint() {
     };
   }, [dailyLogs, today, monthlyGoal, todayTotal]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const monthlyReductionPercent = useMemo(() => {
-    if (yesterdayTotal === 0 && todayTotal === 0) return 0;
-    const monthlyAvg = parseFloat(monthlyStats.avg);
-    if (monthlyAvg === 0) return 0;
-    const dailyGoalKg = monthlyGoal / 30;
-    return Math.max(0, ((monthlyAvg - dailyGoalKg) / monthlyAvg) * 100);
-  }, [todayTotal, yesterdayTotal, monthlyStats.avg, monthlyGoal]);
-
   const avgBangladeshiDaily = useMemo(
     () => (AVG_BANGLADESHI_ANNUAL_TONS * 1000) / 365,
     [],
@@ -452,7 +442,6 @@ export default function CarbonFootprint() {
       amount,
       unit: item.unit,
       carbonKg,
-      // eslint-disable-next-line react-hooks/purity
       date: Date.now(),
       note: formNote.trim() || undefined,
     };
@@ -516,14 +505,6 @@ export default function CarbonFootprint() {
       label: t("Shopping", "শপিং"),
     },
   ];
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const categoryColors: Record<string, string> = {
-    transport: "bg-blue-500",
-    food: "bg-orange-500",
-    energy: "bg-yellow-500",
-    shopping: "bg-purple-500",
-  };
 
   return (
     <motion.div

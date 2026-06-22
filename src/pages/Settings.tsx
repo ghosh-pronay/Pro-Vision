@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAppStore } from "@/store";
@@ -38,10 +38,8 @@ export default function Settings() {
 
   const profile = useQuery(api.userProfiles.get);
   const upsertProfile = useMutation(api.userProfiles.upsert);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const setupFirstAdmin = useMutation((api as any).admin.setupFirstAdmin);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const hasAdmin = useQuery((api as any).admin.hasAdmin);
+  const setupFirstAdmin = useMutation(api.admin.setupFirstAdmin);
+  const hasAdmin = useQuery(api.admin.hasAdmin);
   const [adminMessage, setAdminMessage] = useState("");
 
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -64,24 +62,41 @@ export default function Settings() {
   const [darkModeStart, setDarkModeStart] = useState("20:00");
   const [darkModeEnd, setDarkModeEnd] = useState("06:00");
 
+  const syncProfileRef = useRef<((p: unknown) => void) | null>(null);
+
   useEffect(() => {
     if (profile) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFormName(profile.displayName || "");
-      setFormEmail(profile.email || "");
-      setFormPhone(profile.phone || "");
-      setFormCurrency(profile.currency || "BDT");
-      setFormTimezone(profile.timezone || "Asia/Dhaka");
-      setFormGender(profile.gender || "");
-      if (profile.dateOfBirth) {
-        const d = new Date(profile.dateOfBirth);
-        setFormDob(d.toISOString().split("T")[0]);
-      }
-      setFormNotifications(profile.notificationsEnabled ?? true);
-      setFormWeeklyReport(profile.weeklyEmailReport ?? false);
-      setFormAvatar(profile.avatar || "😀");
+      syncProfileRef.current?.(profile);
     }
   }, [profile]);
+
+  syncProfileRef.current = (p) => {
+    const profile = p as {
+      displayName?: string;
+      email?: string;
+      phone?: string;
+      currency?: string;
+      timezone?: string;
+      gender?: string;
+      dateOfBirth?: number;
+      notificationsEnabled?: boolean;
+      weeklyEmailReport?: boolean;
+      avatar?: string;
+    };
+    setFormName(profile.displayName || "");
+    setFormEmail(profile.email || "");
+    setFormPhone(profile.phone || "");
+    setFormCurrency(profile.currency || "BDT");
+    setFormTimezone(profile.timezone || "Asia/Dhaka");
+    setFormGender(profile.gender || "");
+    if (profile.dateOfBirth) {
+      const d = new Date(profile.dateOfBirth);
+      setFormDob(d.toISOString().split("T")[0]);
+    }
+    setFormNotifications(profile.notificationsEnabled ?? true);
+    setFormWeeklyReport(profile.weeklyEmailReport ?? false);
+    setFormAvatar(profile.avatar || "😀");
+  };
 
   const handleSaveProfile = async () => {
     setSaving(true);
@@ -107,21 +122,23 @@ export default function Settings() {
   };
 
   const handleThemeChange = async (newTheme: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setTheme(newTheme as any);
+    setTheme(newTheme as "light" | "dark" | "oled" | "system");
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await upsertProfile({ theme: newTheme as any });
-    } catch { /* ignore */ }
+      await upsertProfile({
+        theme: newTheme as "light" | "dark" | "oled" | "system",
+      });
+    } catch {
+      /* ignore */
+    }
   };
 
   const handleLanguageChange = async (newLang: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setLanguage(newLang as any);
+    setLanguage(newLang as "en" | "bn");
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await upsertProfile({ language: newLang as any });
-    } catch { /* ignore */ }
+      await upsertProfile({ language: newLang as "en" | "bn" });
+    } catch {
+      /* ignore */
+    }
   };
 
   const sections = [
@@ -853,12 +870,12 @@ export default function Settings() {
                 <button
                   onClick={async () => {
                     try {
-                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                      const result = await setupFirstAdmin();
+                      await setupFirstAdmin();
                       setAdminMessage("You are now an admin! Go to /admin");
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    } catch (err: any) {
-                      setAdminMessage(err.message || "Failed");
+                    } catch (err: unknown) {
+                      setAdminMessage(
+                        err instanceof Error ? err.message : "Failed",
+                      );
                     }
                   }}
                   className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10 transition-colors"

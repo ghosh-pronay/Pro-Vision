@@ -3,8 +3,6 @@ import { useLang } from "@/i18n/LanguageContext";
 import { useState, useMemo } from "react";
 import {
   Sun,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Moon,
   Coffee,
   Target,
   Sparkles,
@@ -21,6 +19,8 @@ interface DailyCheckin {
   topGoal?: string;
   notes?: string;
 }
+
+const NOW = Date.now();
 
 const MOODS = [
   { value: "great", emoji: "😄", label: "Great", color: "text-green-500" },
@@ -41,16 +41,14 @@ export default function DailyCheckin() {
   const [checkins, setCheckins] = useState<DailyCheckin[]>([
     {
       _id: "1",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 1 * 24 * 60 * 60 * 1000,
+      date: NOW - 1 * 24 * 60 * 60 * 1000,
       mood: "good",
       energy: 4,
       topGoal: lang === "bn" ? "প্রজেক্ট সম্পন্ন করুন" : "Finish project",
     },
     {
       _id: "2",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      date: NOW - 2 * 24 * 60 * 60 * 1000,
       mood: "great",
       energy: 5,
       topGoal: lang === "bn" ? "ব্যায়াম করুন" : "Exercise",

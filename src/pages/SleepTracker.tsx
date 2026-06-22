@@ -21,6 +21,8 @@ const QUALITY_CONFIG = {
   bad: { color: "text-red-500", bg: "bg-red-500/10", label: "Bad" },
 };
 
+const NOW = Date.now();
+
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
@@ -36,8 +38,7 @@ export default function SleepTracker() {
       quality: "good",
       bedTime: "23:00",
       wakeTime: "06:30",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 1 * 24 * 60 * 60 * 1000,
+      date: NOW - 1 * 24 * 60 * 60 * 1000,
     },
     {
       _id: "2",
@@ -45,8 +46,7 @@ export default function SleepTracker() {
       quality: "okay",
       bedTime: "00:30",
       wakeTime: "06:30",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      date: NOW - 2 * 24 * 60 * 60 * 1000,
     },
     {
       _id: "3",
@@ -54,8 +54,7 @@ export default function SleepTracker() {
       quality: "great",
       bedTime: "22:30",
       wakeTime: "06:30",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 3 * 24 * 60 * 60 * 1000,
+      date: NOW - 3 * 24 * 60 * 60 * 1000,
     },
   ]);
 

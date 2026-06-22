@@ -3,13 +3,19 @@ import { getAuth, type Auth } from "firebase/auth";
 import type { Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCHzCxlnrx_-fX68FkigYsqt9MxXci-v28",
-  authDomain: "pro-visions.firebaseapp.com",
-  projectId: "pro-visions",
-  storageBucket: "pro-visions.firebasestorage.app",
-  messagingSenderId: "570621295453",
-  appId: "1:570621295453:web:3e2c03807274d8d4e286b4",
-  measurementId: "G-C6FC4FJXWX",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain:
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "pro-visions.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "pro-visions",
+  storageBucket:
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ||
+    "pro-visions.firebasestorage.app",
+  messagingSenderId:
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "570621295453",
+  appId:
+    import.meta.env.VITE_FIREBASE_APP_ID ||
+    "1:570621295453:web:3e2c03807274d8d4e286b4",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-C6FC4FJXWX",
 };
 
 const app: FirebaseApp =
@@ -72,7 +78,7 @@ export async function getFirebaseToken(): Promise<string | null> {
     const currentToken = await fm.getToken(
       m as Parameters<typeof fm.getToken>[0],
       {
-        vapidKey: "BNxR...your-vapid-key...",
+        vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || undefined,
       },
     );
 
@@ -92,12 +98,14 @@ export function onMessageListener(
     data?: Record<string, string>;
   }) => void,
 ) {
-  getMessagingInstance().then(async (m) => {
-    if (m) {
-      const fm = await loadMessaging();
-      fm.onMessage(m as Parameters<typeof fm.onMessage>[0], callback);
-    }
-  });
+  getMessagingInstance()
+    .then(async (m) => {
+      if (m) {
+        const fm = await loadMessaging();
+        fm.onMessage(m as Parameters<typeof fm.onMessage>[0], callback);
+      }
+    })
+    .catch(() => {});
 }
 
 export function getSavedToken(): string | null {

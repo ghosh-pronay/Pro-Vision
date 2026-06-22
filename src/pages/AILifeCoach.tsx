@@ -7,21 +7,17 @@ import {
   Target,
   Brain,
   TrendingUp,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Calendar,
   CheckCircle,
   Clock,
   Zap,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ArrowRight,
   RefreshCw,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Lightbulb,
   BarChart3,
   BookOpen,
   Star,
   Heart,
 } from "lucide-react";
+
+const NOW = Date.now();
 
 interface Goal {
   id: number;
@@ -134,26 +130,16 @@ export default function AILifeCoach() {
     { id: 3, text: "", completed: false, priority: "low" },
   ]);
   const [moodHistory, setMoodHistory] = useState<MoodEntry[]>([
-    // eslint-disable-next-line react-hooks/purity
-    { value: 4, emoji: "🙂", timestamp: new Date(Date.now() - 86400000) },
-    // eslint-disable-next-line react-hooks/purity
-    { value: 3, emoji: "😐", timestamp: new Date(Date.now() - 172800000) },
-    // eslint-disable-next-line react-hooks/purity
-    { value: 5, emoji: "😄", timestamp: new Date(Date.now() - 259200000) },
-    // eslint-disable-next-line react-hooks/purity
-    { value: 4, emoji: "🙂", timestamp: new Date(Date.now() - 345600000) },
-    // eslint-disable-next-line react-hooks/purity
-    { value: 3, emoji: "😐", timestamp: new Date(Date.now() - 432000000) },
-    // eslint-disable-next-line react-hooks/purity
-    { value: 5, emoji: "😄", timestamp: new Date(Date.now() - 518400000) },
-    // eslint-disable-next-line react-hooks/purity
-    { value: 4, emoji: "🙂", timestamp: new Date(Date.now() - 604800000) },
+    { value: 4, emoji: "🙂", timestamp: new Date(NOW - 86400000) },
+    { value: 3, emoji: "😐", timestamp: new Date(NOW - 172800000) },
+    { value: 5, emoji: "😄", timestamp: new Date(NOW - 259200000) },
+    { value: 4, emoji: "🙂", timestamp: new Date(NOW - 345600000) },
+    { value: 3, emoji: "😐", timestamp: new Date(NOW - 432000000) },
+    { value: 5, emoji: "😄", timestamp: new Date(NOW - 518400000) },
+    { value: 4, emoji: "🙂", timestamp: new Date(NOW - 604800000) },
   ]);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [moodLogged, setMoodLogged] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedGoal, setSelectedGoal] = useState<number | null>(null);
 
   const dailyMessage = useMemo(() => {
     const hour = new Date().getHours();

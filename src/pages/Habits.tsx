@@ -21,16 +21,13 @@ import {
   X,
   Snowflake,
   MessageSquare,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ChevronDown,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ChevronRight,
   Bell,
   Clock,
   Award,
   History,
 } from "lucide-react";
 import { toastSuccess, toastError } from "@/lib/toast-helpers";
+import type { Id } from "../convex/_generated/dataModel";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -312,7 +309,6 @@ interface HeatmapCalendarProps {
 
 function HeatmapCalendar({ lang, completedDates }: HeatmapCalendarProps) {
   const days = 35;
-  // eslint-disable-next-line react-hooks/purity
   const now = Date.now();
   const cells = Array.from({ length: days }, (_, i) => {
     const dayStart = now - (days - 1 - i) * 24 * 60 * 60 * 1000;
@@ -706,8 +702,7 @@ export default function Habits() {
       setNewDescription("");
       setNewCategory("other");
       setShowAdd(false);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch (_error) {
       toastError(
         lang === "bn" ? "অভ্যাস যোগ করতে ব্যর্থ হয়েছে" : "Failed to add habit",
       );
@@ -717,8 +712,7 @@ export default function Habits() {
   const saveEdit = async () => {
     if (!editingHabit || !editName.trim()) return;
     await updateHabit({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      id: editingHabit as any,
+      id: editingHabit as Id<"habits">,
       name: editName,
       description: editDescription || undefined,
       frequency: editFrequency,
@@ -729,8 +723,7 @@ export default function Habits() {
     setEditingHabit(null);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const startEdit = (habit: any) => {
+  const startEdit = (habit: (typeof allHabits)[number]) => {
     setEditingHabit(habit._id);
     setEditName(habit.name);
     setEditDescription(habit.description ?? "");
@@ -742,9 +735,7 @@ export default function Habits() {
 
   const toggleCheckIn = async (habitId: string, note?: string) => {
     await checkInHabit({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      id: habitId as any,
-      // eslint-disable-next-line react-hooks/purity
+      id: habitId as Id<"habits">,
       date: Date.now(),
       note: note || undefined,
     });
@@ -754,8 +745,7 @@ export default function Habits() {
 
   const handleFreeze = async (habitId: string) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await applyStreakFreeze({ id: habitId as any });
+      await applyStreakFreeze({ id: habitId as Id<"habits"> });
     } catch {
       // no freezes left
     }
@@ -852,8 +842,7 @@ export default function Habits() {
                         ? `"${habit.name[lang]}" যোগ হয়েছে!`
                         : `"${habit.name[lang]}" added!`,
                     );
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  } catch (error) {
+                  } catch (_error) {
                     toastError(
                       lang === "bn"
                         ? "অভ্যাস যোগ করতে ব্যর্থ হয়েছে"
@@ -1526,8 +1515,6 @@ export default function Habits() {
                 const habitStreak = getHabitStreak(completedDates);
                 const color = HABIT_COLORS[i % HABIT_COLORS.length];
                 const freezes = habit.streakFreezes ?? 0;
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const maxFreezes = habit.maxStreakFreezes ?? 3;
 
                 return (
                   <motion.div
@@ -1655,8 +1642,9 @@ export default function Habits() {
                         <Pencil className="size-3.5" />
                       </button>
                       <button
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        onClick={() => archiveHabit({ id: habit._id as any })}
+                        onClick={() =>
+                          archiveHabit({ id: habit._id as Id<"habits"> })
+                        }
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-[var(--pv-orange)] min-w-[32px] min-h-[32px] flex items-center justify-center"
                       >
                         {habit.archived ? (

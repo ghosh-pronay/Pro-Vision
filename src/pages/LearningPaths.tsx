@@ -11,8 +11,6 @@ import {
   Plus,
   X,
   Trash2,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Calendar,
   ExternalLink,
   Target,
   Flame,
@@ -277,7 +275,6 @@ export default function LearningPaths() {
 
   const getDaysLeft = (targetDate?: number) => {
     if (!targetDate) return null;
-    // eslint-disable-next-line react-hooks/purity
     const diff = targetDate - Date.now();
     return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
   };

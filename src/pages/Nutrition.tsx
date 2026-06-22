@@ -15,28 +15,6 @@ import {
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface MealLog {
-  _id: string;
-  mealType: "breakfast" | "lunch" | "dinner" | "snack";
-  name: string;
-  calories?: number;
-  protein?: number;
-  carbs?: number;
-  fat?: number;
-  notes?: string;
-  date: number;
-  createdAt: number;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface WaterLog {
-  _id: string;
-  glasses: number;
-  date: number;
-  createdAt: number;
-}
-
 const MEAL_TYPES = [
   { value: "breakfast", icon: Coffee, color: "text-orange-500" },
   { value: "lunch", icon: Sun, color: "text-yellow-500" },

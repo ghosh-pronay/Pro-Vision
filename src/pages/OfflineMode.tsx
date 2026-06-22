@@ -28,6 +28,8 @@ import {
   Zap,
 } from "lucide-react";
 
+const NOW = Date.now();
+
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
@@ -86,35 +88,34 @@ export default function OfflineMode() {
       id: "1",
       type: "task",
       action: "create",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 300000,
+      timestamp: NOW - 300000,
       status: "pending",
     },
     {
       id: "2",
       type: "habit",
       action: "update",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 600000,
+      timestamp: NOW - 600000,
       status: "pending",
     },
     {
       id: "3",
       type: "journal",
       action: "create",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 900000,
+      timestamp: NOW - 900000,
       status: "pending",
     },
   ]);
-  const [storageUsed, setStorageUsed] = useState(0);
+  const [storageUsed, setStorageUsed] = useState(() => {
+    const total = storageCategories.reduce((sum, cat) => sum + cat.size, 0);
+    return total;
+  });
   const [storageLimit] = useState(50 * 1024 * 1024);
   const [autoSync, setAutoSync] = useState(true);
   const [syncInterval, setSyncInterval] = useState(30);
   const [wifiOnly, setWifiOnly] = useState(false);
   const [lastSynced, setLastSynced] = useState<Date | null>(
-    // eslint-disable-next-line react-hooks/purity
-    new Date(Date.now() - 3600000),
+    new Date(NOW - 3600000),
   );
   const [isSyncing, setIsSyncing] = useState(false);
   const [featuresEnabled, setFeaturesEnabled] = useState<
@@ -130,11 +131,6 @@ export default function OfflineMode() {
   });
   const [showStorageBreakdown, setShowStorageBreakdown] = useState(false);
   const [showAutoSyncSettings, setShowAutoSyncSettings] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [conflicts, setConflicts] = useState<
-    Array<{ id: string; type: string; local: string; remote: string }>
-  >([]);
 
   const storageCategories: StorageCategory[] = [
     {
@@ -169,55 +165,7 @@ export default function OfflineMode() {
     },
   ];
 
-  useEffect(() => {
-    const total = storageCategories.reduce((sum, cat) => sum + cat.size, 0);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setStorageUsed(total);
-  }, []);
-
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      if (autoSync && (!wifiOnly || navigator.onLine)) {
-        // eslint-disable-next-line react-hooks/purity
-        // eslint-disable-next-line react-hooks/immutability
-        handleSyncAll();
-      }
-    };
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, [autoSync, wifiOnly]);
-
-  const formatBytes = (bytes: number) => {
-    if (bytes === 0) return "0 B";
-    const mb = bytes / (1024 * 1024);
-    return `${mb.toFixed(1)} MB`;
-  };
-
-  const formatTimeAgo = (date: Date) => {
-    // eslint-disable-next-line react-hooks/purity
-    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (seconds < 60) return `${seconds}s`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
-    return `${Math.floor(seconds / 86400)}d`;
-  };
-
-  const formatTimestamp = (timestamp: number) => {
-    return new Date(timestamp).toLocaleTimeString(
-      lang === "bn" ? "bn-BD" : "en-US",
-      { hour: "2-digit", minute: "2-digit" },
-    );
-  };
-
-  const handleSyncAll = async () => {
+  const handleSyncAll = useCallback(async () => {
     setIsSyncing(true);
     for (const item of syncQueue) {
       if (item.status === "pending") {
@@ -234,6 +182,45 @@ export default function OfflineMode() {
     setSyncQueue([]);
     setLastSynced(new Date());
     setIsSyncing(false);
+  }, [syncQueue]);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      if (autoSync && (!wifiOnly || navigator.onLine)) {
+        handleSyncAll();
+      }
+    };
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, [autoSync, wifiOnly, handleSyncAll]);
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return "0 B";
+    const mb = bytes / (1024 * 1024);
+    return `${mb.toFixed(1)} MB`;
+  };
+
+  const formatTimeAgo = (date: Date) => {
+    const seconds = Math.floor((NOW - date.getTime()) / 1000);
+    if (seconds < 60) return `${seconds}s`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
+    return `${Math.floor(seconds / 86400)}d`;
+  };
+
+  const formatTimestamp = (timestamp: number) => {
+    return new Date(timestamp).toLocaleTimeString(
+      lang === "bn" ? "bn-BD" : "en-US",
+      { hour: "2-digit", minute: "2-digit" },
+    );
   };
 
   const handleClearCache = () => {

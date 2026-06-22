@@ -24,6 +24,8 @@ interface StudySession {
   date: number;
 }
 
+const NOW = Date.now();
+
 const SUBJECTS = [
   "Mathematics",
   "Physics",
@@ -51,23 +53,20 @@ export default function StudyTracker() {
       subject: "Mathematics",
       duration: 60,
       notes: "Calculus practice",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 1 * 24 * 60 * 60 * 1000,
+      date: NOW - 1 * 24 * 60 * 60 * 1000,
     },
     {
       _id: "2",
       subject: "Physics",
       duration: 45,
       notes: "Mechanics chapter",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 1 * 24 * 60 * 60 * 1000,
+      date: NOW - 1 * 24 * 60 * 60 * 1000,
     },
     {
       _id: "3",
       subject: "English",
       duration: 30,
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      date: NOW - 2 * 24 * 60 * 60 * 1000,
     },
   ]);
 

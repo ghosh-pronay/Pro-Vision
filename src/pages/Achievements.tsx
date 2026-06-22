@@ -12,13 +12,13 @@ import {
   Heart,
   BookOpen,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface Achievement {
   id: string;
   name: string;
   description: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: any;
+  icon: LucideIcon;
   color: string;
   unlocked: boolean;
   unlockedAt?: number;
@@ -30,6 +30,8 @@ const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
+
+const NOW = Date.now();
 
 export default function Achievements() {
   const { lang } = useLang();
@@ -45,8 +47,7 @@ export default function Achievements() {
       icon: CheckCircle,
       color: "text-green-500",
       unlocked: true,
-      // eslint-disable-next-line react-hooks/purity
-      unlockedAt: Date.now() - 30 * 24 * 60 * 60 * 1000,
+      unlockedAt: NOW - 30 * 24 * 60 * 60 * 1000,
     },
     {
       id: "task_master",
@@ -56,8 +57,7 @@ export default function Achievements() {
       icon: Trophy,
       color: "text-yellow-500",
       unlocked: true,
-      // eslint-disable-next-line react-hooks/purity
-      unlockedAt: Date.now() - 5 * 24 * 60 * 60 * 1000,
+      unlockedAt: NOW - 5 * 24 * 60 * 60 * 1000,
     },
     {
       id: "habit_streak_7",
@@ -69,8 +69,7 @@ export default function Achievements() {
       icon: Flame,
       color: "text-orange-500",
       unlocked: true,
-      // eslint-disable-next-line react-hooks/purity
-      unlockedAt: Date.now() - 10 * 24 * 60 * 60 * 1000,
+      unlockedAt: NOW - 10 * 24 * 60 * 60 * 1000,
     },
     {
       id: "habit_streak_30",

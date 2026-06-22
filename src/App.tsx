@@ -39,7 +39,6 @@ const Nutrition = lazy(() => import("@/pages/Nutrition"));
 const Challenges = lazy(() => import("@/pages/Challenges"));
 const CRM = lazy(() => import("@/pages/CRM"));
 const SleepTracker = lazy(() => import("@/pages/SleepTracker"));
-const SavingsGoals = lazy(() => import("@/pages/SavingsGoals"));
 const Fitness = lazy(() => import("@/pages/Fitness"));
 const StudyTracker = lazy(() => import("@/pages/StudyTracker"));
 const GratitudeJar = lazy(() => import("@/pages/GratitudeJar"));
@@ -53,11 +52,9 @@ const AccountabilityPartner = lazy(
 );
 const Gamification = lazy(() => import("@/pages/Gamification"));
 const HealthDashboard = lazy(() => import("@/pages/HealthDashboard"));
-const FinancialDashboard = lazy(() => import("@/pages/FinancialDashboard"));
 const QRProfile = lazy(() => import("@/pages/QRProfile"));
 const Analytics = lazy(() => import("@/pages/Analytics"));
 const Payment = lazy(() => import("@/pages/Payment"));
-const Wallets = lazy(() => import("@/pages/Wallets"));
 const OfflineMode = lazy(() => import("@/pages/OfflineMode"));
 const DataEncryption = lazy(() => import("@/pages/DataEncryption"));
 const FamilyDashboard = lazy(() => import("@/pages/FamilyDashboard"));
@@ -182,7 +179,6 @@ export default function App() {
             <Route path="/challenges" element={<Challenges />} />
             <Route path="/crm" element={<CRM />} />
             <Route path="/sleep" element={<SleepTracker />} />
-            <Route path="/savings" element={<SavingsGoals />} />
             <Route path="/fitness" element={<Fitness />} />
             <Route path="/study" element={<StudyTracker />} />
             <Route path="/gratitude" element={<GratitudeJar />} />
@@ -197,14 +193,9 @@ export default function App() {
             />
             <Route path="/gamification" element={<Gamification />} />
             <Route path="/health-dashboard" element={<HealthDashboard />} />
-            <Route
-              path="/financial-dashboard"
-              element={<FinancialDashboard />}
-            />
             <Route path="/qr-profile" element={<QRProfile />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/payment" element={<Payment />} />
-            <Route path="/wallets" element={<Wallets />} />
             <Route path="/offline" element={<OfflineMode />} />
             <Route path="/encryption" element={<DataEncryption />} />
             <Route path="/family" element={<FamilyDashboard />} />

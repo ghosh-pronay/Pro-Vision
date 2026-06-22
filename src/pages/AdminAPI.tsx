@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useLang } from "@/i18n/LanguageContext";
-import { t } from "@/i18n/translations";
+import { t, type TranslationKey } from "@/i18n/translations";
 import {
   Activity,
   Settings,
@@ -10,32 +10,20 @@ import {
   Key,
   BarChart3,
   Server,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  RefreshCw,
   Plus,
   Trash2,
   ToggleLeft,
   ToggleRight,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Clock,
   CheckCircle,
   XCircle,
   AlertTriangle,
   Search,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Filter,
   Copy,
   Eye,
   EyeOff,
   Zap,
   Globe,
   Shield,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Download,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  RotateCcw,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toastSuccess, toastError } from "@/lib/toast-helpers";
@@ -205,12 +193,10 @@ export default function AdminAPI() {
     return result;
   }, [configs, searchQuery, categoryFilter]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const t_ = (key: string) => t(lang, key as any);
+  const t_ = (key: string) => t(key as TranslationKey, lang);
 
   const formatTimestamp = (ts: number) => {
     const d = new Date(ts);
-    // eslint-disable-next-line react-hooks/purity
     const now = Date.now();
     const diff = now - ts;
     if (diff < 60000) return t_("api.time.ago");
@@ -263,8 +249,7 @@ export default function AdminAPI() {
 
   const handleRevokeKey = async (id: string) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await revokeKey({ id: id as any });
+      await revokeKey({ id });
       toastSuccess(lang === "bn" ? "কী নিষ্ক্রিয় হয়েছে" : "Key revoked");
     } catch {
       toastError(
@@ -275,8 +260,7 @@ export default function AdminAPI() {
 
   const handleDeleteKey = async (id: string) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await deleteKey({ id: id as any });
+      await deleteKey({ id });
       setConfirmDeleteKeyId(null);
       toastSuccess(lang === "bn" ? "কী মুছে ফেলা হয়েছে" : "Key deleted");
     } catch {
@@ -1284,8 +1268,7 @@ export default function AdminAPI() {
                 )}
               >
                 <Icon className="w-4 h-4" />
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {t_(tab.label as any)}
+                {t_(tab.label)}
               </button>
             );
           })}

@@ -1,19 +1,21 @@
 import { useMemo } from "react";
 import { useLang } from "@/i18n/LanguageContext";
-import {
-  translations,
-  type TranslationKey,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  type Lang,
-} from "@/i18n/translations";
+import { translations, type TranslationKey } from "@/i18n/translations";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function setNested(obj: any, path: string, value: string) {
+// Recursive type for nested translation objects
+interface TranslationNode {
+  [key: string]: TranslationNode | string;
+}
+
+function setNested(obj: TranslationNode, path: string, value: string) {
   const parts = path.split(".");
-  let cur = obj;
+  let cur: TranslationNode = obj;
   for (let i = 0; i < parts.length - 1; i++) {
-    if (!cur[parts[i]] || typeof cur[parts[i]] !== "object") cur[parts[i]] = {};
-    cur = cur[parts[i]];
+    const key = parts[i];
+    if (!cur[key] || typeof cur[key] !== "object") {
+      cur[key] = {};
+    }
+    cur = cur[key] as TranslationNode;
   }
   cur[parts[parts.length - 1]] = value;
 }
@@ -21,8 +23,7 @@ function setNested(obj: any, path: string, value: string) {
 export function useI18n() {
   const { lang } = useLang();
   const nested = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const obj: Record<string, any> = {};
+    const obj: TranslationNode = {};
     for (const key of Object.keys(translations) as TranslationKey[]) {
       const val = translations[key]?.[lang] ?? translations[key]?.["en"] ?? key;
       setNested(obj, key, val);

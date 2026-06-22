@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
-import { useMemo } from "react";
 import { BarChart3, TrendingUp } from "lucide-react";
 
 const fadeUp = {
@@ -8,38 +7,40 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
-export default function HabitHeatmap() {
-  const { lang } = useLang();
+const generateHeatmapData = (): {
+  date: Date;
+  count: number;
+  level: number;
+}[] => {
+  const data: { date: Date; count: number; level: number }[] = [];
+  const now = new Date();
 
-  const generateHeatmapData = () => {
-    const data: { date: Date; count: number; level: number }[] = [];
-    const now = new Date();
+  for (let i = 364; i >= 0; i--) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
 
-    for (let i = 364; i >= 0; i--) {
-      const date = new Date(now);
-      date.setDate(date.getDate() - i);
+    const random = Math.random();
+    let count = 0;
+    let level = 0;
 
-      // eslint-disable-next-line react-hooks/purity
-      const random = Math.random();
-      let count = 0;
-      let level = 0;
-
-      if (random > 0.3) {
-        // eslint-disable-next-line react-hooks/purity
-        count = Math.floor(Math.random() * 5) + 1;
-        if (count >= 4) level = 4;
-        else if (count >= 3) level = 3;
-        else if (count >= 2) level = 2;
-        else level = 1;
-      }
-
-      data.push({ date, count, level });
+    if (random > 0.3) {
+      count = Math.floor(Math.random() * 5) + 1;
+      if (count >= 4) level = 4;
+      else if (count >= 3) level = 3;
+      else if (count >= 2) level = 2;
+      else level = 1;
     }
 
-    return data;
-  };
+    data.push({ date, count, level });
+  }
 
-  const heatmapData = useMemo(() => generateHeatmapData(), []);
+  return data;
+};
+
+const heatmapData = generateHeatmapData();
+
+export default function HabitHeatmap() {
+  const { lang } = useLang();
 
   const getMonthLabel = (date: Date, index: number) => {
     if (index === 0 || date.getDate() === 1) {

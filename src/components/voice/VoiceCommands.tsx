@@ -2,6 +2,23 @@ import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, X } from "lucide-react";
 
+interface SpeechRecognitionLike {
+  start(): void;
+  stop(): void;
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
+  onend: (() => void) | null;
+}
+
+interface SpeechRecognitionEvent {
+  resultIndex: number;
+  results: Array<{ isFinal: boolean; [index: number]: { transcript: string } }>;
+}
+
 interface VoiceCommand {
   command: string;
   action: string;
@@ -95,8 +112,7 @@ const VoiceCommands = memo(function VoiceCommands({
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearFeedbackTimeout = () => {
@@ -147,11 +163,12 @@ const VoiceCommands = memo(function VoiceCommands({
       return;
     }
 
+    const Win = window as unknown as {
+      SpeechRecognition?: new () => SpeechRecognitionLike;
+      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+    };
     const SpeechRecognition =
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).SpeechRecognition ||
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).webkitSpeechRecognition;
+      Win.SpeechRecognition || Win.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
 
     recognition.continuous = false;
@@ -163,8 +180,7 @@ const VoiceCommands = memo(function VoiceCommands({
       setTranscript("");
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       const current = event.resultIndex;
       const result = event.results[current];
       const text = result[0].transcript;
@@ -176,8 +192,7 @@ const VoiceCommands = memo(function VoiceCommands({
       }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event: { error: string }) => {
       if (event.error === "not-allowed") {
         setFeedback("Microphone access denied. Please enable it in settings.");
       }

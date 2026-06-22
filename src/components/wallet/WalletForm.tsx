@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import type { Wallet } from "@/pages/Wallets";
+import type { Wallet } from "@/types/wallet";
 
 const TYPE_OPTIONS = [
   { value: "cash", label: "Cash", labelBn: "নগদ" },

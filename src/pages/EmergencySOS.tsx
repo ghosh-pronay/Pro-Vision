@@ -5,8 +5,6 @@ import {
   AlertTriangle,
   Phone,
   MapPin,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Heart,
   Zap,
   MessageSquare,
   Shield,
@@ -27,8 +25,6 @@ import {
   Baby,
   HandHeart,
   Megaphone,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Share2,
   Copy,
   Check,
   ChevronDown,
@@ -318,10 +314,13 @@ export default function EmergencySOS() {
   }, []);
 
   const copyToClipboard = useCallback((text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopiedText(text);
-      setTimeout(() => setCopiedText(null), 2000);
-    });
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopiedText(text);
+        setTimeout(() => setCopiedText(null), 2000);
+      })
+      .catch(() => {});
   }, []);
 
   const handleSaveContact = () => {
@@ -636,7 +635,6 @@ export default function EmergencySOS() {
 
         {/* Allergies */}
         <MedicalList
-          lang={lang}
           title={lang === "bn" ? "অ্যালার্জি" : "Allergies"}
           icon={<AlertCircle className="h-4 w-4 text-orange-500" />}
           items={medicalInfo.allergies}
@@ -651,7 +649,6 @@ export default function EmergencySOS() {
 
         {/* Medications */}
         <MedicalList
-          lang={lang}
           title={lang === "bn" ? "ওষুধ" : "Medications"}
           icon={<Pill className="h-4 w-4 text-blue-500" />}
           items={medicalInfo.medications}
@@ -666,7 +663,6 @@ export default function EmergencySOS() {
 
         {/* Conditions */}
         <MedicalList
-          lang={lang}
           title={lang === "bn" ? "অবস্থা" : "Conditions"}
           icon={<AlertTriangle className="h-4 w-4 text-yellow-500" />}
           items={medicalInfo.conditions}
@@ -1121,7 +1117,6 @@ export default function EmergencySOS() {
 }
 
 interface MedicalListProps {
-  lang: string;
   title: string;
   icon: React.ReactNode;
   items: string[];
@@ -1133,8 +1128,6 @@ interface MedicalListProps {
 }
 
 function MedicalList({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  lang,
   title,
   icon,
   items,

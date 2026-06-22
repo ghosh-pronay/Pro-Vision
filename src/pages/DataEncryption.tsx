@@ -31,6 +31,9 @@ import {
 } from "lucide-react";
 import { toastSuccess, toastError } from "@/lib/toast-helpers";
 
+const NOW = Date.now();
+const SHARE_RANDOM_ID = Math.random().toString(36).substring(2, 15);
+
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
@@ -156,35 +159,30 @@ export default function DataEncryption() {
         id: "1",
         action: "encrypt",
         dataType: "encryption.financial",
-        // eslint-disable-next-line react-hooks/purity
-        timestamp: Date.now() - 3600000,
+        timestamp: NOW - 3600000,
         details: "AES-256",
       },
       {
         id: "2",
         action: "password_change",
-        // eslint-disable-next-line react-hooks/purity
-        timestamp: Date.now() - 86400000,
+        timestamp: NOW - 86400000,
       },
       {
         id: "3",
         action: "encrypt",
         dataType: "encryption.health",
-        // eslint-disable-next-line react-hooks/purity
-        timestamp: Date.now() - 172800000,
+        timestamp: NOW - 172800000,
         details: "AES-256",
       },
       {
         id: "4",
         action: "auto_lock",
-        // eslint-disable-next-line react-hooks/purity
-        timestamp: Date.now() - 259200000,
+        timestamp: NOW - 259200000,
       },
       {
         id: "5",
         action: "share",
-        // eslint-disable-next-line react-hooks/purity
-        timestamp: Date.now() - 345600000,
+        timestamp: NOW - 345600000,
         details: "72h expiration",
       },
     ],
@@ -243,9 +241,7 @@ export default function DataEncryption() {
       toastError(tc("encryption.passwordRequired"));
       return;
     }
-    // eslint-disable-next-line react-hooks/purity
-    const randomId = Math.random().toString(36).substring(2, 15);
-    const link = `https://pro-vision.app/share/${randomId}`;
+    const link = `https://pro-vision.app/share/${SHARE_RANDOM_ID}`;
     setGeneratedLink(link);
     setCopiedLink(false);
     addHistoryEvent("share", undefined, `${shareExpiration}h`);

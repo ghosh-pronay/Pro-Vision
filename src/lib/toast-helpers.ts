@@ -30,39 +30,14 @@ export function toastInfo(message: string) {
   });
 }
 
-export function toastWarning(message: string) {
-  toast.warning(message, {
-    style: {
-      background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
-      color: "white",
-      border: "none",
-    },
-  });
+export function handleMutationError(
+  error: unknown,
+  fallback = "An error occurred",
+) {
+  const message = error instanceof Error ? error.message : fallback;
+  toastError(message);
 }
 
-export function toastPromise<T>(
-  promise: Promise<T>,
-  messages: {
-    loading: string;
-    success: string | ((data: T) => string);
-    error: string | ((error: unknown) => string);
-  },
-) {
-  return toast.promise(promise, {
-    loading: messages.loading,
-    success: (data) =>
-      typeof messages.success === "function"
-        ? messages.success(data)
-        : messages.success,
-    error: (err) =>
-      typeof messages.error === "function"
-        ? messages.error(err)
-        : messages.error,
-    style: {
-      background: "rgba(255, 255, 255, 0.1)",
-      backdropFilter: "blur(10px)",
-      color: "white",
-      border: "1px solid rgba(255, 255, 255, 0.2)",
-    },
-  });
+export function handleMutationSuccess(message: string) {
+  toastSuccess(message);
 }

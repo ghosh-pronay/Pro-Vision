@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const cache = new Map<string, any>();
+const cache = new Map<string, unknown>();
 const CACHE_TTL = 5 * 60 * 1000;
 const MAX_CACHE_SIZE = 100;
 const timestamps = new Map<string, number>();

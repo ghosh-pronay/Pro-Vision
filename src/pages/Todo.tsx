@@ -4,6 +4,7 @@ import { t, type TranslationKey } from "@/i18n/translations";
 import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import {
   Plus,
   CheckCircle2,
@@ -15,8 +16,12 @@ import {
   List,
   Sparkles,
 } from "lucide-react";
-import { handleMutationError, handleMutationSuccess } from "@/lib/toast";
-import { toastSuccess, toastError } from "@/lib/toast-helpers";
+import {
+  handleMutationError,
+  handleMutationSuccess,
+  toastSuccess,
+  toastError,
+} from "@/lib/toast-helpers";
 import KanbanBoard from "@/components/tasks/KanbanBoard";
 
 const fadeUp = {
@@ -213,8 +218,7 @@ export default function Todo() {
 
   const handleToggle = async (taskId: string) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await toggleTask({ id: taskId as any });
+      await toggleTask({ id: taskId as Id<"tasks"> });
     } catch (error) {
       handleMutationError(
         error,
@@ -225,8 +229,7 @@ export default function Todo() {
 
   const handleRemove = async (taskId: string) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await removeTask({ id: taskId as any });
+      await removeTask({ id: taskId as Id<"tasks"> });
       handleMutationSuccess(
         lang === "bn" ? "টাস্ক মুছে ফেলা হয়েছে" : "Task deleted",
       );
@@ -260,10 +263,8 @@ export default function Todo() {
         id: "todo",
         title: lang === "bn" ? "করণীয়" : "To Do",
         tasks: tasks
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .filter((task: any) => !task.completed)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .map((task: any) => ({
+          .filter((task) => !task.completed)
+          .map((task) => ({
             id: task._id,
             title: task.title,
             description: task.description,
@@ -276,10 +277,8 @@ export default function Todo() {
         id: "done",
         title: lang === "bn" ? "সম্পন্ন" : "Done",
         tasks: tasks
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .filter((task: any) => task.completed)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .map((task: any) => ({
+          .filter((task) => task.completed)
+          .map((task) => ({
             id: task._id,
             title: task.title,
             description: task.description,
@@ -291,8 +290,7 @@ export default function Todo() {
     ];
   }, [filtered, lang]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const doneCount = (allTasks ?? []).filter((t: any) => t.completed).length;
+  const doneCount = (allTasks ?? []).filter((t) => t.completed).length;
   const totalCount = (allTasks ?? []).length;
 
   const FILTER_LABELS: Record<FilterTab, string> = {
@@ -479,8 +477,7 @@ export default function Todo() {
                           ? `"${task.title[lang]}" যোগ হয়েছে!`
                           : `"${task.title[lang]}" added!`,
                       );
-                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    } catch (error) {
+                    } catch (_error) {
                       toastError(
                         lang === "bn"
                           ? "টাস্ক যোগ করতে ব্যর্থ হয়েছে"
@@ -529,8 +526,7 @@ export default function Todo() {
             onTaskMove={async (taskId, fromColumn, toColumn) => {
               if (fromColumn === "todo" && toColumn === "done") {
                 try {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  await toggleTask({ id: taskId as any });
+                  await toggleTask({ id: taskId as Id<"tasks"> });
                 } catch (error) {
                   handleMutationError(
                     error,
@@ -541,8 +537,7 @@ export default function Todo() {
                 }
               } else if (fromColumn === "done" && toColumn === "todo") {
                 try {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  await toggleTask({ id: taskId as any });
+                  await toggleTask({ id: taskId as Id<"tasks"> });
                 } catch (error) {
                   handleMutationError(
                     error,
@@ -576,8 +571,7 @@ export default function Todo() {
             }}
             onTaskDelete={async (taskId) => {
               try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                await removeTask({ id: taskId as any });
+                await removeTask({ id: taskId as Id<"tasks"> });
                 handleMutationSuccess(
                   lang === "bn" ? "টাস্ক মুছে ফেলা হয়েছে" : "Task deleted",
                 );
@@ -602,8 +596,7 @@ export default function Todo() {
               </p>
             </div>
           )}
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          {filtered.map((task: any, i: number) => (
+          {filtered.map((task, i) => (
             <motion.div
               key={task._id}
               custom={i}

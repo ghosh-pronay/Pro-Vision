@@ -57,46 +57,53 @@ export function useAuth() {
     return unsubscribe;
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const signIn = useCallback(async (method: string, credential?: any) => {
-    if (method === "email-otp" && credential instanceof FormData) {
-      const email = credential.get("email") as string;
-      if (!email) throw new Error("Email is required");
-      const actionCodeSettings = {
-        url: window.location.origin,
-        handleCodeInApp: true,
-      };
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-      window.localStorage.setItem("emailForSignIn", email);
-      return;
-    }
-
-    if (method === "email-otp-link") {
-      if (window.localStorage.getItem("emailForSignIn")) {
-        await signInWithEmailLink(
-          auth,
-          window.localStorage.getItem("emailForSignIn")!,
-          window.location.href,
-        );
-        window.localStorage.removeItem("emailForSignIn");
+  const signIn = useCallback(
+    async (method: string, credential?: Record<string, string> | FormData) => {
+      if (method === "email-otp" && credential instanceof FormData) {
+        const email = credential.get("email") as string;
+        if (!email) throw new Error("Email is required");
+        const actionCodeSettings = {
+          url: window.location.origin,
+          handleCodeInApp: true,
+        };
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        window.localStorage.setItem("emailForSignIn", email);
+        return;
       }
-      return;
-    }
 
-    if (method === "anonymous") {
-      return signInAnonymously(auth);
-    }
+      if (method === "email-otp-link") {
+        if (window.localStorage.getItem("emailForSignIn")) {
+          await signInWithEmailLink(
+            auth,
+            window.localStorage.getItem("emailForSignIn")!,
+            window.location.href,
+          );
+          window.localStorage.removeItem("emailForSignIn");
+        }
+        return;
+      }
 
-    if (method === "password" && credential) {
-      return signInWithEmailAndPassword(
-        auth,
-        credential.email,
-        credential.password,
-      );
-    }
+      if (method === "anonymous") {
+        return signInAnonymously(auth);
+      }
 
-    throw new Error(`Unsupported sign-in method: ${method}`);
-  }, []);
+      if (
+        method === "password" &&
+        credential &&
+        "email" in credential &&
+        "password" in credential
+      ) {
+        return signInWithEmailAndPassword(
+          auth,
+          credential.email,
+          credential.password,
+        );
+      }
+
+      throw new Error(`Unsupported sign-in method: ${method}`);
+    },
+    [],
+  );
 
   const signUp = useCallback(async (email: string, password: string) => {
     const credential = await createUserWithEmailAndPassword(

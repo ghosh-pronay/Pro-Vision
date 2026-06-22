@@ -14,8 +14,6 @@ import {
   ExternalLink,
   Edit3,
   Eye,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  EyeOff,
   History,
   X,
   Globe,
@@ -43,6 +41,8 @@ interface QRHistoryItem {
   timestamp: number;
   profileData: ProfileData;
 }
+
+const NOW = Date.now();
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -167,8 +167,7 @@ export default function QRProfile() {
   const [qrHistory, setQrHistory] = useState<QRHistoryItem[]>([
     {
       id: "1",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 3 * 24 * 60 * 60 * 1000,
+      timestamp: NOW - 3 * 24 * 60 * 60 * 1000,
       profileData: {
         ...profile,
         name: "Pronay Ghosh",
@@ -177,8 +176,7 @@ export default function QRProfile() {
     },
     {
       id: "2",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 7 * 24 * 60 * 60 * 1000,
+      timestamp: NOW - 7 * 24 * 60 * 60 * 1000,
       profileData: {
         ...profile,
         name: "Pronay Ghosh",

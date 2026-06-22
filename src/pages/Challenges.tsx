@@ -43,7 +43,6 @@ export default function Challenges() {
   };
 
   const getDaysLeft = (endDate: number) => {
-    // eslint-disable-next-line react-hooks/purity
     const now = Date.now();
     const diff = endDate - now;
     return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));

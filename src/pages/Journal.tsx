@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { type TranslationKey } from "@/i18n/translations";
+
 import { useState, useMemo } from "react";
 import {
   BookOpen,
@@ -9,16 +8,10 @@ import {
   Search,
   Calendar,
   Tag,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Cloud,
   Trash2,
   Edit3,
   X,
   Check,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ChevronLeft,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ChevronRight,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -96,7 +89,6 @@ export default function Journal() {
 
   const filteredEntries = useMemo(() => {
     if (!entries) return [];
-    // eslint-disable-next-line react-hooks/purity
     const now = Date.now();
     const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
     const monthAgo = now - 30 * 24 * 60 * 60 * 1000;

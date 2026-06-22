@@ -18,21 +18,17 @@ import {
   ChevronDown,
   ChevronUp,
   FileText,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  CreditCard,
   ShoppingBag,
   Utensils,
   Bus,
   Clapperboard,
   Tag,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Edit3,
   Check,
   AlertCircle,
   TrendingDown,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  TrendingUp,
 } from "lucide-react";
+const NOW = Date.now();
+
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { formatBanglaCurrency } from "@/lib/bangla-numbers";
@@ -120,8 +116,7 @@ export default function BillSplit() {
       ],
       category: "food",
       currency: "BDT",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 86400000,
+      date: NOW - 86400000,
       status: "partial",
       createdBy: "Rahim",
       paidAmount: 800,
@@ -139,8 +134,7 @@ export default function BillSplit() {
       ],
       category: "entertainment",
       currency: "BDT",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 172800000,
+      date: NOW - 172800000,
       status: "settled",
       createdBy: "Karim",
       paidAmount: 1500,
@@ -156,8 +150,7 @@ export default function BillSplit() {
       ],
       category: "transport",
       currency: "BDT",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 259200000,
+      date: NOW - 259200000,
       status: "pending",
       createdBy: "Rahim",
       paidAmount: 200,
@@ -326,23 +319,6 @@ export default function BillSplit() {
       0,
     );
     return { totalBills, totalAmount, unsettled, totalOwed };
-  }, [bills]);
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const balances = useMemo(() => {
-    const balanceMap: Record<string, number> = {};
-    bills
-      .filter((b) => b.status !== "settled")
-      .forEach((bill) => {
-        bill.participants.forEach((p) => {
-          if (!p.paid) {
-            balanceMap[p.name] = (balanceMap[p.name] || 0) + p.amount;
-          }
-        });
-      });
-    return Object.entries(balanceMap)
-      .map(([name, amount]) => ({ name, amount }))
-      .sort((a, b) => b.amount - a.amount);
   }, [bills]);
 
   const netBalances = useMemo(() => {
@@ -568,9 +544,12 @@ export default function BillSplit() {
 
   const copyShareLink = (billId: string) => {
     const link = `${window.location.origin}/bill/${billId}`;
-    navigator.clipboard.writeText(link).then(() => {
-      toastSuccess(t("billSplit.linkCopied"));
-    });
+    navigator.clipboard
+      .writeText(link)
+      .then(() => {
+        toastSuccess(t("billSplit.linkCopied"));
+      })
+      .catch(() => {});
   };
 
   const formatDate = (timestamp: number) => {

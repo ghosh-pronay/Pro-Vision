@@ -14,9 +14,8 @@ import {
   Clock,
   TrendingUp,
   Users,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ChevronRight,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface DailyChallenge {
   id: string;
@@ -27,8 +26,7 @@ interface DailyChallenge {
   goal: number;
   completed: boolean;
   claimed: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: any;
+  icon: LucideIcon;
 }
 
 interface LeaderboardEntry {
@@ -43,8 +41,7 @@ interface Badge {
   id: string;
   name: string;
   description: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: any;
+  icon: LucideIcon;
   color: string;
   unlocked: boolean;
   progress?: number;

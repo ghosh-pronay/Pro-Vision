@@ -16,8 +16,6 @@ import {
   Zap,
   TrendingUp,
   Bell,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Heart,
   Handshake,
 } from "lucide-react";
 
@@ -68,6 +66,14 @@ interface ActivityFeed {
   icon: string;
 }
 
+const NOW = Date.now();
+
+const weeklyGrowthValues: Record<string, number> = {
+  "1": 9,
+  "2": 17,
+  "3": 12,
+};
+
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
@@ -79,9 +85,6 @@ export default function AccountabilityPartner() {
     "partners" | "requests" | "shared" | "messages" | "feed"
   >("partners");
   const [showInviteModal, setShowInviteModal] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteMessage, setInviteMessage] = useState("");
@@ -98,8 +101,7 @@ export default function AccountabilityPartner() {
       ],
       streak: 14,
       completionRate: 87,
-      // eslint-disable-next-line react-hooks/purity
-      lastActive: Date.now() - 30 * 60 * 1000,
+      lastActive: NOW - 30 * 60 * 1000,
       xp: 2450,
     },
     {
@@ -113,8 +115,7 @@ export default function AccountabilityPartner() {
       ],
       streak: 7,
       completionRate: 72,
-      // eslint-disable-next-line react-hooks/purity
-      lastActive: Date.now() - 2 * 60 * 60 * 1000,
+      lastActive: NOW - 2 * 60 * 60 * 1000,
       xp: 1820,
     },
     {
@@ -128,8 +129,7 @@ export default function AccountabilityPartner() {
       ],
       streak: 21,
       completionRate: 92,
-      // eslint-disable-next-line react-hooks/purity
-      lastActive: Date.now() - 45 * 60 * 1000,
+      lastActive: NOW - 45 * 60 * 1000,
       xp: 3100,
     },
   ]);
@@ -144,8 +144,7 @@ export default function AccountabilityPartner() {
           ? "আমি আপনার সাথে অ্যাকাউন্টেবিলিটি পার্টনার হতে চাই!"
           : "I'd love to be your accountability partner!",
       mutualFriends: 3,
-      // eslint-disable-next-line react-hooks/purity
-      createdAt: Date.now() - 1 * 24 * 60 * 60 * 1000,
+      createdAt: NOW - 1 * 24 * 60 * 60 * 1000,
     },
     {
       _id: "2",
@@ -156,12 +155,10 @@ export default function AccountabilityPartner() {
           ? "আমরা একসাথে লক্ষ্য অর্জন করতে পারি"
           : "We can achieve goals together",
       mutualFriends: 5,
-      // eslint-disable-next-line react-hooks/purity
-      createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      createdAt: NOW - 2 * 24 * 60 * 60 * 1000,
     },
   ]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [sharedChallenges, setSharedChallenges] = useState<SharedChallenge[]>([
     {
       _id: "1",
@@ -173,8 +170,7 @@ export default function AccountabilityPartner() {
       unit: lang === "bn" ? "দিন" : "days",
       partnerProgress: 18,
       myProgress: 15,
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 15 * 24 * 60 * 60 * 1000,
+      endDate: NOW + 15 * 24 * 60 * 60 * 1000,
     },
     {
       _id: "2",
@@ -183,8 +179,7 @@ export default function AccountabilityPartner() {
       unit: lang === "bn" ? "বই" : "books",
       partnerProgress: 8,
       myProgress: 6,
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 30 * 24 * 60 * 60 * 1000,
+      endDate: NOW + 30 * 24 * 60 * 60 * 1000,
     },
   ]);
 
@@ -194,16 +189,14 @@ export default function AccountabilityPartner() {
       fromMe: true,
       content:
         lang === "bn" ? "আজ তুমি খুব ভালো করেছ!" : "You did amazing today!",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 60 * 60 * 1000,
+      timestamp: NOW - 60 * 60 * 1000,
       type: "celebrate",
     },
     {
       _id: "2",
       fromMe: false,
       content: lang === "bn" ? "ধন্যবাদ! তুমিও খুব ভালো!" : "Thanks! You too!",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 55 * 60 * 1000,
+      timestamp: NOW - 55 * 60 * 1000,
       type: "message",
     },
     {
@@ -211,13 +204,11 @@ export default function AccountabilityPartner() {
       fromMe: true,
       content:
         lang === "bn" ? "আজ যোগব্যায়াম করেছ?" : "Did you work out today?",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 30 * 60 * 1000,
+      timestamp: NOW - 30 * 60 * 1000,
       type: "nudge",
     },
   ]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activityFeed, setActivityFeed] = useState<ActivityFeed[]>([
     {
       _id: "1",
@@ -227,8 +218,7 @@ export default function AccountabilityPartner() {
           ? "সকালের রুটিন সম্পন্ন করেছে"
           : "Completed morning routine",
       details: lang === "bn" ? "৫টি অভ্যাস সম্পন্ন" : "5 habits completed",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 1 * 60 * 60 * 1000,
+      timestamp: NOW - 1 * 60 * 60 * 1000,
       icon: "check",
     },
     {
@@ -237,8 +227,7 @@ export default function AccountabilityPartner() {
       action:
         lang === "bn" ? "৭ দিনের স্ট্রিক অর্জন করেছে" : "Achieved 7-day streak",
       details: lang === "bn" ? "ধারাবাহিকতা বজায় রেখেছে" : "Stayed consistent",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 3 * 60 * 60 * 1000,
+      timestamp: NOW - 3 * 60 * 60 * 1000,
       icon: "streak",
     },
     {
@@ -247,8 +236,7 @@ export default function AccountabilityPartner() {
       action: lang === "bn" ? "নতুন লক্ষ্য সেট করেছে" : "Set a new goal",
       details:
         lang === "bn" ? "১০০টি পুশআপ চ্যালেঞ্জ" : "100 push-ups challenge",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 5 * 60 * 60 * 1000,
+      timestamp: NOW - 5 * 60 * 60 * 1000,
       icon: "target",
     },
     {
@@ -256,8 +244,7 @@ export default function AccountabilityPartner() {
       partnerName: "Anika Rahman",
       action: lang === "bn" ? "ব্যাজ অর্জন করেছে" : "Earned a badge",
       details: lang === "bn" ? "ফিটনেস মাস্টার" : "Fitness Master",
-      // eslint-disable-next-line react-hooks/purity
-      timestamp: Date.now() - 8 * 60 * 60 * 1000,
+      timestamp: NOW - 8 * 60 * 60 * 1000,
       icon: "trophy",
     },
   ]);
@@ -266,8 +253,7 @@ export default function AccountabilityPartner() {
     return partners.map((p) => ({
       ...p,
       level: Math.floor(p.xp / 500) + 1,
-      // eslint-disable-next-line react-hooks/purity
-      weeklyGrowth: Math.floor(Math.random() * 15) + 5,
+      weeklyGrowth: weeklyGrowthValues[p._id] ?? 10,
     }));
   }, [partners]);
 
@@ -281,7 +267,6 @@ export default function AccountabilityPartner() {
         sharedHabits: [],
         streak: 0,
         completionRate: 0,
-        // eslint-disable-next-line react-hooks/purity
         lastActive: Date.now(),
         xp: 0,
       };
@@ -311,14 +296,12 @@ export default function AccountabilityPartner() {
     const partner = partners.find((p) => p._id === partnerId);
     if (partner) {
       const newMessage: Message = {
-        // eslint-disable-next-line react-hooks/purity
         _id: Date.now().toString(),
         fromMe: true,
         content:
           lang === "bn"
             ? `${partner.name}, আজ তোমার অভ্যাসগুলো মনে করো!`
             : `${partner.name}, remember your habits today!`,
-        // eslint-disable-next-line react-hooks/purity
         timestamp: Date.now(),
         type: "nudge",
       };
@@ -334,7 +317,6 @@ export default function AccountabilityPartner() {
   };
 
   const getTimeAgo = (timestamp: number) => {
-    // eslint-disable-next-line react-hooks/purity
     const diff = Date.now() - timestamp;
     const minutes = Math.floor(diff / (1000 * 60));
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -611,10 +593,7 @@ export default function AccountabilityPartner() {
               sharedChallenges.map((challenge) => {
                 const daysLeft = Math.max(
                   0,
-                  Math.ceil(
-                    // eslint-disable-next-line react-hooks/purity
-                    (challenge.endDate - Date.now()) / (1000 * 60 * 60 * 24),
-                  ),
+                  Math.ceil((challenge.endDate - NOW) / (1000 * 60 * 60 * 24)),
                 );
                 const myPercent = Math.min(
                   100,

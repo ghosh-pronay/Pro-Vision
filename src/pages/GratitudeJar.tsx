@@ -24,6 +24,8 @@ interface GratitudeEntry {
   date: number;
 }
 
+const NOW = Date.now();
+
 const MOODS = [
   { value: "happy", icon: Smile, color: "text-yellow-500", label: "Happy" },
   { value: "neutral", icon: Meh, color: "text-gray-500", label: "Neutral" },
@@ -44,23 +46,20 @@ export default function GratitudeJar() {
       content:
         lang === "bn" ? "আজ সূর্যোদয় দেখেছি" : "Saw a beautiful sunrise today",
       mood: "happy",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 1 * 24 * 60 * 60 * 1000,
+      date: NOW - 1 * 24 * 60 * 60 * 1000,
     },
     {
       _id: "2",
       content:
         lang === "bn" ? "পরিবারের সাথে রাতের খাবার" : "Had dinner with family",
       mood: "happy",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      date: NOW - 2 * 24 * 60 * 60 * 1000,
     },
     {
       _id: "3",
       content: lang === "bn" ? "একটি ভালো বই পড়েছি" : "Read a good book",
       mood: "neutral",
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 3 * 24 * 60 * 60 * 1000,
+      date: NOW - 3 * 24 * 60 * 60 * 1000,
     },
   ]);
 

@@ -2,8 +2,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
 import { useState, useMemo, useCallback } from "react";
 import {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Calendar,
   ChevronLeft,
   ChevronRight,
   Star,
@@ -13,10 +11,6 @@ import {
   Info,
   Sparkles,
   PartyPopper,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Sun,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Moon,
 } from "lucide-react";
 
 const BENGALI_MONTHS = [
@@ -243,12 +237,6 @@ function getNextFestival(
   }
   return null;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
 
 const container = {
   hidden: {},

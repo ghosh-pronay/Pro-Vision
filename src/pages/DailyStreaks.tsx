@@ -8,8 +8,6 @@ import {
   Gift,
   Snowflake,
   Users,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Clock,
   Star,
   Award,
   Crown,
@@ -27,18 +25,14 @@ import {
   TrendingUp,
   Zap,
   Target,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Heart,
   ShoppingBag,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Bookmark,
   Palette,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  BadgeCheck,
   UserCircle,
   Diamond,
   Settings,
 } from "lucide-react";
+
+import type { LucideIcon } from "lucide-react";
 
 interface StreakDay {
   date: string;
@@ -51,8 +45,7 @@ interface Reward {
   name: string;
   description: string;
   cost: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: any;
+  icon: LucideIcon;
   category: string;
   unlocked: boolean;
 }
@@ -88,12 +81,6 @@ const fadeUp = {
 
 const stagger = {
   visible: { transition: { staggerChildren: 0.06 } },
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
 };
 
 const STREAK_LEVELS = [
@@ -321,10 +308,8 @@ const DEFAULT_REWARDS: Reward[] = [
 export default function DailyStreaks() {
   const { lang } = useLang();
   const [currentStreak, setCurrentStreak] = useState(12);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [longestStreak, setLongestStreak] = useState(28);
   const [points, setPoints] = useState(480);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [level, setLevel] = useState("silver");
   const [freezeTokens, setFreezeTokens] = useState(3);
   const [rewards, setRewards] = useState<Reward[]>(DEFAULT_REWARDS);

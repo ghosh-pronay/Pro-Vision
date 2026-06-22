@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Calculator, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { t, type TranslationKey } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 
 interface FloatingCalculatorProps {
   onResult: (value: string) => void;

@@ -160,11 +160,7 @@ export default function Wellbeing() {
   const [showMeditation, setShowMeditation] = useState(false);
   const [showHealthTracker, setShowHealthTracker] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const moods = useQuery(api.moods.list);
   const moodStats = useQuery(api.moods.stats);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const sleepLogs = useQuery(api.sleepLogs.list);
   const sleepStats = useQuery(api.sleepLogs.stats);
   const gratitudeEntries = useQuery(api.gratitudeEntries.list);
   const gratitudeStats = useQuery(api.gratitudeEntries.stats);
@@ -650,8 +646,7 @@ export default function Wellbeing() {
 
         {gratitudeEntries && gratitudeEntries.length > 0 && (
           <div className="space-y-2">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {gratitudeEntries.slice(0, 5).map((entry: any) => (
+            {gratitudeEntries.slice(0, 5).map((entry) => (
               <motion.div
                 key={entry._id}
                 initial={{ opacity: 0, y: 8 }}
@@ -860,8 +855,7 @@ export default function Wellbeing() {
 
         {exerciseLogs && exerciseLogs.length > 0 && (
           <div className="space-y-2">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {exerciseLogs.slice(0, 5).map((log: any) => {
+            {exerciseLogs.slice(0, 5).map((log) => {
               const et = EXERCISE_TYPES.find((e) => e.type === log.type);
               return (
                 <motion.div
@@ -963,15 +957,12 @@ export default function Wellbeing() {
           <HealthTracker
             waterGoal={2500}
             waterIntakes={(exerciseLogs ?? [])
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              .filter((log: any) => log.type === "Water")
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              .map((log: any) => ({
+              .filter((log) => log.type === "Water")
+              .map((log) => ({
                 amount: log.duration,
                 timestamp: log.createdAt,
               }))}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            exercises={(exerciseLogs ?? []).map((log: any) => ({
+            exercises={(exerciseLogs ?? []).map((log) => ({
               id: log._id,
               type: log.type?.toLowerCase() ?? "other",
               duration: log.duration,

@@ -8,22 +8,6 @@ import {
   Smile,
   Droplets,
   Plus,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  TrendingUp,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  TrendingDown,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Minus,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Flame,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Clock,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Bed,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Zap,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Sun,
   Calendar,
   Award,
   Activity,
@@ -70,14 +54,6 @@ interface ActivityItem {
   bgColor: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const QUALITY_CONFIG = {
-  great: { color: "text-green-500", bg: "bg-green-500/10" },
-  good: { color: "text-blue-500", bg: "bg-blue-500/10" },
-  okay: { color: "text-yellow-500", bg: "bg-yellow-500/10" },
-  bad: { color: "text-red-500", bg: "bg-red-500/10" },
-};
-
 const MOOD_LABELS: Record<number, { emoji: string; label: string }> = {
   1: { emoji: "😔", label: "Terrible" },
   2: { emoji: "😐", label: "Bad" },
@@ -99,111 +75,92 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
+const INITIAL_SLEEP_LOGS: SleepLog[] = [
+  { _id: "1", hours: 7.5, quality: "good", date: Date.now() - 0 * 86400000 },
+  { _id: "2", hours: 6, quality: "okay", date: Date.now() - 1 * 86400000 },
+  { _id: "3", hours: 8, quality: "great", date: Date.now() - 2 * 86400000 },
+  { _id: "4", hours: 7, quality: "good", date: Date.now() - 3 * 86400000 },
+  { _id: "5", hours: 5.5, quality: "bad", date: Date.now() - 4 * 86400000 },
+  { _id: "6", hours: 8.5, quality: "great", date: Date.now() - 5 * 86400000 },
+  { _id: "7", hours: 7, quality: "good", date: Date.now() - 6 * 86400000 },
+];
+
+const INITIAL_EXERCISE_LOGS: ExerciseLog[] = [
+  {
+    _id: "1",
+    type: "running",
+    duration: 30,
+    calories: 300,
+    date: Date.now() - 0 * 86400000,
+  },
+  {
+    _id: "2",
+    type: "gym",
+    duration: 45,
+    calories: 400,
+    date: Date.now() - 1 * 86400000,
+  },
+  {
+    _id: "3",
+    type: "yoga",
+    duration: 60,
+    calories: 200,
+    date: Date.now() - 2 * 86400000,
+  },
+  {
+    _id: "4",
+    type: "cycling",
+    duration: 40,
+    calories: 350,
+    date: Date.now() - 3 * 86400000,
+  },
+  {
+    _id: "5",
+    type: "running",
+    duration: 25,
+    calories: 250,
+    date: Date.now() - 5 * 86400000,
+  },
+  {
+    _id: "6",
+    type: "gym",
+    duration: 50,
+    calories: 450,
+    date: Date.now() - 6 * 86400000,
+  },
+];
+
+const INITIAL_MOOD_LOGS: MoodLog[] = [
+  { _id: "1", score: 4, label: "Good", date: Date.now() - 0 * 86400000 },
+  { _id: "2", score: 3, label: "Okay", date: Date.now() - 1 * 86400000 },
+  { _id: "3", score: 5, label: "Great", date: Date.now() - 2 * 86400000 },
+  { _id: "4", score: 4, label: "Good", date: Date.now() - 3 * 86400000 },
+  { _id: "5", score: 2, label: "Bad", date: Date.now() - 4 * 86400000 },
+  { _id: "6", score: 5, label: "Great", date: Date.now() - 5 * 86400000 },
+  { _id: "7", score: 4, label: "Good", date: Date.now() - 6 * 86400000 },
+];
+
+const INITIAL_WATER_LOGS: WaterLog[] = [
+  { _id: "1", glasses: 8, date: Date.now() - 0 * 86400000 },
+  { _id: "2", glasses: 6, date: Date.now() - 1 * 86400000 },
+  { _id: "3", glasses: 10, date: Date.now() - 2 * 86400000 },
+  { _id: "4", glasses: 7, date: Date.now() - 3 * 86400000 },
+  { _id: "5", glasses: 5, date: Date.now() - 4 * 86400000 },
+  { _id: "6", glasses: 9, date: Date.now() - 5 * 86400000 },
+  { _id: "7", glasses: 8, date: Date.now() - 6 * 86400000 },
+];
+
 export default function HealthDashboard() {
   const { lang } = useLang();
   const [quickLogType, setQuickLogType] = useState<string | null>(null);
 
-  const sleepLogs = useState<SleepLog[]>([
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "1", hours: 7.5, quality: "good", date: Date.now() - 0 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "2", hours: 6, quality: "okay", date: Date.now() - 1 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "3", hours: 8, quality: "great", date: Date.now() - 2 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "4", hours: 7, quality: "good", date: Date.now() - 3 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "5", hours: 5.5, quality: "bad", date: Date.now() - 4 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "6", hours: 8.5, quality: "great", date: Date.now() - 5 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "7", hours: 7, quality: "good", date: Date.now() - 6 * 86400000 },
-  ])[0];
+  const [sleepLogs] = useState<SleepLog[]>(INITIAL_SLEEP_LOGS);
 
-  const exerciseLogs = useState<ExerciseLog[]>([
-    {
-      _id: "1",
-      type: "running",
-      duration: 30,
-      calories: 300,
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 0 * 86400000,
-    },
-    {
-      _id: "2",
-      type: "gym",
-      duration: 45,
-      calories: 400,
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 1 * 86400000,
-    },
-    {
-      _id: "3",
-      type: "yoga",
-      duration: 60,
-      calories: 200,
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 2 * 86400000,
-    },
-    {
-      _id: "4",
-      type: "cycling",
-      duration: 40,
-      calories: 350,
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 3 * 86400000,
-    },
-    {
-      _id: "5",
-      type: "running",
-      duration: 25,
-      calories: 250,
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 5 * 86400000,
-    },
-    {
-      _id: "6",
-      type: "gym",
-      duration: 50,
-      calories: 450,
-      // eslint-disable-next-line react-hooks/purity
-      date: Date.now() - 6 * 86400000,
-    },
-  ])[0];
+  const [exerciseLogs] = useState<ExerciseLog[]>(INITIAL_EXERCISE_LOGS);
 
-  const moodLogs = useState<MoodLog[]>([
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "1", score: 4, label: "Good", date: Date.now() - 0 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "2", score: 3, label: "Okay", date: Date.now() - 1 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "3", score: 5, label: "Great", date: Date.now() - 2 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "4", score: 4, label: "Good", date: Date.now() - 3 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "5", score: 2, label: "Bad", date: Date.now() - 4 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "6", score: 5, label: "Great", date: Date.now() - 5 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "7", score: 4, label: "Good", date: Date.now() - 6 * 86400000 },
-  ])[0];
+  const [moodLogs] = useState<MoodLog[]>(INITIAL_MOOD_LOGS);
 
-  const waterLogs = useState<WaterLog[]>([
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "1", glasses: 8, date: Date.now() - 0 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "2", glasses: 6, date: Date.now() - 1 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "3", glasses: 10, date: Date.now() - 2 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "4", glasses: 7, date: Date.now() - 3 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "5", glasses: 5, date: Date.now() - 4 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "6", glasses: 9, date: Date.now() - 5 * 86400000 },
-    // eslint-disable-next-line react-hooks/purity
-    { _id: "7", glasses: 8, date: Date.now() - 6 * 86400000 },
-  ])[0];
+  const [waterLogs] = useState<WaterLog[]>(INITIAL_WATER_LOGS);
 
   const weeklyData = useMemo(() => {
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -327,13 +284,6 @@ export default function HealthDashboard() {
 
     return activities;
   }, [sleepLogs, exerciseLogs, moodLogs, waterLogs, lang]);
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const maxSleep = Math.max(...weeklyData.map((d) => d.sleep));
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const maxWater = Math.max(...weeklyData.map((d) => d.water));
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const maxMood = Math.max(...weeklyData.map((d) => d.mood));
 
   return (
     <motion.div

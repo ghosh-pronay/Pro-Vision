@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { t, type TranslationKey } from "@/i18n/translations";
-import { useState, useCallback, useEffect } from "react";
+import { t } from "@/i18n/translations";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Globe, RefreshCw, ExternalLink, Search, Clock } from "lucide-react";
 
 const fadeUp = {
@@ -27,8 +26,10 @@ export default function News() {
   const [loading, setLoading] = useState(false);
   const [source, setSource] = useState<string>("");
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  const fetchNews = async (_opts?: any) => ({ articles: [], source: "demo" });
+  const fetchNews = async (_opts?: Record<string, unknown>) => ({
+    articles: [],
+    source: "demo",
+  });
 
   const categories =
     lang === "bn"
@@ -48,6 +49,9 @@ export default function News() {
     Science: "science",
     বিজ্ঞান: "science",
   };
+
+  const loadNewsRef =
+    useRef<(query?: string, cat?: string) => Promise<void>>(undefined);
 
   const loadNews = useCallback(
     async (query?: string, cat?: string) => {
@@ -70,11 +74,11 @@ export default function News() {
     [fetchNews, lang],
   );
 
-  // Load news on mount
+  loadNewsRef.current = loadNews;
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadNews();
-  }, [loadNews]);
+    void loadNewsRef.current?.();
+  }, []);
 
   const handleSearch = () => {
     loadNews(search || undefined, category);
@@ -97,7 +101,6 @@ export default function News() {
   });
 
   const timeAgo = (dateStr: string) => {
-    // eslint-disable-next-line react-hooks/purity
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
     if (mins < 60) return `${mins}m ago`;

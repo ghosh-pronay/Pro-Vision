@@ -63,12 +63,6 @@ interface Badge {
   maxProgress?: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface CheckIn {
-  date: number;
-  completed: boolean;
-}
-
 const CHALLENGE_TYPES = [
   {
     id: "savings",
@@ -229,6 +223,9 @@ const BADGES: Badge[] = [
   },
 ];
 
+const NOW = Date.now();
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
@@ -264,10 +261,8 @@ export default function SocialChallenges() {
       goal: 3,
       unit: "liters",
       duration: 30,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now() - 12 * 24 * 60 * 60 * 1000,
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 18 * 24 * 60 * 60 * 1000,
+      startDate: NOW - 12 * DAY_MS,
+      endDate: NOW + 18 * DAY_MS,
       progress: 40,
       streak: 12,
       joinedUsers: 24,
@@ -284,10 +279,8 @@ export default function SocialChallenges() {
       goal: 10000,
       unit: "steps",
       duration: 14,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now() - 5 * 24 * 60 * 60 * 1000,
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 9 * 24 * 60 * 60 * 1000,
+      startDate: NOW - 5 * DAY_MS,
+      endDate: NOW + 9 * DAY_MS,
       progress: 36,
       streak: 5,
       joinedUsers: 18,
@@ -306,10 +299,8 @@ export default function SocialChallenges() {
       goal: 3,
       unit: "items",
       duration: 7,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now() - 3 * 24 * 60 * 60 * 1000,
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 4 * 24 * 60 * 60 * 1000,
+      startDate: NOW - 3 * DAY_MS,
+      endDate: NOW + 4 * DAY_MS,
       progress: 43,
       streak: 3,
       joinedUsers: 42,
@@ -329,10 +320,8 @@ export default function SocialChallenges() {
       goal: 100,
       unit: "BDT",
       duration: 30,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now(),
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 30 * 24 * 60 * 60 * 1000,
+      startDate: NOW,
+      endDate: NOW + 30 * DAY_MS,
       progress: 0,
       streak: 0,
       joinedUsers: 156,
@@ -349,10 +338,8 @@ export default function SocialChallenges() {
       goal: 20,
       unit: "pages",
       duration: 14,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now(),
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 14 * 24 * 60 * 60 * 1000,
+      startDate: NOW,
+      endDate: NOW + 14 * DAY_MS,
       progress: 0,
       streak: 0,
       joinedUsers: 89,
@@ -369,10 +356,8 @@ export default function SocialChallenges() {
       goal: 7,
       unit: "days",
       duration: 7,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now(),
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 7 * 24 * 60 * 60 * 1000,
+      startDate: NOW,
+      endDate: NOW + 7 * DAY_MS,
       progress: 0,
       streak: 0,
       joinedUsers: 67,
@@ -391,10 +376,8 @@ export default function SocialChallenges() {
       goal: 2,
       unit: "hours",
       duration: 14,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now(),
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 14 * 24 * 60 * 60 * 1000,
+      startDate: NOW,
+      endDate: NOW + 14 * DAY_MS,
       progress: 0,
       streak: 0,
       joinedUsers: 45,
@@ -413,10 +396,8 @@ export default function SocialChallenges() {
       goal: 1,
       unit: "acts",
       duration: 30,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now(),
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + 30 * 24 * 60 * 60 * 1000,
+      startDate: NOW,
+      endDate: NOW + 30 * DAY_MS,
       progress: 0,
       streak: 0,
       joinedUsers: 203,
@@ -426,7 +407,6 @@ export default function SocialChallenges() {
     },
   ]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([
     {
       rank: 1,
@@ -502,10 +482,8 @@ export default function SocialChallenges() {
     },
   ]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [badges, setBadges] = useState<Badge[]>(BADGES);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [history, setHistory] = useState<Challenge[]>([
     {
       _id: "h1",
@@ -516,10 +494,8 @@ export default function SocialChallenges() {
       goal: 5000,
       unit: "steps",
       duration: 7,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now() - 21 * 24 * 60 * 60 * 1000,
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() - 14 * 24 * 60 * 60 * 1000,
+      startDate: NOW - 21 * DAY_MS,
+      endDate: NOW - 14 * DAY_MS,
       progress: 100,
       streak: 7,
       joinedUsers: 34,
@@ -538,10 +514,8 @@ export default function SocialChallenges() {
       goal: 3,
       unit: "items",
       duration: 14,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now() - 30 * 24 * 60 * 60 * 1000,
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() - 16 * 24 * 60 * 60 * 1000,
+      startDate: NOW - 30 * DAY_MS,
+      endDate: NOW - 16 * DAY_MS,
       progress: 100,
       streak: 14,
       joinedUsers: 56,
@@ -560,10 +534,8 @@ export default function SocialChallenges() {
       goal: 2,
       unit: "liters",
       duration: 30,
-      // eslint-disable-next-line react-hooks/purity
-      startDate: Date.now() - 60 * 24 * 60 * 60 * 1000,
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() - 30 * 24 * 60 * 60 * 1000,
+      startDate: NOW - 60 * DAY_MS,
+      endDate: NOW - 30 * DAY_MS,
       progress: 100,
       streak: 30,
       joinedUsers: 78,
@@ -624,10 +596,8 @@ export default function SocialChallenges() {
 
     const joined: Challenge = {
       ...challenge,
-      // eslint-disable-next-line react-hooks/purity
       startDate: Date.now(),
-      // eslint-disable-next-line react-hooks/purity
-      endDate: Date.now() + challenge.duration * 24 * 60 * 60 * 1000,
+      endDate: Date.now() + challenge.duration * DAY_MS,
       progress: 0,
       streak: 0,
       dailyLogs: [],
@@ -642,8 +612,6 @@ export default function SocialChallenges() {
   };
 
   const handleCheckIn = (challengeId: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const value = parseFloat(checkInValue) || 1;
     setActiveChallenges((prev) =>
       prev.map((c) => {
         if (c._id === challengeId) {
@@ -668,8 +636,6 @@ export default function SocialChallenges() {
   const handleCreateChallenge = () => {
     if (!customChallenge.name || !customChallenge.goal) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const typeInfo = getChallengeTypeInfo(customChallenge.type);
     const newChallenge: Challenge = {
       _id: Date.now().toString(),
       type: customChallenge.type,
@@ -725,9 +691,8 @@ export default function SocialChallenges() {
   };
 
   const getDaysLeft = (endDate: number) => {
-    // eslint-disable-next-line react-hooks/purity
     const diff = endDate - Date.now();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    return Math.max(0, Math.ceil(diff / DAY_MS));
   };
 
   const tabs = [

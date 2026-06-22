@@ -3,8 +3,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
