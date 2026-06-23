@@ -78,8 +78,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     const interval = setInterval(async () => {
       try {
         await reloadUser();
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error("[Auth]", "operation failed", e);
       }
     }, 3000);
     return () => clearInterval(interval);
@@ -104,34 +104,40 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
         await signUp(email, password);
         setMode("verify");
       }
-    } catch (err) {
-      console.error("Auth error:", err);
+    } catch (error) {
+      console.error(
+        "[Auth]",
+        error instanceof Error ? error.message : "Unknown error",
+      );
       let message = "Authentication failed. Please try again.";
-      if (err instanceof Error) {
-        if (err.message.includes("auth/user-not-found")) {
+      if (error instanceof Error) {
+        if (error.message.includes("auth/user-not-found")) {
           message =
             lang === "bn"
               ? "ব্যবহারকারী পাওয়া যায়নি। অনুগ্রহ করে সাইন আপ করুন।"
               : "User not found. Please sign up.";
-        } else if (err.message.includes("auth/wrong-password")) {
+        } else if (error.message.includes("auth/wrong-password")) {
           message =
             lang === "bn"
               ? "ভুল পাসওয়ার্ড। আবার চেষ্টা করুন।"
               : "Wrong password. Please try again.";
-        } else if (err.message.includes("auth/email-already-in-use")) {
+        } else if (error.message.includes("auth/email-already-in-use")) {
           message =
             lang === "bn"
               ? "এই ইমেইল ইতিমধ্যে ব্যবহৃত হচ্ছে। সাইন ইন করুন।"
               : "Email already in use. Please sign in.";
-        } else if (err.message.includes("auth/weak-password")) {
+        } else if (error.message.includes("auth/weak-password")) {
           message =
             lang === "bn"
               ? "পাসওয়ার্ড কমজোর। কমপক্ষে ৬ অক্ষর দরকার।"
               : "Weak password. At least 6 characters required.";
-        } else if (err.message.includes("auth/invalid-email")) {
+        } else if (error.message.includes("auth/invalid-email")) {
           message = lang === "bn" ? "অবৈধ ইমেইল।" : "Invalid email address.";
         } else {
-          message = err.message;
+          message =
+            lang === "bn"
+              ? "প্রবেশ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
+              : "Authentication failed. Please try again.";
         }
       }
       setError(message);
@@ -146,8 +152,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       await signIn("anonymous");
       const redirect = redirectAfterAuth || "/dashboard";
       navigate(redirect);
-    } catch (err) {
-      console.error("Guest login error:", err);
+    } catch (error) {
+      console.error(
+        "[Auth]",
+        error instanceof Error ? error.message : "Guest login failed",
+      );
       setError(
         lang === "bn"
           ? "অতিথি হিসাবে প্রবেশ করতে ব্যর্থ।"
@@ -164,8 +173,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     try {
       await sendVerificationEmail();
       setResendCooldown(60);
-    } catch (err) {
-      console.error("Resend error:", err);
+    } catch (error) {
+      console.error(
+        "[Auth]",
+        error instanceof Error ? error.message : "Resend failed",
+      );
       setError(
         lang === "bn"
           ? "ইমেইল পুনরায় পাঠাতে ব্যর্থ।"

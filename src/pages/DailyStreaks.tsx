@@ -6,311 +6,40 @@ import {
   Calendar,
   Trophy,
   Gift,
-  Snowflake,
   Users,
   Star,
-  Award,
-  Crown,
-  Shield,
-  Gem,
-  Medal,
-  ChevronLeft,
-  ChevronRight,
   Check,
-  Lock,
   PartyPopper,
   History,
-  Bell,
-  Sparkles,
-  TrendingUp,
-  Zap,
-  Target,
-  ShoppingBag,
-  Palette,
-  UserCircle,
-  Diamond,
   Settings,
+  Sparkles,
 } from "lucide-react";
-
-import type { LucideIcon } from "lucide-react";
-
-interface StreakDay {
-  date: string;
-  completed: boolean;
-  pointsEarned: number;
-}
-
-interface Reward {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  icon: LucideIcon;
-  category: string;
-  unlocked: boolean;
-}
-
-interface LeaderboardEntry {
-  rank: number;
-  name: string;
-  streak: number;
-  level: string;
-  isCurrentUser: boolean;
-}
-
-interface StreakHistory {
-  id: string;
-  startDate: string;
-  endDate: string;
-  days: number;
-  level: string;
-  pointsEarned: number;
-}
-
-interface Milestone {
-  days: number;
-  label: string;
-  labelBn: string;
-  celebrated: boolean;
-}
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.06 } },
-};
-
-const STREAK_LEVELS = [
-  {
-    level: "bronze",
-    nameEn: "Bronze",
-    nameBn: "ব্রোঞ্জ",
-    minDays: 3,
-    color: "#cd7f32",
-    icon: Medal,
-  },
-  {
-    level: "silver",
-    nameEn: "Silver",
-    nameBn: "রূপা",
-    minDays: 7,
-    color: "#c0c0c0",
-    icon: Shield,
-  },
-  {
-    level: "gold",
-    nameEn: "Gold",
-    nameBn: "সোনা",
-    minDays: 14,
-    color: "#ffd700",
-    icon: Award,
-  },
-  {
-    level: "platinum",
-    nameEn: "Platinum",
-    nameBn: "প্লাটিনাম",
-    minDays: 30,
-    color: "#e5e4e2",
-    icon: Gem,
-  },
-  {
-    level: "diamond",
-    nameEn: "Diamond",
-    nameBn: "হীরা",
-    minDays: 60,
-    color: "#b9f2ff",
-    icon: Diamond,
-  },
-  {
-    level: "crown",
-    nameEn: "Crown",
-    nameBn: "মুকুট",
-    minDays: 100,
-    color: "#9d00ff",
-    icon: Crown,
-  },
-];
-
-const LEVEL_BENEFITS: Record<string, { en: string; bn: string }[]> = {
-  bronze: [
-    { en: "Basic streak tracking", bn: "মৌলিক স্ট্রিক ট্র্যাকিং" },
-    { en: "1 freeze token per week", bn: "প্রতি সপ্তাহে ১টি ফ্রিজ টোকেন" },
-    { en: "Bronze badge", bn: "ব্রোঞ্জ ব্যাজ" },
-  ],
-  silver: [
-    { en: "Advanced analytics", bn: "উন্নত অ্যানালিটিক্স" },
-    { en: "2 freeze tokens per week", bn: "প্রতি সপ্তাহে ২টি ফ্রিজ টোকেন" },
-    { en: "Silver badge & profile frame", bn: "রূপা ব্যাজ ও প্রোফাইল ফ্রেম" },
-  ],
-  gold: [
-    { en: "Custom streak themes", bn: "কাস্টম স্ট্রিক থিম" },
-    { en: "3 freeze tokens per week", bn: "প্রতি সপ্তাহে ৩টি ফ্রিজ টোকেন" },
-    { en: "Gold badge & profile frame", bn: "সোনা ব্যাজ ও প্রোফাইল ফ্রেম" },
-  ],
-  platinum: [
-    { en: "Priority support", bn: "অগ্রাধিকার সহায়তা" },
-    { en: "4 freeze tokens per week", bn: "প্রতি সপ্তাহে ৪টি ফ্রিজ টোকেন" },
-    {
-      en: "Platinum badge & animated frame",
-      bn: "প্লাটিনাম ব্যাজ ও অ্যানিমেটেড ফ্রেম",
-    },
-  ],
-  diamond: [
-    { en: "Exclusive rewards", bn: "একচেটিয়া পুরস্কার" },
-    { en: "5 freeze tokens per week", bn: "প্রতি সপ্তাহে ৫টি ফ্রিজ টোকেন" },
-    { en: "Diamond badge & special effects", bn: "হীরা ব্যাজ ও বিশেষ ইফেক্ট" },
-  ],
-  crown: [
-    { en: "All benefits unlocked", bn: "সমস্ত সুবিধা আনলক" },
-    { en: "Unlimited freeze tokens", bn: "অসীমিত ফ্রিজ টোকেন" },
-    {
-      en: "Crown badge & legendary status",
-      bn: "মুকুট ব্যাজ ও কিংবদন্তী মর্যাদা",
-    },
-  ],
-};
-
-const MILESTONES: Milestone[] = [
-  {
-    days: 3,
-    label: "3-Day Streak!",
-    labelBn: "৩ দিনের স্ট্রিক!",
-    celebrated: false,
-  },
-  {
-    days: 7,
-    label: "1 Week Streak!",
-    labelBn: "১ সপ্তাহের স্ট্রিক!",
-    celebrated: false,
-  },
-  {
-    days: 14,
-    label: "2 Week Streak!",
-    labelBn: "২ সপ্তাহের স্ট্রিক!",
-    celebrated: false,
-  },
-  {
-    days: 30,
-    label: "1 Month Streak!",
-    labelBn: "১ মাসের স্ট্রিক!",
-    celebrated: false,
-  },
-  {
-    days: 60,
-    label: "2 Month Streak!",
-    labelBn: "২ মাসের স্ট্রিক!",
-    celebrated: false,
-  },
-  {
-    days: 100,
-    label: "100 Day Legend!",
-    labelBn: "১০০ দিনের কিংবদন্তী!",
-    celebrated: false,
-  },
-];
-
-const DEFAULT_REWARDS: Reward[] = [
-  {
-    id: "r1",
-    name: "Ocean Theme",
-    description: "Cool ocean blue theme",
-    cost: 100,
-    icon: Palette,
-    category: "theme",
-    unlocked: false,
-  },
-  {
-    id: "r2",
-    name: "Sunset Theme",
-    description: "Warm sunset colors",
-    cost: 100,
-    icon: Palette,
-    category: "theme",
-    unlocked: false,
-  },
-  {
-    id: "r3",
-    name: "Forest Theme",
-    description: "Natural forest green",
-    cost: 100,
-    icon: Palette,
-    category: "theme",
-    unlocked: false,
-  },
-  {
-    id: "r4",
-    name: "Explorer Badge",
-    description: "Special explorer badge",
-    cost: 50,
-    icon: Award,
-    category: "badge",
-    unlocked: false,
-  },
-  {
-    id: "r5",
-    name: "Champion Badge",
-    description: "Champion achievement badge",
-    cost: 75,
-    icon: Trophy,
-    category: "badge",
-    unlocked: false,
-  },
-  {
-    id: "r6",
-    name: "Golden Frame",
-    description: "Golden profile frame",
-    cost: 150,
-    icon: UserCircle,
-    category: "profile",
-    unlocked: false,
-  },
-  {
-    id: "r7",
-    name: "Neon Frame",
-    description: "Neon glow profile frame",
-    cost: 200,
-    icon: UserCircle,
-    category: "profile",
-    unlocked: false,
-  },
-  {
-    id: "r8",
-    name: "Advanced Stats",
-    description: "Unlock advanced analytics",
-    cost: 300,
-    icon: TrendingUp,
-    category: "premium",
-    unlocked: false,
-  },
-  {
-    id: "r9",
-    name: "Custom Reminders",
-    description: "Customizable reminder system",
-    cost: 250,
-    icon: Bell,
-    category: "premium",
-    unlocked: false,
-  },
-  {
-    id: "r10",
-    name: "Streak Shield",
-    description: "Extra freeze token pack",
-    cost: 120,
-    icon: Snowflake,
-    category: "powerup",
-    unlocked: false,
-  },
-];
+import {
+  CalendarTab,
+  RewardsTab,
+  LeaderboardTab,
+  HistoryTab,
+  SettingsTab,
+} from "@/components/daily-streaks";
+import {
+  fadeUp,
+  stagger,
+  STREAK_LEVELS,
+  MILESTONES,
+  DEFAULT_REWARDS,
+  type StreakDay,
+  type Reward,
+  type LeaderboardEntry,
+  type StreakHistory,
+  type Milestone,
+} from "@/components/daily-streaks/types";
 
 export default function DailyStreaks() {
   const { lang } = useLang();
   const [currentStreak, setCurrentStreak] = useState(12);
-  const [longestStreak, setLongestStreak] = useState(28);
+  const [longestStreak] = useState(28);
   const [points, setPoints] = useState(480);
-  const [level, setLevel] = useState("silver");
+  const [level] = useState("silver");
   const [freezeTokens, setFreezeTokens] = useState(3);
   const [rewards, setRewards] = useState<Reward[]>(DEFAULT_REWARDS);
   const [ownedRewards, setOwnedRewards] = useState<string[]>(["r4"]);
@@ -328,11 +57,6 @@ export default function DailyStreaks() {
     () => STREAK_LEVELS.find((l) => l.level === level) || STREAK_LEVELS[0],
     [level],
   );
-
-  const nextLevelData = useMemo(() => {
-    const idx = STREAK_LEVELS.findIndex((l) => l.level === level);
-    return idx < STREAK_LEVELS.length - 1 ? STREAK_LEVELS[idx + 1] : null;
-  }, [level]);
 
   const streakDays = useMemo<StreakDay[]>(() => {
     const days: StreakDay[] = [];
@@ -462,21 +186,6 @@ export default function DailyStreaks() {
     [currentStreak, level, lang],
   );
 
-  const filteredRewards = useMemo(() => {
-    if (filterCategory === "all") return rewards;
-    return rewards.filter((r) => r.category === filterCategory);
-  }, [rewards, filterCategory]);
-
-  const progressToNextLevel = useMemo(() => {
-    if (!nextLevelData) return 100;
-    const currentMin = currentLevelData.minDays;
-    const nextMin = nextLevelData.minDays;
-    return Math.min(
-      100,
-      ((currentStreak - currentMin) / (nextMin - currentMin)) * 100,
-    );
-  }, [currentStreak, currentLevelData, nextLevelData]);
-
   const totalPointsEarned = useMemo(
     () => streakDays.reduce((sum, d) => sum + d.pointsEarned, 0),
     [streakDays],
@@ -541,32 +250,6 @@ export default function DailyStreaks() {
     setCurrentMonth(d);
   };
 
-  const getHeatmapColor = (streak: number) => {
-    if (streak >= 100) return "#9d00ff";
-    if (streak >= 60) return "#b9f2ff";
-    if (streak >= 30) return "#e5e4e2";
-    if (streak >= 14) return "#ffd700";
-    if (streak >= 7) return "#c0c0c0";
-    if (streak >= 3) return "#cd7f32";
-    return "rgba(255,255,255,0.1)";
-  };
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString(
-      lang === "bn" ? "bn-BD" : "en-US",
-      {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      },
-    );
-  };
-
-  const weekDayLabels =
-    lang === "bn"
-      ? ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র", "শনি"]
-      : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
   const tabs = [
     {
       id: "calendar" as const,
@@ -595,27 +278,6 @@ export default function DailyStreaks() {
     },
   ];
 
-  const rewardCategories = [
-    { id: "all", label: lang === "bn" ? "সব" : "All", icon: ShoppingBag },
-    { id: "theme", label: lang === "bn" ? "থিম" : "Themes", icon: Palette },
-    { id: "badge", label: lang === "bn" ? "ব্যাজ" : "Badges", icon: Award },
-    {
-      id: "profile",
-      label: lang === "bn" ? "প্রোফাইল" : "Profile",
-      icon: UserCircle,
-    },
-    {
-      id: "premium",
-      label: lang === "bn" ? "প্রিমিয়াম" : "Premium",
-      icon: Star,
-    },
-    {
-      id: "powerup",
-      label: lang === "bn" ? "পাওয়ারআপ" : "Power-ups",
-      icon: Zap,
-    },
-  ];
-
   return (
     <motion.div
       initial="hidden"
@@ -623,7 +285,6 @@ export default function DailyStreaks() {
       variants={stagger}
       className="min-h-screen p-4 md:p-6 space-y-6"
     >
-      {/* Header */}
       <motion.div variants={fadeUp} className="glass rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-2">
           <div className="p-2 rounded-xl bg-gradient-to-br from-orange-500 to-red-600">
@@ -642,7 +303,6 @@ export default function DailyStreaks() {
         </p>
       </motion.div>
 
-      {/* Current Streak Card */}
       <motion.div variants={fadeUp} className="glass rounded-2xl p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
@@ -708,7 +368,6 @@ export default function DailyStreaks() {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex flex-wrap gap-3 mt-6">
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -727,7 +386,7 @@ export default function DailyStreaks() {
             disabled={freezeTokens === 0}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium disabled:opacity-50"
           >
-            <Snowflake className="w-5 h-5" />
+            <Gift className="w-5 h-5" />
             {lang === "bn"
               ? `ফ্রিজ (${freezeTokens})`
               : `Freeze (${freezeTokens})`}
@@ -735,7 +394,6 @@ export default function DailyStreaks() {
         </div>
       </motion.div>
 
-      {/* Tab Navigation */}
       <motion.div variants={fadeUp} className="glass rounded-2xl p-2">
         <div className="flex gap-2 overflow-x-auto">
           {tabs.map((tab) => (
@@ -757,635 +415,57 @@ export default function DailyStreaks() {
         </div>
       </motion.div>
 
-      {/* Calendar Tab */}
       <AnimatePresence mode="wait">
         {activeTab === "calendar" && (
-          <motion.div
-            key="calendar"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-6"
-          >
-            {/* Streak Calendar */}
-            <div className="glass rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={prevMonth}
-                  className="p-2 rounded-lg hover:bg-white/10"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </motion.button>
-                <h3 className="text-lg font-semibold">{getMonthLabel()}</h3>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={nextMonth}
-                  className="p-2 rounded-lg hover:bg-white/10"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </motion.button>
-              </div>
-
-              <div className="grid grid-cols-7 gap-1 mb-2">
-                {weekDayLabels.map((day) => (
-                  <div
-                    key={day}
-                    className="text-center text-xs text-white/50 py-1"
-                  >
-                    {day}
-                  </div>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-7 gap-1">
-                {calendarDays.map((cell, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: idx * 0.01 }}
-                    className={`aspect-square rounded-lg flex items-center justify-center text-sm relative ${
-                      cell.day === null
-                        ? ""
-                        : cell.isStreak
-                          ? "text-white font-bold"
-                          : cell.isToday
-                            ? "border-2 border-white/50 text-white"
-                            : "text-white/40"
-                    }`}
-                    style={
-                      cell.isStreak
-                        ? {
-                            background: `linear-gradient(135deg, ${getHeatmapColor(currentStreak)}, ${getHeatmapColor(currentStreak)}80)`,
-                          }
-                        : undefined
-                    }
-                  >
-                    {cell.day}
-                    {cell.isStreak && (
-                      <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-white/80" />
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Heatmap Legend */}
-              <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
-                <span className="text-xs text-white/50">
-                  {lang === "bn" ? "কম" : "Less"}
-                </span>
-                {[0, 3, 7, 14, 30, 60, 100].map((days) => (
-                  <div
-                    key={days}
-                    className="w-4 h-4 rounded-sm"
-                    style={{ backgroundColor: getHeatmapColor(days) }}
-                  />
-                ))}
-                <span className="text-xs text-white/50">
-                  {lang === "bn" ? "বেশি" : "More"}
-                </span>
-              </div>
-            </div>
-
-            {/* Level Progress */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-purple-400" />
-                {lang === "bn" ? "লেভেল অগ্রগতি" : "Level Progress"}
-              </h3>
-
-              <div className="space-y-4">
-                {STREAK_LEVELS.map((lvl) => {
-                  const LevelIcon = lvl.icon;
-                  const isActive = lvl.level === level;
-                  const isCompleted = currentStreak >= lvl.minDays;
-                  return (
-                    <div
-                      key={lvl.level}
-                      className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
-                        isActive
-                          ? "bg-white/15 ring-2"
-                          : isCompleted
-                            ? "bg-white/5"
-                            : "bg-white/5 opacity-50"
-                      }`}
-                      style={isActive ? { ringColor: lvl.color } : undefined}
-                    >
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center"
-                        style={{
-                          background: isCompleted
-                            ? `linear-gradient(135deg, ${lvl.color}, ${lvl.color}80)`
-                            : "rgba(255,255,255,0.1)",
-                        }}
-                      >
-                        {isCompleted ? (
-                          <LevelIcon className="w-5 h-5 text-white" />
-                        ) : (
-                          <Lock className="w-4 h-4 text-white/40" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{lvl.nameBn}</span>
-                          <span className="text-xs text-white/50">
-                            {lang === "bn"
-                              ? `${lvl.minDays}+ দিন`
-                              : `${lvl.minDays}+ days`}
-                          </span>
-                        </div>
-                        {isActive && nextLevelData && (
-                          <div className="mt-2">
-                            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${progressToNextLevel}%` }}
-                                transition={{ duration: 1, ease: "easeOut" }}
-                                className="h-full rounded-full"
-                                style={{ backgroundColor: lvl.color }}
-                              />
-                            </div>
-                            <p className="text-xs text-white/50 mt-1">
-                              {currentStreak}/{nextLevelData.minDays}{" "}
-                              {lang === "bn" ? "দিন" : "days"}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                      {isCompleted && (
-                        <Check className="w-5 h-5 text-green-400" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Current Level Benefits */}
-              <div className="mt-6 p-4 rounded-xl bg-white/5">
-                <h4 className="font-medium mb-3 flex items-center gap-2">
-                  <Sparkles
-                    className="w-4 h-4"
-                    style={{ color: currentLevelData.color }}
-                  />
-                  {lang === "bn" ? "আপনার সুবিধা" : "Your Benefits"}
-                </h4>
-                <div className="space-y-2">
-                  {LEVEL_BENEFITS[level]?.map((benefit, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-2 text-sm text-white/70"
-                    >
-                      <Check className="w-4 h-4 text-green-400 shrink-0" />
-                      {lang === "bn" ? benefit.bn : benefit.en}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Milestones */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <PartyPopper className="w-5 h-5 text-yellow-400" />
-                {lang === "bn" ? "মাইলস্টোন" : "Milestones"}
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {MILESTONES.map((milestone) => {
-                  const achieved = currentStreak >= milestone.days;
-                  return (
-                    <motion.div
-                      key={milestone.days}
-                      whileHover={{ scale: 1.05 }}
-                      className={`p-4 rounded-xl text-center ${
-                        achieved
-                          ? "bg-gradient-to-br from-yellow-500/20 to-orange-500/20 ring-1 ring-yellow-500/30"
-                          : "bg-white/5 opacity-50"
-                      }`}
-                    >
-                      {achieved ? (
-                        <PartyPopper className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
-                      ) : (
-                        <Lock className="w-8 h-8 mx-auto mb-2 text-white/30" />
-                      )}
-                      <p className="text-sm font-medium">
-                        {lang === "bn" ? milestone.labelBn : milestone.label}
-                      </p>
-                      <p className="text-xs text-white/50">
-                        {lang === "bn"
-                          ? `${milestone.days} দিন`
-                          : `${milestone.days} days`}
-                      </p>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
+          <CalendarTab
+            currentStreak={currentStreak}
+            level={level}
+            currentMonth={currentMonth}
+            streakDays={streakDays}
+            calendarDays={calendarDays}
+            onPrevMonth={prevMonth}
+            onNextMonth={nextMonth}
+            getMonthLabel={getMonthLabel}
+          />
         )}
 
-        {/* Rewards Tab */}
         {activeTab === "rewards" && (
-          <motion.div
-            key="rewards"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-6"
-          >
-            {/* Points Summary */}
-            <div className="glass rounded-2xl p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white/60 text-sm">
-                    {lang === "bn" ? "উপলব্ধ পয়েন্ট" : "Available Points"}
-                  </p>
-                  <p className="text-3xl font-bold flex items-center gap-2">
-                    <Star className="w-6 h-6 text-yellow-400" />
-                    {points}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-white/60 text-sm">
-                    {lang === "bn" ? "মোট অর্জিত" : "Total Earned"}
-                  </p>
-                  <p className="text-xl font-semibold">{totalPointsEarned}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Category Filters */}
-            <div className="glass rounded-2xl p-2">
-              <div className="flex gap-2 overflow-x-auto">
-                {rewardCategories.map((cat) => (
-                  <motion.button
-                    key={cat.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setFilterCategory(cat.id)}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
-                      filterCategory === cat.id
-                        ? "bg-white/20 text-white"
-                        : "text-white/50 hover:text-white/80"
-                    }`}
-                  >
-                    <cat.icon className="w-3.5 h-3.5" />
-                    {cat.label}
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-
-            {/* Rewards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredRewards.map((reward, idx) => {
-                const isOwned = ownedRewards.includes(reward.id);
-                const canAfford = points >= reward.cost;
-                const RewardIcon = reward.icon;
-                return (
-                  <motion.div
-                    key={reward.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    whileHover={{ scale: 1.02 }}
-                    className={`glass rounded-xl p-4 ${isOwned ? "ring-1 ring-green-500/30" : ""}`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                        <RewardIcon className="w-6 h-6 text-purple-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium">{reward.name}</h4>
-                        <p className="text-sm text-white/50 truncate">
-                          {reward.description}
-                        </p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-sm font-semibold flex items-center gap-1">
-                            <Star className="w-3.5 h-3.5 text-yellow-400" />
-                            {reward.cost}
-                          </span>
-                          {isOwned ? (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 flex items-center gap-1">
-                              <Check className="w-3 h-3" />
-                              {lang === "bn" ? "অর্জিত" : "Owned"}
-                            </span>
-                          ) : (
-                            <motion.button
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => handleRedeemReward(reward)}
-                              disabled={!canAfford}
-                              className={`text-xs px-3 py-1 rounded-full font-medium transition-all ${
-                                canAfford
-                                  ? "bg-purple-500/20 text-purple-400 hover:bg-purple-500/30"
-                                  : "bg-white/5 text-white/30 cursor-not-allowed"
-                              }`}
-                            >
-                              {lang === "bn" ? "রিডিম" : "Redeem"}
-                            </motion.button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.div>
+          <RewardsTab
+            points={points}
+            totalPointsEarned={totalPointsEarned}
+            rewards={rewards}
+            ownedRewards={ownedRewards}
+            filterCategory={filterCategory}
+            onFilterChange={setFilterCategory}
+            onRedeem={handleRedeemReward}
+          />
         )}
 
-        {/* Leaderboard Tab */}
         {activeTab === "leaderboard" && (
-          <motion.div
-            key="leaderboard"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-6"
-          >
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-400" />
-                {lang === "bn" ? "বন্ধুদের সাথে তুলনা" : "Compare with Friends"}
-              </h3>
-
-              <div className="space-y-3">
-                {leaderboard.map((entry, idx) => {
-                  const entryLevel = STREAK_LEVELS.find(
-                    (l) => l.level === entry.level,
-                  );
-                  return (
-                    <motion.div
-                      key={entry.rank}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      className={`flex items-center gap-3 p-3 rounded-xl ${
-                        entry.isCurrentUser
-                          ? "bg-white/15 ring-1 ring-purple-500/30"
-                          : "bg-white/5"
-                      }`}
-                    >
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                          entry.rank === 1
-                            ? "bg-yellow-500/30 text-yellow-400"
-                            : entry.rank === 2
-                              ? "bg-gray-400/30 text-gray-300"
-                              : entry.rank === 3
-                                ? "bg-orange-500/30 text-orange-400"
-                                : "bg-white/10 text-white/50"
-                        }`}
-                      >
-                        {entry.rank}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">{entry.name}</p>
-                        <p className="text-xs text-white/50">
-                          {entryLevel?.nameBn || entry.level} · {entry.streak}{" "}
-                          {lang === "bn" ? "দিন" : "days"}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-1">
-                          <Flame
-                            className="w-4 h-4"
-                            style={{ color: entryLevel?.color }}
-                          />
-                          <span className="font-semibold">{entry.streak}</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
+          <LeaderboardTab leaderboard={leaderboard} />
         )}
 
-        {/* History Tab */}
         {activeTab === "history" && (
-          <motion.div
-            key="history"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-6"
-          >
-            {/* Best Streak */}
-            <div className="glass rounded-2xl p-6">
-              <div className="text-center">
-                <Trophy className="w-12 h-12 mx-auto mb-3 text-yellow-400" />
-                <p className="text-3xl font-bold">{longestStreak}</p>
-                <p className="text-white/60">
-                  {lang === "bn" ? "দীর্ঘতম স্ট্রিক" : "Longest Streak"}
-                </p>
-              </div>
-            </div>
-
-            {/* Streak History */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <History className="w-5 h-5 text-blue-400" />
-                {lang === "bn" ? "স্ট্রিক ইতিহাস" : "Streak History"}
-              </h3>
-              <div className="space-y-3">
-                {streakHistory.map((entry, idx) => {
-                  const entryLevel = STREAK_LEVELS.find(
-                    (l) => l.level === entry.level,
-                  );
-                  return (
-                    <motion.div
-                      key={entry.id}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-white/5"
-                    >
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: `${entryLevel?.color}30` }}
-                      >
-                        <Flame
-                          className="w-5 h-5"
-                          style={{ color: entryLevel?.color }}
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">
-                          {entry.days}{" "}
-                          {lang === "bn" ? "দিনের স্ট্রিক" : "Day Streak"}
-                        </p>
-                        <p className="text-xs text-white/50">
-                          {formatDate(entry.startDate)} -{" "}
-                          {formatDate(entry.endDate)}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p
-                          className="text-sm font-medium"
-                          style={{ color: entryLevel?.color }}
-                        >
-                          {entryLevel?.nameBn}
-                        </p>
-                        <p className="text-xs text-white/50 flex items-center gap-1 justify-end">
-                          <Star className="w-3 h-3 text-yellow-400" />+
-                          {entry.pointsEarned}
-                        </p>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
+          <HistoryTab
+            longestStreak={longestStreak}
+            streakHistory={streakHistory}
+          />
         )}
 
-        {/* Settings Tab */}
         {activeTab === "settings" && (
-          <motion.div
-            key="settings"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-6"
-          >
-            {/* Reminder Settings */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Bell className="w-5 h-5 text-blue-400" />
-                {lang === "bn" ? "দৈনিক রিমাইন্ডার" : "Daily Reminder"}
-              </h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5">
-                  <div>
-                    <p className="font-medium">
-                      {lang === "bn" ? "রিমাইন্ডার সময়" : "Reminder Time"}
-                    </p>
-                    <p className="text-sm text-white/50">
-                      {lang === "bn"
-                        ? "প্রতিদিন রিমাইন্ডার পান"
-                        : "Get reminded daily"}
-                    </p>
-                  </div>
-                  <input
-                    type="time"
-                    value={reminderTime}
-                    onChange={(e) => setReminderTime(e.target.value)}
-                    className="bg-white/10 text-white rounded-lg px-3 py-2 text-sm border border-white/20 focus:outline-none focus:border-white/40"
-                  />
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5">
-                  <div>
-                    <p className="font-medium">
-                      {lang === "bn" ? "রিমাইন্ডার সক্রিয়" : "Reminder Active"}
-                    </p>
-                    <p className="text-sm text-white/50">
-                      {lang === "bn"
-                        ? "নির্ধারিত সময়ে নোটিফিকেশন পান"
-                        : "Get notified at set time"}
-                    </p>
-                  </div>
-                  <div className="w-12 h-6 rounded-full bg-purple-500 relative cursor-pointer hover:bg-purple-600 transition-colors">
-                    <div className="w-5 h-5 rounded-full bg-white absolute top-0.5 right-0.5 transition-all" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Streak Freeze */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Snowflake className="w-5 h-5 text-cyan-400" />
-                {lang === "bn" ? "স্ট্রিক ফ্রিজ" : "Streak Freeze"}
-              </h3>
-              <div className="p-4 rounded-xl bg-white/5">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <p className="font-medium">
-                      {lang === "bn" ? "ফ্রিজ টোকেন" : "Freeze Tokens"}
-                    </p>
-                    <p className="text-sm text-white/50">
-                      {lang === "bn"
-                        ? "স্ট্রিক রক্ষা করতে ফ্রিজ ব্যবহার করুন"
-                        : "Use freeze to protect your streak"}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Snowflake className="w-5 h-5 text-cyan-400" />
-                    <span className="text-xl font-bold">{freezeTokens}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleUseFreeze}
-                    disabled={freezeTokens === 0}
-                    className="flex-1 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 text-sm font-medium disabled:opacity-50"
-                  >
-                    {lang === "bn" ? "ফ্রিজ ব্যবহার করুন" : "Use Freeze"}
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 rounded-lg bg-white/10 text-white/70 text-sm font-medium"
-                  >
-                    {lang === "bn" ? "আরও কিনুন" : "Buy More"}
-                  </motion.button>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Overview */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Target className="w-5 h-5 text-green-400" />
-                {lang === "bn" ? "পরিসংখ্যান" : "Statistics"}
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-white/5 text-center">
-                  <p className="text-2xl font-bold text-orange-400">
-                    {currentStreak}
-                  </p>
-                  <p className="text-xs text-white/50">
-                    {lang === "bn" ? "বর্তমান স্ট্রিক" : "Current"}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-white/5 text-center">
-                  <p className="text-2xl font-bold text-yellow-400">
-                    {longestStreak}
-                  </p>
-                  <p className="text-xs text-white/50">
-                    {lang === "bn" ? "দীর্ঘতম" : "Longest"}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-white/5 text-center">
-                  <p className="text-2xl font-bold text-purple-400">
-                    {totalPointsEarned}
-                  </p>
-                  <p className="text-xs text-white/50">
-                    {lang === "bn" ? "মোট পয়েন্ট" : "Total Points"}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-white/5 text-center">
-                  <p className="text-2xl font-bold text-green-400">
-                    {ownedRewards.length}
-                  </p>
-                  <p className="text-xs text-white/50">
-                    {lang === "bn" ? "পুরস্কার" : "Rewards"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          <SettingsTab
+            reminderTime={reminderTime}
+            freezeTokens={freezeTokens}
+            currentStreak={currentStreak}
+            longestStreak={longestStreak}
+            totalPointsEarned={totalPointsEarned}
+            ownedRewardsCount={ownedRewards.length}
+            onReminderTimeChange={setReminderTime}
+            onUseFreeze={handleUseFreeze}
+          />
         )}
       </AnimatePresence>
 
-      {/* Milestone Celebration Modal */}
       <AnimatePresence>
         {showMilestone && (
           <motion.div
@@ -1430,10 +510,7 @@ export default function DailyStreaks() {
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
 
-      {/* Reward Redemption Modal */}
-      <AnimatePresence>
         {showRewardModal && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -1498,10 +575,7 @@ export default function DailyStreaks() {
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
 
-      {/* Redeem Success Animation */}
-      <AnimatePresence>
         {redeemAnimation && (
           <motion.div
             initial={{ opacity: 0 }}

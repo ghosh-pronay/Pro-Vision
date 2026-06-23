@@ -22,7 +22,8 @@ export function useAuth() {
         try {
           await firebaseUser.reload();
           setUser({ ...firebaseUser });
-        } catch {
+        } catch (e) {
+          console.error("[useAuth]", "operation failed", e);
           setUser(firebaseUser);
         }
       } else {

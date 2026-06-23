@@ -1,4 +1,15 @@
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import app from "./firebase";
+
+const functions = getFunctions(app);
+
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? "";
+
+if (import.meta.env.DEV && GEMINI_API_KEY && GEMINI_API_KEY.length > 10) {
+  console.warn(
+    "Gemini API key detected in development. Ensure VITE_GEMINI_API_KEY is not committed to source control.",
+  );
+}
 
 export interface GeminiMessage {
   role: "user" | "model";
@@ -13,14 +24,26 @@ interface GeminiResponse {
   }>;
 }
 
+async function callGeminiProxy(payload: {
+  contents: Array<{
+    role: string;
+    parts: Array<{
+      text?: string;
+      inlineData?: { mimeType: string; data: string };
+    }>;
+  }>;
+  systemInstruction?: { parts: Array<{ text: string }> };
+  generationConfig?: Record<string, unknown>;
+}): Promise<GeminiResponse> {
+  const proxyFn = httpsCallable(functions, "geminiProxy");
+  const result = await proxyFn(payload);
+  return result.data as GeminiResponse;
+}
+
 export async function generateGeminiResponse(
   messages: GeminiMessage[],
   systemPrompt?: string,
 ): Promise<string> {
-  if (!GEMINI_API_KEY) {
-    return "AI is not configured. Add your Gemini API key to VITE_GEMINI_API_KEY in .env.local to enable real AI coaching.";
-  }
-
   const contents = messages.map((m) => ({
     role: m.role,
     parts: [{ text: m.parts }],
@@ -30,41 +53,24 @@ export async function generateGeminiResponse(
     ? { systemInstruction: { parts: [{ text: systemPrompt }] } }
     : {};
 
+  const generationConfig = {
+    temperature: 0.7,
+    topK: 40,
+    topP: 0.95,
+    maxOutputTokens: 1024,
+  };
+
   try {
-    const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": GEMINI_API_KEY,
-        },
-        body: JSON.stringify({
-          contents,
-          ...systemInstruction,
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-          },
-        }),
-      },
-    );
+    const data = await callGeminiProxy({
+      contents,
+      ...systemInstruction,
+      generationConfig,
+    });
 
-    if (!res.ok) {
-      const error = await res.text();
-      console.error("Gemini API error:", error);
-      return "Sorry, I encountered an error processing your request. Please try again.";
-    }
-
-    const data: GeminiResponse = await res.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
     if (!text) {
       return "I received an empty response. Please try again.";
     }
-
     return text;
   } catch (error) {
     console.error("Gemini API call failed:", error);
@@ -76,55 +82,40 @@ export async function analyzeImageWithGemini(
   imageBase64: string,
   prompt: string,
 ): Promise<string> {
-  if (!GEMINI_API_KEY) {
-    return "AI image analysis is not configured. Add your Gemini API key to VITE_GEMINI_API_KEY in .env.local.";
-  }
-
   const base64Data = imageBase64.includes(",")
     ? imageBase64.split(",")[1]
     : imageBase64;
 
-  try {
-    const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+  const payload = {
+    contents: [
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": GEMINI_API_KEY,
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: prompt },
-                {
-                  inlineData: {
-                    mimeType: "image/jpeg",
-                    data: base64Data,
-                  },
-                },
-              ],
+        role: "user" as const,
+        parts: [
+          { text: prompt },
+          {
+            inlineData: {
+              mimeType: "image/jpeg",
+              data: base64Data,
             },
-          ],
-          generationConfig: {
-            temperature: 0.4,
-            maxOutputTokens: 1024,
           },
-        }),
+        ],
       },
-    );
+    ],
+    generationConfig: {
+      temperature: 0.4,
+      maxOutputTokens: 1024,
+    },
+  };
 
-    if (!res.ok) {
-      return "Image analysis failed. Please try again.";
-    }
+  try {
+    const data = await callGeminiProxy(payload);
 
-    const data: GeminiResponse = await res.json();
     return (
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
       "No analysis available."
     );
-  } catch {
+  } catch (error) {
+    console.error("Gemini image analysis failed:", error);
     return "Unable to analyze image. Please try again.";
   }
 }

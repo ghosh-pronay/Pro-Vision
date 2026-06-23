@@ -1,12 +1,19 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { localDB } from "@/lib/data-store";
 
+if (import.meta.env.PROD) {
+  console.error(
+    "Convex shim loaded in production! This should use the real Convex backend.",
+  );
+  if (typeof window !== "undefined") {
+    window.__CONVEX_SHIM_ACTIVE__ = true;
+  }
+}
+
 type QueryResult<T> = T | undefined;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type QueryFn = (...args: any[]) => any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MutationFn = (...args: any[]) => any;
+type QueryFn = (...args: unknown[]) => unknown;
+type MutationFn = (...args: unknown[]) => unknown;
 
 const _listeners = new Set<() => void>();
 
@@ -34,8 +41,8 @@ export function useQuery<T = unknown>(
         Promise.resolve(result).then((resolved) => {
           setData(resolved as T);
         });
-      } catch {
-        // query failed
+      } catch (e) {
+        console.error("[Convex shim] Query listener failed:", e);
       }
     };
     _listeners.add(listener);
@@ -45,8 +52,8 @@ export function useQuery<T = unknown>(
       Promise.resolve(result).then((resolved) => {
         setData(resolved as T);
       });
-    } catch {
-      // query failed
+    } catch (e) {
+      console.error("[Convex shim] Initial query failed:", e);
     }
 
     return () => {

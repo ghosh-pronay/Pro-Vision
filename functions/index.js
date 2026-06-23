@@ -1,7 +1,69 @@
 const { initializeApp } = require("firebase-admin/app");
 const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { onRequest } = require("firebase-functions/v2/https");
+const functions = require("firebase-functions");
 
 initializeApp();
+
+exports.geminiProxy = onRequest(
+  { cors: true, region: "us-central1" },
+  async (req, res) => {
+    if (req.method !== "POST") {
+      res.status(405).json({ error: "Method not allowed" });
+      return;
+    }
+
+    const apiKey =
+      functions.config().gemini?.api_key || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      res
+        .status(500)
+        .json({ error: "Gemini API key not configured on server" });
+      return;
+    }
+
+    try {
+      const { contents, systemInstruction, generationConfig } = req.body;
+
+      const payload = {
+        contents,
+        generationConfig: generationConfig || {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        },
+      };
+      if (systemInstruction) {
+        payload.systemInstruction = systemInstruction;
+      }
+
+      const response = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        res.status(response.status).json(data);
+        return;
+      }
+
+      res.json(data);
+    } catch (error) {
+      console.error("[geminiProxy] Error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+);
 
 exports.sendWelcomeEmail = onDocumentUpdated(
   "users/{userId}",

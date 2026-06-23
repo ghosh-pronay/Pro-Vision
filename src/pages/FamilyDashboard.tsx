@@ -3,8 +3,6 @@ import { useLang } from "@/i18n/LanguageContext";
 import { useState, useMemo } from "react";
 import {
   Users,
-  Plus,
-  X,
   Target,
   Receipt,
   UtensilsCrossed,
@@ -13,316 +11,47 @@ import {
   MessageSquare,
   Heart,
   Trophy,
-  Wallet,
-  Cake,
-  Syringe,
-  Stethoscope,
-  Trash2,
-  Clock,
-  Send,
-  Star,
-  TrendingUp,
-  UserPlus,
-  Calendar,
-  Megaphone,
-  PartyPopper,
-  Droplets,
-  Moon,
-  Sun,
-  Coffee,
+  X,
 } from "lucide-react";
 
-type TaskStatus = "todo" | "in-progress" | "done";
-type ExpenseCategory =
-  | "food"
-  | "utilities"
-  | "entertainment"
-  | "education"
-  | "healthcare"
-  | "transport"
-  | "others";
-type MemberRole = "parent" | "child" | "grandparent" | "sibling";
-
-interface FamilyMember {
-  id: string;
-  name: string;
-  role: MemberRole;
-  avatar: string;
-  birthday?: number;
-}
-
-interface FamilyGoal {
-  id: string;
-  title: string;
-  description: string;
-  progress: number;
-  target: number;
-  assignedTo?: string;
-  deadline?: number;
-}
-
-interface FamilyExpense {
-  id: string;
-  title: string;
-  amount: number;
-  category: ExpenseCategory;
-  date: number;
-  paidBy: string;
-  splitWith: string[];
-}
-
-interface FamilyTask {
-  id: string;
-  title: string;
-  status: TaskStatus;
-  assignedTo: string;
-  dueDate?: number;
-}
-
-interface FamilyMessage {
-  id: string;
-  text: string;
-  author: string;
-  timestamp: number;
-}
-
-interface FamilyEvent {
-  id: string;
-  title: string;
-  date: number;
-  type: "birthday" | "anniversary" | "vaccination" | "checkup" | "other";
-  description?: string;
-}
-
-const AVATARS = ["👨", "👩", "👦", "👧", "👴", "👵", "🧑", "👶"];
-
-const ROLE_CONFIG: Record<
+import type {
+  FamilyMember,
+  FamilyGoal,
+  FamilyExpense,
+  FamilyTask,
+  FamilyMessage,
+  FamilyEvent,
   MemberRole,
-  { en: string; bn: string; color: string }
-> = {
-  parent: {
-    en: "Parent",
-    bn: "বাবা/মা",
-    color: "text-blue-500 bg-blue-500/10",
-  },
-  child: { en: "Child", bn: "সন্তান", color: "text-green-500 bg-green-500/10" },
-  grandparent: {
-    en: "Grandparent",
-    bn: "দাদা/দিদা",
-    color: "text-purple-500 bg-purple-500/10",
-  },
-  sibling: {
-    en: "Sibling",
-    bn: "ভাই/বোন",
-    color: "text-orange-500 bg-orange-500/10",
-  },
-};
+  ExpenseCategory,
+  TaskStatus,
+  ModalType,
+  ActiveSection,
+  ModalForm,
+} from "@/components/family/FamilyTypes";
 
-const EXPENSE_CATEGORIES: {
-  key: ExpenseCategory;
-  icon: typeof UtensilsCrossed;
-  color: string;
-}[] = [
-  { key: "food", icon: UtensilsCrossed, color: "text-amber-500" },
-  { key: "utilities", icon: Droplets, color: "text-blue-500" },
-  { key: "entertainment", icon: PartyPopper, color: "text-purple-500" },
-  { key: "education", icon: Star, color: "text-green-500" },
-  { key: "healthcare", icon: Heart, color: "text-red-500" },
-  { key: "transport", icon: Calendar, color: "text-cyan-500" },
-  { key: "others", icon: Megaphone, color: "text-gray-500" },
-];
+import {
+  AVATARS,
+  ROLE_CONFIG,
+  EXPENSE_CATEGORIES,
+  EVENT_TYPES,
+  INITIAL_MEMBERS,
+  INITIAL_GOALS,
+  INITIAL_EXPENSES,
+  INITIAL_TASKS,
+  INITIAL_EVENTS,
+} from "@/components/family/FamilyConstants";
 
-const EVENT_TYPES = [
-  "birthday",
-  "anniversary",
-  "vaccination",
-  "checkup",
-  "other",
-] as const;
+import MembersTab from "@/components/family/MembersTab";
+import GoalsTab from "@/components/family/GoalsTab";
+import ExpensesTab from "@/components/family/ExpensesTab";
+import MealsTab from "@/components/family/MealsTab";
+import CalendarTab from "@/components/family/CalendarTab";
+import TasksTab from "@/components/family/TasksTab";
+import MessagesTab from "@/components/family/MessagesTab";
+import HealthTab from "@/components/family/HealthTab";
+import CelebrationsTab from "@/components/family/CelebrationsTab";
 
 const now = Date.now();
-
-const INITIAL_MEMBERS: FamilyMember[] = [
-  {
-    id: "1",
-    name: "Rahim Ahmed",
-    role: "parent",
-    avatar: "👨",
-    birthday: now - 365 * 24 * 60 * 60 * 1000 * 30,
-  },
-  {
-    id: "2",
-    name: "Fatima Rahman",
-    role: "parent",
-    avatar: "👩",
-    birthday: now - 365 * 24 * 60 * 60 * 1000 * 28,
-  },
-  {
-    id: "3",
-    name: "Samir Ahmed",
-    role: "child",
-    avatar: "👦",
-    birthday: now - 365 * 24 * 60 * 60 * 1000 * 8,
-  },
-  {
-    id: "4",
-    name: "Nadia Ahmed",
-    role: "child",
-    avatar: "👧",
-    birthday: now - 365 * 24 * 60 * 60 * 1000 * 5,
-  },
-];
-
-const INITIAL_GOALS: FamilyGoal[] = [
-  {
-    id: "1",
-    title: "Save for vacation",
-    description: "Save ৳100,000 for Cox's Bazar trip",
-    progress: 65000,
-    target: 100000,
-    assignedTo: "1",
-    deadline: now + 90 * 24 * 60 * 60 * 1000,
-  },
-  {
-    id: "2",
-    title: "Family fitness",
-    description: "Exercise together 3x per week for a month",
-    progress: 8,
-    target: 12,
-    deadline: now + 30 * 24 * 60 * 60 * 1000,
-  },
-  {
-    id: "3",
-    title: "Read 10 books together",
-    description: "Family reading challenge",
-    progress: 4,
-    target: 10,
-    deadline: now + 180 * 24 * 60 * 60 * 1000,
-  },
-];
-
-const INITIAL_EXPENSES: FamilyExpense[] = [
-  {
-    id: "1",
-    title: "Monthly Groceries",
-    amount: 8500,
-    category: "food",
-    date: now - 2 * 24 * 60 * 60 * 1000,
-    paidBy: "1",
-    splitWith: ["1", "2"],
-  },
-  {
-    id: "2",
-    title: "Electricity Bill",
-    amount: 3200,
-    category: "utilities",
-    date: now - 5 * 24 * 60 * 60 * 1000,
-    paidBy: "2",
-    splitWith: ["1", "2", "3", "4"],
-  },
-  {
-    id: "3",
-    title: "School Fees - Samir",
-    amount: 12000,
-    category: "education",
-    date: now - 10 * 24 * 60 * 60 * 1000,
-    paidBy: "1",
-    splitWith: ["1"],
-  },
-  {
-    id: "4",
-    title: "Movie Tickets",
-    amount: 2000,
-    category: "entertainment",
-    date: now - 3 * 24 * 60 * 60 * 1000,
-    paidBy: "1",
-    splitWith: ["1", "2", "3", "4"],
-  },
-  {
-    id: "5",
-    title: "Doctor Visit - Nadia",
-    amount: 1500,
-    category: "healthcare",
-    date: now - 7 * 24 * 60 * 60 * 1000,
-    paidBy: "2",
-    splitWith: ["1", "2"],
-  },
-];
-
-const INITIAL_TASKS: FamilyTask[] = [
-  {
-    id: "1",
-    title: "Fix kitchen tap",
-    status: "todo",
-    assignedTo: "1",
-    dueDate: now + 3 * 24 * 60 * 60 * 1000,
-  },
-  {
-    id: "2",
-    title: "Clean living room",
-    status: "in-progress",
-    assignedTo: "3",
-    dueDate: now + 1 * 24 * 60 * 60 * 1000,
-  },
-  {
-    id: "3",
-    title: "Buy groceries",
-    status: "done",
-    assignedTo: "2",
-  },
-  {
-    id: "4",
-    title: "Wash the car",
-    status: "todo",
-    assignedTo: "1",
-    dueDate: now + 2 * 24 * 60 * 60 * 1000,
-  },
-  {
-    id: "5",
-    title: "Water the plants",
-    status: "in-progress",
-    assignedTo: "4",
-    dueDate: now,
-  },
-  {
-    id: "6",
-    title: "Pay internet bill",
-    status: "done",
-    assignedTo: "2",
-  },
-];
-
-const INITIAL_EVENTS: FamilyEvent[] = [
-  {
-    id: "1",
-    title: "Rahim's Birthday",
-    date: now + 45 * 24 * 60 * 60 * 1000,
-    type: "birthday",
-  },
-  {
-    id: "2",
-    title: "Wedding Anniversary",
-    date: now + 120 * 24 * 60 * 60 * 1000,
-    type: "anniversary",
-  },
-  {
-    id: "3",
-    title: "Nadia's Vaccination",
-    date: now + 14 * 24 * 60 * 60 * 1000,
-    type: "vaccination",
-  },
-  {
-    id: "4",
-    title: "Family Health Check-up",
-    date: now + 30 * 24 * 60 * 60 * 1000,
-    type: "checkup",
-  },
-];
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
 
 export default function FamilyDashboard() {
   const { lang } = useLang();
@@ -373,33 +102,21 @@ export default function FamilyDashboard() {
 
   const [events, setEvents] = useState<FamilyEvent[]>(INITIAL_EVENTS);
 
-  const [activeSection, setActiveSection] = useState<
-    | "members"
-    | "goals"
-    | "expenses"
-    | "meals"
-    | "calendar"
-    | "tasks"
-    | "messages"
-    | "health"
-    | "celebrations"
-  >("members");
+  const [activeSection, setActiveSection] = useState<ActiveSection>("members");
 
-  const [showModal, setShowModal] = useState<
-    "member" | "goal" | "expense" | "task" | "event" | "message" | null
-  >(null);
+  const [showModal, setShowModal] = useState<ModalType>(null);
 
-  const [modalForm, setModalForm] = useState({
+  const [modalForm, setModalForm] = useState<ModalForm>({
     name: "",
-    role: "parent" as MemberRole,
+    role: "parent",
     avatar: "👨",
     title: "",
     description: "",
     amount: 0,
-    category: "food" as ExpenseCategory,
+    category: "food",
     assignedTo: "",
-    status: "todo" as TaskStatus,
-    eventType: "birthday" as FamilyEvent["type"],
+    status: "todo",
+    eventType: "birthday",
     date: "",
     messageText: "",
     progress: 0,
@@ -455,19 +172,6 @@ export default function FamilyDashboard() {
     };
   }, [tasks]);
 
-  const upcomingEvents = useMemo(
-    () =>
-      [...events].filter((e) => e.date > now).sort((a, b) => a.date - b.date),
-    [events],
-  );
-
-  const nextCelebration = useMemo(() => upcomingEvents[0], [upcomingEvents]);
-
-  const daysLeft = useMemo(() => {
-    if (!nextCelebration) return null;
-    return Math.ceil((nextCelebration.date - now) / (24 * 60 * 60 * 1000));
-  }, [nextCelebration]);
-
   const todayMeals = useMemo(
     () => ({
       breakfast: {
@@ -486,28 +190,7 @@ export default function FamilyDashboard() {
     [lang],
   );
 
-  const getMemberName = (id: string) => {
-    return members.find((m) => m.id === id)?.name || "Unknown";
-  };
-
-  const getMemberAvatar = (id: string) => {
-    return members.find((m) => m.id === id)?.avatar || "🧑";
-  };
-
-  const handleAddMember = () => {
-    if (!modalForm.name.trim()) return;
-    setMembers([
-      ...members,
-      {
-        id: Date.now().toString(),
-        name: modalForm.name,
-        role: modalForm.role,
-        avatar: modalForm.avatar,
-        birthday: modalForm.date
-          ? new Date(modalForm.date).getTime()
-          : undefined,
-      },
-    ]);
+  const resetModalForm = () => {
     setModalForm({
       name: "",
       role: "parent",
@@ -526,6 +209,23 @@ export default function FamilyDashboard() {
       deadline: "",
       paidBy: "",
     });
+  };
+
+  const handleAddMember = () => {
+    if (!modalForm.name.trim()) return;
+    setMembers([
+      ...members,
+      {
+        id: Date.now().toString(),
+        name: modalForm.name,
+        role: modalForm.role,
+        avatar: modalForm.avatar,
+        birthday: modalForm.date
+          ? new Date(modalForm.date).getTime()
+          : undefined,
+      },
+    ]);
+    resetModalForm();
     setShowModal(null);
   };
 
@@ -545,24 +245,7 @@ export default function FamilyDashboard() {
           : undefined,
       },
     ]);
-    setModalForm({
-      name: "",
-      role: "parent",
-      avatar: "👨",
-      title: "",
-      description: "",
-      amount: 0,
-      category: "food",
-      assignedTo: "",
-      status: "todo",
-      eventType: "birthday",
-      date: "",
-      messageText: "",
-      progress: 0,
-      target: 100,
-      deadline: "",
-      paidBy: "",
-    });
+    resetModalForm();
     setShowModal(null);
   };
 
@@ -583,24 +266,7 @@ export default function FamilyDashboard() {
         splitWith,
       },
     ]);
-    setModalForm({
-      name: "",
-      role: "parent",
-      avatar: "👨",
-      title: "",
-      description: "",
-      amount: 0,
-      category: "food",
-      assignedTo: "",
-      status: "todo",
-      eventType: "birthday",
-      date: "",
-      messageText: "",
-      progress: 0,
-      target: 100,
-      deadline: "",
-      paidBy: "",
-    });
+    resetModalForm();
     setShowModal(null);
   };
 
@@ -618,24 +284,7 @@ export default function FamilyDashboard() {
           : undefined,
       },
     ]);
-    setModalForm({
-      name: "",
-      role: "parent",
-      avatar: "👨",
-      title: "",
-      description: "",
-      amount: 0,
-      category: "food",
-      assignedTo: "",
-      status: "todo",
-      eventType: "birthday",
-      date: "",
-      messageText: "",
-      progress: 0,
-      target: 100,
-      deadline: "",
-      paidBy: "",
-    });
+    resetModalForm();
     setShowModal(null);
   };
 
@@ -651,24 +300,7 @@ export default function FamilyDashboard() {
         description: modalForm.description,
       },
     ]);
-    setModalForm({
-      name: "",
-      role: "parent",
-      avatar: "👨",
-      title: "",
-      description: "",
-      amount: 0,
-      category: "food",
-      assignedTo: "",
-      status: "todo",
-      eventType: "birthday",
-      date: "",
-      messageText: "",
-      progress: 0,
-      target: 100,
-      deadline: "",
-      paidBy: "",
-    });
+    resetModalForm();
     setShowModal(null);
   };
 
@@ -828,1187 +460,88 @@ export default function FamilyDashboard() {
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
         >
-          {/* Members Section */}
           {activeSection === "members" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <Users className="size-5 text-pink-500" />
-                  {lang === "bn" ? "পরিবারের সদস্য" : "Family Members"}
-                </h2>
-                <button
-                  onClick={() => setShowModal("member")}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white text-sm font-medium hover:brightness-110 transition-all"
-                >
-                  <UserPlus className="size-4" />
-                  {lang === "bn" ? "সদস্য যোগ করুন" : "Add Member"}
-                </button>
-              </div>
-
-              {members.length === 0 ? (
-                <div className="glass rounded-2xl p-12 text-center">
-                  <Users className="size-12 mx-auto text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">
-                    {lang === "bn"
-                      ? "এখনো কোনো পরিবারের সদস্য নেই"
-                      : "No family members yet"}
-                  </p>
-                  <p className="text-sm text-muted-foreground/70">
-                    {lang === "bn"
-                      ? "আপনার প্রথম পরিবারের সদস্য যোগ করুন"
-                      : "Add your first family member"}
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {members.map((member) => (
-                    <motion.div
-                      key={member.id}
-                      variants={fadeUp}
-                      className="glass rounded-2xl p-4 group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="text-3xl">{member.avatar}</div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{member.name}</p>
-                          <span
-                            className={`text-xs px-2 py-0.5 rounded-full ${ROLE_CONFIG[member.role].color}`}
-                          >
-                            {ROLE_CONFIG[member.role][lang]}
-                          </span>
-                        </div>
-                        <button
-                          onClick={() => handleDeleteItem("member", member.id)}
-                          className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
-                      {member.birthday && (
-                        <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                          <Cake className="size-3" />
-                          {new Date(member.birthday).toLocaleDateString(
-                            lang === "bn" ? "bn-BD" : "en-US",
-                            { month: "long", day: "numeric" },
-                          )}
-                        </p>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <MembersTab
+              members={members}
+              lang={lang}
+              onAddClick={() => setShowModal("member")}
+              onDelete={(id) => handleDeleteItem("member", id)}
+            />
           )}
 
-          {/* Goals Section */}
           {activeSection === "goals" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <Target className="size-5 text-blue-500" />
-                  {lang === "bn" ? "শেয়ার্ড লক্ষ্য" : "Shared Goals"}
-                </h2>
-                <button
-                  onClick={() => setShowModal("goal")}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-medium hover:brightness-110 transition-all"
-                >
-                  <Plus className="size-4" />
-                  {lang === "bn" ? "লক্ষ্য যোগ করুন" : "Add Goal"}
-                </button>
-              </div>
-
-              {goals.length === 0 ? (
-                <div className="glass rounded-2xl p-12 text-center">
-                  <Target className="size-12 mx-auto text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">
-                    {lang === "bn" ? "এখনো কোনো লক্ষ্য নেই" : "No goals yet"}
-                  </p>
-                  <p className="text-sm text-muted-foreground/70">
-                    {lang === "bn"
-                      ? "আপনার প্রথম পরিবারের লক্ষ্য নির্ধারণ করুন"
-                      : "Set your first family goal"}
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {goals.map((goal) => (
-                    <motion.div
-                      key={goal.id}
-                      variants={fadeUp}
-                      className="glass rounded-2xl p-4"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <p className="font-medium">{goal.title}</p>
-                          {goal.description && (
-                            <p className="text-sm text-muted-foreground">
-                              {goal.description}
-                            </p>
-                          )}
-                          <div className="flex items-center gap-2 mt-1">
-                            {goal.assignedTo && (
-                              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                {getMemberAvatar(goal.assignedTo)}{" "}
-                                {getMemberName(goal.assignedTo)}
-                              </span>
-                            )}
-                            {goal.deadline && (
-                              <span className="text-xs text-muted-foreground">
-                                •{" "}
-                                {new Date(goal.deadline).toLocaleDateString(
-                                  lang === "bn" ? "bn-BD" : "en-US",
-                                )}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handleDeleteItem("goal", goal.id)}
-                          className="text-red-500 hover:text-red-400 transition-all"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            {lang === "bn" ? "অগ্রগতি" : "Progress"}
-                          </span>
-                          <span className="font-medium">
-                            {goal.progress} / {goal.target}
-                          </span>
-                        </div>
-                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{
-                              width: `${Math.min(
-                                (goal.progress / goal.target) * 100,
-                                100,
-                              )}%`,
-                            }}
-                            transition={{ duration: 1, delay: 0.3 }}
-                          />
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() =>
-                              handleUpdateGoalProgress(goal.id, -1)
-                            }
-                            className="px-3 py-1 rounded-lg glass text-xs hover:bg-white/10 transition-all"
-                          >
-                            -
-                          </button>
-                          <button
-                            onClick={() => handleUpdateGoalProgress(goal.id, 1)}
-                            className="px-3 py-1 rounded-lg bg-blue-500/20 text-blue-400 text-xs hover:bg-blue-500/30 transition-all"
-                          >
-                            +1
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <GoalsTab
+              goals={goals}
+              members={members}
+              lang={lang}
+              onAddClick={() => setShowModal("goal")}
+              onDelete={(id) => handleDeleteItem("goal", id)}
+              onUpdateProgress={handleUpdateGoalProgress}
+            />
           )}
 
-          {/* Expenses Section */}
           {activeSection === "expenses" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <Receipt className="size-5 text-amber-500" />
-                  {lang === "bn" ? "পরিবারের খরচ" : "Family Expenses"}
-                </h2>
-                <button
-                  onClick={() => setShowModal("expense")}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-medium hover:brightness-110 transition-all"
-                >
-                  <Plus className="size-4" />
-                  {lang === "bn" ? "খরচ যোগ করুন" : "Add Expense"}
-                </button>
-              </div>
-
-              {/* Budget Overview */}
-              <div className="glass rounded-2xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-muted-foreground flex items-center gap-2">
-                    <Wallet className="size-4" />
-                    {lang === "bn" ? "মাসিক বাজেট" : "Monthly Budget"}
-                  </span>
-                  <button
-                    onClick={() => {
-                      const val = prompt(
-                        lang === "bn"
-                          ? "মাসিক বাজেট সেট করুন:"
-                          : "Set monthly budget:",
-                        budget.toString(),
-                      );
-                      if (val && !isNaN(Number(val))) setBudget(Number(val));
-                    }}
-                    className="text-xs text-blue-400 hover:text-blue-300"
-                  >
-                    {lang === "bn" ? "পরিবর্তন করুন" : "Change"}
-                  </button>
-                </div>
-                <div className="flex items-end gap-2 mb-2">
-                  <span className="text-3xl font-bold">
-                    ৳{totalExpenses.toLocaleString()}
-                  </span>
-                  <span className="text-muted-foreground text-sm mb-1">
-                    / ৳{budget.toLocaleString()}
-                  </span>
-                </div>
-                <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                  <motion.div
-                    className={`h-full rounded-full ${
-                      totalExpenses > budget
-                        ? "bg-gradient-to-r from-red-500 to-red-400"
-                        : "bg-gradient-to-r from-green-500 to-emerald-500"
-                    }`}
-                    initial={{ width: 0 }}
-                    animate={{
-                      width: `${Math.min((totalExpenses / budget) * 100, 100)}%`,
-                    }}
-                    transition={{ duration: 1 }}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {totalExpenses > budget
-                    ? `⚠️ ${lang === "bn" ? "বাজেটের বেশি!" : "Over budget!"}`
-                    : `✅ ৳${(budget - totalExpenses).toLocaleString()} ${
-                        lang === "bn" ? "বাকি" : "remaining"
-                      }`}
-                </p>
-              </div>
-
-              {/* By Category */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <TrendingUp className="size-4" />
-                  {lang === "bn" ? "ক্যাটাগরি অনুযায়ী" : "By Category"}
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {EXPENSE_CATEGORIES.map((cat) => {
-                    const amount = expensesByCategory[cat.key];
-                    if (amount === 0) return null;
-                    return (
-                      <div key={cat.key} className="bg-white/5 rounded-xl p-3">
-                        <div className="flex items-center gap-2 mb-1">
-                          <cat.icon className={`size-4 ${cat.color}`} />
-                          <span className="text-xs capitalize">
-                            {lang === "bn"
-                              ? cat.key === "food"
-                                ? "খাদ্য"
-                                : cat.key === "utilities"
-                                  ? "ইউটিলিটি"
-                                  : cat.key === "entertainment"
-                                    ? "বিনোদন"
-                                    : cat.key === "education"
-                                      ? "শিক্ষা"
-                                      : cat.key === "healthcare"
-                                        ? "স্বাস্থ্যসেবা"
-                                        : cat.key === "transport"
-                                          ? "পরিবহন"
-                                          : "অন্যান্য"
-                              : cat.key}
-                          </span>
-                        </div>
-                        <p className="font-medium text-sm">
-                          ৳{amount.toLocaleString()}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Split View */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Users className="size-4" />
-                  {lang === "bn" ? "খরচ ভাগ" : "Split View"}
-                </h3>
-                <div className="space-y-3">
-                  {members.map((m) => (
-                    <div key={m.id} className="flex items-center gap-3">
-                      <span className="text-xl">{m.avatar}</span>
-                      <span className="flex-1 text-sm">{m.name}</span>
-                      <span className="font-medium">
-                        ৳{Math.round(splitAmounts[m.id] || 0).toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Recent Expenses */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3">
-                  {lang === "bn" ? "সাম্প্রতিক খরচ" : "Recent Expenses"}
-                </h3>
-                <div className="space-y-2">
-                  {expenses.slice(0, 5).map((expense) => {
-                    const catConfig = EXPENSE_CATEGORIES.find(
-                      (c) => c.key === expense.category,
-                    );
-                    return (
-                      <div
-                        key={expense.id}
-                        className="flex items-center gap-3 p-2 bg-white/5 rounded-xl group"
-                      >
-                        {catConfig && (
-                          <catConfig.icon
-                            className={`size-5 ${catConfig.color}`}
-                          />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">
-                            {expense.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {getMemberName(expense.paidBy)} •{" "}
-                            {new Date(expense.date).toLocaleDateString(
-                              lang === "bn" ? "bn-BD" : "en-US",
-                              { month: "short", day: "numeric" },
-                            )}
-                          </p>
-                        </div>
-                        <span className="font-medium text-sm">
-                          ৳{expense.amount.toLocaleString()}
-                        </span>
-                        <button
-                          onClick={() =>
-                            handleDeleteItem("expense", expense.id)
-                          }
-                          className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all"
-                        >
-                          <Trash2 className="size-3" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+            <ExpensesTab
+              expenses={expenses}
+              members={members}
+              lang={lang}
+              onAddClick={() => setShowModal("expense")}
+              onDelete={(id) => handleDeleteItem("expense", id)}
+              budget={budget}
+              setBudget={setBudget}
+              totalExpenses={totalExpenses}
+              expensesByCategory={expensesByCategory}
+              splitAmounts={splitAmounts}
+            />
           )}
 
-          {/* Meals Section */}
           {activeSection === "meals" && (
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <UtensilsCrossed className="size-5 text-green-500" />
-                {lang === "bn" ? "খাদ্য পরিকল্পনা" : "Meal Plan"}
-              </h2>
-
-              {/* Today's Meals */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Sun className="size-4 text-amber-500" />
-                  {lang === "bn" ? "আজকের খাবার" : "Today's Meals"}
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {(
-                    [
-                      {
-                        key: "breakfast",
-                        icon: Coffee,
-                        color: "text-amber-500",
-                        bg: "bg-amber-500/10",
-                      },
-                      {
-                        key: "lunch",
-                        icon: Sun,
-                        color: "text-green-500",
-                        bg: "bg-green-500/10",
-                      },
-                      {
-                        key: "dinner",
-                        icon: Moon,
-                        color: "text-blue-500",
-                        bg: "bg-blue-500/10",
-                      },
-                    ] as const
-                  ).map((meal) => (
-                    <div key={meal.key} className={`${meal.bg} rounded-xl p-4`}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <meal.icon className={`size-4 ${meal.color}`} />
-                        <span className="text-sm font-medium capitalize">
-                          {lang === "bn"
-                            ? meal.key === "breakfast"
-                              ? "সকালের নাস্তা"
-                              : meal.key === "lunch"
-                                ? "দুপুরের খাবার"
-                                : "রাতের খাবার"
-                            : meal.key}
-                        </span>
-                      </div>
-                      <p className="font-medium">{todayMeals[meal.key].name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        ~{todayMeals[meal.key].calories}{" "}
-                        {lang === "bn" ? "ক্যালোরি" : "calories"}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Weekly Plan */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <CalendarDays className="size-4 text-blue-500" />
-                  {lang === "bn" ? "সাপ্তাহিক পরিকল্পনা" : "Weekly Plan"}
-                </h3>
-                <div className="grid grid-cols-7 gap-2">
-                  {(lang === "bn"
-                    ? ["শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র"]
-                    : ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"]
-                  ).map((day, i) => (
-                    <div
-                      key={day}
-                      className={`text-center p-2 rounded-xl ${
-                        i === new Date().getDay()
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-white/5"
-                      }`}
-                    >
-                      <p className="text-xs text-muted-foreground">{day}</p>
-                      <div className="mt-1 space-y-1">
-                        <div className="text-[10px]">🍛</div>
-                        <div className="text-[10px]">🍛</div>
-                        <div className="text-[10px]">🍛</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <MealsTab lang={lang} todayMeals={todayMeals} />
           )}
 
-          {/* Calendar Section */}
           {activeSection === "calendar" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <CalendarDays className="size-5 text-purple-500" />
-                  {lang === "bn" ? "পরিবারের ক্যালেন্ডার" : "Family Calendar"}
-                </h2>
-                <button
-                  onClick={() => setShowModal("event")}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-violet-500 text-white text-sm font-medium hover:brightness-110 transition-all"
-                >
-                  <Plus className="size-4" />
-                  {lang === "bn" ? "অনুষ্ঠান যোগ করুন" : "Add Event"}
-                </button>
-              </div>
-
-              {/* Next Celebration */}
-              {nextCelebration && (
-                <div className="glass rounded-2xl p-4 bg-gradient-to-r from-pink-500/10 to-purple-500/10">
-                  <div className="flex items-center gap-3">
-                    <div className="text-3xl">
-                      {nextCelebration.type === "birthday"
-                        ? "🎂"
-                        : nextCelebration.type === "anniversary"
-                          ? "💍"
-                          : nextCelebration.type === "vaccination"
-                            ? "💉"
-                            : nextCelebration.type === "checkup"
-                              ? "🏥"
-                              : "🎉"}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium">{nextCelebration.title}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {daysLeft} {lang === "bn" ? "দিন বাকি" : "days left"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-pink-500">
-                        {daysLeft}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {lang === "bn" ? "দিন" : "days"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* All Events */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3">
-                  {lang === "bn" ? "আসন্ন অনুষ্ঠান" : "Upcoming Events"}
-                </h3>
-                {events.length === 0 ? (
-                  <div className="text-center py-8">
-                    <CalendarDays className="size-10 mx-auto text-muted-foreground mb-2" />
-                    <p className="text-muted-foreground">
-                      {lang === "bn" ? "কোনো অনুষ্ঠান নেই" : "No events yet"}
-                    </p>
-                    <p className="text-xs text-muted-foreground/70">
-                      {lang === "bn"
-                        ? "আপনার প্রথম পরিবারের অনুষ্ঠান যোগ করুন"
-                        : "Add your first family event"}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {[...events]
-                      .sort((a, b) => a.date - b.date)
-                      .map((event) => {
-                        const daysUntil = Math.ceil(
-                          (event.date - now) / (24 * 60 * 60 * 1000),
-                        );
-                        return (
-                          <div
-                            key={event.id}
-                            className="flex items-center gap-3 p-3 bg-white/5 rounded-xl group"
-                          >
-                            <div className="text-xl">
-                              {event.type === "birthday"
-                                ? "🎂"
-                                : event.type === "anniversary"
-                                  ? "💍"
-                                  : event.type === "vaccination"
-                                    ? "💉"
-                                    : event.type === "checkup"
-                                      ? "🏥"
-                                      : "🎉"}
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">
-                                {event.title}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {new Date(event.date).toLocaleDateString(
-                                  lang === "bn" ? "bn-BD" : "en-US",
-                                  {
-                                    weekday: "long",
-                                    month: "long",
-                                    day: "numeric",
-                                  },
-                                )}
-                              </p>
-                            </div>
-                            <span
-                              className={`text-xs px-2 py-1 rounded-full ${
-                                daysUntil <= 7
-                                  ? "bg-red-500/20 text-red-400"
-                                  : daysUntil <= 30
-                                    ? "bg-amber-500/20 text-amber-400"
-                                    : "bg-green-500/20 text-green-400"
-                              }`}
-                            >
-                              {daysUntil > 0
-                                ? `${daysUntil} ${lang === "bn" ? "দিন" : "d"}`
-                                : lang === "bn"
-                                  ? "আজ"
-                                  : "Today"}
-                            </span>
-                            <button
-                              onClick={() =>
-                                handleDeleteItem("event", event.id)
-                              }
-                              className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all"
-                            >
-                              <Trash2 className="size-4" />
-                            </button>
-                          </div>
-                        );
-                      })}
-                  </div>
-                )}
-              </div>
-            </div>
+            <CalendarTab
+              events={events}
+              lang={lang}
+              onAddClick={() => setShowModal("event")}
+              onDelete={(id) => handleDeleteItem("event", id)}
+            />
           )}
 
-          {/* Tasks Section */}
           {activeSection === "tasks" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <ListChecks className="size-5 text-cyan-500" />
-                  {lang === "bn" ? "কাজের বোর্ড" : "Task Board"}
-                </h2>
-                <button
-                  onClick={() => setShowModal("task")}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-medium hover:brightness-110 transition-all"
-                >
-                  <Plus className="size-4" />
-                  {lang === "bn" ? "কাজ যোগ করুন" : "Add Task"}
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* To Do */}
-                <div className="glass rounded-2xl p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="h-2 w-2 rounded-full bg-amber-500" />
-                    <h3 className="font-medium text-sm">
-                      {lang === "bn" ? "করতে হবে" : "To Do"}
-                    </h3>
-                    <span className="text-xs text-muted-foreground">
-                      ({tasksByStatus.todo.length})
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {tasksByStatus.todo.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">
-                        {lang === "bn" ? "সব আপ টু ডেট!" : "All caught up!"}
-                      </p>
-                    ) : (
-                      tasksByStatus.todo.map((task) => (
-                        <div
-                          key={task.id}
-                          className="bg-white/5 rounded-xl p-3 group"
-                        >
-                          <p className="text-sm font-medium">{task.title}</p>
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              {getMemberAvatar(task.assignedTo)}{" "}
-                              {getMemberName(task.assignedTo)}
-                            </span>
-                            <div className="flex gap-1">
-                              <button
-                                onClick={() =>
-                                  handleUpdateTaskStatus(task.id, "in-progress")
-                                }
-                                className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
-                              >
-                                →
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleDeleteItem("task", task.id)
-                                }
-                                className="opacity-0 group-hover:opacity-100 text-red-500"
-                              >
-                                <Trash2 className="size-3" />
-                              </button>
-                            </div>
-                          </div>
-                          {task.dueDate && (
-                            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                              <Clock className="size-3" />
-                              {new Date(task.dueDate).toLocaleDateString(
-                                lang === "bn" ? "bn-BD" : "en-US",
-                                { month: "short", day: "numeric" },
-                              )}
-                            </p>
-                          )}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* In Progress */}
-                <div className="glass rounded-2xl p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="h-2 w-2 rounded-full bg-blue-500" />
-                    <h3 className="font-medium text-sm">
-                      {lang === "bn" ? "চলমান" : "In Progress"}
-                    </h3>
-                    <span className="text-xs text-muted-foreground">
-                      ({tasksByStatus["in-progress"].length})
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {tasksByStatus["in-progress"].length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">
-                        {lang === "bn" ? "কোনো কাজ নেই" : "No tasks"}
-                      </p>
-                    ) : (
-                      tasksByStatus["in-progress"].map((task) => (
-                        <div
-                          key={task.id}
-                          className="bg-white/5 rounded-xl p-3 group"
-                        >
-                          <p className="text-sm font-medium">{task.title}</p>
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              {getMemberAvatar(task.assignedTo)}{" "}
-                              {getMemberName(task.assignedTo)}
-                            </span>
-                            <div className="flex gap-1">
-                              <button
-                                onClick={() =>
-                                  handleUpdateTaskStatus(task.id, "done")
-                                }
-                                className="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                              >
-                                ✓
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleUpdateTaskStatus(task.id, "todo")
-                                }
-                                className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
-                              >
-                                ←
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleDeleteItem("task", task.id)
-                                }
-                                className="opacity-0 group-hover:opacity-100 text-red-500"
-                              >
-                                <Trash2 className="size-3" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Done */}
-                <div className="glass rounded-2xl p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="h-2 w-2 rounded-full bg-green-500" />
-                    <h3 className="font-medium text-sm">
-                      {lang === "bn" ? "সম্পন্ন" : "Done"}
-                    </h3>
-                    <span className="text-xs text-muted-foreground">
-                      ({tasksByStatus.done.length})
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {tasksByStatus.done.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">
-                        {lang === "bn" ? "কোনো কাজ নেই" : "No tasks"}
-                      </p>
-                    ) : (
-                      tasksByStatus.done.map((task) => (
-                        <div
-                          key={task.id}
-                          className="bg-white/5 rounded-xl p-3 opacity-60 group"
-                        >
-                          <p className="text-sm font-medium line-through">
-                            {task.title}
-                          </p>
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              {getMemberAvatar(task.assignedTo)}{" "}
-                              {getMemberName(task.assignedTo)}
-                            </span>
-                            <button
-                              onClick={() => handleDeleteItem("task", task.id)}
-                              className="opacity-0 group-hover:opacity-100 text-red-500"
-                            >
-                              <Trash2 className="size-3" />
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <TasksTab
+              tasks={tasks}
+              members={members}
+              lang={lang}
+              onAddClick={() => setShowModal("task")}
+              onDelete={(id) => handleDeleteItem("task", id)}
+              onUpdateStatus={handleUpdateTaskStatus}
+              tasksByStatus={tasksByStatus}
+            />
           )}
 
-          {/* Messages Section */}
           {activeSection === "messages" && (
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <MessageSquare className="size-5 text-teal-500" />
-                {lang === "bn" ? "বার্তা বোর্ড" : "Message Board"}
-              </h2>
-
-              <div className="glass rounded-2xl p-4">
-                {/* Messages */}
-                <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
-                  {messages.length === 0 ? (
-                    <div className="text-center py-8">
-                      <MessageSquare className="size-10 mx-auto text-muted-foreground mb-2" />
-                      <p className="text-muted-foreground">
-                        {lang === "bn"
-                          ? "এখনো কোনো বার্তা নেই"
-                          : "No messages yet"}
-                      </p>
-                      <p className="text-xs text-muted-foreground/70">
-                        {lang === "bn"
-                          ? "আপনার পরিবারের সাথে কথা বলুন"
-                          : "Start a conversation with your family"}
-                      </p>
-                    </div>
-                  ) : (
-                    [...messages]
-                      .sort((a, b) => b.timestamp - a.timestamp)
-                      .map((msg) => {
-                        const author = members.find((m) => m.id === msg.author);
-                        return (
-                          <motion.div
-                            key={msg.id}
-                            variants={fadeUp}
-                            className="flex items-start gap-3 group"
-                          >
-                            <span className="text-xl mt-1">
-                              {author?.avatar || "🧑"}
-                            </span>
-                            <div className="flex-1 bg-white/5 rounded-2xl rounded-tl-sm p-3">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-medium text-sm">
-                                  {author?.name || "Unknown"}
-                                </span>
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(msg.timestamp).toLocaleTimeString(
-                                    lang === "bn" ? "bn-BD" : "en-US",
-                                    {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    },
-                                  )}
-                                </span>
-                              </div>
-                              <p className="text-sm">{msg.text}</p>
-                            </div>
-                            <button
-                              onClick={() =>
-                                handleDeleteItem("message", msg.id)
-                              }
-                              className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all mt-2"
-                            >
-                              <Trash2 className="size-3" />
-                            </button>
-                          </motion.div>
-                        );
-                      })
-                  )}
-                </div>
-
-                {/* Input */}
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                    placeholder={
-                      lang === "bn"
-                        ? "একটি বার্তা লিখুন..."
-                        : "Type a message..."
-                    }
-                    className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-pink-500/50 transition-all"
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!newMessage.trim()}
-                    className="px-4 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Send className="size-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
+            <MessagesTab
+              messages={messages}
+              members={members}
+              lang={lang}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              onSend={handleSendMessage}
+              onDelete={(id) => handleDeleteItem("message", id)}
+            />
           )}
 
-          {/* Health Section */}
           {activeSection === "health" && (
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Heart className="size-5 text-red-500" />
-                {lang === "bn" ? "স্বাস্থ্য ট্র্যাকার" : "Health Tracker"}
-              </h2>
-
-              {/* Vaccinations */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Syringe className="size-4 text-blue-500" />
-                  {lang === "bn" ? "টিকাকরণ" : "Vaccinations"}
-                </h3>
-                <div className="space-y-2">
-                  {events
-                    .filter((e) => e.type === "vaccination")
-                    .map((event) => (
-                      <div
-                        key={event.id}
-                        className="flex items-center gap-3 p-3 bg-blue-500/10 rounded-xl"
-                      >
-                        <Syringe className="size-5 text-blue-500" />
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{event.title}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(event.date).toLocaleDateString(
-                              lang === "bn" ? "bn-BD" : "en-US",
-                              {
-                                weekday: "long",
-                                month: "long",
-                                day: "numeric",
-                              },
-                            )}
-                          </p>
-                        </div>
-                        <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">
-                          {lang === "bn" ? "নির্ধারিত" : "Scheduled"}
-                        </span>
-                      </div>
-                    ))}
-                  {events.filter((e) => e.type === "vaccination").length ===
-                    0 && (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      {lang === "bn"
-                        ? "কোনো টিকার তারিখ নেই"
-                        : "No vaccination dates"}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Check-up Reminders */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Stethoscope className="size-4 text-green-500" />
-                  {lang === "bn" ? "চেক-আপ রিমাইন্ডার" : "Check-up Reminders"}
-                </h3>
-                <div className="space-y-2">
-                  {events
-                    .filter((e) => e.type === "checkup")
-                    .map((event) => {
-                      const daysUntil = Math.ceil(
-                        (event.date - now) / (24 * 60 * 60 * 1000),
-                      );
-                      return (
-                        <div
-                          key={event.id}
-                          className="flex items-center gap-3 p-3 bg-green-500/10 rounded-xl"
-                        >
-                          <Stethoscope className="size-5 text-green-500" />
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">{event.title}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(event.date).toLocaleDateString(
-                                lang === "bn" ? "bn-BD" : "en-US",
-                                {
-                                  weekday: "long",
-                                  month: "long",
-                                  day: "numeric",
-                                },
-                              )}
-                            </p>
-                          </div>
-                          <span
-                            className={`text-xs px-2 py-1 rounded-full ${
-                              daysUntil <= 7
-                                ? "bg-red-500/20 text-red-400"
-                                : "bg-amber-500/20 text-amber-400"
-                            }`}
-                          >
-                            {daysUntil}{" "}
-                            {lang === "bn" ? "দিন বাকি" : "days left"}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  {events.filter((e) => e.type === "checkup").length === 0 && (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      {lang === "bn"
-                        ? "কোনো চেক-আপ নেই"
-                        : "No check-up reminders"}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Family Health Summary */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Heart className="size-4 text-red-500" />
-                  {lang === "bn"
-                    ? "পরিবারের স্বাস্থ্য সারাংশ"
-                    : "Family Health Summary"}
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {members.map((member) => (
-                    <div
-                      key={member.id}
-                      className="bg-white/5 rounded-xl p-3 text-center"
-                    >
-                      <div className="text-2xl mb-1">{member.avatar}</div>
-                      <p className="text-xs font-medium">{member.name}</p>
-                      <div className="mt-2 flex justify-center gap-1">
-                        <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                        <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                        <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                        <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                        <div className="h-1.5 w-1.5 rounded-full bg-gray-500" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <HealthTab events={events} members={members} lang={lang} />
           )}
 
-          {/* Celebrations Section */}
           {activeSection === "celebrations" && (
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Trophy className="size-5 text-amber-500" />
-                {lang === "bn" ? "উদযাপন" : "Celebrations"}
-              </h2>
-
-              {/* Next Celebration */}
-              {nextCelebration && (
-                <div className="glass rounded-2xl p-6 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-amber-500/20 text-center">
-                  <div className="text-5xl mb-3">
-                    {nextCelebration.type === "birthday"
-                      ? "🎂"
-                      : nextCelebration.type === "anniversary"
-                        ? "💍"
-                        : "🎉"}
-                  </div>
-                  <h3 className="text-xl font-bold">{nextCelebration.title}</h3>
-                  <p className="text-muted-foreground mt-1">
-                    {new Date(nextCelebration.date).toLocaleDateString(
-                      lang === "bn" ? "bn-BD" : "en-US",
-                      {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      },
-                    )}
-                  </p>
-                  <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10">
-                    <span className="text-2xl font-bold text-pink-500">
-                      {daysLeft}
-                    </span>
-                    <span className="text-sm">
-                      {lang === "bn" ? "দিন বাকি" : "days left"}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* All Celebrations */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <PartyPopper className="size-4 text-amber-500" />
-                  {lang === "bn" ? "সব উদযাপন" : "All Celebrations"}
-                </h3>
-                <div className="space-y-2">
-                  {[...events]
-                    .sort((a, b) => a.date - b.date)
-                    .map((event) => {
-                      const daysUntil = Math.ceil(
-                        (event.date - now) / (24 * 60 * 60 * 1000),
-                      );
-                      return (
-                        <div
-                          key={event.id}
-                          className="flex items-center gap-3 p-3 bg-white/5 rounded-xl group"
-                        >
-                          <div className="text-xl">
-                            {event.type === "birthday"
-                              ? "🎂"
-                              : event.type === "anniversary"
-                                ? "💍"
-                                : event.type === "vaccination"
-                                  ? "💉"
-                                  : event.type === "checkup"
-                                    ? "🏥"
-                                    : "🎉"}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">{event.title}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(event.date).toLocaleDateString(
-                                lang === "bn" ? "bn-BD" : "en-US",
-                                {
-                                  month: "long",
-                                  day: "numeric",
-                                },
-                              )}
-                            </p>
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {daysUntil > 0
-                              ? `${daysUntil} ${lang === "bn" ? "দিন" : "days"}`
-                              : lang === "bn"
-                                ? "আজ!"
-                                : "Today!"}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteItem("event", event.id)}
-                            className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all"
-                          >
-                            <Trash2 className="size-4" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                </div>
-              </div>
-
-              {/* Family Achievements */}
-              <div className="glass rounded-2xl p-4">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Star className="size-4 text-amber-500" />
-                  {lang === "bn" ? "পরিবারের সাফল্য" : "Family Achievements"}
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {[
-                    {
-                      icon: "🏆",
-                      label:
-                        lang === "bn" ? "১০ দিনের স্ট্রিক" : "10-day streak",
-                      done: true,
-                    },
-                    {
-                      icon: "📚",
-                      label: lang === "bn" ? "৫টি বই পড়েছে" : "5 books read",
-                      done: true,
-                    },
-                    {
-                      icon: "💰",
-                      label:
-                        lang === "bn"
-                          ? "সঞ্চয় লক্ষ্য পূরণ"
-                          : "Savings goal met",
-                      done: false,
-                    },
-                    {
-                      icon: "🏃",
-                      label: lang === "bn" ? "পরিবার দৌড়" : "Family run",
-                      done: true,
-                    },
-                    {
-                      icon: "🎯",
-                      label: lang === "bn" ? "মাসিক লক্ষ্য" : "Monthly goal",
-                      done: false,
-                    },
-                    {
-                      icon: "❤️",
-                      label:
-                        lang === "bn" ? "৩৬৫ দিন একসাথে" : "365 days together",
-                      done: false,
-                    },
-                  ].map((ach, i) => (
-                    <div
-                      key={i}
-                      className={`rounded-xl p-3 text-center ${
-                        ach.done ? "bg-amber-500/10" : "bg-white/5 opacity-50"
-                      }`}
-                    >
-                      <div className="text-2xl mb-1">{ach.icon}</div>
-                      <p className="text-xs font-medium">{ach.label}</p>
-                      {ach.done && (
-                        <span className="text-[10px] text-green-500">
-                          ✓ {lang === "bn" ? "অর্জিত" : "Achieved"}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <CelebrationsTab
+              events={events}
+              lang={lang}
+              onDelete={(id) => handleDeleteItem("event", id)}
+            />
           )}
         </motion.div>
       </AnimatePresence>
@@ -2102,7 +635,7 @@ export default function FamilyDashboard() {
                     >
                       {Object.entries(ROLE_CONFIG).map(([key, val]) => (
                         <option key={key} value={key}>
-                          {val[lang]}
+                          {val[lang as "en" | "bn"]}
                         </option>
                       ))}
                     </select>

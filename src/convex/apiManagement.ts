@@ -1,5 +1,23 @@
-import { query, mutation } from "./_generated/server";
+import {
+  query,
+  mutation,
+  type QueryCtx,
+  type MutationCtx,
+} from "./_generated/server";
 import { v } from "convex/values";
+
+async function requireAdmin(ctx: QueryCtx | MutationCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) throw new Error("Not authenticated");
+  const admin = await ctx.db
+    .query("users")
+    .withIndex("by_tokenIdentifier", (q) =>
+      q.eq("tokenIdentifier", identity.tokenIdentifier),
+    )
+    .unique();
+  if (!admin || admin.role !== "admin") throw new Error("Unauthorized");
+  return admin;
+}
 
 const DEFAULT_ENDPOINTS = [
   {
@@ -232,8 +250,7 @@ const DEFAULT_ENDPOINTS = [
 export const getConfig = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    await requireAdmin(ctx);
 
     const configs = await ctx.db.query("apiConfig").collect();
     if (configs.length === 0) {
@@ -252,8 +269,7 @@ export const updateConfig = mutation({
     timeout: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    await requireAdmin(ctx);
 
     const existing = await ctx.db
       .query("apiConfig")
@@ -284,8 +300,7 @@ export const updateConfig = mutation({
 export const getHealth = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    await requireAdmin(ctx);
 
     const configs = await ctx.db.query("apiConfig").collect();
     const now = Date.now();
@@ -327,8 +342,7 @@ export const getHealth = query({
 export const listKeys = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    await requireAdmin(ctx);
 
     return await ctx.db.query("apiKeys").collect();
   },
@@ -340,10 +354,9 @@ export const createKey = mutation({
     permissions: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    await requireAdmin(ctx);
 
-    const key = `pv_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+    const key = `pv_${crypto.randomUUID()}`;
 
     return await ctx.db.insert("apiKeys", {
       key,
@@ -359,8 +372,7 @@ export const createKey = mutation({
 export const revokeKey = mutation({
   args: { id: v.id("apiKeys") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    await requireAdmin(ctx);
 
     await ctx.db.patch(args.id, { active: false });
   },
@@ -369,8 +381,7 @@ export const revokeKey = mutation({
 export const deleteKey = mutation({
   args: { id: v.id("apiKeys") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    await requireAdmin(ctx);
 
     await ctx.db.delete(args.id);
   },
@@ -383,8 +394,7 @@ export const getLogs = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    await requireAdmin(ctx);
 
     let logs;
     if (args.endpoint) {
@@ -411,8 +421,7 @@ export const getLogs = query({
 export const getStats = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    await requireAdmin(ctx);
 
     const now = Date.now();
     const oneDayAgo = now - 86400000;
@@ -471,8 +480,7 @@ export const getStats = query({
 export const getDeploymentInfo = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    await requireAdmin(ctx);
 
     const configs = await ctx.db.query("apiConfig").collect();
     const keys = await ctx.db.query("apiKeys").collect();
@@ -522,8 +530,7 @@ export const logRequest = mutation({
 export const clearLogs = mutation({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    await requireAdmin(ctx);
 
     const logs = await ctx.db.query("apiLogs").collect();
     for (const log of logs) {

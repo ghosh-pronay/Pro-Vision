@@ -401,7 +401,11 @@ export default defineSchema({
     userId: v.id("users"),
     name: v.string(),
     type: v.string(),
-    config: v.any(),
+    config: v.object({
+      triggerType: v.optional(v.string()),
+      conditions: v.optional(v.any()),
+      actions: v.optional(v.any()),
+    }),
     isActive: v.boolean(),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -579,7 +583,13 @@ export default defineSchema({
     message: v.string(),
     type: v.string(),
     isRead: v.boolean(),
-    data: v.optional(v.any()),
+    data: v.optional(
+      v.object({
+        taskId: v.optional(v.string()),
+        habitId: v.optional(v.string()),
+        link: v.optional(v.string()),
+      }),
+    ),
     createdAt: v.number(),
   })
     .index("by_userId", ["userId"])
@@ -698,20 +708,12 @@ export default defineSchema({
     category: v.string(),
     status: v.string(),
     reference: v.optional(v.string()),
-    metadata: v.optional(v.any()),
-    createdAt: v.number(),
-  })
-    .index("by_user", ["userId"])
-    .index("by_status", ["status"])
-    .index("by_method", ["method"]),
-
-  paymentMethods: defineTable({
-    userId: v.string(),
-    type: v.string(),
-    last4: v.optional(v.string()),
-    brand: v.optional(v.string()),
-    isDefault: v.boolean(),
-    metadata: v.optional(v.any()),
+    metadata: v.optional(
+      v.object({
+        method: v.optional(v.string()),
+        reference: v.optional(v.string()),
+      }),
+    ),
     createdAt: v.number(),
   }).index("by_user", ["userId"]),
 

@@ -84,8 +84,7 @@ export const upsert = mutation({
     const now = Date.now();
 
     if (existing) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const updates: Record<string, any> = { updatedAt: now };
+      const updates: Record<string, unknown> = { updatedAt: now };
       if (args.displayName !== undefined)
         updates.displayName = args.displayName;
       if (args.email !== undefined) updates.email = args.email;

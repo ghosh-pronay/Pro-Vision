@@ -81,8 +81,8 @@ async function collectIndexedDBData(): Promise<Record<string, unknown>> {
       data[dbInfo.name] = { version: dbInfo.version, stores: storeData };
       db.close();
     }
-  } catch {
-    // IndexedDB not available or empty
+  } catch (e) {
+    console.error("[DataBackup] IndexedDB not available or empty:", e);
   }
   return data;
 }
@@ -111,7 +111,8 @@ function readFileAsJSON(file: File): Promise<BackupData> {
           reject(new Error("Invalid backup format"));
         }
         resolve(data);
-      } catch {
+      } catch (e) {
+        console.error("[DataBackup]", "Failed to parse backup JSON", e);
         reject(new Error("Invalid JSON"));
       }
     };
@@ -144,7 +145,8 @@ export function DataBackup({ className }: { className?: string }) {
       const filename = `pro-vision-backup-${new Date().toISOString().slice(0, 10)}.json`;
       triggerDownload(backup, filename);
       toast.success(t.exportSuccess, { icon: CheckCircle });
-    } catch {
+    } catch (e) {
+      console.error("[DataBackup]", "Export failed", e);
       toast.error(t.exportError, { icon: AlertCircle });
     }
   };
@@ -157,7 +159,8 @@ export function DataBackup({ className }: { className?: string }) {
       const data = await readFileAsJSON(file);
       setPendingData(data);
       setShowConfirm(true);
-    } catch {
+    } catch (e) {
+      console.error("[DataBackup]", "Invalid file", e);
       toast.error(t.invalidFile, { icon: AlertCircle });
     }
 
@@ -171,7 +174,16 @@ export function DataBackup({ className }: { className?: string }) {
 
     try {
       if (pendingData.localStorage) {
+        const BLOCKED_KEYS = [
+          "pv-fcm-token",
+          "emailForSignIn",
+          "__CONVEX_SHIM_ACTIVE__",
+          "pv-encryption-key",
+          "pv-accessibility",
+        ];
         for (const [key, value] of Object.entries(pendingData.localStorage)) {
+          if (typeof value !== "string") continue;
+          if (BLOCKED_KEYS.some((blocked) => key.startsWith(blocked))) continue;
           localStorage.setItem(key, value);
         }
       }
@@ -179,7 +191,8 @@ export function DataBackup({ className }: { className?: string }) {
       setPendingData(null);
       toast.success(t.importSuccess, { icon: CheckCircle });
       setTimeout(() => window.location.reload(), 800);
-    } catch {
+    } catch (e) {
+      console.error("[DataBackup]", "Import failed", e);
       toast.error(t.importError, { icon: AlertCircle });
     }
   };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const cache = new Map<string, unknown>();
 const CACHE_TTL = 5 * 60 * 1000;
@@ -6,6 +6,8 @@ const MAX_CACHE_SIZE = 100;
 const timestamps = new Map<string, number>();
 let lastCleanup = Date.now();
 const CLEANUP_INTERVAL = 60 * 1000;
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
 
 function cleanupExpired() {
   const now = Date.now();
@@ -36,7 +38,7 @@ function evictOldest() {
 export function useCachedQuery<T>(
   key: string,
   liveData: T | undefined,
-): T | undefined {
+): { data: T | undefined; retry: () => void } {
   const [data, setData] = useState<T | undefined>(() => {
     cleanupExpired();
     const ts = timestamps.get(key);
@@ -45,6 +47,7 @@ export function useCachedQuery<T>(
     }
     return undefined;
   });
+  const [retryCount, setRetryCount] = useState(0);
   const mountedRef = useRef(true);
   const keyRef = useRef(key);
 
@@ -62,9 +65,27 @@ export function useCachedQuery<T>(
       timestamps.set(keyRef.current, Date.now());
       cleanupExpired();
       evictOldest();
-      if (mountedRef.current) setData(liveData);
+      if (mountedRef.current) {
+        setData(liveData);
+        setRetryCount(0);
+      }
+    } else if (
+      liveData === undefined &&
+      retryCount > 0 &&
+      retryCount < MAX_RETRIES
+    ) {
+      const timer = setTimeout(() => {
+        if (mountedRef.current) {
+          setRetryCount((c) => c + 1);
+        }
+      }, RETRY_DELAY * retryCount);
+      return () => clearTimeout(timer);
     }
-  }, [liveData]);
+  }, [liveData, retryCount]);
 
-  return data;
+  const retry = useCallback(() => {
+    setRetryCount(1);
+  }, []);
+
+  return { data, retry };
 }

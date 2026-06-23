@@ -28,6 +28,9 @@
     />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
+    <!-- Performance: preconnect to Firebase/Convex APIs -->
+    <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+    <link rel="preconnect" href="https://www.googleapis.com" />
     <title>Pro-Vision : Plan • Focus • Achieve</title>
     <link rel="canonical" href="https://pro-visions.web.app/" />
     <meta
@@ -54,6 +57,27 @@
       content="All-in-one productivity app with habit tracker, expense tracker, focus timer, AI Coach and well-being tools."
     />
     <meta name="twitter:image" content="/og-image.png" />
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Pro-Vision",
+        "url": "https://pro-visions.web.app/",
+        "description": "All-in-one productivity app with habit tracker, expense tracker, focus timer, AI Coach and well-being tools.",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BDT"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Pro-Vision Team"
+        }
+      }
+    </script>
     <!-- OneSignal loaded after page idle -->
     <script>
       if ("requestIdleCallback" in window) {

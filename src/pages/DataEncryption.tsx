@@ -254,7 +254,8 @@ export default function DataEncryption() {
       setCopiedLink(true);
       toastSuccess(tc("encryption.linkCopied"));
       setTimeout(() => setCopiedLink(false), 2000);
-    } catch {
+    } catch (e) {
+      console.error("[DataEncryption]", "encryption operation failed", e);
       toastError("Failed to copy link");
     }
   };

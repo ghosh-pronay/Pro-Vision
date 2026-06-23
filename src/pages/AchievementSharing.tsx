@@ -334,7 +334,9 @@ export default function AchievementSharing() {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           })
-          .catch(() => {});
+          .catch((e) =>
+            console.error("[AchievementSharing]", "share failed", e),
+          );
         return;
       case "instagram":
         handleDownloadImage(a);

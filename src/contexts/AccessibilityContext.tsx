@@ -48,8 +48,8 @@ function loadSettings(): AccessibilitySettings {
       const parsed = JSON.parse(stored) as Partial<AccessibilitySettings>;
       return { ...defaults, ...parsed };
     }
-  } catch {
-    // ignore
+  } catch (e) {
+    console.error("[AccessibilityContext]", "localStorage read failed", e);
   }
   return { ...defaults, reducedMotion: getSystemReducedMotion() };
 }

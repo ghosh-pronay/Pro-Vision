@@ -53,7 +53,9 @@ const PWARegister = memo(function PWARegister() {
           }
         });
       })
-      .catch(() => {});
+      .catch((e) => {
+        console.error("[PWARegister]", "service worker registration failed", e);
+      });
   }, []);
 
   const handleInstall = async () => {

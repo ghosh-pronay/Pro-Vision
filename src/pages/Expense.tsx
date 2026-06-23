@@ -1,119 +1,26 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 import { useState, useMemo } from "react";
-import {
-  ArrowUpRight,
-  ArrowDownLeft,
-  ArrowLeftRight,
-  Trash2,
-  Calculator,
-  Repeat,
-  TrendingUp,
-  TrendingDown,
-  Wallet,
-  X,
-  Plus,
-  Edit3,
-  Star,
-} from "lucide-react";
+import { Repeat, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
-import FloatingCalculator from "@/components/finance/FloatingCalculator";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toastSuccess, toastError } from "@/lib/toast-helpers";
 import { AddWalletModal } from "@/components/wallet/AddWalletModal";
 import { WalletForm } from "@/components/wallet/WalletForm";
 import type { Wallet as WalletType } from "@/types/wallet";
+import {
+  ExpenseStats,
+  TransactionForm,
+  TransactionList,
+  WalletManager,
+} from "@/components/expense";
+import type { ExpenseTransaction } from "@/components/expense";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
-
-const CATEGORY_ICONS: Record<string, string> = {
-  Food: "🍽️",
-  Salary: "💼",
-  Freelance: "💻",
-  Transfer: "📱",
-  Utilities: "⚡",
-  Transport: "🚌",
-  Cashback: "🎁",
-  Shopping: "🛒",
-  Health: "🏥",
-  Education: "📚",
-  "Food & Dining": "🍽️",
-  Transportation: "🚌",
-  "Bills & Utilities": "⚡",
-  "Mobile Recharge": "📱",
-  "Internet Bill": "📶",
-  Groceries: "🍎",
-  Healthcare: "🏥",
-  Entertainment: "🎬",
-  Clothing: "👕",
-  Savings: "💰",
-  "Investment Returns": "📈",
-  "Gift Received": "🎁",
-  "Gift Given": "🎁",
-  "Charity/Donation": "❤️",
-  Insurance: "🛡️",
-  "Loan Payment": "💳",
-  Business: "🏢",
-  "Other Income": "💵",
-  Rent: "🏠",
-  "Personal Care": "💆",
-  Travel: "✈️",
-  "Other Expense": "📦",
-};
-
-interface ExpenseTransaction {
-  _id: string;
-  type: string;
-  amount: number;
-  category: string;
-  description?: string;
-  date: number;
-  walletId: string;
-  toWalletId?: string;
-}
-
-const INCOME_CATEGORIES = [
-  "Salary",
-  "Freelance",
-  "Business",
-  "Investment Returns",
-  "Gift Received",
-  "Other Income",
-];
-
-const EXPENSE_CATEGORIES = [
-  "Food & Dining",
-  "Transportation",
-  "Shopping",
-  "Bills & Utilities",
-  "Rent",
-  "Groceries",
-  "Healthcare",
-  "Education",
-  "Entertainment",
-  "Clothing",
-  "Personal Care",
-  "Mobile Recharge",
-  "Internet Bill",
-  "Savings",
-  "Travel",
-  "Gift Given",
-  "Charity/Donation",
-  "Insurance",
-  "Loan Payment",
-  "Other Expense",
-];
-
-const toBanglaNumber = (n: number): string => {
-  const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-  return n
-    .toLocaleString("en-US")
-    .replace(/\d/g, (d) => banglaDigits[parseInt(d)]);
 };
 
 export default function Expense() {
@@ -228,8 +135,8 @@ export default function Expense() {
       setShowForm(false);
       toastSuccess(lang === "bn" ? "আয় যোগ হয়েছে!" : "Income added!");
     } catch (error) {
-      handleMutationError(
-        error,
+      console.error("[Expense]", "Failed to add income", error);
+      toastError(
         lang === "bn" ? "আয় যোগ করতে ব্যর্থ" : "Failed to add income",
       );
     } finally {
@@ -255,7 +162,8 @@ export default function Expense() {
       setCategory("");
       setShowForm(false);
       toastSuccess(lang === "bn" ? "খরচ যোগ হয়েছে!" : "Expense added!");
-    } catch (_error) {
+    } catch (e) {
+      console.error("[Expense]", "Failed to add expense", e);
       toastError(
         lang === "bn" ? "খরচ যোগ করতে ব্যর্থ" : "Failed to add expense",
       );
@@ -263,6 +171,25 @@ export default function Expense() {
       setIsAddingExpense(false);
     }
   };
+
+  const transferFee = useMemo(() => {
+    if (
+      !effectiveFromWallet ||
+      !effectiveToWallet ||
+      effectiveFromWallet === effectiveToWallet
+    )
+      return 0;
+    const from = wallets.find(
+      (w: WalletType) => w._id === effectiveFromWallet && !w.isHidden,
+    );
+    const to = wallets.find(
+      (w: WalletType) => w._id === effectiveToWallet && !w.isHidden,
+    );
+    if (from && to && from.type !== to.type) {
+      return parseFloat(amount || "0") * 0.01;
+    }
+    return 0;
+  }, [effectiveFromWallet, effectiveToWallet, wallets, amount]);
 
   const handleTransfer = async () => {
     const amt = parseFloat(amount);
@@ -301,7 +228,8 @@ export default function Expense() {
       toastSuccess(
         lang === "bn" ? "স্থানান্তর সম্পন্ন!" : "Transfer complete!",
       );
-    } catch (_error) {
+    } catch (e) {
+      console.error("[Expense]", "Failed to transfer", e);
       toastError(lang === "bn" ? "স্থানান্তর ব্যর্থ" : "Transfer failed");
     } finally {
       setIsTransferring(false);
@@ -314,7 +242,8 @@ export default function Expense() {
       toastSuccess(
         lang === "bn" ? "লেনদেন মুছে ফেলা হয়েছে" : "Transaction deleted",
       );
-    } catch (_error) {
+    } catch (e) {
+      console.error("[Expense]", "Failed to delete transaction", e);
       toastError(
         lang === "bn"
           ? "লেনদেন মুছে ফেলতে ব্যর্থ"
@@ -338,7 +267,8 @@ export default function Expense() {
       });
       setShowAddWalletModal(false);
       toastSuccess(lang === "bn" ? "ওয়ালেট যোগ হয়েছে" : "Wallet added");
-    } catch {
+    } catch (e) {
+      console.error("[Expense]", "Failed to add wallet", e);
       toastError(
         lang === "bn" ? "ওয়ালেট যোগ করতে ব্যর্থ" : "Failed to add wallet",
       );
@@ -361,7 +291,8 @@ export default function Expense() {
       });
       setEditingWallet(null);
       toastSuccess(lang === "bn" ? "ওয়ালেট আপডেট হয়েছে" : "Wallet updated");
-    } catch {
+    } catch (e) {
+      console.error("[Expense]", "Failed to update wallet", e);
       toastError(
         lang === "bn" ? "ওয়ালেট আপডেট করতে ব্যর্থ" : "Failed to update wallet",
       );
@@ -375,38 +306,22 @@ export default function Expense() {
       toastSuccess(
         lang === "bn" ? "ওয়ালেট মুছে ফেলা হয়েছে" : "Wallet deleted",
       );
-    } catch {
+    } catch (e) {
+      console.error("[Expense]", "Failed to delete wallet", e);
       toastError(
         lang === "bn" ? "ওয়ালেট মুছে ফেলতে ব্যর্থ" : "Failed to delete wallet",
       );
     }
   };
 
-  const handleToggleHide = async (wallet: WalletType) => {
-    try {
-      await updateWallet({
-        id: wallet._id,
-      });
-      toastSuccess(
-        lang === "bn"
-          ? "ওয়ালেট দৃশ্যমানতা পরিবর্তন হয়েছে"
-          : "Wallet visibility updated",
-      );
-    } catch {
-      toastError(lang === "bn" ? "পরিবর্তন করতে ব্যর্থ" : "Failed to update");
-    }
-  };
-
   const handleSetDefault = async (wallet: WalletType) => {
     try {
-      await updateWallet({
-        id: wallet._id,
-        isDefault: true,
-      });
+      await updateWallet({ id: wallet._id, isDefault: true });
       toastSuccess(
         lang === "bn" ? "ডিফল্ট ওয়ালেট সেট হয়েছে" : "Default wallet set",
       );
-    } catch {
+    } catch (e) {
+      console.error("[Expense]", "Failed to set default wallet", e);
       toastError(lang === "bn" ? "সেট করতে ব্যর্থ" : "Failed to set default");
     }
   };
@@ -420,12 +335,7 @@ export default function Expense() {
 
   const todayDate = new Date().toLocaleDateString(
     lang === "bn" ? "bn-BD" : "en-US",
-    {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    },
+    { weekday: "long", year: "numeric", month: "long", day: "numeric" },
   );
 
   const getWalletName = (walletId: string) => {
@@ -433,47 +343,25 @@ export default function Expense() {
     return w ? (lang === "bn" && w.nameBn ? w.nameBn : w.name) : "";
   };
 
-  const getWalletIcon = (walletId: string) => {
+  const getWalletColor = (walletId: string) => {
     const w = wallets.find((w: WalletType) => w._id === walletId);
     return w?.color || "#6b7280";
   };
-
-  const transferFee = useMemo(() => {
-    if (
-      !effectiveFromWallet ||
-      !effectiveToWallet ||
-      effectiveFromWallet === effectiveToWallet
-    )
-      return 0;
-    const from = wallets.find(
-      (w: WalletType) => w._id === effectiveFromWallet && !w.isHidden,
-    );
-    const to = wallets.find(
-      (w: WalletType) => w._id === effectiveToWallet && !w.isHidden,
-    );
-    if (from && to && from.type !== to.type) {
-      return parseFloat(amount || "0") * 0.01;
-    }
-    return 0;
-  }, [effectiveFromWallet, effectiveToWallet, wallets, amount]);
 
   const openIncomeForm = () => {
     setActiveTab("income");
     setShowForm(true);
     setCategory("Salary");
   };
-
   const openExpenseForm = () => {
     setActiveTab("expense");
     setShowForm(true);
     setCategory("Food & Dining");
   };
-
   const openTransferForm = () => {
     setActiveTab("transfer");
     setShowForm(true);
   };
-
   const closeForm = () => {
     setShowForm(false);
     setAmount("");
@@ -508,7 +396,6 @@ export default function Expense() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -520,7 +407,6 @@ export default function Expense() {
         <p className="text-sm text-muted-foreground mt-1">{todayDate}</p>
       </motion.div>
 
-      {/* Three Action Buttons */}
       <motion.div
         custom={0}
         variants={fadeUp}
@@ -545,7 +431,6 @@ export default function Expense() {
             </div>
           </div>
         </button>
-
         <button
           onClick={openExpenseForm}
           className="flex items-center gap-3 p-4 rounded-2xl glass transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -563,7 +448,6 @@ export default function Expense() {
             </div>
           </div>
         </button>
-
         <button
           onClick={openTransferForm}
           className="flex items-center gap-3 p-4 rounded-2xl glass transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -583,623 +467,71 @@ export default function Expense() {
         </button>
       </motion.div>
 
-      {/* Overview Stats Card */}
-      <motion.div
-        custom={1}
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-        className="glass-strong rounded-2xl p-6 glass-accent-top"
-      >
-        {stats === undefined ? (
-          <div className="grid grid-cols-3 gap-4 text-center">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="glass rounded-xl p-3 animate-pulse">
-                <div className="h-3 bg-foreground/10 rounded w-16 mx-auto mb-2" />
-                <div className="h-5 bg-foreground/10 rounded w-20 mx-auto" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="glass rounded-xl p-3">
-              <div className="flex items-center justify-center gap-1.5 mb-1">
-                <ArrowDownLeft className="size-4 text-[var(--pv-green)]" />
-                <span className="text-xs text-muted-foreground">
-                  {t("expense.totalIncome", lang)}
-                </span>
-              </div>
-              <div className="text-lg font-bold text-[var(--pv-green)]">
-                ৳
-                {lang === "bn"
-                  ? toBanglaNumber(totalIncome)
-                  : totalIncome.toLocaleString()}
-              </div>
-            </div>
-            <div className="glass rounded-xl p-3">
-              <div className="flex items-center justify-center gap-1.5 mb-1">
-                <ArrowUpRight className="size-4 text-[var(--pv-red)]" />
-                <span className="text-xs text-muted-foreground">
-                  {t("expense.totalExpense", lang)}
-                </span>
-              </div>
-              <div className="text-lg font-bold text-[var(--pv-red)]">
-                ৳
-                {lang === "bn"
-                  ? toBanglaNumber(totalExpense)
-                  : totalExpense.toLocaleString()}
-              </div>
-            </div>
-            <div className="glass rounded-xl p-3">
-              <div className="flex items-center justify-center gap-1.5 mb-1">
-                <Wallet className="size-4 text-[var(--pv-blue)]" />
-                <span className="text-xs text-muted-foreground">
-                  {t("expense.netBalance", lang)}
-                </span>
-              </div>
-              <div className="text-lg font-bold text-[var(--pv-blue)]">
-                ৳
-                {lang === "bn"
-                  ? toBanglaNumber(netBalance)
-                  : netBalance.toLocaleString()}
-              </div>
-            </div>
-          </div>
-        )}
-      </motion.div>
+      <ExpenseStats
+        lang={lang}
+        stats={stats}
+        totalIncome={totalIncome}
+        totalExpense={totalExpense}
+        netBalance={netBalance}
+      />
 
-      {/* Forms */}
       <AnimatePresence>
         {showForm && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="glass-strong rounded-2xl p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">
-                  {activeTab === "income"
-                    ? t("expense.addIncome", lang)
-                    : activeTab === "expense"
-                      ? t("expense.addExpense", lang)
-                      : t("expense.fundTransfer", lang)}
-                </h3>
-                <button
-                  onClick={closeForm}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
-
-              {/* Income Form */}
-              {activeTab === "income" && (
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.selectWallet", lang)}
-                    </label>
-                    <select
-                      value={effectiveIncomeWallet}
-                      onChange={(e) => setIncomeWallet(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
-                    >
-                      {visibleWallets.map((w: WalletType) => (
-                        <option key={w._id} value={w._id}>
-                          {lang === "bn" && w.nameBn ? w.nameBn : w.name} — ৳
-                          {w.balance.toLocaleString()}
-                          {w.isDefault ? " ★" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.amount", lang)}
-                    </label>
-                    <div className="relative flex items-center gap-1">
-                      <input
-                        value={amount}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9.]/g, "");
-                          const parts = val.split(".");
-                          if (parts.length > 2) return;
-                          if (parts[1] && parts[1].length > 2) return;
-                          setAmount(val);
-                        }}
-                        onKeyDown={(e) =>
-                          e.key === "Enter" && handleAddIncome()
-                        }
-                        placeholder="৳ 0"
-                        type="number"
-                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none"
-                        autoFocus
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowCalc(!showCalc)}
-                        className={`p-2.5 rounded-xl transition-all ${showCalc ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"}`}
-                      >
-                        <Calculator className="size-4" />
-                      </button>
-                      <AnimatePresence>
-                        {showCalc && (
-                          <FloatingCalculator
-                            onResult={(val) => {
-                              setAmount(val);
-                              setShowCalc(false);
-                            }}
-                            onClose={() => setShowCalc(false)}
-                          />
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.category", lang)}
-                    </label>
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
-                    >
-                      {INCOME_CATEGORIES.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {CATEGORY_ICONS[cat] ?? "📦"} {cat}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.description", lang)}
-                    </label>
-                    <input
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder={t("expense.optionalDescription", lang)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.date", lang)}
-                    </label>
-                    <input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleAddIncome}
-                    disabled={!incomeWallet || !amount || isAddingIncome}
-                    className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.97] disabled:opacity-40"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, var(--pv-green), #16a34a)",
-                    }}
-                  >
-                    {isAddingIncome
-                      ? t("expense.adding", lang)
-                      : t("expense.addIncome", lang)}
-                  </button>
-                </div>
-              )}
-
-              {/* Expense Form */}
-              {activeTab === "expense" && (
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.selectWallet", lang)}
-                    </label>
-                    <select
-                      value={effectiveExpenseWallet}
-                      onChange={(e) => setExpenseWallet(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
-                    >
-                      {visibleWallets.map((w: WalletType) => (
-                        <option key={w._id} value={w._id}>
-                          {lang === "bn" && w.nameBn ? w.nameBn : w.name} — ৳
-                          {w.balance.toLocaleString()}
-                          {w.isDefault ? " ★" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.amount", lang)}
-                    </label>
-                    <div className="relative flex items-center gap-1">
-                      <input
-                        value={amount}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9.]/g, "");
-                          const parts = val.split(".");
-                          if (parts.length > 2) return;
-                          if (parts[1] && parts[1].length > 2) return;
-                          setAmount(val);
-                        }}
-                        onKeyDown={(e) =>
-                          e.key === "Enter" && handleAddExpense()
-                        }
-                        placeholder="৳ 0"
-                        type="number"
-                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none"
-                        autoFocus
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowCalc(!showCalc)}
-                        className={`p-2.5 rounded-xl transition-all ${showCalc ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"}`}
-                      >
-                        <Calculator className="size-4" />
-                      </button>
-                      <AnimatePresence>
-                        {showCalc && (
-                          <FloatingCalculator
-                            onResult={(val) => {
-                              setAmount(val);
-                              setShowCalc(false);
-                            }}
-                            onClose={() => setShowCalc(false)}
-                          />
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.category", lang)}
-                    </label>
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
-                    >
-                      {EXPENSE_CATEGORIES.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {CATEGORY_ICONS[cat] ?? "📦"} {cat}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.description", lang)}
-                    </label>
-                    <input
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder={t("expense.optionalDescription", lang)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.date", lang)}
-                    </label>
-                    <input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleAddExpense}
-                    disabled={!expenseWallet || !amount || isAddingExpense}
-                    className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.97] disabled:opacity-40"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, var(--pv-red), #dc2626)",
-                    }}
-                  >
-                    {isAddingExpense
-                      ? t("expense.adding", lang)
-                      : t("expense.addExpense", lang)}
-                  </button>
-                </div>
-              )}
-
-              {/* Transfer Form */}
-              {activeTab === "transfer" && (
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.fromWallet", lang)}
-                    </label>
-                    <select
-                      value={effectiveFromWallet}
-                      onChange={(e) => {
-                        setFromWallet(e.target.value);
-                        if (e.target.value === effectiveToWallet) {
-                          const other = visibleWallets.find(
-                            (w: WalletType) => w._id !== e.target.value,
-                          );
-                          if (other) setToWallet(other._id);
-                        }
-                      }}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
-                    >
-                      {visibleWallets.map((w: WalletType) => (
-                        <option
-                          key={w._id}
-                          value={w._id}
-                          disabled={w._id === effectiveToWallet}
-                        >
-                          {lang === "bn" && w.nameBn ? w.nameBn : w.name} — ৳
-                          {w.balance.toLocaleString()}
-                          {w.isDefault ? " ★" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="flex justify-center">
-                    <div className="p-2 rounded-full bg-foreground/5">
-                      <ArrowLeftRight className="size-4 text-muted-foreground" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.toWallet", lang)}
-                    </label>
-                    <select
-                      value={effectiveToWallet}
-                      onChange={(e) => setToWallet(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
-                    >
-                      {visibleWallets.map((w: WalletType) => (
-                        <option
-                          key={w._id}
-                          value={w._id}
-                          disabled={w._id === effectiveFromWallet}
-                        >
-                          {lang === "bn" && w.nameBn ? w.nameBn : w.name} — ৳
-                          {w.balance.toLocaleString()}
-                          {w.isDefault ? " ★" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.amount", lang)}
-                    </label>
-                    <input
-                      value={amount}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/[^0-9.]/g, "");
-                        const parts = val.split(".");
-                        if (parts.length > 2) return;
-                        if (parts[1] && parts[1].length > 2) return;
-                        setAmount(val);
-                      }}
-                      onKeyDown={(e) => e.key === "Enter" && handleTransfer()}
-                      placeholder="৳ 0"
-                      type="number"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none"
-                    />
-                  </div>
-
-                  {transferFee > 0 && (
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--pv-orange)]/10">
-                      <span className="text-xs text-[var(--pv-orange)]">
-                        {t("expense.transferFee", lang)}: ৳
-                        {transferFee.toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">
-                      {t("expense.description", lang)}
-                    </label>
-                    <input
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder={t("expense.optionalDescription", lang)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleTransfer}
-                    disabled={
-                      !effectiveFromWallet ||
-                      !effectiveToWallet ||
-                      effectiveFromWallet === effectiveToWallet ||
-                      !amount ||
-                      isTransferring
-                    }
-                    className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.97] disabled:opacity-40"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, var(--pv-blue), #2563eb)",
-                    }}
-                  >
-                    {isTransferring
-                      ? t("expense.transferring", lang)
-                      : t("expense.transfer", lang)}
-                  </button>
-                </div>
-              )}
-            </div>
-          </motion.div>
+          <TransactionForm
+            lang={lang}
+            activeTab={activeTab}
+            visibleWallets={visibleWallets}
+            incomeWallet={incomeWallet}
+            setIncomeWallet={setIncomeWallet}
+            expenseWallet={expenseWallet}
+            setExpenseWallet={setExpenseWallet}
+            setFromWallet={setFromWallet}
+            setToWallet={setToWallet}
+            amount={amount}
+            setAmount={setAmount}
+            category={category}
+            setCategory={setCategory}
+            description={description}
+            setDescription={setDescription}
+            date={date}
+            setDate={setDate}
+            showCalc={showCalc}
+            setShowCalc={setShowCalc}
+            effectiveIncomeWallet={effectiveIncomeWallet}
+            effectiveExpenseWallet={effectiveExpenseWallet}
+            effectiveFromWallet={effectiveFromWallet}
+            effectiveToWallet={effectiveToWallet}
+            transferFee={transferFee}
+            isAddingIncome={isAddingIncome}
+            isAddingExpense={isAddingExpense}
+            isTransferring={isTransferring}
+            onClose={closeForm}
+            onSubmitIncome={handleAddIncome}
+            onSubmitExpense={handleAddExpense}
+            onSubmitTransfer={handleTransfer}
+          />
         )}
       </AnimatePresence>
 
-      {/* Recent Transactions */}
-      <motion.div
-        custom={2}
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-foreground">
-            {t("expense.recentTransactions", lang)}
-          </h3>
-          <div className="flex glass rounded-xl overflow-hidden">
-            {(["all", "income", "expense", "transfer"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setTxFilter(f)}
-                className={`px-3 py-1.5 text-xs font-medium transition-all ${txFilter === f ? "bg-[var(--pv-blue)]/10 text-[var(--pv-blue)]" : "text-muted-foreground hover:text-foreground hover-tab"}`}
-              >
-                {t(`expense.tab.${f}` as TranslationKey, lang)}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="glass rounded-2xl divide-y divide-border/20">
-          {filtered.length === 0 && (
-            <div className="p-8 text-center">
-              <span className="text-3xl mb-2 block">💰</span>
-              <p className="text-sm text-muted-foreground">
-                {t("expense.emptyTransactions", lang)}
-              </p>
-            </div>
-          )}
-          {filtered.map((tx: ExpenseTransaction) => (
-            <div
-              key={tx._id}
-              className="flex items-center gap-3 px-4 py-3 group hover-row hover-orange"
-            >
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium"
-                style={{ backgroundColor: getWalletIcon(tx.walletId) }}
-              >
-                {CATEGORY_ICONS[tx.category]?.slice(0, 1) || "📦"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground truncate">
-                    {tx.description || tx.category}
-                  </span>
-                  <span
-                    className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                      tx.type === "income"
-                        ? "bg-[var(--pv-green)]/10 text-[var(--pv-green)]"
-                        : "bg-[var(--pv-red)]/10 text-[var(--pv-red)]"
-                    }`}
-                  >
-                    {tx.type === "income"
-                      ? t("expense.tab.income", lang)
-                      : t("expense.tab.expense", lang)}
-                  </span>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {getWalletName(tx.walletId)} · {tx.category} ·{" "}
-                  {formatDate(tx.date)}
-                </div>
-              </div>
-              <div
-                className={`text-sm font-bold ${tx.type === "income" ? "text-[var(--pv-green)]" : "text-[var(--pv-red)]"}`}
-              >
-                {tx.type === "income" ? "+" : "-"}৳{tx.amount.toLocaleString()}
-              </div>
-              <button
-                onClick={() => setDeleteTarget(tx._id)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500 min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2"
-              >
-                <Trash2 className="size-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+      <TransactionList
+        lang={lang}
+        txFilter={txFilter}
+        setTxFilter={setTxFilter}
+        filtered={filtered}
+        onDeleteTarget={setDeleteTarget}
+        getWalletName={getWalletName}
+        getWalletColor={getWalletColor}
+        formatDate={formatDate}
+      />
 
-      {/* Wallet Management */}
-      <motion.div
-        custom={3}
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-foreground">
-            {t("expense.walletBalance", lang)}
-          </h3>
-          <button
-            onClick={() => setShowAddWalletModal(true)}
-            className="flex items-center gap-1 text-xs text-[var(--pv-blue)] hover:underline cursor-pointer"
-          >
-            <Plus className="size-3" />
-            {lang === "bn" ? "ওয়ালেট যোগ" : "Add Wallet"}
-          </button>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {visibleWallets.map((w: WalletType) => (
-            <div
-              key={w._id}
-              className="glass rounded-xl p-3 hover:bg-foreground/5 transition-all group"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: w.color }}
-                  >
-                    <Wallet className="size-3 text-white" />
-                  </div>
-                  <span className="text-xs font-medium text-foreground truncate">
-                    {lang === "bn" && w.nameBn ? w.nameBn : w.name}
-                  </span>
-                  {w.isDefault && (
-                    <Star className="size-3 text-yellow-500 fill-yellow-500" />
-                  )}
-                </div>
-                <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => handleSetDefault(w)}
-                    className="cursor-pointer p-1 rounded hover:bg-yellow-500/10"
-                    title={lang === "bn" ? "ডিফল্ট" : "Default"}
-                  >
-                    <Star className="size-3 text-muted-foreground hover:text-yellow-500" />
-                  </button>
-                  <button
-                    onClick={() => setEditingWallet(w)}
-                    className="cursor-pointer p-1 rounded hover:bg-foreground/5"
-                    title={lang === "bn" ? "সম্পাদনা" : "Edit"}
-                  >
-                    <Edit3 className="size-3 text-muted-foreground" />
-                  </button>
-                  <button
-                    onClick={() => setDeleteWalletId(w._id)}
-                    className="cursor-pointer p-1 rounded hover:bg-destructive/10"
-                    title={lang === "bn" ? "মুছুন" : "Delete"}
-                  >
-                    <Trash2 className="size-3 text-destructive" />
-                  </button>
-                </div>
-              </div>
-              <div className="text-sm font-bold text-foreground">
-                ৳{w.balance.toLocaleString()}
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+      <WalletManager
+        lang={lang}
+        visibleWallets={visibleWallets}
+        onAdd={() => setShowAddWalletModal(true)}
+        onEdit={setEditingWallet}
+        onDelete={(id) => setDeleteWalletId(id)}
+        onSetDefault={handleSetDefault}
+      />
 
       <ConfirmDialog
         open={!!deleteTarget}

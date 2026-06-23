@@ -2,20 +2,30 @@ import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import type { Firestore } from "firebase/firestore";
 
+const requiredEnvVars = [
+  "VITE_FIREBASE_API_KEY",
+  "VITE_FIREBASE_AUTH_DOMAIN",
+  "VITE_FIREBASE_PROJECT_ID",
+  "VITE_FIREBASE_STORAGE_BUCKET",
+  "VITE_FIREBASE_MESSAGING_SENDER_ID",
+  "VITE_FIREBASE_APP_ID",
+] as const;
+
+const missing = requiredEnvVars.filter((v) => !import.meta.env[v]);
+if (missing.length > 0 && import.meta.env.PROD) {
+  throw new Error(
+    `Missing required Firebase environment variables: ${missing.join(", ")}`,
+  );
+}
+
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain:
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "pro-visions.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "pro-visions",
-  storageBucket:
-    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ||
-    "pro-visions.firebasestorage.app",
-  messagingSenderId:
-    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "570621295453",
-  appId:
-    import.meta.env.VITE_FIREBASE_APP_ID ||
-    "1:570621295453:web:3e2c03807274d8d4e286b4",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-C6FC4FJXWX",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ?? "",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ?? "",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ?? "",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ?? "",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ?? "",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID ?? "",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID ?? "",
 };
 
 const app: FirebaseApp =
@@ -51,7 +61,8 @@ export async function getMessagingInstance() {
       messaging = fm.getMessaging(app);
     }
     return messaging;
-  } catch {
+  } catch (e) {
+    console.error("[Firebase]", "operation failed", e);
     return null;
   }
 }
@@ -64,7 +75,8 @@ export async function requestNotificationPermission(): Promise<boolean> {
   try {
     const permission = await Notification.requestPermission();
     return permission === "granted";
-  } catch {
+  } catch (e) {
+    console.error("[Firebase]", "operation failed", e);
     return false;
   }
 }
@@ -87,7 +99,8 @@ export async function getFirebaseToken(): Promise<string | null> {
       return currentToken;
     }
     return null;
-  } catch {
+  } catch (e) {
+    console.error("[Firebase]", "operation failed", e);
     return null;
   }
 }
@@ -105,7 +118,7 @@ export function onMessageListener(
         fm.onMessage(m as Parameters<typeof fm.onMessage>[0], callback);
       }
     })
-    .catch(() => {});
+    .catch((e) => console.error("[Firebase]", "operation failed", e));
 }
 
 export function getSavedToken(): string | null {

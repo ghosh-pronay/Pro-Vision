@@ -89,7 +89,8 @@ export default function FloatingCalculator({
         setDisplay(rounded.toString());
         setExpression("");
       }
-    } catch {
+    } catch (e) {
+      console.error("[FloatingCalculator]", "calculation failed", e);
       setDisplay("Error");
     }
   };
@@ -121,7 +122,8 @@ export default function FloatingCalculator({
       } else {
         onResult(display);
       }
-    } catch {
+    } catch (e) {
+      console.error("[FloatingCalculator]", "calculation failed", e);
       onResult(display);
     }
   };

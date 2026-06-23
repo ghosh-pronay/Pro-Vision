@@ -703,6 +703,7 @@ export default function Habits() {
       setNewCategory("other");
       setShowAdd(false);
     } catch (_error) {
+      console.error("[Habits]", "Failed to add habit", _error);
       toastError(
         lang === "bn" ? "অভ্যাস যোগ করতে ব্যর্থ হয়েছে" : "Failed to add habit",
       );
@@ -746,8 +747,8 @@ export default function Habits() {
   const handleFreeze = async (habitId: string) => {
     try {
       await applyStreakFreeze({ id: habitId as Id<"habits"> });
-    } catch {
-      // no freezes left
+    } catch (e) {
+      console.error("[Habits]", "Failed to apply streak freeze", e);
     }
   };
 
@@ -843,6 +844,11 @@ export default function Habits() {
                         : `"${habit.name[lang]}" added!`,
                     );
                   } catch (_error) {
+                    console.error(
+                      "[Habits]",
+                      "Failed to add suggested habit",
+                      _error,
+                    );
                     toastError(
                       lang === "bn"
                         ? "অভ্যাস যোগ করতে ব্যর্থ হয়েছে"

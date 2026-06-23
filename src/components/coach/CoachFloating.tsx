@@ -114,8 +114,8 @@ const CoachFloating = memo(function CoachFloating() {
       if (files[i].size > 10 * 1024 * 1024) continue;
       try {
         newAttachments.push(await fileToAttachment(files[i]));
-      } catch {
-        // Skip files that fail to read
+      } catch (e) {
+        console.error("[CoachFloating] Failed to read file:", e);
       }
     }
     setAttachments((prev) => [...prev, ...newAttachments]);
@@ -257,7 +257,8 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, reply]);
-    } catch {
+    } catch (error) {
+      console.error("[CoachFloating]", error);
       const reply: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",

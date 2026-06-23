@@ -35,8 +35,8 @@ export default function AdSenseUnit({
 
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch {
-      // AdSense not ready
+    } catch (e) {
+      console.error("[AdSenseUnit]", "ad load failed", e);
     }
   }, [clientId, slot, position]);
 

@@ -41,7 +41,9 @@ export function usePushNotifications() {
   const [state, setState] = useState<PushNotificationState>(getInitialState);
 
   useEffect(() => {
-    const unsubscribe = onMessageListener((payload) => {
+    const cleanup = () => {};
+
+    onMessageListener((payload) => {
       if (payload.notification) {
         setState((prev) => ({
           ...prev,
@@ -60,11 +62,7 @@ export function usePushNotifications() {
       }
     });
 
-    return () => {
-      if (typeof unsubscribe === "function") {
-        unsubscribe();
-      }
-    };
+    return cleanup;
   }, []);
 
   const requestPermission = useCallback(async (): Promise<boolean> => {

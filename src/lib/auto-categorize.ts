@@ -7,27 +7,108 @@ interface CategorizationResult {
 }
 
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
-  "Food & Dining": ["food", "restaurant", "cafe", "coffee", "lunch", "dinner", "breakfast", "meal", "pizza", "burger", "tea", "snack"],
-  "Transportation": ["uber", "taxi", "bus", "train", "metro", "fuel", "gas", "parking", "transport", "ride"],
-  "Shopping": ["shop", "store", "mall", "amazon", "flipkart", "clothes", "shoes", "electronics"],
-  "Bills & Utilities": ["electricity", "water", "gas", "internet", "wifi", "bill", "utility"],
-  "Mobile Recharge": ["recharge", "mobile", "phone", "airtel", "grameen", "banglalink", "teletalk"],
+  "Food & Dining": [
+    "food",
+    "restaurant",
+    "cafe",
+    "coffee",
+    "lunch",
+    "dinner",
+    "breakfast",
+    "meal",
+    "pizza",
+    "burger",
+    "tea",
+    "snack",
+  ],
+  Transportation: [
+    "uber",
+    "taxi",
+    "bus",
+    "train",
+    "metro",
+    "fuel",
+    "gas",
+    "parking",
+    "transport",
+    "ride",
+  ],
+  Shopping: [
+    "shop",
+    "store",
+    "mall",
+    "amazon",
+    "flipkart",
+    "clothes",
+    "shoes",
+    "electronics",
+  ],
+  "Bills & Utilities": [
+    "electricity",
+    "water",
+    "gas",
+    "internet",
+    "wifi",
+    "bill",
+    "utility",
+  ],
+  "Mobile Recharge": [
+    "recharge",
+    "mobile",
+    "phone",
+    "airtel",
+    "grameen",
+    "banglalink",
+    "teletalk",
+  ],
   "Internet Bill": ["internet", "broadband", "wifi", "gp", "robi", "starlink"],
-  "Groceries": ["grocery", "supermarket", "bazaar", "vegetable", "fruit", "milk", "bread"],
-  "Healthcare": ["doctor", "hospital", "pharmacy", "medicine", "health", "medical", "clinic"],
-  "Education": ["school", "college", "university", "course", "book", "tuition", "education"],
-  "Entertainment": ["movie", "netflix", "spotify", "game", "concert", "show", "entertainment"],
-  "Clothing": ["clothes", "shirt", "pant", "dress", "fashion", "zara", "h&m"],
-  "Savings": ["savings", "fd", "deposit", "investment"],
+  Groceries: [
+    "grocery",
+    "supermarket",
+    "bazaar",
+    "vegetable",
+    "fruit",
+    "milk",
+    "bread",
+  ],
+  Healthcare: [
+    "doctor",
+    "hospital",
+    "pharmacy",
+    "medicine",
+    "health",
+    "medical",
+    "clinic",
+  ],
+  Education: [
+    "school",
+    "college",
+    "university",
+    "course",
+    "book",
+    "tuition",
+    "education",
+  ],
+  Entertainment: [
+    "movie",
+    "netflix",
+    "spotify",
+    "game",
+    "concert",
+    "show",
+    "entertainment",
+  ],
+  Clothing: ["clothes", "shirt", "pant", "dress", "fashion", "zara", "h&m"],
+  Savings: ["savings", "fd", "deposit", "investment"],
   "Investment Returns": ["dividend", "interest", "return", "profit", "gain"],
   "Gift Received": ["gift", "present", "bonus", "reward"],
   "Gift Given": ["gift", "present", "birthday", "anniversary"],
   "Charity/Donation": ["donation", "charity", "zakat", "sadaqah", "ngo"],
-  "Insurance": ["insurance", "premium", "policy"],
+  Insurance: ["insurance", "premium", "policy"],
   "Loan Payment": ["loan", "emi", "installment", "repayment"],
-  "Salary": ["salary", "wage", "pay", "stipend"],
-  "Freelance": ["freelance", "client", "project", "gig", "fiverr", "upwork"],
-  "Business": ["business", "revenue", "sales", "profit"],
+  Salary: ["salary", "wage", "pay", "stipend"],
+  Freelance: ["freelance", "client", "project", "gig", "fiverr", "upwork"],
+  Business: ["business", "revenue", "sales", "profit"],
 };
 
 function calculateConfidence(text: string, keywords: string[]): number {
@@ -45,12 +126,16 @@ export function categorizeTransaction(
   description: string,
 ): CategorizationResult {
   const lowerDesc = description.toLowerCase();
-  let bestMatch = { category: "Other Expense", type: "expense" as const, confidence: 0 };
+  let bestMatch: CategorizationResult = {
+    category: "Other Expense",
+    type: "expense",
+    confidence: 0,
+  };
 
   for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
     const confidence = calculateConfidence(lowerDesc, keywords);
     if (confidence > bestMatch.confidence) {
-      const categoryType = EXPENSE_CATEGORIES.income.some(
+      const categoryType: "income" | "expense" = EXPENSE_CATEGORIES.income.some(
         (c) => c.name === category,
       )
         ? "income"
@@ -60,7 +145,11 @@ export function categorizeTransaction(
   }
 
   if (bestMatch.confidence === 0) {
-    if (lowerDesc.includes("income") || lowerDesc.includes("receive") || lowerDesc.includes("earned")) {
+    if (
+      lowerDesc.includes("income") ||
+      lowerDesc.includes("receive") ||
+      lowerDesc.includes("earned")
+    ) {
       return { category: "Other Income", type: "income", confidence: 0.5 };
     }
     return { category: "Other Expense", type: "expense", confidence: 0 };

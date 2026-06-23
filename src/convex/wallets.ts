@@ -10,7 +10,7 @@ export const list = query({
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -26,7 +26,13 @@ export const list = query({
 export const create = mutation({
   args: {
     name: v.string(),
-    type: v.union(v.literal("cash"), v.literal("bank"), v.literal("credit"), v.literal("savings"), v.literal("digital")),
+    type: v.union(
+      v.literal("cash"),
+      v.literal("bank"),
+      v.literal("credit"),
+      v.literal("savings"),
+      v.literal("digital"),
+    ),
     currency: v.string(),
     balance: v.number(),
     icon: v.optional(v.string()),
@@ -40,7 +46,7 @@ export const create = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -79,7 +85,15 @@ export const update = mutation({
   args: {
     id: v.id("wallets"),
     name: v.optional(v.string()),
-    type: v.optional(v.union(v.literal("cash"), v.literal("bank"), v.literal("credit"), v.literal("savings"), v.literal("digital"))),
+    type: v.optional(
+      v.union(
+        v.literal("cash"),
+        v.literal("bank"),
+        v.literal("credit"),
+        v.literal("savings"),
+        v.literal("digital"),
+      ),
+    ),
     balance: v.optional(v.number()),
     icon: v.optional(v.string()),
     color: v.optional(v.string()),
@@ -95,14 +109,15 @@ export const update = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
     if (!user || wallet.userId !== user._id) throw new Error("Unauthorized");
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updates: Record<string, any> = { updatedAt: Date.now() };
+    const updates: Record<string, string | number | boolean> = {
+      updatedAt: Date.now(),
+    };
     if (args.name !== undefined) updates.name = args.name;
     if (args.type !== undefined) updates.type = args.type;
     if (args.balance !== undefined) updates.balance = args.balance;
@@ -139,7 +154,7 @@ export const remove = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 

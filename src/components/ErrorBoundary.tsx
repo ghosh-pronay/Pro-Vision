@@ -1,5 +1,5 @@
 import { Component, type ReactNode } from "react";
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { AlertTriangle, Copy, Home, RefreshCw } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -9,40 +9,83 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  errorId: string;
+}
+
+function generateErrorId(): string {
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).slice(2, 8);
+  return `${timestamp}-${random}`;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorId: "" };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error, errorId: generateErrorId() };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("ErrorBoundary caught:", error, errorInfo);
   }
 
+  handleCopyError = async () => {
+    const { error, errorId } = this.state;
+    const details = [
+      `Error ID: ${errorId}`,
+      `Message: ${error?.message ?? "Unknown"}`,
+      `Stack: ${error?.stack ?? "N/A"}`,
+    ].join("\n\n");
+
+    await navigator.clipboard.writeText(details);
+  };
+
+  handleGoHome = () => {
+    window.location.href = "/dashboard";
+  };
+
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div className="flex flex-col items-center justify-center p-8 text-center">
+        <div className="glass flex flex-col items-center justify-center p-8 text-center">
           <AlertTriangle className="h-12 w-12 text-yellow-500 mb-4" />
           <h2 className="text-lg font-semibold mb-2">Something went wrong</h2>
           <p className="text-sm text-muted-foreground mb-4">
             {this.state.error?.message || "An unexpected error occurred"}
           </p>
-          <button
-            onClick={() => this.setState({ hasError: false, error: null })}
-            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Try Again
-          </button>
+          <p className="text-xs text-muted-foreground mb-6">
+            Error ID: {this.state.errorId}
+          </p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() =>
+                this.setState({ hasError: false, error: null, errorId: "" })
+              }
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Try Again
+            </button>
+            <button
+              onClick={this.handleCopyError}
+              className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+            >
+              <Copy className="h-4 w-4" />
+              Copy Error
+            </button>
+            <button
+              onClick={this.handleGoHome}
+              className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+            >
+              <Home className="h-4 w-4" />
+              Go Home
+            </button>
+          </div>
         </div>
       );
     }

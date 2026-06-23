@@ -81,6 +81,30 @@ function RouteLoading() {
   );
 }
 
+function RouteErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <ErrorBoundary
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center p-8">
+            <p className="text-sm text-muted-foreground mb-4">
+              This page failed to load.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              Reload Page
+            </button>
+          </div>
+        </div>
+      }
+    >
+      {children}
+    </ErrorBoundary>
+  );
+}
+
 const VoiceButton = memo(function VoiceButton() {
   const [showVoice, setShowVoice] = useState(false);
   const navigate = useNavigate();
@@ -150,10 +174,21 @@ export default function App() {
       <Toaster position="top-right" richColors />
       <Suspense fallback={<RouteLoading />}>
         <Routes key={location.pathname}>
-          <Route path="/" element={<Landing />} />
+          <Route
+            path="/"
+            element={
+              <RouteErrorBoundary>
+                <Landing />
+              </RouteErrorBoundary>
+            }
+          />
           <Route
             path="/auth"
-            element={<AuthPage redirectAfterAuth="/dashboard" />}
+            element={
+              <RouteErrorBoundary>
+                <AuthPage redirectAfterAuth="/dashboard" />
+              </RouteErrorBoundary>
+            }
           />
           <Route
             element={
@@ -164,69 +199,433 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/todo" element={<Todo />} />
-            <Route path="/habits" element={<Habits />} />
-            <Route path="/expense" element={<Expense />} />
-            <Route path="/focus" element={<Focus />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/wellbeing" element={<Wellbeing />} />
-            <Route path="/goals" element={<Goals />} />
-            <Route path="/journal" element={<Journal />} />
-            <Route path="/reading" element={<Reading />} />
-            <Route path="/nutrition" element={<Nutrition />} />
-            <Route path="/challenges" element={<Challenges />} />
-            <Route path="/crm" element={<CRM />} />
-            <Route path="/sleep" element={<SleepTracker />} />
-            <Route path="/fitness" element={<Fitness />} />
-            <Route path="/study" element={<StudyTracker />} />
-            <Route path="/gratitude" element={<GratitudeJar />} />
-            <Route path="/achievements" element={<Achievements />} />
-            <Route path="/heatmap" element={<HabitHeatmap />} />
-            <Route path="/checkin" element={<DailyCheckin />} />
-            <Route path="/correlation" element={<MoodCorrelation />} />
-            <Route path="/learning-paths" element={<LearningPaths />} />
+            <Route
+              path="/dashboard"
+              element={
+                <RouteErrorBoundary>
+                  <Dashboard />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/todo"
+              element={
+                <RouteErrorBoundary>
+                  <Todo />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/habits"
+              element={
+                <RouteErrorBoundary>
+                  <Habits />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/expense"
+              element={
+                <RouteErrorBoundary>
+                  <Expense />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/focus"
+              element={
+                <RouteErrorBoundary>
+                  <Focus />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/news"
+              element={
+                <RouteErrorBoundary>
+                  <News />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <RouteErrorBoundary>
+                  <Reports />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/wellbeing"
+              element={
+                <RouteErrorBoundary>
+                  <Wellbeing />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/goals"
+              element={
+                <RouteErrorBoundary>
+                  <Goals />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/journal"
+              element={
+                <RouteErrorBoundary>
+                  <Journal />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/reading"
+              element={
+                <RouteErrorBoundary>
+                  <Reading />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/nutrition"
+              element={
+                <RouteErrorBoundary>
+                  <Nutrition />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/challenges"
+              element={
+                <RouteErrorBoundary>
+                  <Challenges />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/crm"
+              element={
+                <RouteErrorBoundary>
+                  <CRM />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/sleep"
+              element={
+                <RouteErrorBoundary>
+                  <SleepTracker />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/fitness"
+              element={
+                <RouteErrorBoundary>
+                  <Fitness />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/study"
+              element={
+                <RouteErrorBoundary>
+                  <StudyTracker />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/gratitude"
+              element={
+                <RouteErrorBoundary>
+                  <GratitudeJar />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/achievements"
+              element={
+                <RouteErrorBoundary>
+                  <Achievements />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/heatmap"
+              element={
+                <RouteErrorBoundary>
+                  <HabitHeatmap />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/checkin"
+              element={
+                <RouteErrorBoundary>
+                  <DailyCheckin />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/correlation"
+              element={
+                <RouteErrorBoundary>
+                  <MoodCorrelation />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/learning-paths"
+              element={
+                <RouteErrorBoundary>
+                  <LearningPaths />
+                </RouteErrorBoundary>
+              }
+            />
             <Route
               path="/accountability-partner"
-              element={<AccountabilityPartner />}
+              element={
+                <RouteErrorBoundary>
+                  <AccountabilityPartner />
+                </RouteErrorBoundary>
+              }
             />
-            <Route path="/gamification" element={<Gamification />} />
-            <Route path="/health-dashboard" element={<HealthDashboard />} />
-            <Route path="/qr-profile" element={<QRProfile />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/offline" element={<OfflineMode />} />
-            <Route path="/encryption" element={<DataEncryption />} />
-            <Route path="/family" element={<FamilyDashboard />} />
-            <Route path="/family-sharing" element={<FamilySharing />} />
-            <Route path="/social-challenges" element={<SocialChallenges />} />
-            <Route path="/ai-life-coach" element={<AILifeCoach />} />
-            <Route path="/bill-split" element={<BillSplit />} />
-            <Route path="/subscriptions" element={<Subscriptions />} />
-            <Route path="/market-prices" element={<MarketPrices />} />
-            <Route path="/bengali-calendar" element={<BengaliCalendar />} />
-            <Route path="/emergency-sos" element={<EmergencySOS />} />
-            <Route path="/carbon-footprint" element={<CarbonFootprint />} />
-            <Route path="/meal-planning" element={<MealPlanning />} />
-            <Route path="/commute-tracker" element={<CommuteTracker />} />
-            <Route path="/voice-notes" element={<VoiceNotes />} />
+            <Route
+              path="/gamification"
+              element={
+                <RouteErrorBoundary>
+                  <Gamification />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/health-dashboard"
+              element={
+                <RouteErrorBoundary>
+                  <HealthDashboard />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/qr-profile"
+              element={
+                <RouteErrorBoundary>
+                  <QRProfile />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <RouteErrorBoundary>
+                  <Analytics />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/payment"
+              element={
+                <RouteErrorBoundary>
+                  <Payment />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/offline"
+              element={
+                <RouteErrorBoundary>
+                  <OfflineMode />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/encryption"
+              element={
+                <RouteErrorBoundary>
+                  <DataEncryption />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/family"
+              element={
+                <RouteErrorBoundary>
+                  <FamilyDashboard />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/family-sharing"
+              element={
+                <RouteErrorBoundary>
+                  <FamilySharing />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/social-challenges"
+              element={
+                <RouteErrorBoundary>
+                  <SocialChallenges />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/ai-life-coach"
+              element={
+                <RouteErrorBoundary>
+                  <AILifeCoach />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/bill-split"
+              element={
+                <RouteErrorBoundary>
+                  <BillSplit />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/subscriptions"
+              element={
+                <RouteErrorBoundary>
+                  <Subscriptions />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/market-prices"
+              element={
+                <RouteErrorBoundary>
+                  <MarketPrices />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/bengali-calendar"
+              element={
+                <RouteErrorBoundary>
+                  <BengaliCalendar />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/emergency-sos"
+              element={
+                <RouteErrorBoundary>
+                  <EmergencySOS />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/carbon-footprint"
+              element={
+                <RouteErrorBoundary>
+                  <CarbonFootprint />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/meal-planning"
+              element={
+                <RouteErrorBoundary>
+                  <MealPlanning />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/commute-tracker"
+              element={
+                <RouteErrorBoundary>
+                  <CommuteTracker />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/voice-notes"
+              element={
+                <RouteErrorBoundary>
+                  <VoiceNotes />
+                </RouteErrorBoundary>
+              }
+            />
             <Route
               path="/achievement-sharing"
-              element={<AchievementSharing />}
+              element={
+                <RouteErrorBoundary>
+                  <AchievementSharing />
+                </RouteErrorBoundary>
+              }
             />
-            <Route path="/daily-streaks" element={<DailyStreaks />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/api" element={<AdminAPI />} />
+            <Route
+              path="/daily-streaks"
+              element={
+                <RouteErrorBoundary>
+                  <DailyStreaks />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <RouteErrorBoundary>
+                  <Settings />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RouteErrorBoundary>
+                  <Admin />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/admin/api"
+              element={
+                <RouteErrorBoundary>
+                  <AdminAPI />
+                </RouteErrorBoundary>
+              }
+            />
           </Route>
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/admin-portal" element={<AdminPortal />} />
           <Route
-            path="/admin-portal/dashboard"
-            element={<AdminPortalDashboard />}
+            path="/onboarding"
+            element={
+              <RouteErrorBoundary>
+                <Onboarding />
+              </RouteErrorBoundary>
+            }
           />
-          <Route path="*" element={<NotFound />} />
+          <Route element={<ProtectedRoute />}>
+            <Route
+              path="/admin-portal"
+              element={
+                <RouteErrorBoundary>
+                  <AdminPortal />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="/admin-portal/dashboard"
+              element={
+                <RouteErrorBoundary>
+                  <AdminPortalDashboard />
+                </RouteErrorBoundary>
+              }
+            />
+          </Route>
+          <Route
+            path="*"
+            element={
+              <RouteErrorBoundary>
+                <NotFound />
+              </RouteErrorBoundary>
+            }
+          />
         </Routes>
       </Suspense>
       {showCoach && (

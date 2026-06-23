@@ -127,8 +127,8 @@ export default function Settings() {
       await upsertProfile({
         theme: newTheme as "light" | "dark" | "oled" | "system",
       });
-    } catch {
-      /* ignore */
+    } catch (e) {
+      console.error("[Settings]", "operation failed", e);
     }
   };
 
@@ -136,8 +136,8 @@ export default function Settings() {
     setLanguage(newLang as "en" | "bn");
     try {
       await upsertProfile({ language: newLang as "en" | "bn" });
-    } catch {
-      /* ignore */
+    } catch (e) {
+      console.error("[Settings]", "operation failed", e);
     }
   };
 

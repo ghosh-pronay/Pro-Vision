@@ -176,7 +176,9 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
 
       const drip = () => {
@@ -206,7 +208,9 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
 
       const chirp = () => {
@@ -245,7 +249,9 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
 
       const lfo = ctx.createOscillator();
@@ -258,7 +264,9 @@ function startSound(
       stopFns.push(() => {
         try {
           lfo.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
       return stopAll;
     }
@@ -272,7 +280,9 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
 
       const crackle = () => {
@@ -346,7 +356,9 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
 
       const rumble = () => {
@@ -376,7 +388,9 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
       return stopAll;
     }
@@ -406,7 +420,9 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
       return stopAll;
     }
@@ -417,7 +433,9 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
       return stopAll;
     }
@@ -456,7 +474,9 @@ function startSound(
       stopFns.push(() => {
         try {
           noise.stop();
-        } catch {/* ignore */ }
+        } catch (e) {
+          console.error("[AmbientSounds]", "audio operation failed", e);
+        }
       });
 
       const pad = () => {

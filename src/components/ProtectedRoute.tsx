@@ -1,8 +1,8 @@
 import { useAuthContext } from "@/contexts/AuthContext";
-import { Navigate } from "react-router";
+import { Navigate, Outlet } from "react-router";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
@@ -16,5 +16,5 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <Navigate to="/auth?mode=verify" replace />;
   }
 
-  return <>{children}</>;
+  return children ? <>{children}</> : <Outlet />;
 }

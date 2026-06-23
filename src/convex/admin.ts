@@ -1,4 +1,9 @@
-import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/server";
+import {
+  query,
+  mutation,
+  type QueryCtx,
+  type MutationCtx,
+} from "./_generated/server";
 import { v } from "convex/values";
 
 async function requireAdmin(ctx: QueryCtx | MutationCtx) {
@@ -141,7 +146,12 @@ export const updateUser = mutation({
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const updates: Partial<{ name: string; email: string; role: "user" | "admin"; updatedAt: number }> = { updatedAt: Date.now() };
+    const updates: Partial<{
+      name: string;
+      email: string;
+      role: "user" | "admin";
+      updatedAt: number;
+    }> = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
     if (args.email !== undefined) updates.email = args.email;
     if (args.role !== undefined) updates.role = args.role;
@@ -189,8 +199,7 @@ export const getConfig = query({
   handler: async (ctx) => {
     await requireAdmin(ctx);
     const configs = await ctx.db.query("siteConfig").collect();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result: Record<string, any> = {};
+    const result: Record<string, unknown> = {};
     for (const c of configs) {
       result[c.key] = c.value;
     }

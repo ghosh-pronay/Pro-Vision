@@ -10,7 +10,7 @@ export const list = query({
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -30,10 +30,12 @@ export const create = mutation({
     description: v.optional(v.string()),
     category: v.string(),
     deadline: v.number(),
-    milestones: v.array(v.object({
-      title: v.string(),
-      completed: v.boolean(),
-    })),
+    milestones: v.array(
+      v.object({
+        title: v.string(),
+        completed: v.boolean(),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -42,7 +44,7 @@ export const create = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -72,11 +74,17 @@ export const update = mutation({
     category: v.optional(v.string()),
     deadline: v.optional(v.number()),
     progress: v.optional(v.number()),
-    status: v.optional(v.union(v.literal("active"), v.literal("completed"), v.literal("paused"))),
-    milestones: v.optional(v.array(v.object({
-      title: v.string(),
-      completed: v.boolean(),
-    }))),
+    status: v.optional(
+      v.union(v.literal("active"), v.literal("completed"), v.literal("paused")),
+    ),
+    milestones: v.optional(
+      v.array(
+        v.object({
+          title: v.string(),
+          completed: v.boolean(),
+        }),
+      ),
+    ),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -88,14 +96,13 @@ export const update = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
     if (!user || goal.userId !== user._id) throw new Error("Unauthorized");
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updates: Record<string, any> = { updatedAt: Date.now() };
+    const updates: Record<string, unknown> = { updatedAt: Date.now() };
     if (args.title !== undefined) updates.title = args.title;
     if (args.description !== undefined) updates.description = args.description;
     if (args.category !== undefined) updates.category = args.category;
@@ -120,7 +127,7 @@ export const remove = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 

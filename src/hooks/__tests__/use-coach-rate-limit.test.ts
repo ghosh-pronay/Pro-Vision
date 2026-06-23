@@ -52,8 +52,11 @@ describe("useCoachRateLimit", () => {
     expect(result.current.isLimitReached).toBe(true);
     expect(result.current.remaining).toBe(0);
 
-    const success = act(() => result.current.incrementUsage());
-    expect(success).toBe(false);
+    act(() => {
+      result.current.incrementUsage();
+    });
+    expect(result.current.isLimitReached).toBe(true);
+    expect(result.current.remaining).toBe(0);
   });
 
   it("should reset usage", () => {

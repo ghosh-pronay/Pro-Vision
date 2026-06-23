@@ -251,8 +251,8 @@ export default function QRProfile() {
       await navigator.clipboard.writeText(qrUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      console.error("Failed to copy");
+    } catch (e) {
+      console.error("[QRProfile]", "clipboard/share failed", e);
     }
   };
 
@@ -267,8 +267,8 @@ export default function QRProfile() {
               : `Check out ${profile.name}'s QR Profile`,
           url: qrUrl,
         });
-      } catch {
-        console.error("Share failed");
+      } catch (e) {
+        console.error("[QRProfile]", "clipboard/share failed", e);
       }
     } else {
       handleCopyLink();

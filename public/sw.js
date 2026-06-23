@@ -1,4 +1,4 @@
-const CACHE_NAME = "pro-vision-v6";
+const CACHE_VERSION = "v7";
 const OFFLINE_PAGE = "/offline.html";
 
 const STATIC_ASSETS = [
@@ -13,8 +13,19 @@ const STATIC_ASSETS = [
   "/logo-192.png",
 ];
 
-const STATIC_CACHE = "pro-vision-static-v6";
-const DYNAMIC_CACHE = "pro-vision-dynamic-v6";
+const STATIC_CACHE = `pro-vision-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `pro-vision-dynamic-${CACHE_VERSION}`;
+const MAX_DYNAMIC_ENTRIES = 50;
+
+async function trimCache(name, maxEntries) {
+  const cache = await caches.open(name);
+  const keys = await cache.keys();
+  if (keys.length > maxEntries) {
+    await Promise.all(
+      keys.slice(0, keys.length - maxEntries).map((k) => cache.delete(k)),
+    );
+  }
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -38,6 +49,19 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "INVALIDATE_CACHE") {
+    const cacheName = event.data.cacheName;
+    if (cacheName) {
+      caches.delete(cacheName);
+    } else {
+      Promise.all(
+        caches.keys().then((keys) => keys.map((k) => caches.delete(k))),
+      );
+    }
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -49,7 +73,10 @@ self.addEventListener("fetch", (event) => {
       fetch(request)
         .then((response) => {
           const clone = response.clone();
-          caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, clone));
+          caches.open(DYNAMIC_CACHE).then((cache) => {
+            cache.put(request, clone);
+            trimCache(DYNAMIC_CACHE, MAX_DYNAMIC_ENTRIES);
+          });
           return response;
         })
         .catch(() => caches.match(request)),
@@ -77,18 +104,22 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      Promise.race([
-        fetch(request).then((response) => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches
-              .open(DYNAMIC_CACHE)
-              .then((cache) => cache.put(request, clone));
-          }
-          return response;
-        }),
-        caches.match(request),
-      ]).catch(() => caches.match(OFFLINE_PAGE)),
+      caches.match(request).then((cached) => {
+        const networkUpdate = fetch(request)
+          .then((response) => {
+            if (response.ok) {
+              const clone = response.clone();
+              caches.open(DYNAMIC_CACHE).then((cache) => {
+                cache.put(request, clone);
+                trimCache(DYNAMIC_CACHE, MAX_DYNAMIC_ENTRIES);
+              });
+            }
+            return response;
+          })
+          .catch(() => caches.match(OFFLINE_PAGE));
+
+        return cached || networkUpdate;
+      }),
     );
     return;
   }
@@ -99,9 +130,10 @@ self.addEventListener("fetch", (event) => {
         .then((response) => {
           if (response.ok) {
             const clone = response.clone();
-            caches
-              .open(DYNAMIC_CACHE)
-              .then((cache) => cache.put(request, clone));
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, clone);
+              trimCache(DYNAMIC_CACHE, MAX_DYNAMIC_ENTRIES);
+            });
           }
           return response;
         })
@@ -132,8 +164,8 @@ async function syncPendingActions() {
         });
         await cache.delete(request);
       }
-    } catch {
-      // Will retry on next sync
+    } catch (error) {
+      console.error("Failed to sync action:", request.url, error);
     }
   }
 }
