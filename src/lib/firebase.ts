@@ -13,8 +13,8 @@ const requiredEnvVars = [
 
 const missing = requiredEnvVars.filter((v) => !import.meta.env[v]);
 if (missing.length > 0 && import.meta.env.PROD) {
-  throw new Error(
-    `Missing required Firebase environment variables: ${missing.join(", ")}`,
+  console.warn(
+    `[Firebase] Missing environment variables: ${missing.join(", ")}. Firebase features may not work.`,
   );
 }
 
