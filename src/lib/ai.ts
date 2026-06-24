@@ -1,7 +1,9 @@
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? "";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import app from "./firebase";
 
-const GEMINI_BASE =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+const functions = getFunctions(app);
+
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? "";
 
 if (import.meta.env.DEV && GEMINI_API_KEY && GEMINI_API_KEY.length > 10) {
   console.warn(
@@ -22,7 +24,7 @@ interface GeminiResponse {
   }>;
 }
 
-async function callGemini(payload: {
+async function callGeminiProxy(payload: {
   contents: Array<{
     role: string;
     parts: Array<{
@@ -33,21 +35,9 @@ async function callGemini(payload: {
   systemInstruction?: { parts: Array<{ text: string }> };
   generationConfig?: Record<string, unknown>;
 }): Promise<GeminiResponse> {
-  if (!GEMINI_API_KEY) {
-    throw new Error("Gemini API key not configured");
-  }
-  const response = await fetch(`${GEMINI_BASE}?key=${GEMINI_API_KEY}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(
-      error?.error?.message || `Gemini API error ${response.status}`,
-    );
-  }
-  return response.json();
+  const proxyFn = httpsCallable(functions, "geminiProxy");
+  const result = await proxyFn(payload);
+  return result.data as GeminiResponse;
 }
 
 export async function generateGeminiResponse(
@@ -71,7 +61,7 @@ export async function generateGeminiResponse(
   };
 
   try {
-    const data = await callGemini({
+    const data = await callGeminiProxy({
       contents,
       ...systemInstruction,
       generationConfig,
@@ -84,9 +74,6 @@ export async function generateGeminiResponse(
     return text;
   } catch (error) {
     console.error("Gemini API call failed:", error);
-    if (!GEMINI_API_KEY) {
-      return "AI is not configured. Please contact support.";
-    }
     return "Unable to connect to AI service. Please check your internet connection and try again.";
   }
 }
@@ -121,7 +108,7 @@ export async function analyzeImageWithGemini(
   };
 
   try {
-    const data = await callGemini(payload);
+    const data = await callGeminiProxy(payload);
 
     return (
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
