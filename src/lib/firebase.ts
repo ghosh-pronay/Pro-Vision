@@ -28,10 +28,37 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID ?? "",
 };
 
-const app: FirebaseApp =
-  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const existingApps = getApps();
+let app: FirebaseApp;
+if (existingApps.length > 0) {
+  app = existingApps[0];
+} else {
+  try {
+    app = initializeApp(firebaseConfig);
+  } catch (e) {
+    console.error("[Firebase] Failed to initialize app:", e);
+    try {
+      app = initializeApp({ apiKey: "fallback", projectId: "fallback" });
+    } catch {
+      app = initializeApp({ apiKey: "", projectId: "" });
+    }
+  }
+}
 
-export const auth: Auth = getAuth(app);
+let auth: Auth;
+try {
+  auth = getAuth(app);
+} catch (e) {
+  console.error("[Firebase] Failed to get auth:", e);
+  try {
+    const fallbackApp = initializeApp({ apiKey: "", projectId: "" });
+    auth = getAuth(fallbackApp);
+  } catch {
+    auth = getAuth(getApps()[0]);
+  }
+}
+
+export { auth };
 
 let dbInstance: Firestore | null = null;
 

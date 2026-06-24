@@ -17,45 +17,60 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser && !firebaseUser.emailVerified && firebaseUser.email) {
+    let unsubscribe: (() => void) | undefined;
+    try {
+      unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         try {
-          await firebaseUser.reload();
-          setUser({ ...firebaseUser });
-        } catch (e) {
-          console.error("[useAuth]", "operation failed", e);
-          setUser(firebaseUser);
-        }
-      } else {
-        setUser(firebaseUser);
-      }
-      if (firebaseUser?.emailVerified && firebaseUser.email) {
-        try {
-          const { doc, getDoc, setDoc } = await import("firebase/firestore");
-          const db = await getDb();
-          const userRef = doc(db, "users", firebaseUser.uid);
-          const snap = await getDoc(userRef);
-          if (!snap.exists() || !snap.data().emailVerified) {
-            await setDoc(
-              userRef,
-              {
-                email: firebaseUser.email,
-                emailVerified: true,
-                updatedAt: Date.now(),
-              },
-              { merge: true },
-            );
+          if (
+            firebaseUser &&
+            !firebaseUser.emailVerified &&
+            firebaseUser.email
+          ) {
+            try {
+              await firebaseUser.reload();
+              setUser({ ...firebaseUser });
+            } catch (e) {
+              console.error("[useAuth]", "operation failed", e);
+              setUser(firebaseUser);
+            }
+          } else {
+            setUser(firebaseUser);
           }
-        } catch (err) {
-          console.error(
-            "[auth] Failed to write emailVerified to Firestore:",
-            err,
-          );
+          if (firebaseUser?.emailVerified && firebaseUser.email) {
+            try {
+              const { doc, getDoc, setDoc } =
+                await import("firebase/firestore");
+              const db = await getDb();
+              const userRef = doc(db, "users", firebaseUser.uid);
+              const snap = await getDoc(userRef);
+              if (!snap.exists() || !snap.data().emailVerified) {
+                await setDoc(
+                  userRef,
+                  {
+                    email: firebaseUser.email,
+                    emailVerified: true,
+                    updatedAt: Date.now(),
+                  },
+                  { merge: true },
+                );
+              }
+            } catch (err) {
+              console.error(
+                "[auth] Failed to write emailVerified to Firestore:",
+                err,
+              );
+            }
+          }
+        } catch (e) {
+          console.error("[useAuth] Auth state callback error:", e);
         }
-      }
+        setIsLoading(false);
+      });
+    } catch (e) {
+      console.error("[useAuth] Failed to subscribe to auth state:", e);
       setIsLoading(false);
-    });
-    return unsubscribe;
+    }
+    return () => unsubscribe?.();
   }, []);
 
   const signIn = useCallback(

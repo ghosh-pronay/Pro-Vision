@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v8";
+const CACHE_VERSION = "v9";
 const OFFLINE_PAGE = "/offline.html";
 
 const STATIC_ASSETS = [
