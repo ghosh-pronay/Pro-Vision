@@ -1,9 +1,7 @@
-import { getFunctions, httpsCallable } from "firebase/functions";
-import app from "./firebase";
-
-const functions = getFunctions(app);
-
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? "";
+
+const GEMINI_BASE =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 if (import.meta.env.DEV && GEMINI_API_KEY && GEMINI_API_KEY.length > 10) {
   console.warn(
@@ -24,7 +22,7 @@ interface GeminiResponse {
   }>;
 }
 
-async function callGeminiProxy(payload: {
+async function callGemini(payload: {
   contents: Array<{
     role: string;
     parts: Array<{
@@ -35,9 +33,21 @@ async function callGeminiProxy(payload: {
   systemInstruction?: { parts: Array<{ text: string }> };
   generationConfig?: Record<string, unknown>;
 }): Promise<GeminiResponse> {
-  const proxyFn = httpsCallable(functions, "geminiProxy");
-  const result = await proxyFn(payload);
-  return result.data as GeminiResponse;
+  if (!GEMINI_API_KEY) {
+    throw new Error("Gemini API key not configured");
+  }
+  const response = await fetch(`${GEMINI_BASE}?key=${GEMINI_API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(
+      error?.error?.message || `Gemini API error ${response.status}`,
+    );
+  }
+  return response.json();
 }
 
 export async function generateGeminiResponse(
@@ -61,7 +71,7 @@ export async function generateGeminiResponse(
   };
 
   try {
-    const data = await callGeminiProxy({
+    const data = await callGemini({
       contents,
       ...systemInstruction,
       generationConfig,
@@ -74,6 +84,9 @@ export async function generateGeminiResponse(
     return text;
   } catch (error) {
     console.error("Gemini API call failed:", error);
+    if (!GEMINI_API_KEY) {
+      return "AI is not configured. Please contact support.";
+    }
     return "Unable to connect to AI service. Please check your internet connection and try again.";
   }
 }
@@ -108,7 +121,7 @@ export async function analyzeImageWithGemini(
   };
 
   try {
-    const data = await callGeminiProxy(payload);
+    const data = await callGemini(payload);
 
     return (
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
