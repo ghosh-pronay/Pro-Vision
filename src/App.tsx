@@ -10,9 +10,6 @@ import { useNavigate } from "react-router";
 const CoachFloating = lazy(() => import("@/components/coach/CoachFloating"));
 const VoiceCommands = lazy(() => import("@/components/voice/VoiceCommands"));
 const PWARegister = lazy(() => import("@/components/PWARegister"));
-const PushNotificationBanner = lazy(
-  () => import("@/components/PushNotificationBanner"),
-);
 
 const Landing = lazy(() => import("@/pages/Landing"));
 const AuthPage = lazy(() => import("@/pages/Auth"));
@@ -636,9 +633,6 @@ export default function App() {
       {showCoach && <VoiceButton />}
       <Suspense fallback={null}>
         <PWARegister />
-      </Suspense>
-      <Suspense fallback={null}>
-        <PushNotificationBanner />
       </Suspense>
     </ErrorBoundary>
   );
