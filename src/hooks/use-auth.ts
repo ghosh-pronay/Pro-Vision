@@ -18,6 +18,14 @@ export function useAuth() {
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
+    let settled = false;
+    const finalize = () => {
+      if (!settled) {
+        settled = true;
+        setIsLoading(false);
+      }
+    };
+    const timeout = setTimeout(finalize, 5000);
     try {
       unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         try {
@@ -64,13 +72,16 @@ export function useAuth() {
         } catch (e) {
           console.error("[useAuth] Auth state callback error:", e);
         }
-        setIsLoading(false);
+        finalize();
       });
     } catch (e) {
       console.error("[useAuth] Failed to subscribe to auth state:", e);
-      setIsLoading(false);
+      finalize();
     }
-    return () => unsubscribe?.();
+    return () => {
+      clearTimeout(timeout);
+      unsubscribe?.();
+    };
   }, []);
 
   const signIn = useCallback(

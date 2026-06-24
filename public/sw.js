@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v9";
+const CACHE_VERSION = "v10";
 const OFFLINE_PAGE = "/offline.html";
 
 const STATIC_ASSETS = [
@@ -104,22 +104,18 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      caches.match(request).then((cached) => {
-        const networkUpdate = fetch(request)
-          .then((response) => {
-            if (response.ok) {
-              const clone = response.clone();
-              caches.open(DYNAMIC_CACHE).then((cache) => {
-                cache.put(request, clone);
-                trimCache(DYNAMIC_CACHE, MAX_DYNAMIC_ENTRIES);
-              });
-            }
-            return response;
-          })
-          .catch(() => caches.match(OFFLINE_PAGE));
-
-        return cached || networkUpdate;
-      }),
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, clone);
+              trimCache(DYNAMIC_CACHE, MAX_DYNAMIC_ENTRIES);
+            });
+          }
+          return response;
+        })
+        .catch(() => caches.match(request) || caches.match(OFFLINE_PAGE)),
     );
     return;
   }
