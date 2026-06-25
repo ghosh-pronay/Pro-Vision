@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 import { useCoachRateLimit } from "@/hooks/use-coach-rate-limit";
 import {
   generateGeminiResponse,
-  isGeminiConfigured,
+  isAIConfigured,
   type GeminiMessage,
 } from "@/lib/ai";
 
@@ -379,12 +379,12 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
                 <span
                   className={cn(
                     "rounded-full px-2 py-0.5 text-[10px]",
-                    isGeminiConfigured()
+                    isAIConfigured()
                       ? "bg-emerald-400/20 text-emerald-200"
                       : "bg-white/10 text-white/60",
                   )}
                 >
-                  {isGeminiConfigured() ? "Gemini AI" : "Demo Mode"}
+                  {isAIConfigured() ? "AI Active" : "Demo Mode"}
                 </span>
                 {isLimitReached ? (
                   <span className="flex items-center gap-1 rounded-full bg-red-500/20 px-2.5 py-0.5 text-[11px] text-red-200">
