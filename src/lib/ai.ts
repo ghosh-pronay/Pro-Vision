@@ -3,15 +3,7 @@ import app from "./firebase";
 
 const functions = getFunctions(app);
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? "";
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY ?? "";
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-
-if (import.meta.env.DEV && GROQ_API_KEY && GROQ_API_KEY.length > 10) {
-  console.warn(
-    "Groq API key detected in development. Ensure VITE_GROQ_API_KEY is not committed to source control.",
-  );
-}
+const GROQ_MODEL = "llama-3.3-70b-versatile";
 
 export interface GeminiMessage {
   role: "user" | "model";
@@ -25,8 +17,6 @@ interface GeminiResponse {
     };
   }>;
 }
-
-const GROQ_MODEL = "llama-3.3-70b-versatile";
 
 function isQuotaError(error: unknown): boolean {
   if (error instanceof Error) {
@@ -57,47 +47,27 @@ async function callGeminiProxy(payload: {
   return result.data as GeminiResponse;
 }
 
-async function callGroqDirect(
+async function callGroqProxy(
   messages: Array<{ role: string; content: string }>,
   options?: { temperature?: number; max_tokens?: number },
 ): Promise<string> {
-  const response = await fetch(GROQ_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${GROQ_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      messages,
-      temperature: options?.temperature ?? 0.7,
-      max_tokens: options?.max_tokens ?? 1024,
-    }),
+  const proxyFn = httpsCallable(functions, "groqProxy");
+  const result = await proxyFn({
+    messages,
+    model: GROQ_MODEL,
+    temperature: options?.temperature ?? 0.7,
+    max_tokens: options?.max_tokens ?? 1024,
   });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.error?.message || `Groq API error: ${response.status}`,
-    );
-  }
-
-  const data = await response.json();
-  const text = data.choices?.[0]?.message?.content;
-  if (!text) {
-    throw new Error("Empty response from Groq");
-  }
-  return text;
+  const data = result.data as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  return data.choices?.[0]?.message?.content ?? "";
 }
 
 async function callGroqChat(
   messages: GeminiMessage[],
   systemPrompt?: string,
 ): Promise<string> {
-  if (!GROQ_API_KEY) {
-    return "AI service unavailable. Please try again later.";
-  }
-
   const groqMessages: Array<{ role: string; content: string }> = [];
   if (systemPrompt) {
     groqMessages.push({ role: "system", content: systemPrompt });
@@ -109,7 +79,7 @@ async function callGroqChat(
     })),
   );
 
-  return callGroqDirect(groqMessages);
+  return callGroqProxy(groqMessages);
 }
 
 export async function generateGeminiResponse(
@@ -147,7 +117,7 @@ export async function generateGeminiResponse(
   } catch (error) {
     console.error("Gemini API call failed:", error);
 
-    if (isQuotaError(error) && GROQ_API_KEY) {
+    if (isQuotaError(error)) {
       console.log("Gemini quota exhausted, falling back to Groq...");
       try {
         return await callGroqChat(messages, systemPrompt);
@@ -200,10 +170,10 @@ export async function analyzeImageWithGemini(
   } catch (error) {
     console.error("Gemini image analysis failed:", error);
 
-    if (isQuotaError(error) && GROQ_API_KEY) {
+    if (isQuotaError(error)) {
       console.log("Gemini quota exhausted, falling back to Groq...");
       try {
-        return await callGroqDirect(
+        return await callGroqProxy(
           [
             {
               role: "user",
@@ -223,13 +193,13 @@ export async function analyzeImageWithGemini(
 }
 
 export function isGeminiConfigured(): boolean {
-  return !!GEMINI_API_KEY;
+  return true;
 }
 
 export function isGroqConfigured(): boolean {
-  return !!GROQ_API_KEY;
+  return true;
 }
 
 export function isAIConfigured(): boolean {
-  return !!GEMINI_API_KEY || !!GROQ_API_KEY;
+  return true;
 }

@@ -18,7 +18,6 @@ All-in-one productivity app for Bangladesh. Track tasks, habits, expenses, mood,
 - **Zustand** (state management)
 - **Lucide Icons** (icons)
 - **Recharts** (charts)
-- **Three.js** (3D graphics)
 
 ## Setup
 
@@ -27,9 +26,18 @@ npm install
 npm run dev
 ```
 
+## Testing
+
+```bash
+npm test              # Run all tests
+npm run test:watch    # Watch mode
+npm run test:coverage # With coverage
+npm run verify        # Lint + typecheck + test
+```
+
 ## Environment Variables
 
-Create a `.env.local` file with your Firebase config:
+Copy `.env.example` to `.env.local` and fill in your Firebase config:
 
 ```
 VITE_FIREBASE_API_KEY=your_key
@@ -39,6 +47,35 @@ VITE_FIREBASE_STORAGE_BUCKET=your_bucket
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 ```
+
+API keys are server-side only (Cloud Functions):
+
+```bash
+firebase functions:config:set gemini.api_key="YOUR_KEY"
+firebase functions:config:set groq.api_key="YOUR_KEY"
+```
+
+## Architecture
+
+### Dual Backend Strategy
+
+The app supports two data backends:
+
+1. **Local Development (default)**: localStorage-backed Convex shim (`src/convex/react.ts`)
+   - All data persists in the browser
+   - No server required
+   - Set `VITE_CONVEX_URL` to use real Convex
+
+2. **Production (optional)**: Real Convex backend
+   - Set `VITE_CONVEX_URL` in `.env.local`
+   - Remove Vite aliases in `vite.config.ts`
+   - Data syncs across devices
+
+### AI Integration
+
+- **Primary**: Google Gemini 2.0 Flash (via Cloud Function proxy)
+- **Fallback**: Groq (llama-3.3-70b-versatile)
+- API keys are server-side only (Cloud Functions)
 
 ## Project Structure
 
@@ -53,7 +90,10 @@ src/
 ├── pages/            # Route pages
 ├── hooks/            # Custom hooks (useAuth, useI18n, etc.)
 ├── i18n/             # Bengali/English translations
-├── convex/           # Backend shim (placeholder)
+├── convex/           # Convex backend definitions
+│   ├── schema.ts     # Database schema (51 tables)
+│   ├── react.ts      # Local Convex shim (useQuery, useMutation)
+│   └── _generated/   # Generated API (shimmed to localStorage)
 ├── lib/              # Firebase config, utilities
 ├── store/            # Zustand store
 └── index.css         # Global styles + Tailwind theme
@@ -80,6 +120,10 @@ src/
 ```bash
 firebase deploy --only hosting
 ```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 

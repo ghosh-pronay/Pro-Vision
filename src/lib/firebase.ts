@@ -137,15 +137,31 @@ export function onMessageListener(
     notification?: { title?: string; body?: string };
     data?: Record<string, string>;
   }) => void,
-) {
+): () => void {
+  let unsubscribed = false;
+  let unsubscribeFn: (() => void) | null = null;
+
   getMessagingInstance()
     .then(async (m) => {
-      if (m) {
+      if (m && !unsubscribed) {
         const fm = await loadMessaging();
-        fm.onMessage(m as Parameters<typeof fm.onMessage>[0], callback);
+        const unsub = fm.onMessage(
+          m as Parameters<typeof fm.onMessage>[0],
+          callback,
+        );
+        if (unsubscribed) {
+          unsub();
+        } else {
+          unsubscribeFn = unsub;
+        }
       }
     })
     .catch((e) => console.error("[Firebase]", "operation failed", e));
+
+  return () => {
+    unsubscribed = true;
+    unsubscribeFn?.();
+  };
 }
 
 export function getSavedToken(): string | null {

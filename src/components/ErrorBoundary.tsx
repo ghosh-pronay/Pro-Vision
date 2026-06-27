@@ -33,12 +33,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   handleCopyError = async () => {
-    const { error, errorId } = this.state;
-    const details = [
-      `Error ID: ${errorId}`,
-      `Message: ${error?.message ?? "Unknown"}`,
-      `Stack: ${error?.stack ?? "N/A"}`,
-    ].join("\n\n");
+    const { errorId } = this.state;
+    const details = [`Error ID: ${errorId}`].join("\n\n");
 
     await navigator.clipboard.writeText(details);
   };
@@ -56,7 +52,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <AlertTriangle className="h-12 w-12 text-yellow-500 mb-4" />
           <h2 className="text-lg font-semibold mb-2">Something went wrong</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            {this.state.error?.message || "An unexpected error occurred"}
+            An unexpected error occurred
           </p>
           <p className="text-xs text-muted-foreground mb-6">
             Error ID: {this.state.errorId}

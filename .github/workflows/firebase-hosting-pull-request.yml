@@ -18,6 +18,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npm run verify
+      - run: npm run test:coverage
       - run: npm run build
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
@@ -28,7 +30,6 @@ jobs:
           VITE_FIREBASE_APP_ID: "1:570621295453:web:3e2c03807274d8d4e286b4"
           VITE_FIREBASE_MEASUREMENT_ID: G-C6FC4FJXWX
           VITE_FIREBASE_VAPID_KEY: ${{ secrets.VITE_FIREBASE_VAPID_KEY }}
-          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

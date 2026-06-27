@@ -99,14 +99,14 @@ export function useAuth() {
       }
 
       if (method === "email-otp-link") {
-        if (window.localStorage.getItem("emailForSignIn")) {
-          await signInWithEmailLink(
-            auth,
-            window.localStorage.getItem("emailForSignIn")!,
-            window.location.href,
+        const email = window.localStorage.getItem("emailForSignIn");
+        if (!email) {
+          throw new Error(
+            "Email link expired or invalid. Please request a new link.",
           );
-          window.localStorage.removeItem("emailForSignIn");
         }
+        await signInWithEmailLink(auth, email, window.location.href);
+        window.localStorage.removeItem("emailForSignIn");
         return;
       }
 
@@ -169,6 +169,7 @@ export function useAuth() {
   }, []);
 
   const signOut = useCallback(async () => {
+    localStorage.removeItem("pv-fcm-token");
     return firebaseSignOut(auth);
   }, []);
 

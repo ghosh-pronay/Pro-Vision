@@ -44,11 +44,13 @@ const labels = {
   },
 };
 
+const EXCLUDED_KEYS = ["emailForSignIn", "pv-fcm-token"];
+
 async function collectLocalStorageData(): Promise<Record<string, string>> {
   const data: Record<string, string> = {};
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key) {
+    if (key && !EXCLUDED_KEYS.includes(key)) {
       data[key] = localStorage.getItem(key) ?? "";
     }
   }

@@ -14,11 +14,10 @@ describe("AI Utility", () => {
   });
 
   describe("isGeminiConfigured", () => {
-    it("returns false when no env var set", async () => {
-      vi.stubEnv("VITE_GEMINI_API_KEY", "");
+    it("returns true (Cloud Functions handle API keys)", async () => {
       vi.resetModules();
       const { isGeminiConfigured } = await import("../ai");
-      expect(isGeminiConfigured()).toBe(false);
+      expect(isGeminiConfigured()).toBe(true);
     });
   });
 

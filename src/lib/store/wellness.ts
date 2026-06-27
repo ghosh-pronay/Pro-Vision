@@ -1,24 +1,14 @@
-import { StoredRecord, getStore, setStore, generateId, now } from "./types";
+import { createCollection, now, type StoredRecord } from "./types";
+
+const gratitudeEntriesBase = createCollection<StoredRecord>(
+  "gratitudeEntries",
+  { prepend: true },
+);
 
 export const gratitudeEntries = {
-  list(): StoredRecord[] {
-    return getStore("gratitudeEntries");
-  },
-  create(data: Record<string, unknown>): StoredRecord {
-    const items = getStore("gratitudeEntries");
-    const item = { _id: generateId(), createdAt: now(), ...data };
-    items.unshift(item);
-    setStore("gratitudeEntries", items);
-    return item;
-  },
-  remove(id: string): void {
-    setStore(
-      "gratitudeEntries",
-      getStore("gratitudeEntries").filter((e) => e._id !== id),
-    );
-  },
+  ...gratitudeEntriesBase,
   stats(): Record<string, unknown> {
-    const items = getStore("gratitudeEntries");
+    const items = gratitudeEntriesBase.list();
     const weekAgo = now() - 7 * 24 * 60 * 60 * 1000;
     return {
       total: items.length,
@@ -27,19 +17,14 @@ export const gratitudeEntries = {
   },
 };
 
+const exerciseLogsBase = createCollection<StoredRecord>("exerciseLogs", {
+  prepend: true,
+});
+
 export const exerciseLogs = {
-  list(): StoredRecord[] {
-    return getStore("exerciseLogs");
-  },
-  create(data: Record<string, unknown>): StoredRecord {
-    const items = getStore("exerciseLogs");
-    const item = { _id: generateId(), createdAt: now(), ...data };
-    items.unshift(item);
-    setStore("exerciseLogs", items);
-    return item;
-  },
+  ...exerciseLogsBase,
   stats(): Record<string, unknown> {
-    const items = getStore("exerciseLogs");
+    const items = exerciseLogsBase.list();
     const weekAgo = now() - 7 * 24 * 60 * 60 * 1000;
     return {
       totalMinutes: items.reduce(
@@ -57,31 +42,29 @@ export const exerciseLogs = {
   },
 };
 
+const waterLogsBase = createCollection<StoredRecord>("waterLogs");
+
 export const waterLogs = {
+  ...waterLogsBase,
   listByDate(_date: number): StoredRecord[] {
-    const items = getStore("waterLogs");
+    const items = waterLogsBase.list();
     const day = new Date(_date).setHours(0, 0, 0, 0);
     return items.filter(
       (w) => new Date(w.date as number).setHours(0, 0, 0, 0) === day,
     );
   },
   getTodayTotal(): number {
-    const items = getStore("waterLogs");
+    const items = waterLogsBase.list();
     const todayStart = new Date().setHours(0, 0, 0, 0);
     return items
       .filter((w) => (w.date as number) >= todayStart)
       .reduce((sum, w) => sum + ((w.glasses as number) || 0), 0);
   },
   addWater(date: number, glasses: number): void {
-    const items = getStore("waterLogs");
-    items.push({ _id: generateId(), date, glasses, createdAt: now() });
-    setStore("waterLogs", items);
+    waterLogsBase.create({ date, glasses });
   },
   removeWater(id: string): void {
-    setStore(
-      "waterLogs",
-      getStore("waterLogs").filter((w) => w._id !== id),
-    );
+    waterLogsBase.remove(id);
   },
   getWeeklyStats(): Record<string, number> {
     return {};

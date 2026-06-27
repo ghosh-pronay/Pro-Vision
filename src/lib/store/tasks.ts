@@ -1,24 +1,17 @@
-import { StoredRecord, getStore, setStore, generateId, now } from "./types";
+import { createCollection, setStore, now, type StoredRecord } from "./types";
+
+const tasksBase = createCollection<StoredRecord>("tasks", { prepend: true });
 
 export const tasks = {
-  list(): StoredRecord[] {
-    return getStore("tasks");
-  },
+  ...tasksBase,
   create(data: Record<string, unknown>): StoredRecord {
-    const items = getStore("tasks");
-    const item = {
-      _id: generateId(),
+    return tasksBase.create({
       completed: false,
-      createdAt: now(),
-      updatedAt: now(),
       ...data,
-    };
-    items.unshift(item);
-    setStore("tasks", items);
-    return item;
+    });
   },
   toggle(id: string): void {
-    const items = getStore("tasks");
+    const items = tasksBase.list();
     const idx = items.findIndex((t) => t._id === id);
     if (idx !== -1) {
       items[idx].completed = !items[idx].completed;
@@ -26,27 +19,30 @@ export const tasks = {
       setStore("tasks", items);
     }
   },
-  remove(id: string): void {
-    setStore(
-      "tasks",
-      getStore("tasks").filter((t) => t._id !== id),
-    );
-  },
   stats(): {
     total: number;
     completed: number;
     pending: number;
     overdue: number;
   } {
-    const items = getStore("tasks");
+    const items = tasksBase.list();
     const n = now();
+    let completed = 0;
+    let pending = 0;
+    let overdue = 0;
+    for (const t of items) {
+      if (t.completed) {
+        completed++;
+      } else {
+        pending++;
+        if (t.dueDate && (t.dueDate as number) < n) overdue++;
+      }
+    }
     return {
       total: items.length,
-      completed: items.filter((t) => t.completed).length,
-      pending: items.filter((t) => !t.completed).length,
-      overdue: items.filter(
-        (t) => !t.completed && t.dueDate && (t.dueDate as number) < n,
-      ).length,
+      completed,
+      pending,
+      overdue,
     };
   },
 };

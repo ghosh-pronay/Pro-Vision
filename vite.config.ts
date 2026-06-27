@@ -13,6 +13,8 @@ export default defineConfig({
         __dirname,
         "./src/convex/_generated/api.ts",
       ),
+      "convex/values": path.resolve(__dirname, "./src/convex/shims/values.ts"),
+      "convex/server": path.resolve(__dirname, "./src/convex/shims/server.ts"),
     },
   },
   build: {
@@ -31,7 +33,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           "react-vendor": ["react", "react-dom", "react-router"],
-          "convex-vendor": ["convex"],
           "framer-motion": ["framer-motion"],
           "lucide-react": ["lucide-react"],
           "ui-libs": ["sonner", "zustand", "zustand/middleware"],
@@ -48,7 +49,7 @@ export default defineConfig({
     cssMinify: "esbuild",
   },
   optimizeDeps: {
-    include: ["react", "react-dom", "react-router", "@convex-dev/auth/react"],
+    include: ["react", "react-dom", "react-router"],
   },
   server: {
     hmr: true,

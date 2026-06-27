@@ -1,18 +1,13 @@
-import { StoredRecord, getStore, setStore, generateId, now } from "./types";
+import { createCollection, type StoredRecord } from "./types";
+
+const focusSessionsBase = createCollection<StoredRecord>("focusSessions", {
+  prepend: true,
+});
 
 export const focusSessions = {
-  list(): StoredRecord[] {
-    return getStore("focusSessions");
-  },
-  create(data: Record<string, unknown>): StoredRecord {
-    const items = getStore("focusSessions");
-    const item = { _id: generateId(), createdAt: now(), ...data };
-    items.unshift(item);
-    setStore("focusSessions", items);
-    return item;
-  },
+  ...focusSessionsBase,
   stats(): Record<string, unknown> {
-    const items = getStore("focusSessions");
+    const items = focusSessionsBase.list();
     const todayStart = new Date().setHours(0, 0, 0, 0);
     const todayMinutes = items
       .filter((s) => (s.completedAt as number) >= todayStart)

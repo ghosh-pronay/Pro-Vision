@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router";
 import { SkipLink } from "@/components/ui/SkipLink";
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { useAuth } from "@/hooks/use-auth";
 import { NAV_ITEMS } from "@/components/layout/nav-items";
@@ -18,7 +18,23 @@ export default function DashboardLayout() {
   void useLocation();
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isAdmin = (user as { role?: string })?.role === "admin";
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const checkAdmin = async () => {
+      try {
+        const { doc, getDoc } = await import("firebase/firestore");
+        const { getDb } = await import("@/lib/firebase");
+        const db = await getDb();
+        const snap = await getDoc(doc(db, "users", user.uid));
+        setIsAdmin(snap.data()?.role === "admin");
+      } catch {
+        setIsAdmin(false);
+      }
+    };
+    checkAdmin();
+  }, [user]);
 
   useKeyboardShortcuts();
 

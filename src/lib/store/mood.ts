@@ -1,18 +1,11 @@
-import { StoredRecord, getStore, setStore, generateId, now } from "./types";
+import { createCollection, type StoredRecord } from "./types";
+
+const moodsBase = createCollection<StoredRecord>("moods", { prepend: true });
 
 export const moods = {
-  list(): StoredRecord[] {
-    return getStore("moods");
-  },
-  create(data: Record<string, unknown>): StoredRecord {
-    const items = getStore("moods");
-    const item = { _id: generateId(), createdAt: now(), ...data };
-    items.unshift(item);
-    setStore("moods", items);
-    return item;
-  },
+  ...moodsBase,
   stats(): Record<string, unknown> {
-    const items = getStore("moods");
+    const items = moodsBase.list();
     const todayStart = new Date().setHours(0, 0, 0, 0);
     const todayMood =
       items.find((m) => (m.date as number) >= todayStart) || null;

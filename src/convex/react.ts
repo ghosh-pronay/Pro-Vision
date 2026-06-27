@@ -15,10 +15,19 @@ type QueryResult<T> = T | undefined;
 type QueryFn = (...args: unknown[]) => unknown;
 type MutationFn = (...args: unknown[]) => unknown;
 
-const _listeners = new Set<() => void>();
+const queryListeners = new Map<string, Set<() => void>>();
 
-export function notifyDataChange() {
-  _listeners.forEach((l) => l());
+export function notifyDataChange(collectionKey?: string) {
+  if (collectionKey) {
+    const listeners = queryListeners.get(collectionKey);
+    if (listeners) {
+      listeners.forEach((l) => l());
+    }
+  } else {
+    queryListeners.forEach((listeners) => {
+      listeners.forEach((l) => l());
+    });
+  }
 }
 
 export function useQuery<T = unknown>(
@@ -28,13 +37,31 @@ export function useQuery<T = unknown>(
   const [data, setData] = useState<T | undefined>(undefined);
   const fnRef = useRef(fn);
   const argsRef = useRef(args);
+  const argsKeyRef = useRef(JSON.stringify(args));
+  const listenerKeyRef = useRef<string>("");
+
+  const argsKey = JSON.stringify(args);
 
   useEffect(() => {
     fnRef.current = fn;
     argsRef.current = args;
-  });
 
-  useEffect(() => {
+    const newKey = `${fn.name || "anonymous"}_${argsKey}`;
+    const oldKey = listenerKeyRef.current;
+
+    if (oldKey && oldKey !== newKey) {
+      queryListeners.get(oldKey)?.forEach((l) => l());
+      queryListeners.get(oldKey)?.clear();
+      queryListeners.delete(oldKey);
+    }
+
+    listenerKeyRef.current = newKey;
+    argsKeyRef.current = argsKey;
+
+    if (!queryListeners.has(newKey)) {
+      queryListeners.set(newKey, new Set());
+    }
+
     const listener = () => {
       try {
         const result = fnRef.current(argsRef.current);
@@ -45,7 +72,7 @@ export function useQuery<T = unknown>(
         console.error("[Convex shim] Query listener failed:", e);
       }
     };
-    _listeners.add(listener);
+    queryListeners.get(newKey)!.add(listener);
 
     try {
       const result = fn(args);
@@ -57,24 +84,30 @@ export function useQuery<T = unknown>(
     }
 
     return () => {
-      _listeners.delete(listener);
+      queryListeners.get(newKey)?.delete(listener);
+      const currentListeners = queryListeners.get(newKey);
+      if (currentListeners && currentListeners.size === 0) {
+        queryListeners.delete(newKey);
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fn, JSON.stringify(args)]);
+  }, [fn, argsKey]);
 
   return data;
 }
 
-export function useMutation(fn: MutationFn) {
+export function useMutation(fn: MutationFn, collectionKey?: string) {
   const fnRef = useRef(fn);
+  const collectionKeyRef = useRef(collectionKey);
 
   useEffect(() => {
     fnRef.current = fn;
+    collectionKeyRef.current = collectionKey;
   });
 
   return useCallback(async (...args: unknown[]) => {
     const result = await fnRef.current(...args);
-    notifyDataChange();
+    notifyDataChange(collectionKeyRef.current);
     return result;
   }, []);
 }

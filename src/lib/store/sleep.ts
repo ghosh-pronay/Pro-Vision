@@ -1,18 +1,13 @@
-import { StoredRecord, getStore, setStore, generateId, now } from "./types";
+import { createCollection, type StoredRecord } from "./types";
+
+const sleepLogsBase = createCollection<StoredRecord>("sleepLogs", {
+  prepend: true,
+});
 
 export const sleepLogs = {
-  list(): StoredRecord[] {
-    return getStore("sleepLogs");
-  },
-  create(data: Record<string, unknown>): StoredRecord {
-    const items = getStore("sleepLogs");
-    const item = { _id: generateId(), createdAt: now(), ...data };
-    items.unshift(item);
-    setStore("sleepLogs", items);
-    return item;
-  },
+  ...sleepLogsBase,
   stats(): Record<string, unknown> {
-    const items = getStore("sleepLogs");
+    const items = sleepLogsBase.list();
     const avgHours =
       items.length > 0
         ? Math.round(

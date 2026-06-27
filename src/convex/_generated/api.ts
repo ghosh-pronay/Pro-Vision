@@ -4,6 +4,13 @@ import { localDB } from "@/lib/data-store";
 // When real Convex is deployed, remove the Vite aliases in vite.config.ts
 // and this file will be replaced by the auto-generated Convex API.
 
+function requireAdminGuard() {
+  const profile = localDB.userProfiles.get();
+  if (!profile || (profile as { role?: string }).role !== "admin") {
+    throw new Error("Unauthorized: admin role required");
+  }
+}
+
 export const api = {
   users: {
     currentUser: () => localDB.users.currentUser(),
@@ -133,17 +140,38 @@ export const api = {
       if (!user) return null;
       return { user, tasks: [], habits: [], transactions: [] };
     },
-    grantPremium: (...args: unknown[]) =>
-      localDB.admin.grantPremium(args[0] as Record<string, unknown>),
-    revokePremium: (...args: unknown[]) =>
-      localDB.admin.revokePremium(args[0] as Record<string, unknown>),
-    deleteUser: (...args: unknown[]) =>
-      localDB.admin.deleteUser(args[0] as Record<string, unknown>),
-    updateUser: (...args: unknown[]) => Promise.resolve(args[0]),
-    setConfig: (...args: unknown[]) => Promise.resolve(args[0]),
-    bulkSetConfig: (...args: unknown[]) => Promise.resolve(args[0]),
-    createChallenge: (...args: unknown[]) => Promise.resolve(args[0]),
-    updateChallenge: (...args: unknown[]) => Promise.resolve(args[0]),
+    grantPremium: (...args: unknown[]) => {
+      requireAdminGuard();
+      return localDB.admin.grantPremium(args[0] as Record<string, unknown>);
+    },
+    revokePremium: (...args: unknown[]) => {
+      requireAdminGuard();
+      return localDB.admin.revokePremium(args[0] as Record<string, unknown>);
+    },
+    deleteUser: (...args: unknown[]) => {
+      requireAdminGuard();
+      return localDB.admin.deleteUser(args[0] as Record<string, unknown>);
+    },
+    updateUser: (...args: unknown[]) => {
+      requireAdminGuard();
+      return Promise.resolve(args[0]);
+    },
+    setConfig: (...args: unknown[]) => {
+      requireAdminGuard();
+      return Promise.resolve(args[0]);
+    },
+    bulkSetConfig: (...args: unknown[]) => {
+      requireAdminGuard();
+      return Promise.resolve(args[0]);
+    },
+    createChallenge: (...args: unknown[]) => {
+      requireAdminGuard();
+      return Promise.resolve(args[0]);
+    },
+    updateChallenge: (...args: unknown[]) => {
+      requireAdminGuard();
+      return Promise.resolve(args[0]);
+    },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     deleteChallenge: (...args: unknown[]) => Promise.resolve(),
     setupFirstAdmin: () => Promise.resolve(),

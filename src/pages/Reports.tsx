@@ -2,19 +2,54 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/i18n/LanguageContext";
 import { t } from "@/i18n/translations";
 import { Download, BarChart3 } from "lucide-react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, lazy } from "react";
 import { useSearchParams } from "react-router";
-import {
-  PeriodSelector,
-  OverviewTab,
-  TasksTab,
-  HabitsTab,
-  FocusTab,
-  FinanceTab,
-  WellbeingTab,
-  GoalsTab,
-  InsightsTab,
-} from "@/components/analytics";
+
+const PeriodSelector = lazy(() =>
+  import("@/components/analytics/PeriodSelector").then((m) => ({
+    default: m.PeriodSelector,
+  })),
+);
+const OverviewTab = lazy(() =>
+  import("@/components/analytics/OverviewTab").then((m) => ({
+    default: m.OverviewTab,
+  })),
+);
+const TasksTab = lazy(() =>
+  import("@/components/analytics/TasksTab").then((m) => ({
+    default: m.TasksTab,
+  })),
+);
+const HabitsTab = lazy(() =>
+  import("@/components/analytics/HabitsTab").then((m) => ({
+    default: m.HabitsTab,
+  })),
+);
+const FocusTab = lazy(() =>
+  import("@/components/analytics/FocusTab").then((m) => ({
+    default: m.FocusTab,
+  })),
+);
+const FinanceTab = lazy(() =>
+  import("@/components/analytics/FinanceTab").then((m) => ({
+    default: m.FinanceTab,
+  })),
+);
+const WellbeingTab = lazy(() =>
+  import("@/components/analytics/WellbeingTab").then((m) => ({
+    default: m.WellbeingTab,
+  })),
+);
+const GoalsTab = lazy(() =>
+  import("@/components/analytics/GoalsInsightsTabs").then((m) => ({
+    default: m.GoalsTab,
+  })),
+);
+const InsightsTab = lazy(() =>
+  import("@/components/analytics/GoalsInsightsTabs").then((m) => ({
+    default: m.InsightsTab,
+  })),
+);
 
 // Lazy load PDF libs only when exporting
 const fadeUp = {
@@ -101,27 +136,30 @@ export default function Reports() {
     if (!reportRef.current) return;
     setExporting(true);
     try {
-      const [{ jsPDF }, html2canvas] = await Promise.all([
+      const [{ jsPDF }, { toPng }] = await Promise.all([
         import("jspdf"),
-        import("html2canvas"),
+        import("html-to-image"),
       ]);
 
       const el = reportRef.current;
       el.classList.add("pdf-export");
 
-      const canvas = await html2canvas.default(el, {
-        scale: 2,
-        useCORS: true,
+      const dataUrl = await toPng(el, {
+        pixelRatio: 2,
         backgroundColor: "#121820",
-        logging: false,
-        removeContainer: true,
       });
 
       el.classList.remove("pdf-export");
 
-      const imgData = canvas.toDataURL("image/png");
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise((resolve) => {
+        img.onload = resolve;
+      });
+
+      const imgData = dataUrl;
       const imgWidth = 190;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const imgHeight = (img.height * imgWidth) / img.width;
       const pageHeight = 277;
 
       const doc = new jsPDF("p", "mm", "a4");
@@ -143,35 +181,35 @@ export default function Reports() {
       );
       yPos += 10;
 
-      if (imgHeight <= pageHeight - 20) {
+      const totalPages = Math.ceil(imgHeight / (pageHeight - 20));
+      if (totalPages <= 1) {
         doc.addImage(imgData, "PNG", 10, yPos, imgWidth, imgHeight);
       } else {
-        const totalPages = Math.ceil(imgHeight / (pageHeight - 20));
         for (let page = 0; page < totalPages; page++) {
           if (page > 0) doc.addPage();
-          const sliceY = (page * (pageHeight - 20) * canvas.width) / imgWidth;
+          const sliceY = (page * (pageHeight - 20) * img.width) / imgWidth;
           const sliceHeight = Math.min(
-            ((pageHeight - 20) * canvas.width) / imgWidth,
-            canvas.height - sliceY,
+            ((pageHeight - 20) * img.width) / imgWidth,
+            img.height - sliceY,
           );
           const sliceCanvas = document.createElement("canvas");
-          sliceCanvas.width = canvas.width;
+          sliceCanvas.width = img.width;
           sliceCanvas.height = sliceHeight;
           const sliceCtx = sliceCanvas.getContext("2d");
           if (sliceCtx) {
             sliceCtx.drawImage(
-              canvas,
+              img,
               0,
               sliceY,
-              canvas.width,
+              img.width,
               sliceHeight,
               0,
               0,
-              canvas.width,
+              img.width,
               sliceHeight,
             );
             const sliceData = sliceCanvas.toDataURL("image/png");
-            const sliceImgH = (sliceHeight * imgWidth) / canvas.width;
+            const sliceImgH = (sliceHeight * imgWidth) / img.width;
             doc.addImage(sliceData, "PNG", 10, 10, imgWidth, sliceImgH);
           }
         }

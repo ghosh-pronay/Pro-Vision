@@ -1,24 +1,17 @@
-import { StoredRecord, getStore, setStore, generateId, now } from "./types";
+import { createCollection, now, setStore, type StoredRecord } from "./types";
+
+const habitsBase = createCollection<StoredRecord>("habits", { prepend: true });
 
 export const habits = {
-  list(): StoredRecord[] {
-    return getStore("habits");
-  },
+  ...habitsBase,
   create(data: Record<string, unknown>): StoredRecord {
-    const items = getStore("habits");
-    const item = {
-      _id: generateId(),
+    return habitsBase.create({
       completedDates: [],
-      createdAt: now(),
-      updatedAt: now(),
       ...data,
-    };
-    items.unshift(item);
-    setStore("habits", items);
-    return item;
+    });
   },
   checkIn(id: string, date: number): void {
-    const items = getStore("habits");
+    const items = habitsBase.list();
     const idx = items.findIndex((h) => h._id === id);
     if (idx !== -1) {
       const dates = (items[idx].completedDates as number[]) || [];
@@ -36,19 +29,13 @@ export const habits = {
       setStore("habits", items);
     }
   },
-  remove(id: string): void {
-    setStore(
-      "habits",
-      getStore("habits").filter((h) => h._id !== id),
-    );
-  },
   stats(): {
     total: number;
     totalStreak: number;
     avgRate: number;
     todayCompleted: number;
   } {
-    const items = getStore("habits");
+    const items = habitsBase.list();
     const today = new Date().setHours(0, 0, 0, 0);
     const todayCompleted = items.filter((h) =>
       ((h.completedDates as number[]) || []).some(

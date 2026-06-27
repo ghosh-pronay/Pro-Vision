@@ -31,6 +31,6 @@
       "lucide-react": ["./src/lucide-react.d.ts"]
     }
   },
-  "include": ["src", "vly-toolbar-readonly.tsx"],
+  "include": ["src"],
   "exclude": ["src/../target-src"]
 }

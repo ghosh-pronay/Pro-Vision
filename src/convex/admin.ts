@@ -1,23 +1,6 @@
-import {
-  query,
-  mutation,
-  type QueryCtx,
-  type MutationCtx,
-} from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-
-async function requireAdmin(ctx: QueryCtx | MutationCtx) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) throw new Error("Not authenticated");
-  const admin = await ctx.db
-    .query("users")
-    .withIndex("by_tokenIdentifier", (q) =>
-      q.eq("tokenIdentifier", identity.tokenIdentifier),
-    )
-    .unique();
-  if (!admin || admin.role !== "admin") throw new Error("Unauthorized");
-  return admin;
-}
+import { requireAdmin } from "./admin-guard";
 
 export const hasAdmin = query({
   args: {},
@@ -210,7 +193,7 @@ export const getConfig = query({
 export const setConfig = mutation({
   args: {
     key: v.string(),
-    value: v.any(),
+    value: v.union(v.string(), v.number(), v.boolean()),
   },
   handler: async (ctx, args) => {
     const admin = await requireAdmin(ctx);
@@ -240,7 +223,7 @@ export const bulkSetConfig = mutation({
     configs: v.array(
       v.object({
         key: v.string(),
-        value: v.any(),
+        value: v.union(v.string(), v.number(), v.boolean()),
       }),
     ),
   },

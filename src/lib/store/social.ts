@@ -1,37 +1,19 @@
-import { StoredRecord, getStore, setStore, generateId, now } from "./types";
+import {
+  createCollection,
+  getStore,
+  setStore,
+  now,
+  type StoredRecord,
+} from "./types";
+
+const contactsBase = createCollection<StoredRecord>("contacts", {
+  prepend: true,
+});
 
 export const contacts = {
-  list(): StoredRecord[] {
-    return getStore("contacts");
-  },
-  create(data: Record<string, unknown>): StoredRecord {
-    const items = getStore("contacts");
-    const item = {
-      _id: generateId(),
-      createdAt: now(),
-      updatedAt: now(),
-      ...data,
-    };
-    items.unshift(item);
-    setStore("contacts", items);
-    return item;
-  },
-  update(id: string, data: Record<string, unknown>): void {
-    const items = getStore("contacts");
-    const idx = items.findIndex((c) => c._id === id);
-    if (idx !== -1) {
-      Object.assign(items[idx], data, { updatedAt: now() });
-      setStore("contacts", items);
-    }
-  },
-  remove(id: string): void {
-    setStore(
-      "contacts",
-      getStore("contacts").filter((c) => c._id !== id),
-    );
-  },
+  ...contactsBase,
   upcomingBirthdays(): StoredRecord[] {
-    const items = getStore("contacts");
+    const items = contactsBase.list();
     const now2 = new Date();
     const month = now2.getMonth();
     return items.filter((c) => {
@@ -52,7 +34,7 @@ export const userProfiles = {
       Object.assign(items[0], data, { updatedAt: now() });
     } else {
       items.push({
-        _id: generateId(),
+        _id: `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
         createdAt: now(),
         updatedAt: now(),
         ...data,
@@ -72,7 +54,7 @@ export const users = {
       Object.assign(items[0], data, { updatedAt: now() });
     } else {
       items.push({
-        _id: generateId(),
+        _id: `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
         createdAt: now(),
         updatedAt: now(),
         ...data,

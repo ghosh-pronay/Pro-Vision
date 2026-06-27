@@ -21,3 +21,51 @@ export function generateId(): string {
 export function now(): number {
   return Date.now();
 }
+
+export interface Collection<T extends StoredRecord> {
+  list(): T[];
+  create(data: Record<string, unknown>): T;
+  remove(id: string): void;
+  update(id: string, data: Partial<T>): void;
+}
+
+export function createCollection<T extends StoredRecord>(
+  key: string,
+  options?: { prepend?: boolean },
+): Collection<T> {
+  return {
+    list(): T[] {
+      return getStore<T>(key);
+    },
+    create(data: Record<string, unknown>): T {
+      const items = getStore<T>(key);
+      const item = {
+        _id: generateId(),
+        createdAt: now(),
+        updatedAt: now(),
+        ...data,
+      } as unknown as T;
+      if (options?.prepend) {
+        items.unshift(item);
+      } else {
+        items.push(item);
+      }
+      setStore(key, items);
+      return item;
+    },
+    remove(id: string): void {
+      setStore(
+        key,
+        getStore<T>(key).filter((item) => item._id !== id),
+      );
+    },
+    update(id: string, data: Partial<T>): void {
+      const items = getStore<T>(key);
+      const index = items.findIndex((item) => item._id === id);
+      if (index !== -1) {
+        items[index] = { ...items[index], ...data };
+        setStore(key, items);
+      }
+    },
+  };
+}

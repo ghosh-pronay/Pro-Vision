@@ -9,9 +9,23 @@ interface HeatmapData {
 
 export function useHeatmap(data: Array<{ date: number; value?: number }>) {
   const heatmapData = useMemo(() => {
+    if (data.length === 0) {
+      const now = new Date();
+      const yearStart = startOfYear(now);
+      const days = eachDayOfInterval({ start: yearStart, end: now });
+      return days.map((day) => ({
+        date: format(day, "yyyy-MM-dd"),
+        value: 0,
+        count: 0,
+      }));
+    }
+
+    const timestamps = data.map((d) => d.date);
+    const earliest = new Date(Math.min(...timestamps));
     const now = new Date();
     const yearStart = startOfYear(now);
-    const days = eachDayOfInterval({ start: yearStart, end: now });
+    const intervalStart = earliest > yearStart ? earliest : yearStart;
+    const days = eachDayOfInterval({ start: intervalStart, end: now });
 
     const dayMap: Record<string, { value: number; count: number }> = {};
 
@@ -28,9 +42,9 @@ export function useHeatmap(data: Array<{ date: number; value?: number }>) {
       }
     });
 
-    return Object.entries(dayMap).map(([date, data]) => ({
+    return Object.entries(dayMap).map(([date, d]) => ({
       date,
-      ...data,
+      ...d,
     }));
   }, [data]);
 
@@ -46,7 +60,7 @@ export function useHeatmap(data: Array<{ date: number; value?: number }>) {
   }, [heatmapData]);
 
   const maxValue = useMemo(() => {
-    return Math.max(...heatmapData.map((d) => d.value), 1);
+    return heatmapData.reduce((max, d) => Math.max(max, d.value), 1);
   }, [heatmapData]);
 
   const getIntensity = (value: number) => {
@@ -88,7 +102,8 @@ function calculateLongestStreak(data: HeatmapData[]): number {
       } else {
         const prevDate = new Date(sorted[i - 1].date);
         const currDate = new Date(sorted[i].date);
-        const diffDays = (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24);
+        const diffDays =
+          (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24);
 
         if (diffDays === 1) {
           current++;
@@ -106,8 +121,7 @@ function calculateLongestStreak(data: HeatmapData[]): number {
 }
 
 function calculateCurrentStreak(data: HeatmapData[]): number {
-  const sorted = [...data]
-    .sort((a, b) => b.date.localeCompare(a.date));
+  const sorted = [...data].sort((a, b) => b.date.localeCompare(a.date));
 
   let streak = 0;
   let expectedDate = format(new Date(), "yyyy-MM-dd");
@@ -174,10 +188,14 @@ export function generateYearInReview(data: YearInReviewData) {
   ];
 
   const achievements = [];
-  if (data.tasks.completed >= 100) achievements.push({ title: "Century Club", icon: "💯" });
-  if (data.habits.streak >= 30) achievements.push({ title: "Monthly Master", icon: "🏆" });
-  if (data.finance.savings >= 10000) achievements.push({ title: "Big Saver", icon: "🏦" });
-  if (data.focus.totalMinutes >= 6000) achievements.push({ title: "Flow Master", icon: "🧘" });
+  if (data.tasks.completed >= 100)
+    achievements.push({ title: "Century Club", icon: "💯" });
+  if (data.habits.streak >= 30)
+    achievements.push({ title: "Monthly Master", icon: "🏆" });
+  if (data.finance.savings >= 10000)
+    achievements.push({ title: "Big Saver", icon: "🏦" });
+  if (data.focus.totalMinutes >= 6000)
+    achievements.push({ title: "Flow Master", icon: "🧘" });
 
   return { sections, achievements };
 }
@@ -200,20 +218,39 @@ export const HeatmapCalendar = memo(function HeatmapCalendar({
 
   const colors = colorMap[colorScheme];
 
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   return (
     <div className="overflow-x-auto">
       <div className="flex gap-1 mb-2">
         {months.map((month) => (
-          <div key={month} className="text-xs text-muted-foreground w-[30px] text-center">
+          <div
+            key={month}
+            className="text-xs text-muted-foreground w-[30px] text-center"
+          >
             {month}
           </div>
         ))}
       </div>
       <div className="flex gap-1">
         {["", "Mon", "", "Wed", "", "Fri", ""].map((day, i) => (
-          <div key={i} className="text-xs text-muted-foreground w-4 h-4 flex items-center justify-center">
+          <div
+            key={i}
+            className="text-xs text-muted-foreground w-4 h-4 flex items-center justify-center"
+          >
             {day}
           </div>
         ))}
@@ -265,19 +302,27 @@ export const YearInReviewCard = memo(function YearInReviewCard({
             style={{ backgroundColor: section.color + "15" }}
           >
             <div className="text-2xl mb-2">{section.icon}</div>
-            <div className="text-2xl font-bold" style={{ color: section.color }}>
-              {typeof section.value === "number" && section.title === "Total Saved"
+            <div
+              className="text-2xl font-bold"
+              style={{ color: section.color }}
+            >
+              {typeof section.value === "number" &&
+              section.title === "Total Saved"
                 ? `৳${section.value.toLocaleString()}`
                 : section.value.toLocaleString()}
             </div>
-            <div className="text-xs text-muted-foreground mt-1">{section.subtitle}</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {section.subtitle}
+            </div>
           </div>
         ))}
       </div>
 
       {achievements.length > 0 && (
         <div>
-          <h4 className="font-semibold text-sm text-foreground mb-3">Achievements Unlocked</h4>
+          <h4 className="font-semibold text-sm text-foreground mb-3">
+            Achievements Unlocked
+          </h4>
           <div className="flex flex-wrap gap-2">
             {achievements.map((achievement) => (
               <div

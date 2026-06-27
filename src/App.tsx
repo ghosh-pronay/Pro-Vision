@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { Mic } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminRoute from "@/components/AdminRoute";
 import { useNavigate } from "react-router";
 
 const CoachFloating = lazy(() => import("@/components/coach/CoachFloating"));
@@ -170,7 +171,7 @@ export default function App() {
     <ErrorBoundary>
       <Toaster position="top-right" richColors />
       <Suspense fallback={<RouteLoading />}>
-        <Routes key={location.pathname}>
+        <Routes>
           <Route
             path="/"
             element={
@@ -572,6 +573,14 @@ export default function App() {
                 </RouteErrorBoundary>
               }
             />
+          </Route>
+          <Route
+            element={
+              <ProtectedRoute>
+                <AdminRoute />
+              </ProtectedRoute>
+            }
+          >
             <Route
               path="/admin"
               element={

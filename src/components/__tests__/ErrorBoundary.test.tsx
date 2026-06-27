@@ -40,14 +40,16 @@ describe("ErrorBoundary", () => {
     expect(screen.queryByText("Child content")).not.toBeInTheDocument();
   });
 
-  it("shows error message from thrown error", () => {
+  it("shows generic error message for security", () => {
     render(
       <ErrorBoundary>
         <ThrowingChild shouldThrow={true} />
       </ErrorBoundary>,
     );
 
-    expect(screen.getByText("Test error message")).toBeInTheDocument();
+    expect(
+      screen.getByText("An unexpected error occurred"),
+    ).toBeInTheDocument();
   });
 
   it("'Try Again' button re-renders children", () => {

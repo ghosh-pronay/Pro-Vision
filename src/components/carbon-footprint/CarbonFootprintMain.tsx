@@ -8,7 +8,7 @@ import {
 } from "./types";
 import type { CarbonLog } from "./types";
 import { useState } from "react";
-import { generateId } from "@/lib/store/types";
+import { generateId } from "@/lib/utils";
 
 interface CarbonFootprintMainProps {
   lang: string;

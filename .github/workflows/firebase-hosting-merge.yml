@@ -13,6 +13,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npm run verify
+      - run: npm run test:coverage
       - run: npm run build
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
@@ -23,12 +25,11 @@ jobs:
           VITE_FIREBASE_APP_ID: "1:570621295453:web:3e2c03807274d8d4e286b4"
           VITE_FIREBASE_MEASUREMENT_ID: G-C6FC4FJXWX
           VITE_FIREBASE_VAPID_KEY: ${{ secrets.VITE_FIREBASE_VAPID_KEY }}
-          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
-      - name: Deploy Functions with Gemini key
+      - name: Deploy Functions with API keys
         run: |
           npm install -g firebase-tools
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRO_VISIONS }}' > /tmp/sa.json
-          GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json firebase functions:config:set gemini.api_key="${{ secrets.VITE_GEMINI_API_KEY }}" --project pro-visions
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json firebase functions:config:set gemini.api_key="${{ secrets.VITE_GEMINI_API_KEY }}" groq.api_key="${{ secrets.GROQ_API_KEY }}" --project pro-visions
           GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json firebase deploy --only functions --project pro-visions
           rm /tmp/sa.json
       - uses: FirebaseExtended/action-hosting-deploy@v0
