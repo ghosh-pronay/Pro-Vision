@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   Navigation,
   Plus,
@@ -9,8 +9,8 @@ import {
   BarChart3,
   Clock,
   Sparkles,
-} from "lucide-react";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+} from "lucide-react"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import {
   TodayView,
   WeekView,
@@ -18,7 +18,7 @@ import {
   CompareView,
   ScheduleView,
   CommuteForm,
-} from "@/components/commute-tracker";
+} from "@/components/commute-tracker"
 import {
   TRANSPORT_MODES,
   fadeUp,
@@ -26,20 +26,20 @@ import {
   getModeById,
   type Commute,
   type SavedRoute,
-} from "@/components/commute-tracker/types";
+} from "@/components/commute-tracker/types"
 
 export default function CommuteTracker() {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
-  const [commutes, setCommutes] = useState<Commute[]>([]);
-  const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
-  const [selectedMode, setSelectedMode] = useState<string>("");
-  const [showForm, setShowForm] = useState(false);
+  const [commutes, setCommutes] = useState<Commute[]>([])
+  const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([])
+  const [selectedMode, setSelectedMode] = useState<string>("")
+  const [showForm, setShowForm] = useState(false)
   const [activeTab, setActiveTab] = useState<
     "today" | "week" | "history" | "compare" | "schedule"
-  >("today");
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [routeName, setRouteName] = useState("");
+  >("today")
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [routeName, setRouteName] = useState("")
 
   const [formData, setFormData] = useState({
     from: "",
@@ -49,45 +49,45 @@ export default function CommuteTracker() {
     cost: 0,
     distance: 0,
     notes: "",
-  });
+  })
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split("T")[0]
 
   const todayCommutes = useMemo(
     () => commutes.filter((c) => c.date === today),
     [commutes, today],
-  );
+  )
 
-  const weekDates = useMemo(() => getWeekDates(), []);
+  const weekDates = useMemo(() => getWeekDates(), [])
 
   const weekCommutes = useMemo(
     () => commutes.filter((c) => weekDates.includes(c.date)),
     [commutes, weekDates],
-  );
+  )
 
   const weeklyStats = useMemo(() => {
-    const totalTrips = weekCommutes.length;
-    const totalDistance = weekCommutes.reduce((sum, c) => sum + c.distance, 0);
-    const totalCost = weekCommutes.reduce((sum, c) => sum + c.cost, 0);
+    const totalTrips = weekCommutes.length
+    const totalDistance = weekCommutes.reduce((sum, c) => sum + c.distance, 0)
+    const totalCost = weekCommutes.reduce((sum, c) => sum + c.cost, 0)
     const totalCarbon = weekCommutes.reduce((sum, c) => {
-      const mode = TRANSPORT_MODES.find((m) => m.id === c.mode);
-      return sum + (mode ? mode.carbon * c.distance : 0);
-    }, 0);
+      const mode = TRANSPORT_MODES.find((m) => m.id === c.mode)
+      return sum + (mode ? mode.carbon * c.distance : 0)
+    }, 0)
     const totalTime = weekCommutes.reduce((sum, c) => {
       if (c.departure && c.arrival) {
-        const dep = new Date(`2000-01-01T${c.departure}`);
-        const arr = new Date(`2000-01-01T${c.arrival}`);
-        return sum + (arr.getTime() - dep.getTime()) / 60000;
+        const dep = new Date(`2000-01-01T${c.departure}`)
+        const arr = new Date(`2000-01-01T${c.arrival}`)
+        return sum + (arr.getTime() - dep.getTime()) / 60000
       }
-      return sum;
-    }, 0);
+      return sum
+    }, 0)
 
-    const modeCount: Record<string, number> = {};
+    const modeCount: Record<string, number> = {}
     weekCommutes.forEach((c) => {
-      modeCount[c.mode] = (modeCount[c.mode] || 0) + 1;
-    });
+      modeCount[c.mode] = (modeCount[c.mode] || 0) + 1
+    })
     const mostUsedMode =
-      Object.entries(modeCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
+      Object.entries(modeCount).sort((a, b) => b[1] - a[1])[0]?.[0] || ""
 
     return {
       totalTrips,
@@ -96,58 +96,59 @@ export default function CommuteTracker() {
       totalCarbon,
       totalTime,
       mostUsedMode,
-    };
-  }, [weekCommutes]);
+    }
+  }, [weekCommutes])
 
   const comparisonData = useMemo(() => {
     return TRANSPORT_MODES.map((mode) => {
-      const modeTrips = commutes.filter((c) => c.mode === mode.id);
-      const totalDist = modeTrips.reduce((s, c) => s + c.distance, 0);
+      const modeTrips = commutes.filter((c) => c.mode === mode.id)
+      const totalDist = modeTrips.reduce((s, c) => s + c.distance, 0)
       const avgTime =
         modeTrips.length > 0
           ? modeTrips.reduce((s, c) => {
               if (c.departure && c.arrival) {
-                const dep = new Date(`2000-01-01T${c.departure}`);
-                const arr = new Date(`2000-01-01T${c.arrival}`);
-                return s + (arr.getTime() - dep.getTime()) / 60000;
+                const dep = new Date(`2000-01-01T${c.departure}`)
+                const arr = new Date(`2000-01-01T${c.arrival}`)
+                return s + (arr.getTime() - dep.getTime()) / 60000
               }
-              return s + (totalDist > 0 ? (totalDist / mode.avgSpeed) * 60 : 0);
+              return s + (totalDist > 0 ? (totalDist / mode.avgSpeed) * 60 : 0)
             }, 0) / modeTrips.length
           : totalDist > 0
             ? (totalDist / mode.avgSpeed) * 60
-            : 0;
+            : 0
       const avgCost =
         modeTrips.length > 0
           ? modeTrips.reduce((s, c) => s + c.cost, 0) / modeTrips.length
-          : mode.avgCost;
+          : mode.avgCost
       return {
         ...mode,
         trips: modeTrips.length,
         avgTime: Math.round(avgTime),
         avgCost: Math.round(avgCost),
-      };
-    });
-  }, [commutes]);
+      }
+    })
+  }, [commutes])
 
   const fastestRoute = useMemo(() => {
     return (
       comparisonData
         .filter((c) => c.trips > 0)
         .sort((a, b) => a.avgTime - b.avgTime)[0] || null
-    );
-  }, [comparisonData]);
+    )
+  }, [comparisonData])
 
   const cheapestRoute = useMemo(() => {
     return (
       comparisonData
         .filter((c) => c.trips > 0)
         .sort((a, b) => a.avgCost - b.avgCost)[0] || null
-    );
-  }, [comparisonData]);
+    )
+  }, [comparisonData])
 
   const handleSaveCommute = () => {
-    if (!selectedMode || !formData.from || !formData.to) return;
+    if (!selectedMode || !formData.from || !formData.to) return
     const newCommute: Commute = {
+      // eslint-disable-next-line react-hooks/purity
       id: Date.now().toString(),
       mode: selectedMode,
       from: formData.from,
@@ -158,13 +159,13 @@ export default function CommuteTracker() {
       distance: formData.distance,
       date: today,
       notes: formData.notes,
-    };
-    setCommutes((prev) => [newCommute, ...prev]);
-    resetForm();
-  };
+    }
+    setCommutes((prev) => [newCommute, ...prev])
+    resetForm()
+  }
 
   const resetForm = () => {
-    setSelectedMode("");
+    setSelectedMode("")
     setFormData({
       from: "",
       to: "",
@@ -173,17 +174,17 @@ export default function CommuteTracker() {
       cost: 0,
       distance: 0,
       notes: "",
-    });
-    setShowForm(false);
-  };
+    })
+    setShowForm(false)
+  }
 
   const handleDeleteCommute = (id: string) => {
-    setCommutes((prev) => prev.filter((c) => c.id !== id));
-    setDeleteConfirm(null);
-  };
+    setCommutes((prev) => prev.filter((c) => c.id !== id))
+    setDeleteConfirm(null)
+  }
 
   const handleSaveRoute = () => {
-    if (!formData.from || !formData.to || !selectedMode) return;
+    if (!formData.from || !formData.to || !selectedMode) return
     const route: SavedRoute = {
       id: Date.now().toString(),
       name: routeName || `${formData.from} → ${formData.to}`,
@@ -191,25 +192,25 @@ export default function CommuteTracker() {
       to: formData.to,
       mode: selectedMode,
       avgCost: formData.cost || getModeById(selectedMode)?.avgCost || 0,
-    };
-    setSavedRoutes((prev) => [...prev, route]);
-    setRouteName("");
-  };
+    }
+    setSavedRoutes((prev) => [...prev, route])
+    setRouteName("")
+  }
 
   const handleSelectRoute = (route: SavedRoute) => {
-    setSelectedMode(route.mode);
+    setSelectedMode(route.mode)
     setFormData((prev) => ({
       ...prev,
       from: route.from,
       to: route.to,
       cost: route.avgCost,
-    }));
-    setShowForm(true);
-  };
+    }))
+    setShowForm(true)
+  }
 
   const handleDeleteRoute = (id: string) => {
-    setSavedRoutes((prev) => prev.filter((r) => r.id !== id));
-  };
+    setSavedRoutes((prev) => prev.filter((r) => r.id !== id))
+  }
 
   const tabs = [
     { key: "today" as const, labelEn: "Today", labelBn: "আজ", icon: Sparkles },
@@ -237,7 +238,7 @@ export default function CommuteTracker() {
       labelBn: "সময়সূচী",
       icon: Clock,
     },
-  ];
+  ]
 
   return (
     <div className="min-h-screen bg-mesh p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -267,7 +268,7 @@ export default function CommuteTracker() {
 
         <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
           {tabs.map((tab) => {
-            const Icon = tab.icon;
+            const Icon = tab.icon
             return (
               <motion.button
                 key={tab.key}
@@ -283,7 +284,7 @@ export default function CommuteTracker() {
                 <Icon className="w-4 h-4" />
                 {lang === "bn" ? tab.labelBn : tab.labelEn}
               </motion.button>
-            );
+            )
           })}
         </div>
 
@@ -356,5 +357,5 @@ export default function CommuteTracker() {
         variant="danger"
       />
     </div>
-  );
+  )
 }

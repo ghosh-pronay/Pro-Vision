@@ -1,27 +1,26 @@
-import { Link, NavLink } from "react-router";
-import { useLang } from "@/i18n/LanguageContext";
-import { t } from "@/i18n/translations";
-import { Shield, Settings } from "lucide-react";
-import logo from "@/assets/logo.png";
-import { useAuth } from "@/hooks/use-auth";
+import { Link, NavLink } from "react-router"
+import { useLang } from "@/i18n/LanguageContext"
+import { t } from "@/i18n/translations"
+import { Shield, Settings } from "lucide-react"
+import logo from "@/assets/logo.png"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import type { NavItem } from "./nav-items";
+} from "@/components/ui/tooltip"
+import type { NavItem } from "./nav-items"
 
 interface TabletSidebarProps {
-  navItems: NavItem[];
-  isAdmin: boolean;
+  navItems: NavItem[]
+  isAdmin: boolean
 }
 
 export default function TabletSidebar({
   navItems,
   isAdmin,
 }: TabletSidebarProps) {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -115,5 +114,5 @@ export default function TabletSidebar({
         </div>
       </div>
     </TooltipProvider>
-  );
+  )
 }

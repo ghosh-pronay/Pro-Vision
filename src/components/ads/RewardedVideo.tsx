@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Play, Check } from "lucide-react";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { X, Play, Check } from "lucide-react"
+import { useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
 
 interface RewardedVideoProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onRewarded: () => void;
-  featureName: string;
+  isOpen: boolean
+  onClose: () => void
+  onRewarded: () => void
+  featureName: string
 }
 
 export default function RewardedVideo({
@@ -17,33 +17,31 @@ export default function RewardedVideo({
   onRewarded,
   featureName,
 }: RewardedVideoProps) {
-  const [status, setStatus] = useState<"idle" | "watching" | "complete">(
-    "idle",
-  );
-  const [progress, setProgress] = useState(0);
-  const updateProfile = useMutation(api.userProfiles.upsert);
+  const [status, setStatus] = useState<"idle" | "watching" | "complete">("idle")
+  const [progress, setProgress] = useState(0)
+  const updateProfile = useMutation(api.userProfiles.upsert, "userProfiles")
 
   const handleWatch = () => {
-    setStatus("watching");
-    setProgress(0);
+    setStatus("watching")
+    setProgress(0)
 
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          clearInterval(interval);
-          setStatus("complete");
-          return 100;
+          clearInterval(interval)
+          setStatus("complete")
+          return 100
         }
-        return prev + 2;
-      });
-    }, 600);
-  };
+        return prev + 2
+      })
+    }, 600)
+  }
 
   const handleClaim = async () => {
-    await updateProfile({});
-    onRewarded();
-    onClose();
-  };
+    await updateProfile({})
+    onRewarded()
+    onClose()
+  }
 
   return (
     <AnimatePresence>
@@ -133,5 +131,5 @@ export default function RewardedVideo({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

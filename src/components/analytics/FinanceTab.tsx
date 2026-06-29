@@ -1,8 +1,8 @@
-import { useState, useMemo, memo } from "react";
-import { useI18n } from "@/hooks/use-i18n";
-import { Calendar } from "lucide-react";
+import { useState, useMemo, memo } from "react"
+import { useI18n } from "@/hooks/use-i18n"
+import { Calendar } from "lucide-react"
 
-type ReportView = "balanceSheet" | "incomeExpense";
+type ReportView = "balanceSheet" | "incomeExpense"
 
 type DatePreset =
   | "thisMonth"
@@ -12,80 +12,80 @@ type DatePreset =
   | "thisYear"
   | "lastYear"
   | "allTime"
-  | "custom";
+  | "custom"
 
 const VIEW_TABS = [
   { id: "balanceSheet" as const, en: "Balance Sheet", bn: "ব্যালেন্স শিট" },
   { id: "incomeExpense" as const, en: "Income & Expense", bn: "আয় ও ব্যয়" },
-];
+]
 
 interface IECategory {
-  name: string;
-  amount: number;
-  pct: number;
+  name: string
+  amount: number
+  pct: number
 }
 
 interface BalanceSheetData {
-  asOf: number;
+  asOf: number
   assets: {
-    total: number;
-    current: number;
-    nonCurrent: number;
+    total: number
+    current: number
+    nonCurrent: number
     currentBreakdown: {
-      label: string;
-      amount: number;
-      breakdown?: { name: string; amount: number }[];
-    }[];
+      label: string
+      amount: number
+      breakdown?: { name: string; amount: number }[]
+    }[]
     nonCurrentBreakdown: {
-      label: string;
-      amount: number;
-      breakdown?: { name: string; amount: number }[];
-    }[];
-  };
+      label: string
+      amount: number
+      breakdown?: { name: string; amount: number }[]
+    }[]
+  }
   liabilities: {
-    total: number;
-    current: number;
-    nonCurrent: number;
+    total: number
+    current: number
+    nonCurrent: number
     currentBreakdown: {
-      label: string;
-      amount: number;
-      breakdown?: { name: string; amount: number }[];
-    }[];
+      label: string
+      amount: number
+      breakdown?: { name: string; amount: number }[]
+    }[]
     nonCurrentBreakdown: {
-      label: string;
-      amount: number;
-      breakdown?: { name: string; amount: number }[];
-    }[];
-  };
-  netWorth: number;
+      label: string
+      amount: number
+      breakdown?: { name: string; amount: number }[]
+    }[]
+  }
+  netWorth: number
 }
 
 interface IncomeExpenseData {
   summary: {
-    totalIncome: number;
-    totalExpense: number;
-    netIncome: number;
-    periodIncome: number;
-    periodExpense: number;
-    periodNet: number;
-    compIncome: number;
-    compExpense: number;
-    compNet: number;
-    yearIncome: number;
-    yearExpense: number;
-    yearNet: number;
-    incomeChange: number;
-    expenseChange: number;
-  };
-  period: { selected: string; comparison: string; year: number };
+    totalIncome: number
+    totalExpense: number
+    netIncome: number
+    periodIncome: number
+    periodExpense: number
+    periodNet: number
+    compIncome: number
+    compExpense: number
+    compNet: number
+    yearIncome: number
+    yearExpense: number
+    yearNet: number
+    incomeChange: number
+    expenseChange: number
+  }
+  period: { selected: string; comparison: string; year: number }
   selectedPeriod: {
-    income: { categories: IECategory[]; total: number };
-    expense: { categories: IECategory[]; total: number };
-  };
+    income: { categories: IECategory[]; total: number }
+    expense: { categories: IECategory[]; total: number }
+  }
   comparisonPeriod: {
-    income: { categories: IECategory[]; total: number };
-    expense: { categories: IECategory[]; total: number };
-  };
+    income: { categories: IECategory[]; total: number }
+    expense: { categories: IECategory[]; total: number }
+  }
 }
 
 const PRESET_OPTIONS: { id: DatePreset; en: string; bn: string }[] = [
@@ -97,92 +97,92 @@ const PRESET_OPTIONS: { id: DatePreset; en: string; bn: string }[] = [
   { id: "lastYear", en: "Last Year", bn: "গত বছর" },
   { id: "allTime", en: "All Time", bn: "সব সময়" },
   { id: "custom", en: "Custom Range", bn: "কাস্টম রেঞ্জ" },
-];
+]
 
 function getDateRange(
   preset: DatePreset,
   customStart?: string,
   customEnd?: string,
 ): { startDate: number; endDate: number } {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const day = now.getDate();
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth()
+  const day = now.getDate()
 
   switch (preset) {
     case "thisMonth":
       return {
         startDate: new Date(year, month, 1).getTime(),
         endDate: new Date(year, month, day, 23, 59, 59, 999).getTime(),
-      };
+      }
     case "lastMonth":
       return {
         startDate: new Date(year, month - 1, 1).getTime(),
         endDate: new Date(year, month, 0, 23, 59, 59, 999).getTime(),
-      };
+      }
     case "thisQuarter": {
-      const quarterStart = Math.floor(month / 3) * 3;
+      const quarterStart = Math.floor(month / 3) * 3
       return {
         startDate: new Date(year, quarterStart, 1).getTime(),
         endDate: new Date(year, month, day, 23, 59, 59, 999).getTime(),
-      };
+      }
     }
     case "lastQuarter": {
-      const lastQStart = Math.floor(month / 3) * 3 - 3;
-      const lastQEnd = Math.floor(month / 3) * 3 - 1;
+      const lastQStart = Math.floor(month / 3) * 3 - 3
+      const lastQEnd = Math.floor(month / 3) * 3 - 1
       return {
         startDate: new Date(year, lastQStart, 1).getTime(),
         endDate: new Date(year, lastQEnd + 1, 0, 23, 59, 59, 999).getTime(),
-      };
+      }
     }
     case "thisYear":
       return {
         startDate: new Date(year, 0, 1).getTime(),
         endDate: new Date(year, month, day, 23, 59, 59, 999).getTime(),
-      };
+      }
     case "lastYear":
       return {
         startDate: new Date(year - 1, 0, 1).getTime(),
         endDate: new Date(year - 1, 11, 31, 23, 59, 59, 999).getTime(),
-      };
+      }
     case "allTime":
       return {
         startDate: new Date(2020, 0, 1).getTime(),
         endDate: new Date(year, month, day, 23, 59, 59, 999).getTime(),
-      };
+      }
     case "custom": {
       const start = customStart
         ? new Date(customStart).getTime()
-        : new Date(year, month, 1).getTime();
+        : new Date(year, month, 1).getTime()
       const end = customEnd
         ? new Date(customEnd + "T23:59:59.999").getTime()
-        : new Date(year, month, day, 23, 59, 59, 999).getTime();
-      return { startDate: start, endDate: end };
+        : new Date(year, month, day, 23, 59, 59, 999).getTime()
+      return { startDate: start, endDate: end }
     }
   }
 }
 
 function formatDateLabel(start: number, end: number): string {
-  const s = new Date(start);
-  const e = new Date(end);
+  const s = new Date(start)
+  const e = new Date(end)
   const opts: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "short",
     day: "numeric",
-  };
-  return `${s.toLocaleDateString("en-US", opts)} – ${e.toLocaleDateString("en-US", opts)}`;
+  }
+  return `${s.toLocaleDateString("en-US", opts)} – ${e.toLocaleDateString("en-US", opts)}`
 }
 
 function formatBDT(amount: number): string {
   if (Math.abs(amount) >= 100000) {
-    return `৳${(amount / 100000).toFixed(2)}L`;
+    return `৳${(amount / 100000).toFixed(2)}L`
   }
-  return `৳${amount.toLocaleString()}`;
+  return `৳${amount.toLocaleString()}`
 }
 
 function formatChange(pct: number): { text: string; positive: boolean } {
-  if (pct === 0) return { text: "0%", positive: true };
-  return { text: `${pct > 0 ? "+" : ""}${pct}%`, positive: pct > 0 };
+  if (pct === 0) return { text: "0%", positive: true }
+  return { text: `${pct > 0 ? "+" : ""}${pct}%`, positive: pct > 0 }
 }
 
 const BSRow = memo(function BSRow({
@@ -192,11 +192,11 @@ const BSRow = memo(function BSRow({
   bold = false,
   underline = false,
 }: {
-  label: string;
-  amount: number;
-  indent?: boolean;
-  bold?: boolean;
-  underline?: boolean;
+  label: string
+  amount: number
+  indent?: boolean
+  bold?: boolean
+  underline?: boolean
 }) {
   return (
     <div
@@ -209,8 +209,8 @@ const BSRow = memo(function BSRow({
         {formatBDT(amount)}
       </span>
     </div>
-  );
-});
+  )
+})
 
 const BSGroup = memo(function BSGroup({
   title,
@@ -219,15 +219,15 @@ const BSGroup = memo(function BSGroup({
   totalLabel,
   level,
 }: {
-  title: string;
+  title: string
   items: {
-    label: string;
-    amount: number;
-    breakdown?: { name: string; amount: number }[];
-  }[];
-  total: number;
-  totalLabel: string;
-  level?: "current" | "nonCurrent";
+    label: string
+    amount: number
+    breakdown?: { name: string; amount: number }[]
+  }[]
+  total: number
+  totalLabel: string
+  level?: "current" | "nonCurrent"
 }) {
   return (
     <div className="mb-3">
@@ -259,8 +259,8 @@ const BSGroup = memo(function BSGroup({
       </div>
       <BSRow label={totalLabel} amount={total} bold underline />
     </div>
-  );
-});
+  )
+})
 
 const IESection = memo(function IESection({
   title,
@@ -268,14 +268,12 @@ const IESection = memo(function IESection({
   categories,
   total,
   compCategories,
-  compTotal,
 }: {
-  title: string;
-  color: string;
-  categories: { name: string; amount: number; pct: number }[];
-  total: number;
-  compCategories: { name: string; amount: number }[];
-  compTotal: number;
+  title: string
+  color: string
+  categories: { name: string; amount: number; pct: number }[]
+  total: number
+  compCategories: { name: string; amount: number }[]
 }) {
   return (
     <div className="glass rounded-2xl p-4">
@@ -297,11 +295,11 @@ const IESection = memo(function IESection({
         )}
         {categories.map((cat) => {
           const compAmount =
-            compCategories.find((l) => l.name === cat.name)?.amount ?? 0;
+            compCategories.find((l) => l.name === cat.name)?.amount ?? 0
           const change =
             compAmount > 0
               ? Math.round(((cat.amount - compAmount) / compAmount) * 100)
-              : null;
+              : null
           return (
             <div key={cat.name} className="flex items-center gap-2">
               <div className="flex-1 min-w-0">
@@ -334,12 +332,12 @@ const IESection = memo(function IESection({
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-});
+  )
+})
 
 const DateRangePicker = memo(function DateRangePicker({
   preset,
@@ -350,15 +348,15 @@ const DateRangePicker = memo(function DateRangePicker({
   onCustomEndChange,
   lang,
 }: {
-  preset: DatePreset;
-  onPresetChange: (p: DatePreset) => void;
-  customStart: string;
-  customEnd: string;
-  onCustomStartChange: (v: string) => void;
-  onCustomEndChange: (v: string) => void;
-  lang: string;
+  preset: DatePreset
+  onPresetChange: (p: DatePreset) => void
+  customStart: string
+  customEnd: string
+  onCustomStartChange: (v: string) => void
+  onCustomEndChange: (v: string) => void
+  lang: string
 }) {
-  const [showCustom, setShowCustom] = useState(false);
+  const [showCustom, setShowCustom] = useState(false)
 
   return (
     <div className="space-y-2">
@@ -368,8 +366,8 @@ const DateRangePicker = memo(function DateRangePicker({
           <button
             key={opt.id}
             onClick={() => {
-              onPresetChange(opt.id);
-              if (opt.id !== "custom") setShowCustom(false);
+              onPresetChange(opt.id)
+              if (opt.id !== "custom") setShowCustom(false)
             }}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
               preset === opt.id
@@ -406,27 +404,27 @@ const DateRangePicker = memo(function DateRangePicker({
         </div>
       )}
     </div>
-  );
-});
+  )
+})
 
-export function FinanceTab({ period }: { period: "7d" | "30d" | "90d" }) {
-  const [view, setView] = useState<ReportView>("balanceSheet");
-  const [datePreset, setDatePreset] = useState<DatePreset>("thisMonth");
+export function FinanceTab() {
+  const [view, setView] = useState<ReportView>("balanceSheet")
+  const [datePreset, setDatePreset] = useState<DatePreset>("thisMonth")
   const [customStart, setCustomStart] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
-  });
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`
+  })
   const [customEnd, setCustomEnd] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  });
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+  })
 
   const { startDate, endDate } = useMemo(
     () => getDateRange(datePreset, customStart, customEnd),
     [datePreset, customStart, customEnd],
-  );
+  )
 
-  const { lang } = useI18n();
+  const { lang } = useI18n()
 
   const bs = {
     asOf: endDate,
@@ -445,7 +443,7 @@ export function FinanceTab({ period }: { period: "7d" | "30d" | "90d" }) {
       nonCurrentBreakdown: [],
     },
     netWorth: 0,
-  };
+  }
   const ie = {
     summary: {
       totalIncome: 0,
@@ -472,7 +470,7 @@ export function FinanceTab({ period }: { period: "7d" | "30d" | "90d" }) {
       income: { categories: [] as IECategory[], total: 0 },
       expense: { categories: [] as IECategory[], total: 0 },
     },
-  };
+  }
 
   return (
     <div className="space-y-4">
@@ -528,7 +526,7 @@ export function FinanceTab({ period }: { period: "7d" | "30d" | "90d" }) {
 
       {view === "incomeExpense" && <IncomeExpenseView data={ie} lang={lang} />}
     </div>
-  );
+  )
 }
 
 function BalanceSheetView({
@@ -536,11 +534,11 @@ function BalanceSheetView({
   lang,
   dateLabel,
 }: {
-  data: BalanceSheetData;
-  lang: string;
-  dateLabel: string;
+  data: BalanceSheetData
+  lang: string
+  dateLabel: string
 }) {
-  const { assets, liabilities, netWorth } = data;
+  const { assets, liabilities, netWorth } = data
 
   return (
     <div className="space-y-4">
@@ -713,20 +711,20 @@ function BalanceSheetView({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function IncomeExpenseView({
   data,
   lang,
 }: {
-  data: IncomeExpenseData;
-  lang: string;
+  data: IncomeExpenseData
+  lang: string
 }) {
-  const { summary, selectedPeriod, comparisonPeriod, period } = data;
+  const { summary, selectedPeriod, comparisonPeriod, period } = data
 
-  const incomeChange = formatChange(summary.incomeChange);
-  const expenseChange = formatChange(summary.expenseChange);
+  const incomeChange = formatChange(summary.incomeChange)
+  const expenseChange = formatChange(summary.expenseChange)
 
   return (
     <div className="space-y-4">
@@ -1002,7 +1000,6 @@ function IncomeExpenseView({
         categories={selectedPeriod.income.categories}
         total={selectedPeriod.income.total}
         compCategories={comparisonPeriod.income.categories}
-        compTotal={comparisonPeriod.income.total}
       />
 
       {/* Expense Breakdown */}
@@ -1012,8 +1009,7 @@ function IncomeExpenseView({
         categories={selectedPeriod.expense.categories}
         total={selectedPeriod.expense.total}
         compCategories={comparisonPeriod.expense.categories}
-        compTotal={comparisonPeriod.expense.total}
       />
     </div>
-  );
+  )
 }

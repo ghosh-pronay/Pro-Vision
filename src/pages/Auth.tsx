@@ -1,17 +1,17 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Link } from "react-router";
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Link } from "react-router"
 
-import { useAuth } from "@/hooks/use-auth";
-import logo from "@/assets/logo.png";
-import { useLang } from "@/i18n/LanguageContext";
+import { useAuth } from "@/hooks/use-auth"
+import logo from "@/assets/logo.png"
+import { useLang } from "@/i18n/LanguageContext"
 
 import {
   ArrowRight,
@@ -23,12 +23,12 @@ import {
   EyeOff,
   CheckCircle2,
   Send,
-} from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+} from "lucide-react"
+import { Suspense, useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router"
 
 interface AuthProps {
-  redirectAfterAuth?: string;
+  redirectAfterAuth?: string
 }
 
 function Auth({ redirectAfterAuth }: AuthProps = {}) {
@@ -40,30 +40,24 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     signUp,
     sendVerificationEmail,
     reloadUser,
-  } = useAuth();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { lang } = useLang();
+  } = useAuth()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { lang } = useLang()
   const [mode, setMode] = useState<"signin" | "signup" | "verify">(
     searchParams.get("mode") === "verify" ? "verify" : "signin",
-  );
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [resendCooldown, setResendCooldown] = useState(0);
-
-  useEffect(() => {
-    if (searchParams.get("mode") === "verify") {
-      setMode("verify");
-    }
-  }, [searchParams]);
+  )
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [resendCooldown, setResendCooldown] = useState(0)
 
   useEffect(() => {
     if (!authLoading && isAuthenticated && isEmailVerified) {
-      const redirect = redirectAfterAuth || "/dashboard";
-      navigate(redirect);
+      const redirect = redirectAfterAuth || "/dashboard"
+      navigate(redirect)
     }
   }, [
     authLoading,
@@ -71,122 +65,122 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     isEmailVerified,
     navigate,
     redirectAfterAuth,
-  ]);
+  ])
 
   useEffect(() => {
-    if (mode !== "verify" || !isAuthenticated) return;
+    if (mode !== "verify" || !isAuthenticated) return
     const interval = setInterval(async () => {
       try {
-        await reloadUser();
+        await reloadUser()
       } catch (e) {
-        console.error("[Auth]", "operation failed", e);
+        console.error("[Auth]", "operation failed", e)
       }
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [mode, isAuthenticated, reloadUser]);
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [mode, isAuthenticated, reloadUser])
 
   useEffect(() => {
-    if (resendCooldown <= 0) return;
-    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [resendCooldown]);
+    if (resendCooldown <= 0) return
+    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [resendCooldown])
 
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsLoading(true);
-    setError(null);
+    event.preventDefault()
+    setIsLoading(true)
+    setError(null)
     try {
       if (mode === "signin") {
-        await signIn("password", { email, password });
-        const redirect = redirectAfterAuth || "/dashboard";
-        navigate(redirect);
+        await signIn("password", { email, password })
+        const redirect = redirectAfterAuth || "/dashboard"
+        navigate(redirect)
       } else {
-        await signUp(email, password);
-        setMode("verify");
+        await signUp(email, password)
+        setMode("verify")
       }
     } catch (error) {
       console.error(
         "[Auth]",
         error instanceof Error ? error.message : "Unknown error",
-      );
-      let message = "Authentication failed. Please try again.";
+      )
+      let message = "Authentication failed. Please try again."
       if (error instanceof Error) {
         if (error.message.includes("auth/user-not-found")) {
           message =
             lang === "bn"
               ? "ব্যবহারকারী পাওয়া যায়নি। অনুগ্রহ করে সাইন আপ করুন।"
-              : "User not found. Please sign up.";
+              : "User not found. Please sign up."
         } else if (error.message.includes("auth/wrong-password")) {
           message =
             lang === "bn"
               ? "ভুল পাসওয়ার্ড। আবার চেষ্টা করুন।"
-              : "Wrong password. Please try again.";
+              : "Wrong password. Please try again."
         } else if (error.message.includes("auth/email-already-in-use")) {
           message =
             lang === "bn"
               ? "এই ইমেইল ইতিমধ্যে ব্যবহৃত হচ্ছে। সাইন ইন করুন।"
-              : "Email already in use. Please sign in.";
+              : "Email already in use. Please sign in."
         } else if (error.message.includes("auth/weak-password")) {
           message =
             lang === "bn"
               ? "পাসওয়ার্ড কমজোর। কমপক্ষে ৬ অক্ষর দরকার।"
-              : "Weak password. At least 6 characters required.";
+              : "Weak password. At least 6 characters required."
         } else if (error.message.includes("auth/invalid-email")) {
-          message = lang === "bn" ? "অবৈধ ইমেইল।" : "Invalid email address.";
+          message = lang === "bn" ? "অবৈধ ইমেইল।" : "Invalid email address."
         } else {
           message =
             lang === "bn"
               ? "প্রবেশ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
-              : "Authentication failed. Please try again.";
+              : "Authentication failed. Please try again."
         }
       }
-      setError(message);
-      setIsLoading(false);
+      setError(message)
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleGuestLogin = async () => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
     try {
-      await signIn("anonymous");
-      const redirect = redirectAfterAuth || "/dashboard";
-      navigate(redirect);
+      await signIn("anonymous")
+      const redirect = redirectAfterAuth || "/dashboard"
+      navigate(redirect)
     } catch (error) {
       console.error(
         "[Auth]",
         error instanceof Error ? error.message : "Guest login failed",
-      );
+      )
       setError(
         lang === "bn"
           ? "অতিথি হিসাবে প্রবেশ করতে ব্যর্থ।"
           : "Failed to sign in as guest.",
-      );
-      setIsLoading(false);
+      )
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleResendVerification = async () => {
-    if (resendCooldown > 0) return;
-    setIsLoading(true);
-    setError(null);
+    if (resendCooldown > 0) return
+    setIsLoading(true)
+    setError(null)
     try {
-      await sendVerificationEmail();
-      setResendCooldown(60);
+      await sendVerificationEmail()
+      setResendCooldown(60)
     } catch (error) {
       console.error(
         "[Auth]",
         error instanceof Error ? error.message : "Resend failed",
-      );
+      )
       setError(
         lang === "bn"
           ? "ইমেইল পুনরায় পাঠাতে ব্যর্থ।"
           : "Failed to resend verification email.",
-      );
+      )
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   if (mode === "verify") {
     return (
@@ -258,8 +252,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 {error && <p className="text-sm text-red-500">{error}</p>}
                 <button
                   onClick={() => {
-                    setMode("signin");
-                    setError(null);
+                    setMode("signin")
+                    setError(null)
                   }}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
@@ -270,7 +264,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -324,8 +318,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
             <div className="flex mx-6 mb-4 bg-white/5 rounded-xl p-1 border border-white/10">
               <button
                 onClick={() => {
-                  setMode("signin");
-                  setError(null);
+                  setMode("signin")
+                  setError(null)
                 }}
                 className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
                   mode === "signin"
@@ -337,8 +331,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
               </button>
               <button
                 onClick={() => {
-                  setMode("signup");
-                  setError(null);
+                  setMode("signup")
+                  setError(null)
                 }}
                 className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
                   mode === "signup"
@@ -456,8 +450,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     : "Don't have an account? "}
                   <button
                     onClick={() => {
-                      setMode("signup");
-                      setError(null);
+                      setMode("signup")
+                      setError(null)
                     }}
                     className="underline hover:text-[var(--pv-blue)] transition-colors"
                   >
@@ -471,8 +465,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     : "Already have an account? "}
                   <button
                     onClick={() => {
-                      setMode("signin");
-                      setError(null);
+                      setMode("signin")
+                      setError(null)
                     }}
                     className="underline hover:text-[var(--pv-blue)] transition-colors"
                   >
@@ -495,7 +489,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default function AuthPage(props: AuthProps) {
@@ -503,5 +497,5 @@ export default function AuthPage(props: AuthProps) {
     <Suspense>
       <Auth {...props} />
     </Suspense>
-  );
+  )
 }

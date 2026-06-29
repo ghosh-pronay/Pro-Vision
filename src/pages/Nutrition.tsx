@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   UtensilsCrossed,
   Plus,
@@ -11,68 +11,68 @@ import {
   Cookie,
   Droplets,
   Minus,
-} from "lucide-react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
+} from "lucide-react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "../convex/_generated/api"
 
 const MEAL_TYPES = [
   { value: "breakfast", icon: Coffee, color: "text-orange-500" },
   { value: "lunch", icon: Sun, color: "text-yellow-500" },
   { value: "dinner", icon: Moon, color: "text-indigo-500" },
   { value: "snack", icon: Cookie, color: "text-pink-500" },
-] as const;
+] as const
 
-const CALORIE_GOAL = 2000;
-const WATER_GOAL = 8;
+const CALORIE_GOAL = 2000
+const WATER_GOAL = 8
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function Nutrition() {
-  const { lang } = useLang();
-  const today = new Date().setHours(0, 0, 0, 0);
-  const meals = useQuery(api.mealLogs.list);
-  const waterLogs = useQuery(api.waterLogs.listByDate, { date: today });
-  const createMeal = useMutation(api.mealLogs.create);
-  const deleteMeal = useMutation(api.mealLogs.remove);
-  const logWater = useMutation(api.waterLogs.addWater);
+  const { lang } = useLang()
+  const today = new Date().setHours(0, 0, 0, 0)
+  const meals = useQuery(api.mealLogs.list)
+  const waterLogs = useQuery(api.waterLogs.listByDate, { date: today })
+  const createMeal = useMutation(api.mealLogs.create, "mealLogs")
+  const deleteMeal = useMutation(api.mealLogs.remove, "mealLogs")
+  const logWater = useMutation(api.waterLogs.addWater, "waterLogs")
 
-  const [showMealEditor, setShowMealEditor] = useState(false);
+  const [showMealEditor, setShowMealEditor] = useState(false)
   const [selectedMealType, setSelectedMealType] = useState<
     "breakfast" | "lunch" | "dinner" | "snack"
-  >("breakfast");
-  const [mealName, setMealName] = useState("");
-  const [mealCalories, setMealCalories] = useState("");
-  const [mealProtein, setMealProtein] = useState("");
-  const [mealCarbs, setMealCarbs] = useState("");
-  const [mealFat, setMealFat] = useState("");
-  const [mealNotes, setMealNotes] = useState("");
+  >("breakfast")
+  const [mealName, setMealName] = useState("")
+  const [mealCalories, setMealCalories] = useState("")
+  const [mealProtein, setMealProtein] = useState("")
+  const [mealCarbs, setMealCarbs] = useState("")
+  const [mealFat, setMealFat] = useState("")
+  const [mealNotes, setMealNotes] = useState("")
 
   const todayMeals = useMemo(() => {
-    if (!meals) return [];
+    if (!meals) return []
     return meals
       .filter((m) => new Date(m.date).setHours(0, 0, 0, 0) === today)
-      .sort((a, b) => b.createdAt - a.createdAt);
-  }, [meals, today]);
+      .sort((a, b) => b.createdAt - a.createdAt)
+  }, [meals, today])
 
   const todayWater = useMemo(() => {
-    if (!waterLogs || waterLogs.length === 0) return 0;
-    const latest = [...waterLogs].sort((a, b) => b.createdAt - a.createdAt)[0];
-    return latest?.glasses || 0;
-  }, [waterLogs]);
+    if (!waterLogs || waterLogs.length === 0) return 0
+    const latest = [...waterLogs].sort((a, b) => b.createdAt - a.createdAt)[0]
+    return latest?.glasses || 0
+  }, [waterLogs])
 
   const todayStats = useMemo(() => {
-    const calories = todayMeals.reduce((sum, m) => sum + (m.calories || 0), 0);
-    const protein = todayMeals.reduce((sum, m) => sum + (m.protein || 0), 0);
-    const carbs = todayMeals.reduce((sum, m) => sum + (m.carbs || 0), 0);
-    const fat = todayMeals.reduce((sum, m) => sum + (m.fat || 0), 0);
-    return { calories, protein, carbs, fat };
-  }, [todayMeals]);
+    const calories = todayMeals.reduce((sum, m) => sum + (m.calories || 0), 0)
+    const protein = todayMeals.reduce((sum, m) => sum + (m.protein || 0), 0)
+    const carbs = todayMeals.reduce((sum, m) => sum + (m.carbs || 0), 0)
+    const fat = todayMeals.reduce((sum, m) => sum + (m.fat || 0), 0)
+    return { calories, protein, carbs, fat }
+  }, [todayMeals])
 
   const handleAddMeal = async () => {
-    if (!mealName.trim()) return;
+    if (!mealName.trim()) return
 
     await createMeal({
       mealType: selectedMealType,
@@ -82,40 +82,40 @@ export default function Nutrition() {
       carbs: mealCarbs ? parseInt(mealCarbs) : undefined,
       fat: mealFat ? parseInt(mealFat) : undefined,
       notes: mealNotes.trim() || undefined,
-    });
+    })
 
-    resetMealEditor();
-  };
+    resetMealEditor()
+  }
 
   const handleDeleteMeal = async (id: string) => {
-    await deleteMeal({ id });
-  };
+    await deleteMeal({ id })
+  }
 
   const handleLogWater = async (amount: number) => {
-    const newAmount = Math.max(0, todayWater + amount);
-    await logWater({ glasses: newAmount, date: today });
-  };
+    const newAmount = Math.max(0, todayWater + amount)
+    await logWater({ glasses: newAmount, date: today })
+  }
 
   const resetMealEditor = () => {
-    setShowMealEditor(false);
-    setMealName("");
-    setMealCalories("");
-    setMealProtein("");
-    setMealCarbs("");
-    setMealFat("");
-    setMealNotes("");
-  };
+    setShowMealEditor(false)
+    setMealName("")
+    setMealCalories("")
+    setMealProtein("")
+    setMealCarbs("")
+    setMealFat("")
+    setMealNotes("")
+  }
 
   const getMealIcon = (type: string) => {
-    const meal = MEAL_TYPES.find((m) => m.value === type);
-    if (!meal) return Coffee;
-    return meal.icon;
-  };
+    const meal = MEAL_TYPES.find((m) => m.value === type)
+    if (!meal) return Coffee
+    return meal.icon
+  }
 
   const getMealColor = (type: string) => {
-    const meal = MEAL_TYPES.find((m) => m.value === type);
-    return meal?.color || "text-muted-foreground";
-  };
+    const meal = MEAL_TYPES.find((m) => m.value === type)
+    return meal?.color || "text-muted-foreground"
+  }
 
   return (
     <motion.div
@@ -267,7 +267,7 @@ export default function Nutrition() {
             </div>
           ) : (
             todayMeals.map((meal) => {
-              const Icon = getMealIcon(meal.mealType);
+              const Icon = getMealIcon(meal.mealType)
               return (
                 <motion.div
                   key={meal._id}
@@ -294,7 +294,7 @@ export default function Nutrition() {
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </motion.div>
-              );
+              )
             })
           )}
         </div>
@@ -337,7 +337,7 @@ export default function Nutrition() {
                   </label>
                   <div className="grid grid-cols-4 gap-2">
                     {MEAL_TYPES.map((mt) => {
-                      const Icon = mt.icon;
+                      const Icon = mt.icon
                       return (
                         <button
                           key={mt.value}
@@ -351,7 +351,7 @@ export default function Nutrition() {
                           <Icon className="h-5 w-5" />
                           <span className="text-xs capitalize">{mt.value}</span>
                         </button>
-                      );
+                      )
                     })}
                   </div>
                 </div>
@@ -445,5 +445,5 @@ export default function Nutrition() {
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }

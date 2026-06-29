@@ -59,17 +59,20 @@ firebase functions:config:set groq.api_key="YOUR_KEY"
 
 ### Dual Backend Strategy
 
-The app supports two data backends:
+The app uses a localStorage-backed Convex shim for local development and offline-first usage. All data persists in the browser.
 
-1. **Local Development (default)**: localStorage-backed Convex shim (`src/convex/react.ts`)
-   - All data persists in the browser
-   - No server required
-   - Set `VITE_CONVEX_URL` to use real Convex
+**Current (default):** localStorage-backed Convex shim (`src/convex/react.ts`)
 
-2. **Production (optional)**: Real Convex backend
-   - Set `VITE_CONVEX_URL` in `.env.local`
-   - Remove Vite aliases in `vite.config.ts`
-   - Data syncs across devices
+- No server required
+- All data stays in the browser
+- API keys are server-side only (Cloud Functions for AI features)
+
+**Future (planned):** Real Convex backend
+
+- Set `VITE_CONVEX_URL` in `.env.local`
+- Remove Vite aliases in `vite.config.ts`
+- Data syncs across devices
+- Server-side auth guards and admin controls
 
 ### AI Integration
 

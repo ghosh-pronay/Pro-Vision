@@ -1,9 +1,9 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type Lang, type TranslationKey } from "@/i18n/translations";
-import { useState, useMemo, useCallback } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type Lang, type TranslationKey } from "@/i18n/translations"
+import { useState, useMemo, useCallback } from "react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "../convex/_generated/api"
 import {
   Flame,
   Plus,
@@ -25,9 +25,9 @@ import {
   Clock,
   Award,
   History,
-} from "lucide-react";
-import { toastSuccess, toastError } from "@/lib/toast-helpers";
-import type { Id } from "../convex/_generated/dataModel";
+} from "lucide-react"
+import { toastSuccess, toastError } from "@/lib/toast-helpers"
+import type { Id } from "../convex/_generated/dataModel"
 import {
   HABIT_COLORS,
   FREQUENCY_OPTIONS,
@@ -36,33 +36,33 @@ import {
   SUGGESTED_HABITS,
   type SortKey,
   getMotivationalMessage,
-} from "./habits-constants";
+} from "./habits-constants"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 interface HeatmapCalendarProps {
-  lang: Lang;
-  completedDates: number[];
+  lang: Lang
+  completedDates: number[]
 }
 
 function HeatmapCalendar({ lang, completedDates }: HeatmapCalendarProps) {
-  const days = 35;
+  const days = 35
   // eslint-disable-next-line react-hooks/purity -- time snapshot is intentional
-  const now = Date.now();
+  const now = Date.now()
   const cells = Array.from({ length: days }, (_, i) => {
-    const dayStart = now - (days - 1 - i) * 24 * 60 * 60 * 1000;
-    const dayEnd = dayStart + 24 * 60 * 60 * 1000;
+    const dayStart = now - (days - 1 - i) * 24 * 60 * 60 * 1000
+    const dayEnd = dayStart + 24 * 60 * 60 * 1000
     const count = completedDates.filter(
       (d) => d >= dayStart && d < dayEnd,
-    ).length;
+    ).length
     return {
       day: i,
       level: count === 0 ? 0 : count === 1 ? 1 : count === 2 ? 2 : 3,
-    };
-  });
+    }
+  })
 
   return (
     <div className="glass rounded-2xl p-4">
@@ -117,17 +117,17 @@ function HeatmapCalendar({ lang, completedDates }: HeatmapCalendarProps) {
         </span>
       </div>
     </div>
-  );
+  )
 }
 
 interface StreakBarProps {
-  bestStreak: number;
-  currentStreak: number;
-  lang: Lang;
+  bestStreak: number
+  currentStreak: number
+  lang: Lang
 }
 
 function StreakBar({ bestStreak, currentStreak, lang }: StreakBarProps) {
-  const max = Math.max(bestStreak, 1);
+  const max = Math.max(bestStreak, 1)
   return (
     <div className="glass rounded-2xl p-4">
       <div className="flex items-center gap-2 mb-3">
@@ -171,30 +171,30 @@ function StreakBar({ bestStreak, currentStreak, lang }: StreakBarProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 interface WeeklyBarProps {
-  completedDates: number[];
-  lang: Lang;
+  completedDates: number[]
+  lang: Lang
 }
 
 function WeeklyBar({ completedDates, lang }: WeeklyBarProps) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dayOfWeek = today.getDay();
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const dayOfWeek = today.getDay()
   const weekDays =
     lang === "bn"
       ? ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র", "শনি"]
-      : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   return (
     <div className="flex items-end gap-1 h-10">
       {weekDays.map((day, i) => {
-        const dayMs = today.getTime() - (dayOfWeek - i) * 86400000;
+        const dayMs = today.getTime() - (dayOfWeek - i) * 86400000
         const done = completedDates.some(
           (d) => new Date(d).setHours(0, 0, 0, 0) === dayMs,
-        );
+        )
         return (
           <div key={i} className="flex flex-col items-center gap-0.5 flex-1">
             <div
@@ -218,64 +218,65 @@ function WeeklyBar({ completedDates, lang }: WeeklyBarProps) {
               {day}
             </span>
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 
 export default function Habits() {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
-  const habits = useQuery(api.habits.list);
-  const habitStats = useQuery(api.habits.stats);
-  const createHabit = useMutation(api.habits.create);
-  const updateHabit = useMutation(api.habits.update);
-  const archiveHabit = useMutation(api.habits.archive);
-  const removeHabit = useMutation(api.habits.remove);
-  const checkInHabit = useMutation(api.habits.checkIn);
-  const applyStreakFreeze = useMutation(api.habits.useStreakFreeze);
+  const habits = useQuery(api.habits.list)
+  const habitStats = useQuery(api.habits.stats)
+  const createHabit = useMutation(api.habits.create, "habits")
+  const updateHabit = useMutation(api.habits.update, "habits")
+  const archiveHabit = useMutation(api.habits.archive, "habits")
+  const removeHabit = useMutation(api.habits.remove, "habits")
+  const checkInHabit = useMutation(api.habits.checkIn, "habits")
+  const applyStreakFreeze = useMutation(api.habits.useStreakFreeze, "habits")
 
-  const [showAdd, setShowAdd] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [newIcon, setNewIcon] = useState("💪");
-  const [newFrequency, setNewFrequency] = useState<"daily" | "weekly">("daily");
-  const [newDescription, setNewDescription] = useState("");
-  const [newCategory, setNewCategory] = useState("other");
+  const [showAdd, setShowAdd] = useState(false)
+  const [newName, setNewName] = useState("")
+  const [newIcon, setNewIcon] = useState("💪")
+  const [newFrequency, setNewFrequency] = useState<"daily" | "weekly">("daily")
+  const [newDescription, setNewDescription] = useState("")
+  const [newCategory, setNewCategory] = useState("other")
 
-  const [editingHabit, setEditingHabit] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
-  const [editDescription, setEditDescription] = useState("");
+  const [editingHabit, setEditingHabit] = useState<string | null>(null)
+  const [editName, setEditName] = useState("")
+  const [editDescription, setEditDescription] = useState("")
   const [editFrequency, setEditFrequency] = useState<"daily" | "weekly">(
     "daily",
-  );
-  const [editIcon, setEditIcon] = useState("💪");
-  const [editCategory, setEditCategory] = useState("other");
-  const [editReminder, setEditReminder] = useState("");
+  )
+  const [editIcon, setEditIcon] = useState("💪")
+  const [editCategory, setEditCategory] = useState("other")
+  const [editReminder, setEditReminder] = useState("")
 
-  const [sortBy, setSortBy] = useState<SortKey>("newest");
-  const [filterCategory, setFilterCategory] = useState<string | null>(null);
-  const [filterFrequency, setFilterFrequency] = useState<string | null>(null);
-  const [showArchived, setShowArchived] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<SortKey>("newest")
+  const [filterCategory, setFilterCategory] = useState<string | null>(null)
+  const [filterFrequency, setFilterFrequency] = useState<string | null>(null)
+  const [showArchived, setShowArchived] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
 
-  const [checkInNote, setCheckInNote] = useState("");
-  const [activeCheckIn, setActiveCheckIn] = useState<string | null>(null);
+  const [checkInNote, setCheckInNote] = useState("")
+  const [activeCheckIn, setActiveCheckIn] = useState<string | null>(null)
 
-  const [detailHabit, setDetailHabit] = useState<string | null>(null);
-  const [detailTab, setDetailTab] = useState<"history" | "weekly">("history");
+  const [detailHabit, setDetailHabit] = useState<string | null>(null)
+  const [detailTab, setDetailTab] = useState<"history" | "weekly">("history")
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
 
-  const allHabits = habits ?? [];
+  const allHabits = habits ?? []
   const stats = habitStats ?? {
     total: 0,
     totalStreak: 0,
     avgRate: 0,
     todayCompleted: 0,
-  };
+  }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayStart = today.getTime();
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const todayStart = today.getTime()
 
   const checkedToday = useMemo(
     () =>
@@ -287,67 +288,67 @@ export default function Habits() {
           .map((h) => h._id),
       ),
     [allHabits, todayStart],
-  );
+  )
 
   const activeHabits = useMemo(
     () => allHabits.filter((h) => (showArchived ? true : !h.archived)),
     [allHabits, showArchived],
-  );
+  )
 
   const allCompletedDates = useMemo(
     () => allHabits.flatMap((h) => h.completedDates ?? []),
     [allHabits],
-  );
+  )
 
   const bestStreak = useMemo(() => {
-    let best = 0;
+    let best = 0
     for (const h of allHabits) {
       const dates = (h.completedDates ?? [])
         .map((d: number) => new Date(d).setHours(0, 0, 0, 0))
-        .sort((a: number, b: number) => b - a);
-      let streak = 0;
+        .sort((a: number, b: number) => b - a)
+      let streak = 0
       for (let i = 0; i < dates.length; i++) {
         if (i === 0 || dates[i - 1] - dates[i] <= 86400000) {
-          streak++;
-          best = Math.max(best, streak);
+          streak++
+          best = Math.max(best, streak)
         } else {
-          streak = 1;
+          streak = 1
         }
       }
     }
-    return best;
-  }, [allHabits]);
+    return best
+  }, [allHabits])
 
   const currentStreak = useMemo(() => {
-    let streak = 0;
-    const todayMs = todayStart;
+    let streak = 0
+    const todayMs = todayStart
     for (let i = 0; i <= 365; i++) {
-      const dayMs = todayMs - i * 86400000;
+      const dayMs = todayMs - i * 86400000
       const anyCompleted = allHabits.some((h) =>
         (h.completedDates ?? []).some(
           (d: number) => new Date(d).setHours(0, 0, 0, 0) === dayMs,
         ),
-      );
-      if (anyCompleted) streak++;
-      else break;
+      )
+      if (anyCompleted) streak++
+      else break
     }
-    return streak;
-  }, [allHabits, todayStart]);
+    return streak
+  }, [allHabits, todayStart])
 
-  const totalStreak = bestStreak;
+  const totalStreak = bestStreak
 
   const getHabitStreak = useCallback((completedDates: number[]) => {
     const dates = completedDates
       .map((d) => new Date(d).setHours(0, 0, 0, 0))
-      .sort((a, b) => b - a);
-    let streak = 0;
+      .sort((a, b) => b - a)
+    let streak = 0
     for (let j = 0; j < dates.length; j++) {
       if (j === 0 || dates[j - 1] - dates[j] <= 86400000) {
-        streak++;
-      } else break;
+        streak++
+      } else break
     }
-    return streak;
-  }, []);
+    return streak
+  }, [])
 
   const getCompletionRate = useCallback(
     (completedDates: number[]) => {
@@ -362,19 +363,19 @@ export default function Habits() {
                 100,
             ),
           )
-        : 0;
+        : 0
     },
     [todayStart],
-  );
+  )
 
   const filteredHabits = useMemo(() => {
-    let result = activeHabits;
+    let result = activeHabits
 
     if (filterCategory) {
-      result = result.filter((h) => h.category === filterCategory);
+      result = result.filter((h) => h.category === filterCategory)
     }
     if (filterFrequency) {
-      result = result.filter((h) => h.frequency === filterFrequency);
+      result = result.filter((h) => h.frequency === filterFrequency)
     }
 
     result = [...result].sort((a, b) => {
@@ -383,20 +384,20 @@ export default function Habits() {
           return (
             getHabitStreak(b.completedDates ?? []) -
             getHabitStreak(a.completedDates ?? [])
-          );
+          )
         case "completion":
           return (
             getCompletionRate(b.completedDates ?? []) -
             getCompletionRate(a.completedDates ?? [])
-          );
+          )
         case "name":
-          return a.name.localeCompare(b.name);
+          return a.name.localeCompare(b.name)
         default:
-          return (b.createdAt ?? 0) - (a.createdAt ?? 0);
+          return (b.createdAt ?? 0) - (a.createdAt ?? 0)
       }
-    });
+    })
 
-    return result;
+    return result
   }, [
     activeHabits,
     filterCategory,
@@ -404,25 +405,25 @@ export default function Habits() {
     sortBy,
     getHabitStreak,
     getCompletionRate,
-  ]);
+  ])
 
   const groupedHabits = useMemo(() => {
-    const groups: Record<string, typeof filteredHabits> = {};
+    const groups: Record<string, typeof filteredHabits> = {}
     for (const habit of filteredHabits) {
-      const cat = habit.category || "other";
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(habit);
+      const cat = habit.category || "other"
+      if (!groups[cat]) groups[cat] = []
+      groups[cat].push(habit)
     }
-    return groups;
-  }, [filteredHabits]);
+    return groups
+  }, [filteredHabits])
 
   const motivationalMessage = useMemo(
     () => getMotivationalMessage(currentStreak, lang),
     [currentStreak, lang],
-  );
+  )
 
   const addHabit = async () => {
-    if (!newName.trim()) return;
+    if (!newName.trim()) return
     try {
       await createHabit({
         name: newName,
@@ -430,47 +431,54 @@ export default function Habits() {
         icon: newIcon || "💪",
         frequency: newFrequency,
         category: newCategory,
-      });
+      })
       toastSuccess(
         lang === "bn" ? `"${newName}" যোগ হয়েছে!` : `"${newName}" added!`,
-      );
-      setNewName("");
-      setNewIcon("💪");
-      setNewFrequency("daily");
-      setNewDescription("");
-      setNewCategory("other");
-      setShowAdd(false);
+      )
+      setNewName("")
+      setNewIcon("💪")
+      setNewFrequency("daily")
+      setNewDescription("")
+      setNewCategory("other")
+      setShowAdd(false)
     } catch (_error) {
-      console.error("[Habits]", "Failed to add habit", _error);
+      console.error("[Habits]", "Failed to add habit", _error)
       toastError(
         lang === "bn" ? "অভ্যাস যোগ করতে ব্যর্থ হয়েছে" : "Failed to add habit",
-      );
+      )
     }
-  };
+  }
 
   const saveEdit = async () => {
-    if (!editingHabit || !editName.trim()) return;
-    await updateHabit({
-      id: editingHabit as Id<"habits">,
-      name: editName,
-      description: editDescription || undefined,
-      frequency: editFrequency,
-      icon: editIcon,
-      category: editCategory,
-      reminderTime: editReminder || undefined,
-    });
-    setEditingHabit(null);
-  };
+    if (!editingHabit || !editName.trim()) return
+    try {
+      await updateHabit({
+        id: editingHabit as Id<"habits">,
+        name: editName,
+        description: editDescription || undefined,
+        frequency: editFrequency,
+        icon: editIcon,
+        category: editCategory,
+        reminderTime: editReminder || undefined,
+      })
+      setEditingHabit(null)
+    } catch (_error) {
+      console.error("[Habits]", "Failed to save edit", _error)
+      toastError(
+        lang === "bn" ? "সম্পাদনা সংরক্ষণ করতে ব্যর্থ" : "Failed to save edit",
+      )
+    }
+  }
 
   const startEdit = (habit: (typeof allHabits)[number]) => {
-    setEditingHabit(habit._id);
-    setEditName(habit.name);
-    setEditDescription(habit.description ?? "");
-    setEditFrequency(habit.frequency);
-    setEditIcon(habit.icon ?? "💪");
-    setEditCategory(habit.category ?? "other");
-    setEditReminder(habit.reminderTime ?? "");
-  };
+    setEditingHabit(habit._id)
+    setEditName(habit.name)
+    setEditDescription(habit.description ?? "")
+    setEditFrequency(habit.frequency)
+    setEditIcon(habit.icon ?? "💪")
+    setEditCategory(habit.category ?? "other")
+    setEditReminder(habit.reminderTime ?? "")
+  }
 
   const toggleCheckIn = async (habitId: string, note?: string) => {
     await checkInHabit({
@@ -478,25 +486,39 @@ export default function Habits() {
       // eslint-disable-next-line react-hooks/purity -- time snapshot is intentional
       date: Date.now(),
       note: note || undefined,
-    });
-    setActiveCheckIn(null);
-    setCheckInNote("");
-  };
+    })
+    setActiveCheckIn(null)
+    setCheckInNote("")
+  }
 
   const handleFreeze = async (habitId: string) => {
     try {
-      await applyStreakFreeze({ id: habitId as Id<"habits"> });
+      await applyStreakFreeze({ id: habitId as Id<"habits"> })
     } catch (e) {
-      console.error("[Habits]", "Failed to apply streak freeze", e);
+      console.error("[Habits]", "Failed to apply streak freeze", e)
     }
-  };
+  }
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return
+    try {
+      await removeHabit({ id: deleteTarget })
+      setDeleteTarget(null)
+      toastSuccess(lang === "bn" ? "অভ্যাস মুছে ফেলা হয়েছে" : "Habit deleted")
+    } catch (_error) {
+      console.error("[Habits]", "Failed to delete habit", _error)
+      toastError(
+        lang === "bn" ? "অভ্যাস মুছে ফেলতে ব্যর্থ" : "Failed to delete habit",
+      )
+    }
+  }
 
   if (habits === undefined) {
     return (
       <div className="max-w-3xl mx-auto flex items-center justify-center h-64">
         <div className="text-sm text-muted-foreground">Loading habits...</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -562,13 +584,13 @@ export default function Habits() {
                 h.name === habit.name[lang] ||
                 h.name === habit.name.en ||
                 h.name === habit.name.bn,
-            );
+            )
             return (
               <button
                 key={habit.name.en}
                 disabled={alreadyAdded}
                 onClick={async () => {
-                  if (alreadyAdded) return;
+                  if (alreadyAdded) return
                   try {
                     await createHabit({
                       name: habit.name[lang],
@@ -576,23 +598,23 @@ export default function Habits() {
                       icon: habit.icon,
                       frequency: "daily",
                       category: habit.category,
-                    });
+                    })
                     toastSuccess(
                       lang === "bn"
                         ? `"${habit.name[lang]}" যোগ হয়েছে!`
                         : `"${habit.name[lang]}" added!`,
-                    );
+                    )
                   } catch (_error) {
                     console.error(
                       "[Habits]",
                       "Failed to add suggested habit",
                       _error,
-                    );
+                    )
                     toastError(
                       lang === "bn"
                         ? "অভ্যাস যোগ করতে ব্যর্থ হয়েছে"
                         : "Failed to add habit",
-                    );
+                    )
                   }
                 }}
                 className={`flex items-center gap-2 shrink-0 px-3 py-2 rounded-xl border transition-all ${
@@ -616,7 +638,7 @@ export default function Habits() {
                   <Plus className="size-4 text-muted-foreground group-hover:text-[var(--pv-green)] shrink-0" />
                 )}
               </button>
-            );
+            )
           })}
         </div>
       </motion.div>
@@ -989,8 +1011,8 @@ export default function Habits() {
               {(filterCategory || filterFrequency) && (
                 <button
                   onClick={() => {
-                    setFilterCategory(null);
-                    setFilterFrequency(null);
+                    setFilterCategory(null)
+                    setFilterFrequency(null)
                   }}
                   className="text-[10px] text-red-500 hover:underline"
                 >
@@ -1004,17 +1026,17 @@ export default function Habits() {
 
       {detailHabit &&
         (() => {
-          const habit = allHabits.find((h) => h._id === detailHabit);
-          if (!habit) return null;
-          const completedDates = (habit.completedDates ?? []) as number[];
+          const habit = allHabits.find((h) => h._id === detailHabit)
+          if (!habit) return null
+          const completedDates = (habit.completedDates ?? []) as number[]
           const notes = (habit.checkInNotes ?? []) as {
-            date: number;
-            note: string;
-          }[];
-          const streak = getHabitStreak(completedDates);
-          const rate = getCompletionRate(completedDates);
-          const freezes = habit.streakFreezes ?? 0;
-          const maxFreezes = habit.maxStreakFreezes ?? 3;
+            date: number
+            note: string
+          }[]
+          const streak = getHabitStreak(completedDates)
+          const rate = getCompletionRate(completedDates)
+          const freezes = habit.streakFreezes ?? 0
+          const maxFreezes = habit.maxStreakFreezes ?? 3
 
           return (
             <motion.div
@@ -1156,7 +1178,7 @@ export default function Habits() {
                 )}
               </div>
             </motion.div>
-          );
+          )
         })()}
 
       <div className="space-y-2">
@@ -1172,10 +1194,10 @@ export default function Habits() {
         )}
         {(() => {
           const todayHabits = filteredHabits.filter((h) => {
-            const isChecked = checkedToday.has(h._id);
-            return !isChecked && !h.archived;
-          });
-          if (todayHabits.length === 0) return null;
+            const isChecked = checkedToday.has(h._id)
+            return !isChecked && !h.archived
+          })
+          if (todayHabits.length === 0) return null
           return (
             <div className="glass-strong rounded-2xl p-4 space-y-3">
               <div className="flex items-center justify-between">
@@ -1210,14 +1232,14 @@ export default function Habits() {
                 )}
               </div>
             </div>
-          );
+          )
         })()}
         {(() => {
           const completedCount = allHabits.filter(
             (h) => checkedToday.has(h._id) && !h.archived,
-          ).length;
-          const totalActive = allHabits.filter((h) => !h.archived).length;
-          if (completedCount === 0 || totalActive === 0) return null;
+          ).length
+          const totalActive = allHabits.filter((h) => !h.archived).length
+          if (completedCount === 0 || totalActive === 0) return null
           return (
             <div className="glass rounded-xl p-3 flex items-center gap-3 hover-blue">
               <div className="flex-1">
@@ -1239,7 +1261,7 @@ export default function Habits() {
                 </div>
               </div>
             </div>
-          );
+          )
         })()}
         {CATEGORIES.filter((cat) => groupedHabits[cat.id]?.length > 0).map(
           (cat) => (
@@ -1254,12 +1276,12 @@ export default function Habits() {
                 </span>
               </div>
               {groupedHabits[cat.id].map((habit, i) => {
-                const isChecked = checkedToday.has(habit._id);
-                const completedDates = (habit.completedDates ?? []) as number[];
-                const completionRate = getCompletionRate(completedDates);
-                const habitStreak = getHabitStreak(completedDates);
-                const color = HABIT_COLORS[i % HABIT_COLORS.length];
-                const freezes = habit.streakFreezes ?? 0;
+                const isChecked = checkedToday.has(habit._id)
+                const completedDates = (habit.completedDates ?? []) as number[]
+                const completionRate = getCompletionRate(completedDates)
+                const habitStreak = getHabitStreak(completedDates)
+                const color = HABIT_COLORS[i % HABIT_COLORS.length]
+                const freezes = habit.streakFreezes ?? 0
 
                 return (
                   <motion.div
@@ -1340,10 +1362,10 @@ export default function Habits() {
                             autoFocus
                             onKeyDown={(e) => {
                               if (e.key === "Enter")
-                                toggleCheckIn(habit._id, checkInNote);
+                                toggleCheckIn(habit._id, checkInNote)
                               if (e.key === "Escape") {
-                                setActiveCheckIn(null);
-                                setCheckInNote("");
+                                setActiveCheckIn(null)
+                                setCheckInNote("")
                               }
                             }}
                           />
@@ -1399,19 +1421,59 @@ export default function Habits() {
                         )}
                       </button>
                       <button
-                        onClick={() => removeHabit({ id: habit._id })}
+                        onClick={() => setDeleteTarget(habit._id)}
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500 min-w-[32px] min-h-[32px] flex items-center justify-center -mr-1"
                       >
                         <Trash2 className="size-3.5" />
                       </button>
                     </div>
                   </motion.div>
-                );
+                )
               })}
             </div>
           ),
         )}
       </div>
+
+      {deleteTarget && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setDeleteTarget(null)}
+        >
+          <div
+            className="glass-strong rounded-2xl p-6 max-w-sm mx-4 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center">
+              <Trash2 className="size-8 mx-auto mb-2 text-red-500" />
+              <h3 className="text-sm font-semibold text-foreground">
+                {lang === "bn" ? "অভ্যাস মুছে ফেলুন?" : "Delete Habit?"}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                {lang === "bn"
+                  ? "এটি অপরিবর্তনীয়। সব ইতিহাস এবং স্ট্রিক মুছে যাবে।"
+                  : "This cannot be undone. All history and streaks will be lost."}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="flex-1 text-xs px-3 py-2 rounded-xl border border-border/40 text-muted-foreground hover-chip"
+              >
+                {lang === "bn" ? "বাতিল" : "Cancel"}
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 text-xs px-3 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors"
+              >
+                {lang === "bn" ? "মুছে ফেলুন" : "Delete"}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
-  );
+  )
 }

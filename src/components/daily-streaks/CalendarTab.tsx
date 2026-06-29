@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useMemo } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useMemo } from "react"
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,64 +9,60 @@ import {
   PartyPopper,
   TrendingUp,
   Sparkles,
-} from "lucide-react";
+} from "lucide-react"
 import {
-  fadeUp,
   STREAK_LEVELS,
   LEVEL_BENEFITS,
   MILESTONES,
   getHeatmapColor,
   type StreakDay,
-  type Milestone,
-} from "./types";
+} from "./types"
 
 interface CalendarTabProps {
-  currentStreak: number;
-  level: string;
-  currentMonth: Date;
-  streakDays: StreakDay[];
-  calendarDays: { day: number | null; isStreak: boolean; isToday: boolean }[];
-  onPrevMonth: () => void;
-  onNextMonth: () => void;
-  getMonthLabel: () => string;
+  currentStreak: number
+  level: string
+  currentMonth: Date
+  streakDays: StreakDay[]
+  calendarDays: { day: number | null; isStreak: boolean; isToday: boolean }[]
+  onPrevMonth: () => void
+  onNextMonth: () => void
+  getMonthLabel: () => string
 }
 
 export function CalendarTab({
   currentStreak,
   level,
-  currentMonth,
-  streakDays,
   calendarDays,
   onPrevMonth,
   onNextMonth,
   getMonthLabel,
 }: CalendarTabProps) {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   const currentLevelData = useMemo(
     () => STREAK_LEVELS.find((l) => l.level === level) || STREAK_LEVELS[0],
     [level],
-  );
+  )
 
   const nextLevelData = useMemo(() => {
-    const idx = STREAK_LEVELS.findIndex((l) => l.level === level);
-    return idx < STREAK_LEVELS.length - 1 ? STREAK_LEVELS[idx + 1] : null;
-  }, [level]);
+    const idx = STREAK_LEVELS.findIndex((l) => l.level === level)
+    return idx < STREAK_LEVELS.length - 1 ? STREAK_LEVELS[idx + 1] : null
+  }, [level])
 
   const progressToNextLevel = useMemo(() => {
-    if (!nextLevelData) return 100;
-    const currentMin = currentLevelData.minDays;
-    const nextMin = nextLevelData.minDays;
+    if (!nextLevelData) return 100
+    const currentMin = currentLevelData.minDays
+    const nextMin = nextLevelData.minDays
     return Math.min(
       100,
       ((currentStreak - currentMin) / (nextMin - currentMin)) * 100,
-    );
-  }, [currentStreak, currentLevelData, nextLevelData]);
+    )
+  }, [currentStreak, currentLevelData, nextLevelData])
 
   const weekDayLabels =
     lang === "bn"
       ? ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র", "শনি"]
-      : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   return (
     <motion.div
@@ -162,9 +158,9 @@ export function CalendarTab({
 
         <div className="space-y-4">
           {STREAK_LEVELS.map((lvl) => {
-            const LevelIcon = lvl.icon;
-            const isActive = lvl.level === level;
-            const isCompleted = currentStreak >= lvl.minDays;
+            const LevelIcon = lvl.icon
+            const isActive = lvl.level === level
+            const isCompleted = currentStreak >= lvl.minDays
             return (
               <div
                 key={lvl.level}
@@ -220,7 +216,7 @@ export function CalendarTab({
                 </div>
                 {isCompleted && <Check className="w-5 h-5 text-green-400" />}
               </div>
-            );
+            )
           })}
         </div>
 
@@ -253,7 +249,7 @@ export function CalendarTab({
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {MILESTONES.map((milestone) => {
-            const achieved = currentStreak >= milestone.days;
+            const achieved = currentStreak >= milestone.days
             return (
               <motion.div
                 key={milestone.days}
@@ -278,10 +274,10 @@ export function CalendarTab({
                     : `${milestone.days} days`}
                 </p>
               </motion.div>
-            );
+            )
           })}
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

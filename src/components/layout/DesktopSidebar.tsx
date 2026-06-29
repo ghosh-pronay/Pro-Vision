@@ -1,21 +1,20 @@
-import { Link, NavLink } from "react-router";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
-import { Shield, Settings } from "lucide-react";
-import logo from "@/assets/logo.png";
-import { useAuth } from "@/hooks/use-auth";
-import type { NavItem } from "./nav-items";
+import { Link, NavLink } from "react-router"
+import { useLang } from "@/i18n/LanguageContext"
+import { t } from "@/i18n/translations"
+import { Shield, Settings } from "lucide-react"
+import logo from "@/assets/logo.png"
+import type { NavItem } from "./nav-items"
 
 interface DesktopSidebarProps {
-  navItems: NavItem[];
-  isAdmin: boolean;
+  navItems: NavItem[]
+  isAdmin: boolean
 }
 
 export default function DesktopSidebar({
   navItems,
   isAdmin,
 }: DesktopSidebarProps) {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   return (
     <aside className="hidden lg:flex flex-col w-[260px] fixed inset-y-0 left-0 z-40">
@@ -96,5 +95,5 @@ export default function DesktopSidebar({
         </div>
       </div>
     </aside>
-  );
+  )
 }

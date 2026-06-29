@@ -1,9 +1,9 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "../convex/_generated/api"
+import { useState, useEffect, useCallback, useRef } from "react"
 import {
   Play,
   Pause,
@@ -12,23 +12,23 @@ import {
   Clock,
   Target,
   Zap,
-} from "lucide-react";
-import AmbientSounds from "@/components/AmbientSounds";
+} from "lucide-react"
+import AmbientSounds from "@/components/AmbientSounds"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
-type Mode = "pomodoro" | "short" | "long" | "deep";
+type Mode = "pomodoro" | "short" | "long" | "deep"
 
 const MODES: Record<
   Mode,
   {
-    work: number;
-    break: number;
-    labelKey: TranslationKey;
-    type: "pomodoro" | "shortBreak" | "longBreak" | "custom";
+    work: number
+    break: number
+    labelKey: TranslationKey
+    type: "pomodoro" | "shortBreak" | "longBreak" | "custom"
   }
 > = {
   pomodoro: {
@@ -50,119 +50,120 @@ const MODES: Record<
     type: "longBreak",
   },
   deep: { work: 50, break: 15, labelKey: "focus.modes.deep", type: "custom" },
-};
+}
 
 export default function Focus() {
-  const { lang } = useLang();
-  const [mode, setMode] = useState<Mode>("pomodoro");
-  const [isWork, setIsWork] = useState(true);
-  const [running, setRunning] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(MODES.pomodoro.work * 60);
-  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { lang } = useLang()
+  const [mode, setMode] = useState<Mode>("pomodoro")
+  const [isWork, setIsWork] = useState(true)
+  const [running, setRunning] = useState(false)
+  const [secondsLeft, setSecondsLeft] = useState(MODES.pomodoro.work * 60)
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const sessions = useQuery(api.focusSessions.list);
-  const stats = useQuery(api.focusSessions.stats);
-  const createSession = useMutation(api.focusSessions.create);
+  const sessions = useQuery(api.focusSessions.list)
+  const stats = useQuery(api.focusSessions.stats)
+  const createSession = useMutation(api.focusSessions.create, "focusSessions")
 
-  const current = MODES[mode];
+  const current = MODES[mode]
 
   const playSession = useCallback(async () => {
-    if (!sessionStartTime) return;
-    const duration = Math.round((Date.now() - sessionStartTime) / 60000);
-    if (duration <= 0) return;
+    if (!sessionStartTime) return
+    const duration = Math.round((Date.now() - sessionStartTime) / 60000)
+    if (duration <= 0) return
     try {
       await createSession({
         duration,
         type: MODES[mode].type,
-      });
+      })
     } catch (err) {
-      console.error("Failed to save focus session:", err);
+      console.error("Failed to save focus session:", err)
     }
-    setSessionStartTime(null);
-  }, [sessionStartTime, mode, createSession]);
+    setSessionStartTime(null)
+  }, [sessionStartTime, mode, createSession])
 
   useEffect(() => {
-    if (!running) return;
+    if (!running) return
     intervalRef.current = setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(intervalRef.current!);
-          setRunning(false);
+          clearInterval(intervalRef.current!)
+          setRunning(false)
           if (isWork) {
-            playSession();
-            setIsWork(false);
-            return current.break * 60;
+            playSession()
+            setIsWork(false)
+            return current.break * 60
           } else {
-            setIsWork(true);
-            return current.work * 60;
+            setIsWork(true)
+            return current.work * 60
           }
         }
-        return prev - 1;
-      });
-    }, 1000);
+        return prev - 1
+      })
+    }, 1000)
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [running, isWork, current, mode, playSession]);
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [running, isWork, current, mode, playSession])
 
   const switchMode = (m: Mode) => {
-    setMode(m);
-    setRunning(false);
-    setIsWork(true);
-    setSecondsLeft(MODES[m].work * 60);
-    setSessionStartTime(null);
-  };
+    setMode(m)
+    setRunning(false)
+    setIsWork(true)
+    setSecondsLeft(MODES[m].work * 60)
+    setSessionStartTime(null)
+  }
 
   const reset = () => {
-    setRunning(false);
-    setIsWork(true);
-    setSecondsLeft(current.work * 60);
-    setSessionStartTime(null);
-  };
+    setRunning(false)
+    setIsWork(true)
+    setSecondsLeft(current.work * 60)
+    setSessionStartTime(null)
+  }
 
   const skip = () => {
-    setRunning(false);
-    if (isWork) playSession();
-    setIsWork((prev) => !prev);
-    setSecondsLeft(isWork ? current.break * 60 : current.work * 60);
-    setSessionStartTime(null);
-  };
+    setRunning(false)
+    if (isWork) playSession()
+    setIsWork((prev) => !prev)
+    setSecondsLeft(isWork ? current.break * 60 : current.work * 60)
+    setSessionStartTime(null)
+  }
 
   const toggleTimer = () => {
     if (!running) {
-      setSessionStartTime(Date.now());
+      setSessionStartTime(Date.now())
     } else {
-      playSession();
-      setSessionStartTime(null);
+      playSession()
+      setSessionStartTime(null)
     }
-    setRunning(!running);
-  };
+    setRunning(!running)
+  }
 
-  const minutes = Math.floor(secondsLeft / 60);
-  const seconds = secondsLeft % 60;
-  const totalSeconds = (isWork ? current.work : current.break) * 60;
-  const progress = ((totalSeconds - secondsLeft) / totalSeconds) * 100;
-  const radius = 100;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (progress / 100) * circumference;
+  const minutes = Math.floor(secondsLeft / 60)
+  const seconds = secondsLeft % 60
+  const totalSeconds = (isWork ? current.work : current.break) * 60
+  const progress = ((totalSeconds - secondsLeft) / totalSeconds) * 100
+  const radius = 100
+  const circumference = 2 * Math.PI * radius
+  const offset = circumference - (progress / 100) * circumference
 
-  const totalSessions = stats?.sessions ?? 0;
-  const totalHours = stats?.totalHours ?? 0;
-  const todayMinutes = stats?.todayMinutes ?? 0;
+  const totalSessions = stats?.sessions ?? 0
+  const totalHours = stats?.totalHours ?? 0
+  const todayMinutes = stats?.todayMinutes ?? 0
 
-  const recentSessions = sessions?.slice(0, 10) ?? [];
+  const recentSessions = sessions?.slice(0, 10) ?? []
 
   const formatTimeAgo = (ts: number) => {
-    const diff = Date.now() - ts;
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return lang === "bn" ? "এইমাত্র" : "just now";
-    if (mins < 60) return `${mins}m`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h`;
-    const days = Math.floor(hrs / 24);
-    return `${days}d`;
-  };
+    // eslint-disable-next-line react-hooks/purity
+    const diff = Date.now() - ts
+    const mins = Math.floor(diff / 60000)
+    if (mins < 1) return lang === "bn" ? "এইমাত্র" : "just now"
+    if (mins < 60) return `${mins}m`
+    const hrs = Math.floor(mins / 60)
+    if (hrs < 24) return `${hrs}h`
+    const days = Math.floor(hrs / 24)
+    return `${days}d`
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -342,10 +343,10 @@ export default function Focus() {
             <div className="space-y-2">
               {recentSessions.map(
                 (s: {
-                  _id: string;
-                  type: string;
-                  duration: number;
-                  completedAt: number;
+                  _id: string
+                  type: string
+                  duration: number
+                  completedAt: number
                 }) => (
                   <div
                     key={s._id}
@@ -384,5 +385,5 @@ export default function Focus() {
         </motion.div>
       )}
     </div>
-  );
+  )
 }

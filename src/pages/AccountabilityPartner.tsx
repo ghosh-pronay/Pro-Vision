@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   Users,
   UserPlus,
@@ -17,77 +17,77 @@ import {
   TrendingUp,
   Bell,
   Handshake,
-} from "lucide-react";
+} from "lucide-react"
 
 interface Partner {
-  _id: string;
-  name: string;
-  avatar: string;
-  sharedHabits: string[];
-  streak: number;
-  completionRate: number;
-  lastActive: number;
-  xp: number;
+  _id: string
+  name: string
+  avatar: string
+  sharedHabits: string[]
+  streak: number
+  completionRate: number
+  lastActive: number
+  xp: number
 }
 
 interface PartnerRequest {
-  _id: string;
-  name: string;
-  avatar: string;
-  message: string;
-  mutualFriends: number;
-  createdAt: number;
+  _id: string
+  name: string
+  avatar: string
+  message: string
+  mutualFriends: number
+  createdAt: number
 }
 
 interface SharedChallenge {
-  _id: string;
-  title: string;
-  goal: number;
-  unit: string;
-  partnerProgress: number;
-  myProgress: number;
-  endDate: number;
+  _id: string
+  title: string
+  goal: number
+  unit: string
+  partnerProgress: number
+  myProgress: number
+  endDate: number
 }
 
 interface Message {
-  _id: string;
-  fromMe: boolean;
-  content: string;
-  timestamp: number;
-  type: "nudge" | "celebrate" | "message";
+  _id: string
+  fromMe: boolean
+  content: string
+  timestamp: number
+  type: "nudge" | "celebrate" | "message"
 }
 
 interface ActivityFeed {
-  _id: string;
-  partnerName: string;
-  action: string;
-  details: string;
-  timestamp: number;
-  icon: string;
+  _id: string
+  partnerName: string
+  action: string
+  details: string
+  timestamp: number
+  icon: string
 }
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 const weeklyGrowthValues: Record<string, number> = {
   "1": 9,
   "2": 17,
   "3": 12,
-};
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function AccountabilityPartner() {
-  const { lang } = useLang();
+  const { lang } = useLang()
   const [activeTab, setActiveTab] = useState<
     "partners" | "requests" | "shared" | "messages" | "feed"
-  >("partners");
-  const [showInviteModal, setShowInviteModal] = useState(false);
-  const [messageInput, setMessageInput] = useState("");
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteMessage, setInviteMessage] = useState("");
+  >("partners")
+  const [showInviteModal, setShowInviteModal] = useState(false)
+  const [messageInput, setMessageInput] = useState("")
+  const [inviteEmail, setInviteEmail] = useState("")
+  const [inviteMessage, setInviteMessage] = useState("")
 
   const [partners, setPartners] = useState<Partner[]>([
     {
@@ -132,7 +132,7 @@ export default function AccountabilityPartner() {
       lastActive: NOW - 45 * 60 * 1000,
       xp: 3100,
     },
-  ]);
+  ])
 
   const [requests, setRequests] = useState<PartnerRequest[]>([
     {
@@ -157,9 +157,9 @@ export default function AccountabilityPartner() {
       mutualFriends: 5,
       createdAt: NOW - 2 * 24 * 60 * 60 * 1000,
     },
-  ]);
+  ])
 
-  const [sharedChallenges, setSharedChallenges] = useState<SharedChallenge[]>([
+  const [sharedChallenges] = useState<SharedChallenge[]>([
     {
       _id: "1",
       title:
@@ -181,7 +181,7 @@ export default function AccountabilityPartner() {
       myProgress: 6,
       endDate: NOW + 30 * 24 * 60 * 60 * 1000,
     },
-  ]);
+  ])
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -207,9 +207,9 @@ export default function AccountabilityPartner() {
       timestamp: NOW - 30 * 60 * 1000,
       type: "nudge",
     },
-  ]);
+  ])
 
-  const [activityFeed, setActivityFeed] = useState<ActivityFeed[]>([
+  const [activityFeed] = useState<ActivityFeed[]>([
     {
       _id: "1",
       partnerName: "Anika Rahman",
@@ -247,18 +247,18 @@ export default function AccountabilityPartner() {
       timestamp: NOW - 8 * 60 * 60 * 1000,
       icon: "trophy",
     },
-  ]);
+  ])
 
   const partnersWithStats = useMemo(() => {
     return partners.map((p) => ({
       ...p,
       level: Math.floor(p.xp / 500) + 1,
       weeklyGrowth: weeklyGrowthValues[p._id] ?? 10,
-    }));
-  }, [partners]);
+    }))
+  }, [partners])
 
   const handleAcceptRequest = (requestId: string) => {
-    const request = requests.find((r) => r._id === requestId);
+    const request = requests.find((r) => r._id === requestId)
     if (request) {
       const newPartner: Partner = {
         _id: request._id,
@@ -267,84 +267,88 @@ export default function AccountabilityPartner() {
         sharedHabits: [],
         streak: 0,
         completionRate: 0,
+        // eslint-disable-next-line react-hooks/purity
         lastActive: Date.now(),
         xp: 0,
-      };
-      setPartners([...partners, newPartner]);
-      setRequests(requests.filter((r) => r._id !== requestId));
+      }
+      setPartners([...partners, newPartner])
+      setRequests(requests.filter((r) => r._id !== requestId))
     }
-  };
+  }
 
   const handleDeclineRequest = (requestId: string) => {
-    setRequests(requests.filter((r) => r._id !== requestId));
-  };
+    setRequests(requests.filter((r) => r._id !== requestId))
+  }
 
   const handleSendMessage = () => {
-    if (!messageInput.trim()) return;
+    if (!messageInput.trim()) return
     const newMessage: Message = {
       _id: Date.now().toString(),
       fromMe: true,
       content: messageInput,
       timestamp: Date.now(),
       type: "message",
-    };
-    setMessages([...messages, newMessage]);
-    setMessageInput("");
-  };
+    }
+    setMessages([...messages, newMessage])
+    setMessageInput("")
+  }
 
   const handleSendNudge = (partnerId: string) => {
-    const partner = partners.find((p) => p._id === partnerId);
+    const partner = partners.find((p) => p._id === partnerId)
     if (partner) {
       const newMessage: Message = {
+        // eslint-disable-next-line react-hooks/purity
         _id: Date.now().toString(),
         fromMe: true,
         content:
           lang === "bn"
             ? `${partner.name}, আজ তোমার অভ্যাসগুলো মনে করো!`
             : `${partner.name}, remember your habits today!`,
+        // eslint-disable-next-line react-hooks/purity
         timestamp: Date.now(),
         type: "nudge",
-      };
-      setMessages([...messages, newMessage]);
+      }
+      setMessages([...messages, newMessage])
     }
-  };
+  }
 
   const handleInvite = () => {
-    if (!inviteEmail.trim()) return;
-    setShowInviteModal(false);
-    setInviteEmail("");
-    setInviteMessage("");
-  };
+    if (!inviteEmail.trim()) return
+    setShowInviteModal(false)
+    setInviteEmail("")
+    setInviteMessage("")
+  }
 
   const getTimeAgo = (timestamp: number) => {
-    const diff = Date.now() - timestamp;
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    // eslint-disable-next-line react-hooks/purity
+    const diff = Date.now() - timestamp
+    const minutes = Math.floor(diff / (1000 * 60))
+    const hours = Math.floor(diff / (1000 * 60 * 60))
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
 
     if (minutes < 60) {
-      return lang === "bn" ? `${minutes} মিনিট আগে` : `${minutes}m ago`;
+      return lang === "bn" ? `${minutes} মিনিট আগে` : `${minutes}m ago`
     }
     if (hours < 24) {
-      return lang === "bn" ? `${hours} ঘণ্টা আগে` : `${hours}h ago`;
+      return lang === "bn" ? `${hours} ঘণ্টা আগে` : `${hours}h ago`
     }
-    return lang === "bn" ? `${days} দিন আগে` : `${days}d ago`;
-  };
+    return lang === "bn" ? `${days} দিন আগে` : `${days}d ago`
+  }
 
   const getActivityIcon = (icon: string) => {
     switch (icon) {
       case "check":
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className="h-5 w-5 text-green-500" />
       case "streak":
-        return <Flame className="h-5 w-5 text-orange-500" />;
+        return <Flame className="h-5 w-5 text-orange-500" />
       case "target":
-        return <Target className="h-5 w-5 text-blue-500" />;
+        return <Target className="h-5 w-5 text-blue-500" />
       case "trophy":
-        return <Trophy className="h-5 w-5 text-yellow-500" />;
+        return <Trophy className="h-5 w-5 text-yellow-500" />
       default:
-        return <Star className="h-5 w-5 text-purple-500" />;
+        return <Star className="h-5 w-5 text-purple-500" />
     }
-  };
+  }
 
   return (
     <motion.div
@@ -594,15 +598,15 @@ export default function AccountabilityPartner() {
                 const daysLeft = Math.max(
                   0,
                   Math.ceil((challenge.endDate - NOW) / (1000 * 60 * 60 * 24)),
-                );
+                )
                 const myPercent = Math.min(
                   100,
                   (challenge.myProgress / challenge.goal) * 100,
-                );
+                )
                 const partnerPercent = Math.min(
                   100,
                   (challenge.partnerProgress / challenge.goal) * 100,
-                );
+                )
 
                 return (
                   <motion.div
@@ -653,7 +657,7 @@ export default function AccountabilityPartner() {
                       </div>
                     </div>
                   </motion.div>
-                );
+                )
               })
             )}
           </>
@@ -843,5 +847,5 @@ export default function AccountabilityPartner() {
         </div>
       )}
     </motion.div>
-  );
+  )
 }

@@ -1,29 +1,29 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { GripVertical, Plus, Trash2, Edit3 } from "lucide-react";
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { GripVertical, Plus, Trash2, Edit3 } from "lucide-react"
 
 interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  priority: "low" | "medium" | "high";
-  dueDate?: number;
-  tags?: string[];
+  id: string
+  title: string
+  description?: string
+  priority: "low" | "medium" | "high"
+  dueDate?: number
+  tags?: string[]
 }
 
 interface Column {
-  id: string;
-  title: string;
-  tasks: Task[];
+  id: string
+  title: string
+  tasks: Task[]
 }
 
 interface KanbanBoardProps {
-  columns: Column[];
-  onColumnsChange: (columns: Column[]) => void;
-  onTaskMove?: (taskId: string, fromColumn: string, toColumn: string) => void;
-  onTaskAdd?: (columnId: string, task: Omit<Task, "id">) => void;
-  onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void;
-  onTaskDelete?: (taskId: string) => void;
+  columns: Column[]
+  onColumnsChange: (columns: Column[]) => void
+  onTaskMove?: (taskId: string, fromColumn: string, toColumn: string) => void
+  onTaskAdd?: (columnId: string, task: Omit<Task, "id">) => void
+  onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void
+  onTaskDelete?: (taskId: string) => void
 }
 
 export default function KanbanBoard({
@@ -34,67 +34,67 @@ export default function KanbanBoard({
   onTaskUpdate,
   onTaskDelete,
 }: KanbanBoardProps) {
-  const [editingTask, setEditingTask] = useState<string | null>(null);
-  const [addingToColumn, setAddingToColumn] = useState<string | null>(null);
-  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [editingTask, setEditingTask] = useState<string | null>(null)
+  const [addingToColumn, setAddingToColumn] = useState<string | null>(null)
+  const [newTaskTitle, setNewTaskTitle] = useState("")
   const [draggedTask, setDraggedTask] = useState<{
-    task: Task;
-    columnId: string;
-  } | null>(null);
+    task: Task
+    columnId: string
+  } | null>(null)
 
   const handleDragStart = (task: Task, columnId: string) => {
-    setDraggedTask({ task, columnId });
-  };
+    setDraggedTask({ task, columnId })
+  }
 
-  const handleDragOver = (e: React.DragEvent, columnId: string) => {
-    e.preventDefault();
-  };
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
 
   const handleDrop = (e: React.DragEvent, targetColumnId: string) => {
-    e.preventDefault();
-    if (!draggedTask) return;
+    e.preventDefault()
+    if (!draggedTask) return
 
-    const { task, columnId: sourceColumnId } = draggedTask;
+    const { task, columnId: sourceColumnId } = draggedTask
 
-    if (sourceColumnId === targetColumnId) return;
+    if (sourceColumnId === targetColumnId) return
 
     const updatedColumns = columns.map((col) => {
       if (col.id === sourceColumnId) {
-        return { ...col, tasks: col.tasks.filter((t) => t.id !== task.id) };
+        return { ...col, tasks: col.tasks.filter((t) => t.id !== task.id) }
       }
       if (col.id === targetColumnId) {
-        return { ...col, tasks: [...col.tasks, task] };
+        return { ...col, tasks: [...col.tasks, task] }
       }
-      return col;
-    });
+      return col
+    })
 
-    onColumnsChange(updatedColumns);
-    onTaskMove?.(task.id, sourceColumnId, targetColumnId);
-    setDraggedTask(null);
-  };
+    onColumnsChange(updatedColumns)
+    onTaskMove?.(task.id, sourceColumnId, targetColumnId)
+    setDraggedTask(null)
+  }
 
   const handleAddTask = (columnId: string) => {
-    if (!newTaskTitle.trim()) return;
+    if (!newTaskTitle.trim()) return
 
     const newTask: Task = {
+      // eslint-disable-next-line react-hooks/purity
       id: Date.now().toString(),
       title: newTaskTitle.trim(),
       priority: "medium",
-    };
+    }
 
     const updatedColumns = columns.map((col) => {
       if (col.id === columnId) {
-        return { ...col, tasks: [...col.tasks, newTask] };
+        return { ...col, tasks: [...col.tasks, newTask] }
       }
-      return col;
-    });
+      return col
+    })
 
-    onColumnsChange(updatedColumns);
-    const { id, ...taskWithoutId } = newTask;
-    onTaskAdd?.(columnId, taskWithoutId);
-    setNewTaskTitle("");
-    setAddingToColumn(null);
-  };
+    onColumnsChange(updatedColumns)
+    onTaskAdd?.(columnId, { title: newTask.title, priority: newTask.priority })
+    setNewTaskTitle("")
+    setAddingToColumn(null)
+  }
 
   const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
     const updatedColumns = columns.map((col) => ({
@@ -102,35 +102,35 @@ export default function KanbanBoard({
       tasks: col.tasks.map((task) =>
         task.id === taskId ? { ...task, ...updates } : task,
       ),
-    }));
+    }))
 
-    onColumnsChange(updatedColumns);
-    onTaskUpdate?.(taskId, updates);
-    setEditingTask(null);
-  };
+    onColumnsChange(updatedColumns)
+    onTaskUpdate?.(taskId, updates)
+    setEditingTask(null)
+  }
 
   const handleDeleteTask = (taskId: string) => {
     const updatedColumns = columns.map((col) => ({
       ...col,
       tasks: col.tasks.filter((task) => task.id !== taskId),
-    }));
+    }))
 
-    onColumnsChange(updatedColumns);
-    onTaskDelete?.(taskId);
-  };
+    onColumnsChange(updatedColumns)
+    onTaskDelete?.(taskId)
+  }
 
   const getPriorityColor = (priority: Task["priority"]) => {
     switch (priority) {
       case "high":
-        return "bg-red-500";
+        return "bg-red-500"
       case "medium":
-        return "bg-yellow-500";
+        return "bg-yellow-500"
       case "low":
-        return "bg-green-500";
+        return "bg-green-500"
       default:
-        return "bg-gray-500";
+        return "bg-gray-500"
     }
-  };
+  }
 
   return (
     <div className="flex gap-4 overflow-x-auto pb-4">
@@ -138,7 +138,7 @@ export default function KanbanBoard({
         <div
           key={column.id}
           className="flex-shrink-0 w-72 glass-strong rounded-2xl p-4"
-          onDragOver={(e) => handleDragOver(e, column.id)}
+          onDragOver={(e) => handleDragOver(e)}
           onDrop={(e) => handleDrop(e, column.id)}
         >
           <div className="flex items-center justify-between mb-4">
@@ -180,7 +180,7 @@ export default function KanbanBoard({
                         if (e.key === "Enter") {
                           handleUpdateTask(task.id, {
                             title: (e.target as HTMLInputElement).value,
-                          });
+                          })
                         }
                       }}
                       autoFocus
@@ -272,8 +272,8 @@ export default function KanbanBoard({
                   placeholder="Task title..."
                   className="w-full bg-white/10 rounded-lg px-2 py-1 text-sm focus:outline-none focus:border-primary mb-2"
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") handleAddTask(column.id);
-                    if (e.key === "Escape") setAddingToColumn(null);
+                    if (e.key === "Enter") handleAddTask(column.id)
+                    if (e.key === "Escape") setAddingToColumn(null)
                   }}
                   autoFocus
                 />
@@ -297,5 +297,5 @@ export default function KanbanBoard({
         </div>
       ))}
     </div>
-  );
+  )
 }

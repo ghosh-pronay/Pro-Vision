@@ -117,6 +117,29 @@ exports.geminiProxy = onRequest(
     try {
       const { contents, systemInstruction, generationConfig } = req.body;
 
+      if (
+        !Array.isArray(contents) ||
+        contents.length === 0 ||
+        contents.length > 50
+      ) {
+        res
+          .status(400)
+          .json({ error: "Invalid contents: expected 1-50 messages" });
+        return;
+      }
+      for (const part of contents) {
+        if (!part || typeof part !== "object") {
+          res.status(400).json({ error: "Invalid content part" });
+          return;
+        }
+        if (Array.isArray(part.parts) && part.parts.length > 20) {
+          res
+            .status(400)
+            .json({ error: "Too many parts per message (max 20)" });
+          return;
+        }
+      }
+
       const sanitizedConfig = sanitizeGenerationConfig(generationConfig);
       const payload = {
         contents,
@@ -146,7 +169,7 @@ exports.geminiProxy = onRequest(
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("[geminiProxy] Upstream error:", response.status, data);
+        console.error("[geminiProxy] Upstream error:", response.status);
         const clientStatus = response.status >= 500 ? 502 : response.status;
         res
           .status(clientStatus)
@@ -196,6 +219,17 @@ exports.groqProxy = onRequest(
     try {
       const { messages, model, temperature, max_tokens } = req.body;
 
+      if (
+        !Array.isArray(messages) ||
+        messages.length === 0 ||
+        messages.length > 50
+      ) {
+        res
+          .status(400)
+          .json({ error: "Invalid messages: expected 1-50 messages" });
+        return;
+      }
+
       const safeModel =
         model && ALLOWED_GROQ_MODELS.includes(model)
           ? model
@@ -229,7 +263,7 @@ exports.groqProxy = onRequest(
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("[groqProxy] Upstream error:", response.status, data);
+        console.error("[groqProxy] Upstream error:", response.status);
         const clientStatus = response.status >= 500 ? 502 : response.status;
         res
           .status(clientStatus)

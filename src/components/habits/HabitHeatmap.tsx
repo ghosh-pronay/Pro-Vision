@@ -1,28 +1,30 @@
-import { Calendar } from "lucide-react";
-import { t, type Lang } from "@/i18n/translations";
+import { useMemo } from "react"
+import { Calendar } from "lucide-react"
+import { t, type Lang } from "@/i18n/translations"
 
 interface HeatmapCalendarProps {
-  lang: Lang;
-  completedDates: number[];
+  lang: Lang
+  completedDates: number[]
 }
 
 export function HeatmapCalendar({
   lang,
   completedDates,
 }: HeatmapCalendarProps) {
-  const days = 35;
-  const now = Date.now();
+  const days = 35
+  // eslint-disable-next-line react-hooks/purity
+  const now = useMemo(() => Date.now(), [])
   const cells = Array.from({ length: days }, (_, i) => {
-    const dayStart = now - (days - 1 - i) * 24 * 60 * 60 * 1000;
-    const dayEnd = dayStart + 24 * 60 * 60 * 1000;
+    const dayStart = now - (days - 1 - i) * 24 * 60 * 60 * 1000
+    const dayEnd = dayStart + 24 * 60 * 60 * 1000
     const count = completedDates.filter(
       (d) => d >= dayStart && d < dayEnd,
-    ).length;
+    ).length
     return {
       day: i,
       level: count === 0 ? 0 : count === 1 ? 1 : count === 2 ? 2 : 3,
-    };
-  });
+    }
+  })
 
   return (
     <div className="glass rounded-2xl p-4">
@@ -77,30 +79,30 @@ export function HeatmapCalendar({
         </span>
       </div>
     </div>
-  );
+  )
 }
 
 interface WeeklyBarProps {
-  completedDates: number[];
-  lang: Lang;
+  completedDates: number[]
+  lang: Lang
 }
 
 export function WeeklyBar({ completedDates, lang }: WeeklyBarProps) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dayOfWeek = today.getDay();
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const dayOfWeek = today.getDay()
   const weekDays =
     lang === "bn"
       ? ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র", "শনি"]
-      : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   return (
     <div className="flex items-end gap-1 h-10">
       {weekDays.map((day, i) => {
-        const dayMs = today.getTime() - (dayOfWeek - i) * 86400000;
+        const dayMs = today.getTime() - (dayOfWeek - i) * 86400000
         const done = completedDates.some(
           (d) => new Date(d).setHours(0, 0, 0, 0) === dayMs,
-        );
+        )
         return (
           <div key={i} className="flex flex-col items-center gap-0.5 flex-1">
             <div
@@ -124,8 +126,8 @@ export function WeeklyBar({ completedDates, lang }: WeeklyBarProps) {
               {day}
             </span>
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

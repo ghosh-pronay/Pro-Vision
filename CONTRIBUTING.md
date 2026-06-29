@@ -33,7 +33,24 @@ functions/        # Firebase Cloud Functions
 - **i18n**: Use `useI18n()` hook for translations (Bengali/English)
 - **State**: Zustand for global UI state, localStorage for data persistence
 - **Routes**: All pages lazy-loaded in `src/App.tsx`
-- **Store**: Use `createCollection()` from `src/lib/store/types.ts` for new data modules (note: finance.ts uses manual CRUD for historical reasons)
+- **Store**: Use `createCollection()` from `src/lib/store/types.ts` for new data modules. Note: `index.ts` and `finance.ts` contain ~10 modules with manual CRUD — these are legacy and should be migrated to `createCollection` over time. All new modules must use `createCollection` in separate files.
+
+## Convex Shim Architecture
+
+All `convex/*` imports resolve to local shims via Vite aliases:
+
+- `convex/react` → `src/convex/react.ts` (useQuery, useMutation)
+- `convex/_generated/api` → `src/convex/_generated/api.ts` (API routes)
+- `convex/values` → `src/convex/shims/values.ts` (validators)
+- `convex/server` → `src/convex/shims/server.ts` (server stubs)
+
+**Key rules:**
+
+- Never import directly from `src/lib/store` in components — use the Convex shim interface
+- `useQuery(fn)` runs `fn` against localStorage and re-runs when data changes
+- `useMutation(fn, collectionKey)` runs `fn`, then notifies listeners for that collection
+- Always pass `collectionKey` to `useMutation` for efficient reactivity
+- The shim logs an error in production — this is expected until real Convex is deployed
 
 ## Testing
 

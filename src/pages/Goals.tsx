@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
-import { useI18n } from "@/hooks/use-i18n";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "../convex/_generated/api"
+import { useI18n } from "@/hooks/use-i18n"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Plus,
   Trophy,
@@ -13,9 +13,9 @@ import {
   ChevronDown,
   ChevronUp,
   X,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { Id } from "../convex/_generated/dataModel";
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+import type { Id } from "../convex/_generated/dataModel"
 
 const CATEGORIES = [
   "All",
@@ -24,71 +24,71 @@ const CATEGORIES = [
   "Finance",
   "Career",
   "Personal",
-];
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function Goals() {
-  const { t } = useI18n();
+  const { t } = useI18n()
 
-  const goals = useQuery(api.goals.list);
-  const createGoal = useMutation(api.goals.create);
-  const updateGoal = useMutation(api.goals.update);
-  const removeGoal = useMutation(api.goals.remove);
+  const goals = useQuery(api.goals.list)
+  const createGoal = useMutation(api.goals.create, "goals")
+  const updateGoal = useMutation(api.goals.update, "goals")
+  const removeGoal = useMutation(api.goals.remove, "goals")
 
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [expandedGoalId, setExpandedGoalId] = useState<string | null>(null);
-  const [newMilestoneTitle, setNewMilestoneTitle] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [expandedGoalId, setExpandedGoalId] = useState<string | null>(null)
+  const [newMilestoneTitle, setNewMilestoneTitle] = useState("")
   const [newGoal, setNewGoal] = useState({
     title: "",
     description: "",
     category: "Fitness",
     deadline: "",
     milestones: [] as { title: string; completed: boolean }[],
-  });
+  })
 
-  type GoalItem = (typeof goals)[number];
-  const allGoals: GoalItem[] = goals ?? ([] as GoalItem[]);
+  type GoalItem = (typeof goals)[number]
+  const allGoals: GoalItem[] = goals ?? ([] as GoalItem[])
   const filteredGoals =
     selectedCategory === "All"
       ? allGoals
-      : allGoals.filter((g: GoalItem) => g.category === selectedCategory);
+      : allGoals.filter((g: GoalItem) => g.category === selectedCategory)
 
   const activeGoals = allGoals.filter(
     (g: GoalItem) => g.status === "active",
-  ).length;
+  ).length
   const completedGoals = allGoals.filter(
     (g: GoalItem) => g.status === "completed",
-  ).length;
+  ).length
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-        return "text-green-500 bg-green-500/20";
+        return "text-green-500 bg-green-500/20"
       case "paused":
-        return "text-yellow-500 bg-yellow-500/20";
+        return "text-yellow-500 bg-yellow-500/20"
       default:
-        return "text-primary bg-primary/20";
+        return "text-primary bg-primary/20"
     }
-  };
+  }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "completed":
-        return t.goals.status.completed;
+        return t.goals.status.completed
       case "paused":
-        return t.goals.status.paused;
+        return t.goals.status.paused
       default:
-        return t.goals.status.active;
+        return t.goals.status.active
     }
-  };
+  }
 
   const handleAddGoal = async () => {
-    if (!newGoal.title.trim()) return;
+    if (!newGoal.title.trim()) return
     await createGoal({
       title: newGoal.title,
       description: newGoal.description || undefined,
@@ -97,29 +97,29 @@ export default function Goals() {
         ? new Date(newGoal.deadline).getTime()
         : Date.now() + 30 * 24 * 60 * 60 * 1000,
       milestones: newGoal.milestones,
-    });
+    })
     setNewGoal({
       title: "",
       description: "",
       category: "Fitness",
       deadline: "",
       milestones: [],
-    });
-    setShowAddModal(false);
-  };
+    })
+    setShowAddModal(false)
+  }
 
   const handleDeleteGoal = async (id: string) => {
-    await removeGoal({ id: id as Id<"goals"> });
-  };
+    await removeGoal({ id: id as Id<"goals"> })
+  }
 
   const handleToggleStatus = async (goal: GoalItem) => {
-    const nextStatus = goal.status === "active" ? "completed" : "active";
+    const nextStatus = goal.status === "active" ? "completed" : "active"
     await updateGoal({
       id: goal._id,
       status: nextStatus,
       progress: nextStatus === "completed" ? 100 : goal.progress,
-    });
-  };
+    })
+  }
 
   const handleToggleMilestone = async (
     goal: GoalItem,
@@ -127,57 +127,57 @@ export default function Goals() {
   ) => {
     const updatedMilestones = goal.milestones.map((m, i) =>
       i === milestoneIndex ? { ...m, completed: !m.completed } : m,
-    );
-    const completedCount = updatedMilestones.filter((m) => m.completed).length;
+    )
+    const completedCount = updatedMilestones.filter((m) => m.completed).length
     const newProgress =
       updatedMilestones.length > 0
         ? Math.round((completedCount / updatedMilestones.length) * 100)
-        : goal.progress;
+        : goal.progress
     await updateGoal({
       id: goal._id,
       milestones: updatedMilestones,
       progress: newProgress,
-    });
-  };
+    })
+  }
 
   const handleAddMilestoneToGoal = async (goal: GoalItem) => {
-    if (!newMilestoneTitle.trim()) return;
+    if (!newMilestoneTitle.trim()) return
     const updatedMilestones = [
       ...goal.milestones,
       { title: newMilestoneTitle, completed: false },
-    ];
+    ]
     await updateGoal({
       id: goal._id,
       milestones: updatedMilestones,
-    });
-    setNewMilestoneTitle("");
-  };
+    })
+    setNewMilestoneTitle("")
+  }
 
   const handleAddMilestoneToNew = () => {
-    if (!newMilestoneTitle.trim()) return;
+    if (!newMilestoneTitle.trim()) return
     setNewGoal({
       ...newGoal,
       milestones: [
         ...newGoal.milestones,
         { title: newMilestoneTitle, completed: false },
       ],
-    });
-    setNewMilestoneTitle("");
-  };
+    })
+    setNewMilestoneTitle("")
+  }
 
   const handleRemoveMilestoneFromNew = (index: number) => {
     setNewGoal({
       ...newGoal,
       milestones: newGoal.milestones.filter((_, i) => i !== index),
-    });
-  };
+    })
+  }
 
   if (goals === undefined) {
     return (
       <div className="max-w-3xl mx-auto flex items-center justify-center h-64">
         <div className="text-sm text-muted-foreground">{t.common.loading}</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -263,10 +263,10 @@ export default function Goals() {
 
       <div className="space-y-3">
         {filteredGoals.map((goal, i) => {
-          const isExpanded = expandedGoalId === goal._id;
+          const isExpanded = expandedGoalId === goal._id
           const completedMilestones =
-            goal.milestones?.filter((m) => m.completed).length ?? 0;
-          const totalMilestones = goal.milestones?.length ?? 0;
+            goal.milestones?.filter((m) => m.completed).length ?? 0
+          const totalMilestones = goal.milestones?.length ?? 0
 
           return (
             <motion.div
@@ -431,7 +431,7 @@ export default function Goals() {
                 </div>
               )}
             </motion.div>
-          );
+          )
         })}
       </div>
 
@@ -577,5 +577,5 @@ export default function Goals() {
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }

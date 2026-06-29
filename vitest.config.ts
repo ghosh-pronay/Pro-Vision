@@ -1,5 +1,5 @@
-import { defineConfig } from "vitest/config";
-import path from "path";
+import { defineConfig } from "vitest/config"
+import path from "path"
 
 export default defineConfig({
   resolve: {
@@ -10,6 +10,8 @@ export default defineConfig({
         __dirname,
         "./src/convex/_generated/api.ts",
       ),
+      "convex/values": path.resolve(__dirname, "./src/convex/shims/values.ts"),
+      "convex/server": path.resolve(__dirname, "./src/convex/shims/server.ts"),
     },
   },
   test: {
@@ -28,11 +30,11 @@ export default defineConfig({
         "src/**/*.spec.{ts,tsx}",
       ],
       thresholds: {
-        lines: 50,
-        functions: 50,
-        branches: 40,
-        statements: 50,
+        lines: 60,
+        functions: 60,
+        branches: 50,
+        statements: 60,
       },
     },
   },
-});
+})

@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useAppStore } from "@/store";
-import { useAuth } from "@/hooks/use-auth";
-import { useI18n } from "@/hooks/use-i18n";
+import { useState, useEffect, useRef } from "react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { useAppStore } from "@/store"
+import { useAuth } from "@/hooks/use-auth"
+import { useI18n } from "@/hooks/use-i18n"
 import {
   User,
   Bell,
@@ -24,83 +24,85 @@ import {
   LayoutGrid,
   Snowflake,
   Camera,
-} from "lucide-react";
-import NotificationsPanel from "@/components/NotificationsPanel";
-import { DataBackup } from "@/components/ui/DataBackup";
-import DashboardWidgetCustomizer from "@/components/DashboardWidgetCustomizer";
-import StreakFreeze from "@/components/StreakFreeze";
-import { TIMEZONE_OPTIONS, AVATAR_EMOJIS } from "@/lib/constants";
+} from "lucide-react"
+import NotificationsPanel from "@/components/NotificationsPanel"
+import { DataBackup } from "@/components/ui/DataBackup"
+import DashboardWidgetCustomizer from "@/components/DashboardWidgetCustomizer"
+import StreakFreeze from "@/components/StreakFreeze"
+import { TIMEZONE_OPTIONS, AVATAR_EMOJIS } from "@/lib/constants"
 
 export default function Settings() {
-  const { theme, setTheme, language, setLanguage } = useAppStore();
-  const { signOut, user } = useAuth();
-  const { t, lang } = useI18n();
+  const { theme, setTheme, language, setLanguage } = useAppStore()
+  const { signOut, user } = useAuth()
+  const { t, lang } = useI18n()
 
-  const profile = useQuery(api.userProfiles.get);
-  const upsertProfile = useMutation(api.userProfiles.upsert);
-  const setupFirstAdmin = useMutation(api.admin.setupFirstAdmin);
-  const hasAdmin = useQuery(api.admin.hasAdmin);
-  const [adminMessage, setAdminMessage] = useState("");
+  const profile = useQuery(api.userProfiles.get)
+  const upsertProfile = useMutation(api.userProfiles.upsert, "userProfiles")
+  const setupFirstAdmin = useMutation(api.admin.setupFirstAdmin, "admin")
+  const hasAdmin = useQuery(api.admin.hasAdmin)
+  const [adminMessage, setAdminMessage] = useState("")
 
-  const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
 
-  const [formName, setFormName] = useState("");
-  const [formEmail, setFormEmail] = useState("");
-  const [formPhone, setFormPhone] = useState("");
-  const [formCurrency, setFormCurrency] = useState("BDT");
-  const [formTimezone, setFormTimezone] = useState("Asia/Dhaka");
-  const [formGender, setFormGender] = useState<string>("");
-  const [formDob, setFormDob] = useState("");
-  const [formNotifications, setFormNotifications] = useState(true);
-  const [formWeeklyReport, setFormWeeklyReport] = useState(false);
-  const [formAvatar, setFormAvatar] = useState("😀");
-  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [formName, setFormName] = useState("")
+  const [formEmail, setFormEmail] = useState("")
+  const [formPhone, setFormPhone] = useState("")
+  const [formCurrency, setFormCurrency] = useState("BDT")
+  const [formTimezone, setFormTimezone] = useState("Asia/Dhaka")
+  const [formGender, setFormGender] = useState<string>("")
+  const [formDob, setFormDob] = useState("")
+  const [formNotifications, setFormNotifications] = useState(true)
+  const [formWeeklyReport, setFormWeeklyReport] = useState(false)
+  const [formAvatar, setFormAvatar] = useState("😀")
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false)
 
-  const [darkModeSchedule, setDarkModeSchedule] = useState(false);
-  const [darkModeStart, setDarkModeStart] = useState("20:00");
-  const [darkModeEnd, setDarkModeEnd] = useState("06:00");
+  const [darkModeSchedule, setDarkModeSchedule] = useState(false)
+  const [darkModeStart, setDarkModeStart] = useState("20:00")
+  const [darkModeEnd, setDarkModeEnd] = useState("06:00")
 
-  const syncProfileRef = useRef<((p: unknown) => void) | null>(null);
+  const syncProfileRef = useRef<((p: unknown) => void) | null>(null)
+
+  useEffect(() => {
+    syncProfileRef.current = (p) => {
+      const prof = p as {
+        displayName?: string
+        email?: string
+        phone?: string
+        currency?: string
+        timezone?: string
+        gender?: string
+        dateOfBirth?: number
+        notificationsEnabled?: boolean
+        weeklyEmailReport?: boolean
+        avatar?: string
+      }
+      setFormName(prof.displayName || "")
+      setFormEmail(prof.email || "")
+      setFormPhone(prof.phone || "")
+      setFormCurrency(prof.currency || "BDT")
+      setFormTimezone(prof.timezone || "Asia/Dhaka")
+      setFormGender(prof.gender || "")
+      if (prof.dateOfBirth) {
+        const d = new Date(prof.dateOfBirth)
+        setFormDob(d.toISOString().split("T")[0])
+      }
+      setFormNotifications(prof.notificationsEnabled ?? true)
+      setFormWeeklyReport(prof.weeklyEmailReport ?? false)
+      setFormAvatar(prof.avatar || "😀")
+    }
+  })
 
   useEffect(() => {
     if (profile) {
-      syncProfileRef.current?.(profile);
+      syncProfileRef.current?.(profile)
     }
-  }, [profile]);
-
-  syncProfileRef.current = (p) => {
-    const profile = p as {
-      displayName?: string;
-      email?: string;
-      phone?: string;
-      currency?: string;
-      timezone?: string;
-      gender?: string;
-      dateOfBirth?: number;
-      notificationsEnabled?: boolean;
-      weeklyEmailReport?: boolean;
-      avatar?: string;
-    };
-    setFormName(profile.displayName || "");
-    setFormEmail(profile.email || "");
-    setFormPhone(profile.phone || "");
-    setFormCurrency(profile.currency || "BDT");
-    setFormTimezone(profile.timezone || "Asia/Dhaka");
-    setFormGender(profile.gender || "");
-    if (profile.dateOfBirth) {
-      const d = new Date(profile.dateOfBirth);
-      setFormDob(d.toISOString().split("T")[0]);
-    }
-    setFormNotifications(profile.notificationsEnabled ?? true);
-    setFormWeeklyReport(profile.weeklyEmailReport ?? false);
-    setFormAvatar(profile.avatar || "😀");
-  };
+  }, [profile])
 
   const handleSaveProfile = async () => {
-    setSaving(true);
-    setSaved(false);
+    setSaving(true)
+    setSaved(false)
     try {
       await upsertProfile({
         displayName: formName,
@@ -113,33 +115,33 @@ export default function Settings() {
         notificationsEnabled: formNotifications,
         weeklyEmailReport: formWeeklyReport,
         avatar: formAvatar,
-      });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   const handleThemeChange = async (newTheme: string) => {
-    setTheme(newTheme as "light" | "dark" | "oled" | "system");
+    setTheme(newTheme as "light" | "dark" | "oled" | "system")
     try {
       await upsertProfile({
         theme: newTheme as "light" | "dark" | "oled" | "system",
-      });
+      })
     } catch (e) {
-      console.error("[Settings]", "operation failed", e);
+      console.error("[Settings]", "operation failed", e)
     }
-  };
+  }
 
   const handleLanguageChange = async (newLang: string) => {
-    setLanguage(newLang as "en" | "bn");
+    setLanguage(newLang as "en" | "bn")
     try {
-      await upsertProfile({ language: newLang as "en" | "bn" });
+      await upsertProfile({ language: newLang as "en" | "bn" })
     } catch (e) {
-      console.error("[Settings]", "operation failed", e);
+      console.error("[Settings]", "operation failed", e)
     }
-  };
+  }
 
   const sections = [
     {
@@ -208,11 +210,11 @@ export default function Settings() {
       title: t.settings.helpSupport,
       description: t.settings.helpDescription,
     },
-  ];
+  ]
 
   const renderSection = () => {
     if (profile === undefined) {
-      return <p className="text-muted-foreground">{t.common.loading}</p>;
+      return <p className="text-muted-foreground">{t.common.loading}</p>
     }
 
     switch (activeSection) {
@@ -251,8 +253,8 @@ export default function Settings() {
                     <button
                       key={emoji}
                       onClick={() => {
-                        setFormAvatar(emoji);
-                        setShowAvatarPicker(false);
+                        setFormAvatar(emoji)
+                        setShowAvatarPicker(false)
                       }}
                       className={`text-2xl p-1.5 rounded-lg hover:bg-foreground/5 transition-colors ${
                         formAvatar === emoji
@@ -409,7 +411,7 @@ export default function Settings() {
               </button>
             </div>
           </div>
-        );
+        )
 
       case "appearance":
         return (
@@ -530,7 +532,7 @@ export default function Settings() {
               </div>
             </div>
           </div>
-        );
+        )
 
       case "notifications":
         return (
@@ -585,7 +587,7 @@ export default function Settings() {
               </div>
             </div>
           </div>
-        );
+        )
 
       case "premium":
         return (
@@ -623,7 +625,7 @@ export default function Settings() {
               </button>
             </div>
           </div>
-        );
+        )
 
       case "security":
         return (
@@ -684,7 +686,7 @@ export default function Settings() {
               </div>
             </div>
           </div>
-        );
+        )
 
       case "backup":
         return (
@@ -724,7 +726,7 @@ export default function Settings() {
               </button>
             </div>
           </div>
-        );
+        )
 
       case "help":
         return (
@@ -783,7 +785,7 @@ export default function Settings() {
               </div>
             </div>
           </div>
-        );
+        )
 
       case "notifications-panel":
         return (
@@ -793,7 +795,7 @@ export default function Settings() {
             </h3>
             <NotificationsPanel />
           </div>
-        );
+        )
 
       case "data-backup":
         return (
@@ -801,7 +803,7 @@ export default function Settings() {
             <h3 className="text-lg font-semibold">{t.settings.dataBackup}</h3>
             <DataBackup />
           </div>
-        );
+        )
 
       case "widgets":
         return (
@@ -809,7 +811,7 @@ export default function Settings() {
             <h3 className="text-lg font-semibold">{t.settings.widgets}</h3>
             <DashboardWidgetCustomizer />
           </div>
-        );
+        )
 
       case "streak-freeze":
         return (
@@ -817,12 +819,12 @@ export default function Settings() {
             <h3 className="text-lg font-semibold">{t.settings.streakFreeze}</h3>
             <StreakFreeze />
           </div>
-        );
+        )
 
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -870,12 +872,12 @@ export default function Settings() {
                 <button
                   onClick={async () => {
                     try {
-                      await setupFirstAdmin();
-                      setAdminMessage("You are now an admin! Go to /admin");
+                      await setupFirstAdmin()
+                      setAdminMessage("You are now an admin! Go to /admin")
                     } catch (err: unknown) {
                       setAdminMessage(
                         err instanceof Error ? err.message : "Failed",
-                      );
+                      )
                     }
                   }}
                   className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10 transition-colors"
@@ -907,5 +909,5 @@ export default function Settings() {
         </div>
       )}
     </div>
-  );
+  )
 }

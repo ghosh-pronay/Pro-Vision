@@ -1,62 +1,63 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState } from "react";
-import { Trophy, Users, Target, Clock, Crown, Award } from "lucide-react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
-import type { Id } from "../convex/_generated/dataModel";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState } from "react"
+import { Trophy, Users, Target, Clock, Crown, Award } from "lucide-react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "../convex/_generated/api"
+import type { Id } from "../convex/_generated/dataModel"
 
 const CHALLENGE_TYPES = [
   { value: "habits", icon: Target, color: "text-green-500" },
   { value: "focus", icon: Clock, color: "text-red-500" },
   { value: "tasks", icon: Target, color: "text-blue-500" },
-] as const;
+] as const
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function Challenges() {
-  const { lang } = useLang();
-  const challenges = useQuery(api.challenges.listChallenges);
-  const myChallenges = useQuery(api.challenges.listUserChallenges);
-  const joinChallenge = useMutation(api.challenges.joinChallenge);
+  const { lang } = useLang()
+  const challenges = useQuery(api.challenges.listChallenges)
+  const myChallenges = useQuery(api.challenges.listUserChallenges)
+  const joinChallenge = useMutation(api.challenges.joinChallenge, "challenges")
 
   const [activeTab, setActiveTab] = useState<
     "active" | "joined" | "leaderboard"
-  >("active");
+  >("active")
   const [selectedChallengeId, setSelectedChallengeId] =
-    useState<Id<"challenges"> | null>(null);
+    useState<Id<"challenges"> | null>(null)
 
   const leaderboardChallengeId =
     selectedChallengeId ??
-    (myChallenges?.[0]?._id as Id<"challenges"> | undefined);
+    (myChallenges?.[0]?._id as Id<"challenges"> | undefined)
 
   const leaderboard = useQuery(
     api.challenges.getLeaderboard,
     leaderboardChallengeId ? { challengeId: leaderboardChallengeId } : "skip",
-  );
+  )
 
   const handleJoin = async (challengeId: string) => {
-    await joinChallenge({ challengeId: challengeId as Id<"challenges"> });
-  };
+    await joinChallenge({ challengeId: challengeId as Id<"challenges"> })
+  }
 
   const getDaysLeft = (endDate: number) => {
-    const now = Date.now();
-    const diff = endDate - now;
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  };
+    // eslint-disable-next-line react-hooks/purity
+    const now = Date.now()
+    const diff = endDate - now
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
+  }
 
   const getChallengeIcon = (type: string) => {
-    const challengeType = CHALLENGE_TYPES.find((t) => t.value === type);
-    return challengeType?.icon || Target;
-  };
+    const challengeType = CHALLENGE_TYPES.find((t) => t.value === type)
+    return challengeType?.icon || Target
+  }
 
   const getChallengeColor = (type: string) => {
-    const challengeType = CHALLENGE_TYPES.find((t) => t.value === type);
-    return challengeType?.color || "text-muted-foreground";
-  };
+    const challengeType = CHALLENGE_TYPES.find((t) => t.value === type)
+    return challengeType?.color || "text-muted-foreground"
+  }
 
   return (
     <motion.div
@@ -133,11 +134,11 @@ export default function Challenges() {
               </div>
             ) : (
               challenges.map((challenge) => {
-                const Icon = getChallengeIcon(challenge.type);
-                const daysLeft = getDaysLeft(challenge.endDate);
+                const Icon = getChallengeIcon(challenge.type)
+                const daysLeft = getDaysLeft(challenge.endDate)
                 const isJoined = (myChallenges ?? []).some(
                   (c) => c._id === challenge._id,
-                );
+                )
 
                 return (
                   <motion.div
@@ -190,7 +191,7 @@ export default function Challenges() {
                       </button>
                     </div>
                   </motion.div>
-                );
+                )
               })
             )}
           </>
@@ -214,13 +215,13 @@ export default function Challenges() {
               </div>
             ) : (
               myChallenges.map((challenge) => {
-                const Icon = getChallengeIcon(challenge.type);
-                const daysLeft = getDaysLeft(challenge.endDate);
-                const progress = challenge.progress || 0;
+                const Icon = getChallengeIcon(challenge.type)
+                const daysLeft = getDaysLeft(challenge.endDate)
+                const progress = challenge.progress || 0
                 const progressPercent = Math.min(
                   100,
                   (progress / challenge.goal) * 100,
-                );
+                )
 
                 return (
                   <motion.div
@@ -258,7 +259,7 @@ export default function Challenges() {
                       </div>
                     </div>
                   </motion.div>
-                );
+                )
               })
             )}
           </>
@@ -310,7 +311,7 @@ export default function Challenges() {
             ) : (
               <div className="space-y-3">
                 {leaderboard.map((entry, idx) => {
-                  const rank = idx + 1;
+                  const rank = idx + 1
                   const badge =
                     rank === 1
                       ? "🥇"
@@ -318,7 +319,7 @@ export default function Challenges() {
                         ? "🥈"
                         : rank === 3
                           ? "🥉"
-                          : "";
+                          : ""
                   return (
                     <div
                       key={entry.userId}
@@ -349,7 +350,7 @@ export default function Challenges() {
                         />
                       )}
                     </div>
-                  );
+                  )
                 })}
               </div>
             )}
@@ -357,5 +358,5 @@ export default function Challenges() {
         )}
       </motion.div>
     </motion.div>
-  );
+  )
 }

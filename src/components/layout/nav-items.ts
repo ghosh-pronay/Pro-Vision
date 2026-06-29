@@ -1,4 +1,4 @@
-import { type TranslationKey } from "@/i18n/translations";
+import { type TranslationKey } from "@/i18n/translations"
 import {
   Layout,
   ListChecks,
@@ -8,7 +8,6 @@ import {
   Newspaper,
   BarChart3,
   Heart,
-  Settings,
   Shield,
   Trophy,
   BookOpen,
@@ -27,15 +26,15 @@ import {
   Activity,
   QrCode,
   CreditCard,
-} from "lucide-react";
+} from "lucide-react"
 
 export type NavItem = {
-  path: string;
-  icon: React.ComponentType<{ className?: string }>;
-  labelKey: TranslationKey;
-  id: string;
-  section?: string;
-};
+  path: string
+  icon: React.ComponentType<{ className?: string }>
+  labelKey: TranslationKey
+  id: string
+  section?: string
+}
 
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -353,6 +352,6 @@ export const NAV_ITEMS: NavItem[] = [
     id: "familySharing",
     section: "social",
   },
-];
+]
 
-export const BOTTOM_NAV = NAV_ITEMS.slice(0, 5);
+export const BOTTOM_NAV = NAV_ITEMS.slice(0, 5)

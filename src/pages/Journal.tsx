@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
 
-import { useState, useMemo } from "react";
+import { useState, useMemo } from "react"
 import {
   BookOpen,
   Plus,
@@ -12,24 +12,24 @@ import {
   Edit3,
   X,
   Check,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
-import { toastSuccess } from "@/lib/toast-helpers";
-import { sanitizeInput } from "@/lib/input-sanitizer";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "../convex/_generated/api"
+import { toastSuccess } from "@/lib/toast-helpers"
+import { sanitizeInput } from "@/lib/input-sanitizer"
 
 interface JournalEntry {
-  _id: string;
-  title: string;
-  content: string;
-  mood?: string;
-  tags?: string[];
-  weather?: string;
-  date: number;
-  createdAt: number;
-  updatedAt: number;
+  _id: string
+  title: string
+  content: string
+  mood?: string
+  tags?: string[]
+  weather?: string
+  date: number
+  createdAt: number
+  updatedAt: number
 }
 
 const MOODS = [
@@ -41,7 +41,7 @@ const MOODS = [
   { emoji: "😴", label: "Tired", value: "tired" },
   { emoji: "🎉", label: "Excited", value: "excited" },
   { emoji: "💪", label: "Motivated", value: "motivated" },
-];
+]
 
 const WEATHER_OPTIONS = [
   { icon: "☀️", label: "Sunny" },
@@ -50,7 +50,7 @@ const WEATHER_OPTIONS = [
   { icon: "🌧️", label: "Rainy" },
   { icon: "⛈️", label: "Stormy" },
   { icon: "❄️", label: "Snowy" },
-];
+]
 
 const SUGGESTED_TAGS = [
   "Personal",
@@ -61,78 +61,79 @@ const SUGGESTED_TAGS = [
   "Gratitude",
   "Goals",
   "Reflection",
-];
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function Journal() {
-  const { lang } = useLang();
-  const entries = useQuery(api.journal.list);
-  const createEntry = useMutation(api.journal.create);
-  const updateEntry = useMutation(api.journal.update);
-  const deleteEntry = useMutation(api.journal.remove);
+  const { lang } = useLang()
+  const entries = useQuery(api.journal.list)
+  const createEntry = useMutation(api.journal.create, "journal")
+  const updateEntry = useMutation(api.journal.update, "journal")
+  const deleteEntry = useMutation(api.journal.remove, "journal")
 
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<"all" | "week" | "month">("all");
-  const [showEditor, setShowEditor] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [selectedMood, setSelectedMood] = useState<string>("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [selectedWeather, setSelectedWeather] = useState("");
-  const [customTag, setCustomTag] = useState("");
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [search, setSearch] = useState("")
+  const [filter, setFilter] = useState<"all" | "week" | "month">("all")
+  const [showEditor, setShowEditor] = useState(false)
+  const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null)
+  const [title, setTitle] = useState("")
+  const [content, setContent] = useState("")
+  const [selectedMood, setSelectedMood] = useState<string>("")
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [selectedWeather, setSelectedWeather] = useState("")
+  const [customTag, setCustomTag] = useState("")
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   const filteredEntries = useMemo(() => {
-    if (!entries) return [];
-    const now = Date.now();
-    const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
-    const monthAgo = now - 30 * 24 * 60 * 60 * 1000;
+    if (!entries) return []
+    // eslint-disable-next-line react-hooks/purity
+    const now = Date.now()
+    const weekAgo = now - 7 * 24 * 60 * 60 * 1000
+    const monthAgo = now - 30 * 24 * 60 * 60 * 1000
 
     return entries
       .filter((entry) => {
         const matchesSearch =
           entry.title.toLowerCase().includes(search.toLowerCase()) ||
-          entry.content.toLowerCase().includes(search.toLowerCase());
+          entry.content.toLowerCase().includes(search.toLowerCase())
         const matchesFilter =
           filter === "all" ||
           (filter === "week" && entry.date >= weekAgo) ||
-          (filter === "month" && entry.date >= monthAgo);
-        return matchesSearch && matchesFilter;
+          (filter === "month" && entry.date >= monthAgo)
+        return matchesSearch && matchesFilter
       })
-      .sort((a, b) => b.date - a.date);
-  }, [entries, search, filter]);
+      .sort((a, b) => b.date - a.date)
+  }, [entries, search, filter])
 
   const writingStreak = useMemo(() => {
-    if (!entries || entries.length === 0) return 0;
-    const today = new Date().setHours(0, 0, 0, 0);
+    if (!entries || entries.length === 0) return 0
+    const today = new Date().setHours(0, 0, 0, 0)
     const sortedDates = entries
       .map((e) => new Date(e.date).setHours(0, 0, 0, 0))
-      .sort((a, b) => b - a);
-    const uniqueDates = [...new Set(sortedDates)];
+      .sort((a, b) => b - a)
+    const uniqueDates = [...new Set(sortedDates)]
 
-    let streak = 0;
-    let currentDate = today;
+    let streak = 0
+    let currentDate = today
 
     for (const date of uniqueDates) {
       if (date === currentDate) {
-        streak++;
-        currentDate -= 86400000;
+        streak++
+        currentDate -= 86400000
       } else if (date === currentDate + 86400000) {
-        continue;
+        continue
       } else {
-        break;
+        break
       }
     }
-    return streak;
-  }, [entries]);
+    return streak
+  }, [entries])
 
   const handleSave = async () => {
-    if (!title.trim() || !content.trim()) return;
+    if (!title.trim() || !content.trim()) return
 
     if (editingEntry) {
       await updateEntry({
@@ -142,8 +143,8 @@ export default function Journal() {
         mood: selectedMood || undefined,
         tags: selectedTags.length > 0 ? selectedTags : undefined,
         weather: selectedWeather || undefined,
-      });
-      toastSuccess(lang === "bn" ? "এন্ট্রি আপডেট হয়েছে" : "Entry updated");
+      })
+      toastSuccess(lang === "bn" ? "এন্ট্রি আপডেট হয়েছে" : "Entry updated")
     } else {
       await createEntry({
         title: sanitizeInput(title.trim()),
@@ -151,51 +152,51 @@ export default function Journal() {
         mood: selectedMood || undefined,
         tags: selectedTags.length > 0 ? selectedTags : undefined,
         weather: selectedWeather || undefined,
-      });
-      toastSuccess(lang === "bn" ? "এন্ট্রি তৈরি হয়েছে" : "Entry created");
+      })
+      toastSuccess(lang === "bn" ? "এন্ট্রি তৈরি হয়েছে" : "Entry created")
     }
 
-    resetEditor();
-  };
+    resetEditor()
+  }
 
   const handleEdit = (entry: JournalEntry) => {
-    setEditingEntry(entry);
-    setTitle(entry.title);
-    setContent(entry.content);
-    setSelectedMood(entry.mood || "");
-    setSelectedTags(entry.tags || []);
-    setSelectedWeather(entry.weather || "");
-    setShowEditor(true);
-  };
+    setEditingEntry(entry)
+    setTitle(entry.title)
+    setContent(entry.content)
+    setSelectedMood(entry.mood || "")
+    setSelectedTags(entry.tags || [])
+    setSelectedWeather(entry.weather || "")
+    setShowEditor(true)
+  }
 
   const handleDelete = async (id: string) => {
-    await deleteEntry({ id });
-    toastSuccess(lang === "bn" ? "এন্ট্রি মুছে ফেলা হয়েছে" : "Entry deleted");
-  };
+    await deleteEntry({ id })
+    toastSuccess(lang === "bn" ? "এন্ট্রি মুছে ফেলা হয়েছে" : "Entry deleted")
+  }
 
   const resetEditor = () => {
-    setShowEditor(false);
-    setEditingEntry(null);
-    setTitle("");
-    setContent("");
-    setSelectedMood("");
-    setSelectedTags([]);
-    setSelectedWeather("");
-    setCustomTag("");
-  };
+    setShowEditor(false)
+    setEditingEntry(null)
+    setTitle("")
+    setContent("")
+    setSelectedMood("")
+    setSelectedTags([])
+    setSelectedWeather("")
+    setCustomTag("")
+  }
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
-  };
+    )
+  }
 
   const addCustomTag = () => {
     if (customTag.trim() && !selectedTags.includes(customTag.trim())) {
-      setSelectedTags((prev) => [...prev, customTag.trim()]);
-      setCustomTag("");
+      setSelectedTags((prev) => [...prev, customTag.trim()])
+      setCustomTag("")
     }
-  };
+  }
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString(
@@ -206,8 +207,8 @@ export default function Journal() {
         month: "long",
         day: "numeric",
       },
-    );
-  };
+    )
+  }
 
   return (
     <motion.div
@@ -571,8 +572,8 @@ export default function Journal() {
       <ConfirmDialog
         open={deleteConfirmId !== null}
         onConfirm={() => {
-          if (deleteConfirmId) handleDelete(deleteConfirmId);
-          setDeleteConfirmId(null);
+          if (deleteConfirmId) handleDelete(deleteConfirmId)
+          setDeleteConfirmId(null)
         }}
         onCancel={() => setDeleteConfirmId(null)}
         title={lang === "bn" ? "এন্ট্রি মুছুন?" : "Delete entry?"}
@@ -583,5 +584,5 @@ export default function Journal() {
         }
       />
     </motion.div>
-  );
+  )
 }

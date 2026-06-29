@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
-import { useState, useMemo } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
+import { useState, useMemo } from "react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
 import {
   Plus,
   CheckCircle2,
@@ -15,30 +15,30 @@ import {
   LayoutGrid,
   List,
   Sparkles,
-} from "lucide-react";
+} from "lucide-react"
 import {
   handleMutationError,
   handleMutationSuccess,
   toastSuccess,
   toastError,
-} from "@/lib/toast-helpers";
-import KanbanBoard from "@/components/tasks/KanbanBoard";
+} from "@/lib/toast-helpers"
+import KanbanBoard from "@/components/tasks/KanbanBoard"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
-type Priority = "high" | "medium" | "low";
+type Priority = "high" | "medium" | "low"
 
 const PRIORITY_COLORS: Record<Priority, string> = {
   high: "var(--pv-orange)",
   medium: "var(--pv-blue)",
   low: "var(--pv-green)",
-};
+}
 
-type ViewMode = "list" | "kanban";
-type FilterTab = "all" | "today" | "important" | "scheduled";
+type ViewMode = "list" | "kanban"
+type FilterTab = "all" | "today" | "important" | "scheduled"
 
 const SUGGESTED_TASKS = [
   {
@@ -152,112 +152,112 @@ const SUGGESTED_TASKS = [
     priority: "high" as Priority,
     tags: ["productivity"],
   },
-];
+]
 
 export default function Todo() {
-  const { lang } = useLang();
-  const allTasks = useQuery(api.tasks.list);
-  const createTask = useMutation(api.tasks.create);
-  const toggleTask = useMutation(api.tasks.toggle);
-  const removeTask = useMutation(api.tasks.remove);
+  const { lang } = useLang()
+  const allTasks = useQuery(api.tasks.list)
+  const createTask = useMutation(api.tasks.create, "tasks")
+  const toggleTask = useMutation(api.tasks.toggle, "tasks")
+  const removeTask = useMutation(api.tasks.remove, "tasks")
 
-  const [filter, setFilter] = useState<FilterTab>("all");
-  const [search, setSearch] = useState("");
-  const [showAdd, setShowAdd] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newPriority, setNewPriority] = useState<Priority>("medium");
-  const [newDescription, setNewDescription] = useState("");
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [filter, setFilter] = useState<FilterTab>("all")
+  const [search, setSearch] = useState("")
+  const [showAdd, setShowAdd] = useState(false)
+  const [newTitle, setNewTitle] = useState("")
+  const [newPriority, setNewPriority] = useState<Priority>("medium")
+  const [newDescription, setNewDescription] = useState("")
+  const [viewMode, setViewMode] = useState<ViewMode>("list")
 
-  const isOffline = false;
+  const isOffline = false
 
   const filtered = (allTasks ?? []).filter((task) => {
     if (search && !task.title.toLowerCase().includes(search.toLowerCase()))
-      return false;
+      return false
 
-    const now = new Date();
+    const now = new Date()
     const todayStart = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
-    ).getTime();
-    const todayEnd = todayStart + 86400000;
+    ).getTime()
+    const todayEnd = todayStart + 86400000
 
     switch (filter) {
       case "today":
-        if (!task.dueDate) return false;
-        return task.dueDate >= todayStart && task.dueDate < todayEnd;
+        if (!task.dueDate) return false
+        return task.dueDate >= todayStart && task.dueDate < todayEnd
       case "important":
-        return task.priority === "high";
+        return task.priority === "high"
       case "scheduled":
-        return !!task.dueDate;
+        return !!task.dueDate
       default:
-        return true;
+        return true
     }
-  });
+  })
 
   const addTask = async () => {
-    if (!newTitle.trim()) return;
+    if (!newTitle.trim()) return
     try {
       await createTask({
         title: newTitle,
         priority: newPriority,
         description: newDescription || undefined,
-      });
-      setNewTitle("");
-      setNewDescription("");
-      setShowAdd(false);
-      handleMutationSuccess(lang === "bn" ? "টাস্ক যোগ হয়েছে" : "Task added");
+      })
+      setNewTitle("")
+      setNewDescription("")
+      setShowAdd(false)
+      handleMutationSuccess(lang === "bn" ? "টাস্ক যোগ হয়েছে" : "Task added")
     } catch (error) {
       handleMutationError(
         error,
         lang === "bn" ? "টাস্ক যোগ করতে ব্যর্থ" : "Failed to add task",
-      );
+      )
     }
-  };
+  }
 
   const handleToggle = async (taskId: string) => {
     try {
-      await toggleTask({ id: taskId as Id<"tasks"> });
+      await toggleTask({ id: taskId as Id<"tasks"> })
     } catch (error) {
       handleMutationError(
         error,
         lang === "bn" ? "টাস্ক আপডেট করতে ব্যর্থ" : "Failed to update task",
-      );
+      )
     }
-  };
+  }
 
   const handleRemove = async (taskId: string) => {
     try {
-      await removeTask({ id: taskId as Id<"tasks"> });
+      await removeTask({ id: taskId as Id<"tasks"> })
       handleMutationSuccess(
         lang === "bn" ? "টাস্ক মুছে ফেলা হয়েছে" : "Task deleted",
-      );
+      )
     } catch (error) {
       handleMutationError(
         error,
         lang === "bn" ? "টাস্ক মুছে ফেলতে ব্যর্থ" : "Failed to delete task",
-      );
+      )
     }
-  };
+  }
 
   const formatDue = (ts?: number) => {
-    if (!ts) return "";
-    const d = new Date(ts);
-    const now = new Date();
-    const diff = d.getTime() - now.getTime();
-    if (diff < 0 && diff > -86400000) return lang === "bn" ? "আজ" : "Today";
-    if (diff > 0 && diff < 86400000) return lang === "bn" ? "আজ" : "Today";
+    if (!ts) return ""
+    const d = new Date(ts)
+    const now = new Date()
+    const diff = d.getTime() - now.getTime()
+    if (diff < 0 && diff > -86400000) return lang === "bn" ? "আজ" : "Today"
+    if (diff > 0 && diff < 86400000) return lang === "bn" ? "আজ" : "Today"
     if (diff > 86400000 && diff < 172800000)
-      return lang === "bn" ? "আগামীকাল" : "Tomorrow";
+      return lang === "bn" ? "আগামীকাল" : "Tomorrow"
     return d.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   const kanbanColumns = useMemo(() => {
-    const tasks = filtered;
+    const tasks = filtered
     return [
       {
         id: "todo",
@@ -287,18 +287,18 @@ export default function Todo() {
             tags: task.tags,
           })),
       },
-    ];
-  }, [filtered, lang]);
+    ]
+  }, [filtered, lang])
 
-  const doneCount = (allTasks ?? []).filter((t) => t.completed).length;
-  const totalCount = (allTasks ?? []).length;
+  const doneCount = (allTasks ?? []).filter((t) => t.completed).length
+  const totalCount = (allTasks ?? []).length
 
   const FILTER_LABELS: Record<FilterTab, string> = {
     all: t("todo.filter.all" as TranslationKey, lang),
     today: lang === "bn" ? "আজ" : "Today",
     important: lang === "bn" ? "গুরুত্বপূর্ণ" : "Important",
     scheduled: lang === "bn" ? "নির্ধারিত" : "Scheduled",
-  };
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -459,30 +459,30 @@ export default function Todo() {
                   existing.title === task.title[lang] ||
                   existing.title === task.title.en ||
                   existing.title === task.title.bn,
-              );
+              )
               return (
                 <button
                   key={task.title.en}
                   disabled={alreadyAdded}
                   onClick={async () => {
-                    if (alreadyAdded) return;
+                    if (alreadyAdded) return
                     try {
                       await createTask({
                         title: task.title[lang],
                         priority: task.priority,
                         tags: task.tags,
-                      });
+                      })
                       toastSuccess(
                         lang === "bn"
                           ? `"${task.title[lang]}" যোগ হয়েছে!`
                           : `"${task.title[lang]}" added!`,
-                      );
-                    } catch (_error) {
+                      )
+                    } catch {
                       toastError(
                         lang === "bn"
                           ? "টাস্ক যোগ করতে ব্যর্থ হয়েছে"
                           : "Failed to add task",
-                      );
+                      )
                     }
                   }}
                   className={`flex items-center gap-2 shrink-0 px-3 py-2 rounded-xl border transition-all ${
@@ -512,7 +512,7 @@ export default function Todo() {
                     <Plus className="size-4 text-muted-foreground shrink-0" />
                   )}
                 </button>
-              );
+              )
             })}
           </div>
         </motion.div>
@@ -526,25 +526,25 @@ export default function Todo() {
             onTaskMove={async (taskId, fromColumn, toColumn) => {
               if (fromColumn === "todo" && toColumn === "done") {
                 try {
-                  await toggleTask({ id: taskId as Id<"tasks"> });
+                  await toggleTask({ id: taskId as Id<"tasks"> })
                 } catch (error) {
                   handleMutationError(
                     error,
                     lang === "bn"
                       ? "টাস্ক আপডেট করতে ব্যর্থ"
                       : "Failed to update task",
-                  );
+                  )
                 }
               } else if (fromColumn === "done" && toColumn === "todo") {
                 try {
-                  await toggleTask({ id: taskId as Id<"tasks"> });
+                  await toggleTask({ id: taskId as Id<"tasks"> })
                 } catch (error) {
                   handleMutationError(
                     error,
                     lang === "bn"
                       ? "টাস্ক আপডেট করতে ব্যর্থ"
                       : "Failed to update task",
-                  );
+                  )
                 }
               }
             }}
@@ -556,32 +556,32 @@ export default function Todo() {
                   description: task.description,
                   dueDate: task.dueDate,
                   tags: task.tags,
-                });
+                })
                 handleMutationSuccess(
                   lang === "bn" ? "টাস্ক যোগ হয়েছে" : "Task added",
-                );
+                )
               } catch (error) {
                 handleMutationError(
                   error,
                   lang === "bn"
                     ? "টাস্ক যোগ করতে ব্যর্থ"
                     : "Failed to add task",
-                );
+                )
               }
             }}
             onTaskDelete={async (taskId) => {
               try {
-                await removeTask({ id: taskId as Id<"tasks"> });
+                await removeTask({ id: taskId as Id<"tasks"> })
                 handleMutationSuccess(
                   lang === "bn" ? "টাস্ক মুছে ফেলা হয়েছে" : "Task deleted",
-                );
+                )
               } catch (error) {
                 handleMutationError(
                   error,
                   lang === "bn"
                     ? "টাস্ক মুছে ফেলতে ব্যর্থ"
                     : "Failed to delete task",
-                );
+                )
               }
             }}
           />
@@ -678,5 +678,5 @@ export default function Todo() {
         </div>
       )}
     </div>
-  );
+  )
 }

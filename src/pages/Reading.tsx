@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   BookOpen,
   Plus,
@@ -15,29 +15,29 @@ import {
   Headphones,
   Video,
   FileText,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
-import { toastSuccess } from "@/lib/toast-helpers";
-import { sanitizeInput } from "@/lib/input-sanitizer";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "../convex/_generated/api"
+import { toastSuccess } from "@/lib/toast-helpers"
+import { sanitizeInput } from "@/lib/input-sanitizer"
 
 interface ReadingItem {
-  _id: string;
-  title: string;
-  author?: string;
-  type: "book" | "article" | "podcast" | "video";
-  status: "want_to_read" | "reading" | "completed";
-  progress: number;
-  rating?: number;
-  notes?: string;
-  url?: string;
-  coverUrl?: string;
-  totalPages?: number;
-  currentPage?: number;
-  createdAt: number;
-  updatedAt: number;
+  _id: string
+  title: string
+  author?: string
+  type: "book" | "article" | "podcast" | "video"
+  status: "want_to_read" | "reading" | "completed"
+  progress: number
+  rating?: number
+  notes?: string
+  url?: string
+  coverUrl?: string
+  totalPages?: number
+  currentPage?: number
+  createdAt: number
+  updatedAt: number
 }
 
 const TYPE_ICONS = {
@@ -45,74 +45,74 @@ const TYPE_ICONS = {
   article: FileText,
   podcast: Headphones,
   video: Video,
-};
+}
 
 const TYPE_COLORS = {
   book: "text-blue-500",
   article: "text-green-500",
   podcast: "text-purple-500",
   video: "text-red-500",
-};
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function Reading() {
-  const { lang } = useLang();
-  const items = useQuery(api.readingList.list);
-  const createItem = useMutation(api.readingList.create);
-  const updateItem = useMutation(api.readingList.update);
-  const deleteItem = useMutation(api.readingList.remove);
+  const { lang } = useLang()
+  const items = useQuery(api.readingList.list)
+  const createItem = useMutation(api.readingList.create, "readingList")
+  const updateItem = useMutation(api.readingList.update, "readingList")
+  const deleteItem = useMutation(api.readingList.remove, "readingList")
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("")
   const [filter, setFilter] = useState<
     "all" | "want_to_read" | "reading" | "completed"
-  >("all");
-  const [showEditor, setShowEditor] = useState(false);
-  const [editingItem, setEditingItem] = useState<ReadingItem | null>(null);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
+  >("all")
+  const [showEditor, setShowEditor] = useState(false)
+  const [editingItem, setEditingItem] = useState<ReadingItem | null>(null)
+  const [title, setTitle] = useState("")
+  const [author, setAuthor] = useState("")
   const [type, setType] = useState<"book" | "article" | "podcast" | "video">(
     "book",
-  );
+  )
   const [status, setStatus] = useState<
     "want_to_read" | "reading" | "completed"
-  >("want_to_read");
-  const [progress, setProgress] = useState(0);
-  const [rating, setRating] = useState(0);
-  const [notes, setNotes] = useState("");
-  const [url, setUrl] = useState("");
-  const [totalPages, setTotalPages] = useState("");
-  const [currentPage, setCurrentPage] = useState("");
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  >("want_to_read")
+  const [progress, setProgress] = useState(0)
+  const [rating, setRating] = useState(0)
+  const [notes, setNotes] = useState("")
+  const [url, setUrl] = useState("")
+  const [totalPages, setTotalPages] = useState("")
+  const [currentPage, setCurrentPage] = useState("")
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   const filteredItems = useMemo(() => {
-    if (!items) return [];
+    if (!items) return []
     return items
       .filter((item) => {
         const matchesSearch =
           item.title.toLowerCase().includes(search.toLowerCase()) ||
-          item.author?.toLowerCase().includes(search.toLowerCase());
-        const matchesFilter = filter === "all" || item.status === filter;
-        return matchesSearch && matchesFilter;
+          item.author?.toLowerCase().includes(search.toLowerCase())
+        const matchesFilter = filter === "all" || item.status === filter
+        return matchesSearch && matchesFilter
       })
-      .sort((a, b) => b.updatedAt - a.updatedAt);
-  }, [items, search, filter]);
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+  }, [items, search, filter])
 
   const stats = useMemo(() => {
-    if (!items) return { total: 0, reading: 0, completed: 0, wantToRead: 0 };
+    if (!items) return { total: 0, reading: 0, completed: 0, wantToRead: 0 }
     return {
       total: items.length,
       reading: items.filter((i) => i.status === "reading").length,
       completed: items.filter((i) => i.status === "completed").length,
       wantToRead: items.filter((i) => i.status === "want_to_read").length,
-    };
-  }, [items]);
+    }
+  }, [items])
 
   const handleSave = async () => {
-    if (!title.trim()) return;
+    if (!title.trim()) return
 
     const data = {
       title: sanitizeInput(title.trim()),
@@ -125,53 +125,53 @@ export default function Reading() {
       url: url.trim() || undefined,
       totalPages: totalPages ? parseInt(totalPages) : undefined,
       currentPage: currentPage ? parseInt(currentPage) : undefined,
-    };
-
-    if (editingItem) {
-      await updateItem({ id: editingItem._id, ...data });
-      toastSuccess(lang === "bn" ? "আইটেম আপডেট হয়েছে" : "Item updated");
-    } else {
-      await createItem(data);
-      toastSuccess(lang === "bn" ? "আইটেম যোগ হয়েছে" : "Item added");
     }
 
-    resetEditor();
-  };
+    if (editingItem) {
+      await updateItem({ id: editingItem._id, ...data })
+      toastSuccess(lang === "bn" ? "আইটেম আপডেট হয়েছে" : "Item updated")
+    } else {
+      await createItem(data)
+      toastSuccess(lang === "bn" ? "আইটেম যোগ হয়েছে" : "Item added")
+    }
+
+    resetEditor()
+  }
 
   const handleEdit = (item: ReadingItem) => {
-    setEditingItem(item);
-    setTitle(item.title);
-    setAuthor(item.author || "");
-    setType(item.type);
-    setStatus(item.status);
-    setProgress(item.progress);
-    setRating(item.rating || 0);
-    setNotes(item.notes || "");
-    setUrl(item.url || "");
-    setTotalPages(item.totalPages?.toString() || "");
-    setCurrentPage(item.currentPage?.toString() || "");
-    setShowEditor(true);
-  };
+    setEditingItem(item)
+    setTitle(item.title)
+    setAuthor(item.author || "")
+    setType(item.type)
+    setStatus(item.status)
+    setProgress(item.progress)
+    setRating(item.rating || 0)
+    setNotes(item.notes || "")
+    setUrl(item.url || "")
+    setTotalPages(item.totalPages?.toString() || "")
+    setCurrentPage(item.currentPage?.toString() || "")
+    setShowEditor(true)
+  }
 
   const handleDelete = async (id: string) => {
-    await deleteItem({ id });
-    toastSuccess(lang === "bn" ? "আইটেম মুছে ফেলা হয়েছে" : "Item deleted");
-  };
+    await deleteItem({ id })
+    toastSuccess(lang === "bn" ? "আইটেম মুছে ফেলা হয়েছে" : "Item deleted")
+  }
 
   const resetEditor = () => {
-    setShowEditor(false);
-    setEditingItem(null);
-    setTitle("");
-    setAuthor("");
-    setType("book");
-    setStatus("want_to_read");
-    setProgress(0);
-    setRating(0);
-    setNotes("");
-    setUrl("");
-    setTotalPages("");
-    setCurrentPage("");
-  };
+    setShowEditor(false)
+    setEditingItem(null)
+    setTitle("")
+    setAuthor("")
+    setType("book")
+    setStatus("want_to_read")
+    setProgress(0)
+    setRating(0)
+    setNotes("")
+    setUrl("")
+    setTotalPages("")
+    setCurrentPage("")
+  }
 
   return (
     <motion.div
@@ -310,7 +310,7 @@ export default function Reading() {
           />
         ) : (
           filteredItems.map((item) => {
-            const Icon = TYPE_ICONS[item.type];
+            const Icon = TYPE_ICONS[item.type]
             return (
               <motion.div
                 key={item._id}
@@ -419,7 +419,7 @@ export default function Reading() {
                   </div>
                 </div>
               </motion.div>
-            );
+            )
           })
         )}
       </motion.div>
@@ -483,7 +483,7 @@ export default function Reading() {
                   <div className="flex gap-2">
                     {(["book", "article", "podcast", "video"] as const).map(
                       (t) => {
-                        const Icon = TYPE_ICONS[t];
+                        const Icon = TYPE_ICONS[t]
                         return (
                           <button
                             key={t}
@@ -511,7 +511,7 @@ export default function Reading() {
                                     ? "ভিডিও"
                                     : "Video"}
                           </button>
-                        );
+                        )
                       },
                     )}
                   </div>
@@ -656,8 +656,8 @@ export default function Reading() {
       <ConfirmDialog
         open={deleteConfirmId !== null}
         onConfirm={() => {
-          if (deleteConfirmId) handleDelete(deleteConfirmId);
-          setDeleteConfirmId(null);
+          if (deleteConfirmId) handleDelete(deleteConfirmId)
+          setDeleteConfirmId(null)
         }}
         onCancel={() => setDeleteConfirmId(null)}
         title={lang === "bn" ? "আইটেম মুছুন?" : "Delete item?"}
@@ -668,5 +668,5 @@ export default function Reading() {
         }
       />
     </motion.div>
-  );
+  )
 }

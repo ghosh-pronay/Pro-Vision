@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
 import {
   Receipt,
   Trash2,
@@ -10,30 +10,29 @@ import {
   QrCode,
   CheckCircle,
   Check,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { formatBanglaCurrency } from "@/lib/bangla-numbers";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { formatBanglaCurrency } from "@/lib/bangla-numbers"
 import {
   type Bill,
-  type BillStatus,
   fadeUp,
   slideIn,
   getCategoryIcon,
   getCategoryColor,
   getStatusColor,
   formatCurrency,
-} from "./types";
+} from "./types"
 
 interface HistoryTabProps {
-  bills: Bill[];
-  t: (key: string) => string;
-  expandedBill: string | null;
-  onToggleExpand: (id: string | null) => void;
-  onMarkPaid: (billId: string, participantId: string) => void;
-  onSettle: (billId: string) => void;
-  onDelete: (billId: string) => void;
-  onCopyLink: (billId: string) => void;
-  onShowQR: (billId: string) => void;
+  bills: Bill[]
+  t: (key: string) => string
+  expandedBill: string | null
+  onToggleExpand: (id: string | null) => void
+  onMarkPaid: (billId: string, participantId: string) => void
+  onSettle: (billId: string) => void
+  onDelete: (billId: string) => void
+  onCopyLink: (billId: string) => void
+  onShowQR: (billId: string) => void
 }
 
 export function HistoryTab({
@@ -47,14 +46,14 @@ export function HistoryTab({
   onCopyLink,
   onShowQR,
 }: HistoryTabProps) {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString(
       lang === "bn" ? "bn-BD" : "en-US",
       { day: "numeric", month: "short", year: "numeric" },
-    );
-  };
+    )
+  }
 
   if (bills.length === 0) {
     return (
@@ -72,7 +71,7 @@ export function HistoryTab({
           description={t("billSplit.noBillsDesc")}
         />
       </motion.div>
-    );
+    )
   }
 
   return (
@@ -85,8 +84,8 @@ export function HistoryTab({
       className="space-y-4"
     >
       {bills.map((bill) => {
-        const CatIcon = getCategoryIcon(bill.category);
-        const isExpanded = expandedBill === bill._id;
+        const CatIcon = getCategoryIcon(bill.category)
+        const isExpanded = expandedBill === bill._id
         return (
           <motion.div
             key={bill._id}
@@ -173,8 +172,8 @@ export function HistoryTab({
                           <div className="flex items-center gap-2">
                             <button
                               onClick={(e) => {
-                                e.stopPropagation();
-                                onMarkPaid(bill._id, p.id);
+                                e.stopPropagation()
+                                onMarkPaid(bill._id, p.id)
                               }}
                               className={`cursor-pointer w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                                 p.paid
@@ -220,8 +219,8 @@ export function HistoryTab({
                       <div className="flex gap-2">
                         <button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            onCopyLink(bill._id);
+                            e.stopPropagation()
+                            onCopyLink(bill._id)
                           }}
                           className="cursor-pointer flex items-center gap-1 px-3 py-1.5 rounded-lg glass text-xs hover:bg-foreground/5"
                         >
@@ -230,8 +229,8 @@ export function HistoryTab({
                         </button>
                         <button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            onShowQR(bill._id);
+                            e.stopPropagation()
+                            onShowQR(bill._id)
                           }}
                           className="cursor-pointer flex items-center gap-1 px-3 py-1.5 rounded-lg glass text-xs hover:bg-foreground/5"
                         >
@@ -243,8 +242,8 @@ export function HistoryTab({
                         {bill.status !== "settled" && (
                           <button
                             onClick={(e) => {
-                              e.stopPropagation();
-                              onSettle(bill._id);
+                              e.stopPropagation()
+                              onSettle(bill._id)
                             }}
                             className="cursor-pointer flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-xs hover:bg-emerald-600"
                           >
@@ -254,8 +253,8 @@ export function HistoryTab({
                         )}
                         <button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete(bill._id);
+                            e.stopPropagation()
+                            onDelete(bill._id)
                           }}
                           className="cursor-pointer p-1.5 rounded-lg hover:bg-destructive/10"
                         >
@@ -268,8 +267,8 @@ export function HistoryTab({
               )}
             </AnimatePresence>
           </motion.div>
-        );
+        )
       })}
     </motion.div>
-  );
+  )
 }

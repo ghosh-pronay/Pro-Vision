@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
+import { useState, useMemo } from "react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
 import {
   Activity,
   Settings,
@@ -11,9 +11,9 @@ import {
   BarChart3,
   Globe,
   Shield,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { toastSuccess, toastError } from "@/lib/toast-helpers";
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+import { toastSuccess, toastError } from "@/lib/toast-helpers"
 import {
   HealthTab,
   ConfigTab,
@@ -21,13 +21,16 @@ import {
   KeysTab,
   AnalyticsTab,
   DeploymentTab,
-} from "@/components/admin-api";
+} from "@/components/admin-api"
 import type {
   Tab,
   ApiConfigItem,
+  HealthItem,
+  ApiKeyItem,
+  ApiLogItem,
   StatsData,
   DeploymentData,
-} from "@/components/admin-api";
+} from "@/components/admin-api"
 
 const TABS: { id: Tab; label: string; icon: typeof Activity }[] = [
   { id: "health", label: "api.tab.health", icon: Activity },
@@ -36,64 +39,67 @@ const TABS: { id: Tab; label: string; icon: typeof Activity }[] = [
   { id: "keys", label: "api.tab.keys", icon: Key },
   { id: "analytics", label: "api.tab.analytics", icon: BarChart3 },
   { id: "deployment", label: "api.tab.deployment", icon: Globe },
-];
+]
 
 export default function AdminAPI() {
-  const { lang } = useLang();
-  const [activeTab, setActiveTab] = useState<Tab>("health");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [logEndpointFilter, setLogEndpointFilter] = useState("");
-  const [logStatusFilter, setLogStatusFilter] = useState<number | "">("");
+  const { lang } = useLang()
+  const [activeTab, setActiveTab] = useState<Tab>("health")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState("all")
+  const [logEndpointFilter, setLogEndpointFilter] = useState("")
+  const [logStatusFilter, setLogStatusFilter] = useState<number | "">("")
 
-  const configs = useQuery(api.apiManagement.getConfig);
-  const health = useQuery(api.apiManagement.getHealth);
-  const keys = useQuery(api.apiManagement.listKeys);
+  const configs = useQuery(api.apiManagement.getConfig)
+  const health = useQuery(api.apiManagement.getHealth)
+  const keys = useQuery(api.apiManagement.listKeys)
   const logs = useQuery(api.apiManagement.getLogs, {
     endpoint: logEndpointFilter || undefined,
     status: logStatusFilter !== "" ? logStatusFilter : undefined,
     limit: 200,
-  });
-  const stats = useQuery(api.apiManagement.getStats) as StatsData | null;
+  })
+  const stats = useQuery(api.apiManagement.getStats) as StatsData | null
   const deployment = useQuery(
     api.apiManagement.getDeploymentInfo,
-  ) as DeploymentData | null;
+  ) as DeploymentData | null
 
-  const updateConfig = useMutation(api.apiManagement.updateConfig);
-  const createKey = useMutation(api.apiManagement.createKey);
-  const revokeKey = useMutation(api.apiManagement.revokeKey);
-  const deleteKey = useMutation(api.apiManagement.deleteKey);
-  const clearLogs = useMutation(api.apiManagement.clearLogs);
+  const updateConfig = useMutation(
+    api.apiManagement.updateConfig,
+    "apiManagement",
+  )
+  const createKey = useMutation(api.apiManagement.createKey, "apiManagement")
+  const revokeKey = useMutation(api.apiManagement.revokeKey, "apiManagement")
+  const deleteKey = useMutation(api.apiManagement.deleteKey, "apiManagement")
+  const clearLogs = useMutation(api.apiManagement.clearLogs, "apiManagement")
 
   const filteredConfigs = useMemo(() => {
-    if (!configs) return [];
-    let result = configs as ApiConfigItem[];
+    if (!configs) return []
+    let result = configs as ApiConfigItem[]
     if (searchQuery) {
-      const q = searchQuery.toLowerCase();
+      const q = searchQuery.toLowerCase()
       result = result.filter(
         (c) =>
           c.endpoint.toLowerCase().includes(q) ||
           c.method.toLowerCase().includes(q) ||
           (c.description || "").toLowerCase().includes(q),
-      );
+      )
     }
     if (categoryFilter !== "all") {
-      result = result.filter((c) => c.category === categoryFilter);
+      result = result.filter((c) => c.category === categoryFilter)
     }
-    return result;
-  }, [configs, searchQuery, categoryFilter]);
+    return result
+  }, [configs, searchQuery, categoryFilter])
 
-  const t_ = (key: string) => t(key as TranslationKey, lang);
+  const t_ = (key: string) => t(key as TranslationKey, lang)
 
   const formatTimestamp = (ts: number) => {
-    const d = new Date(ts);
-    const now = Date.now();
-    const diff = now - ts;
-    if (diff < 60000) return t_("api.time.ago");
-    if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-    if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-    return d.toLocaleDateString();
-  };
+    const d = new Date(ts)
+    const now = Date.now()
+    const diff = now - ts
+    if (diff < 60000) return t_("api.time.ago")
+    if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`
+    return d.toLocaleDateString()
+  }
 
   const handleToggleEndpoint = async (
     endpoint: string,
@@ -101,15 +107,13 @@ export default function AdminAPI() {
     currentEnabled: boolean,
   ) => {
     try {
-      await updateConfig({ endpoint, method, enabled: !currentEnabled });
-      toastSuccess(
-        lang === "bn" ? "আপডেট সফল হয়েছে" : "Configuration updated",
-      );
+      await updateConfig({ endpoint, method, enabled: !currentEnabled })
+      toastSuccess(lang === "bn" ? "আপডেট সফল হয়েছে" : "Configuration updated")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to toggle endpoint", e);
-      toastError(lang === "bn" ? "আপডেট ব্যর্থ" : "Failed to update");
+      console.error("[AdminAPI]", "Failed to toggle endpoint", e)
+      toastError(lang === "bn" ? "আপডেট ব্যর্থ" : "Failed to update")
     }
-  };
+  }
 
   const handleUpdateRateLimit = async (
     endpoint: string,
@@ -117,58 +121,54 @@ export default function AdminAPI() {
     rateLimit: number,
   ) => {
     try {
-      await updateConfig({ endpoint, method, rateLimit });
+      await updateConfig({ endpoint, method, rateLimit })
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to update rate limit", e);
-      toastError(
-        lang === "bn" ? "আপডেট ব্যর্থ" : "Failed to update rate limit",
-      );
+      console.error("[AdminAPI]", "Failed to update rate limit", e)
+      toastError(lang === "bn" ? "আপডেট ব্যর্থ" : "Failed to update rate limit")
     }
-  };
+  }
 
   const handleCreateKey = async (name: string, permissions: string[]) => {
     try {
-      await createKey({ name, permissions });
-      toastSuccess(lang === "bn" ? "API কী তৈরি হয়েছে" : "API key created");
+      await createKey({ name, permissions })
+      toastSuccess(lang === "bn" ? "API কী তৈরি হয়েছে" : "API key created")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to create API key", e);
-      toastError(lang === "bn" ? "কী তৈরি ব্যর্থ" : "Failed to create key");
+      console.error("[AdminAPI]", "Failed to create API key", e)
+      toastError(lang === "bn" ? "কী তৈরি ব্যর্থ" : "Failed to create key")
     }
-  };
+  }
 
   const handleRevokeKey = async (id: string) => {
     try {
-      await revokeKey({ id });
-      toastSuccess(lang === "bn" ? "কী নিষ্ক্রিয় হয়েছে" : "Key revoked");
+      await revokeKey({ id })
+      toastSuccess(lang === "bn" ? "কী নিষ্ক্রিয় হয়েছে" : "Key revoked")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to revoke key", e);
+      console.error("[AdminAPI]", "Failed to revoke key", e)
       toastError(
         lang === "bn" ? "নিষ্ক্রিয়করণ ব্যর্থ" : "Failed to revoke key",
-      );
+      )
     }
-  };
+  }
 
   const handleDeleteKey = async (id: string) => {
     try {
-      await deleteKey({ id });
-      toastSuccess(lang === "bn" ? "কী মুছে ফেলা হয়েছে" : "Key deleted");
+      await deleteKey({ id })
+      toastSuccess(lang === "bn" ? "কী মুছে ফেলা হয়েছে" : "Key deleted")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to delete API key", e);
-      toastError(lang === "bn" ? "মুছে ফেলা ব্যর্থ" : "Failed to delete key");
+      console.error("[AdminAPI]", "Failed to delete API key", e)
+      toastError(lang === "bn" ? "মুছে ফেলা ব্যর্থ" : "Failed to delete key")
     }
-  };
+  }
 
   const handleClearLogs = async () => {
     try {
-      await clearLogs();
-      toastSuccess(lang === "bn" ? "লগ মুছে ফেলা হয়েছে" : "Logs cleared");
+      await clearLogs()
+      toastSuccess(lang === "bn" ? "লগ মুছে ফেলা হয়েছে" : "Logs cleared")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to clear logs", e);
-      toastError(
-        lang === "bn" ? "লগ মুছে ফেলা ব্যর্থ" : "Failed to clear logs",
-      );
+      console.error("[AdminAPI]", "Failed to clear logs", e)
+      toastError(lang === "bn" ? "লগ মুছে ফেলা ব্যর্থ" : "Failed to clear logs")
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950 p-4 md:p-8">
@@ -189,7 +189,7 @@ export default function AdminAPI() {
 
         <div className="flex gap-1 mb-6 overflow-x-auto pb-2 scrollbar-thin">
           {TABS.map((tab) => {
-            const Icon = tab.icon;
+            const Icon = tab.icon
             return (
               <button
                 key={tab.id}
@@ -204,13 +204,13 @@ export default function AdminAPI() {
                 <Icon className="w-4 h-4" />
                 {t_(tab.label)}
               </button>
-            );
+            )
           })}
         </div>
 
         {activeTab === "health" && (
           <HealthTab
-            health={health as any}
+            health={health as HealthItem[]}
             t_={t_}
             onToggle={handleToggleEndpoint}
           />
@@ -218,7 +218,7 @@ export default function AdminAPI() {
 
         {activeTab === "config" && (
           <ConfigTab
-            configs={configs as any}
+            configs={configs as ApiConfigItem[]}
             filteredConfigs={filteredConfigs}
             searchQuery={searchQuery}
             categoryFilter={categoryFilter}
@@ -232,8 +232,8 @@ export default function AdminAPI() {
 
         {activeTab === "logs" && (
           <LogsTab
-            logs={logs as any}
-            configs={configs as any}
+            logs={logs as ApiLogItem[]}
+            configs={configs as ApiConfigItem[]}
             endpointFilter={logEndpointFilter}
             statusFilter={logStatusFilter}
             t_={t_}
@@ -246,7 +246,7 @@ export default function AdminAPI() {
 
         {activeTab === "keys" && (
           <KeysTab
-            keys={keys as any}
+            keys={keys as ApiKeyItem[]}
             t_={t_}
             lang={lang}
             formatTimestamp={formatTimestamp}
@@ -268,5 +268,5 @@ export default function AdminAPI() {
         )}
       </div>
     </div>
-  );
+  )
 }

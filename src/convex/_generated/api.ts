@@ -1,13 +1,13 @@
-import { localDB } from "@/lib/data-store";
+import { localDB } from "@/lib/store/index"
 
 // This file provides a Convex-compatible API shape backed by localStorage.
 // When real Convex is deployed, remove the Vite aliases in vite.config.ts
 // and this file will be replaced by the auto-generated Convex API.
 
 function requireAdminGuard() {
-  const profile = localDB.userProfiles.get();
+  const profile = localDB.userProfiles.get()
   if (!profile || (profile as { role?: string }).role !== "admin") {
-    throw new Error("Unauthorized: admin role required");
+    throw new Error("Unauthorized: admin role required")
   }
 }
 
@@ -38,26 +38,26 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.habits.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
+      const a = args[0] as Record<string, unknown>
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      localDB.habits.update?.(a.id as string, a) ?? Promise.resolve();
+      localDB.habits.update?.(a.id as string, a) ?? Promise.resolve()
     },
     archive: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
+      const a = args[0] as Record<string, unknown>
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      localDB.habits.archive?.(a.id as string) ?? Promise.resolve();
+      localDB.habits.archive?.(a.id as string) ?? Promise.resolve()
     },
     checkIn: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.habits.checkIn(a.id as string, a.date as number);
+      const a = args[0] as Record<string, unknown>
+      localDB.habits.checkIn(a.id as string, a.date as number)
     },
     remove: (...args: unknown[]) =>
       localDB.habits.remove((args[0] as Record<string, unknown>).id as string),
     useStreakFreeze: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
+      const a = args[0] as Record<string, unknown>
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       localDB.habits.useStreakFreeze?.(a.id as string, a.date as number) ??
-        Promise.resolve();
+        Promise.resolve()
     },
     stats: () => localDB.habits.stats(),
   },
@@ -66,8 +66,8 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.wallets.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.wallets.update(a.id as string, a);
+      const a = args[0] as Record<string, unknown>
+      localDB.wallets.update(a.id as string, a)
     },
     remove: (...args: unknown[]) =>
       localDB.wallets.remove((args[0] as Record<string, unknown>).id as string),
@@ -87,8 +87,8 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.goals.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.goals.update(a.id as string, a);
+      const a = args[0] as Record<string, unknown>
+      localDB.goals.update(a.id as string, a)
     },
     remove: (...args: unknown[]) =>
       localDB.goals.remove((args[0] as Record<string, unknown>).id as string),
@@ -126,51 +126,67 @@ export const api = {
       localDB.news.fetchNews(args[0] as Record<string, unknown>),
   },
   admin: {
-    listUsers: () => localDB.admin.listUsers(),
-    getStats: () => localDB.admin.getStats(),
-    getConfig: () => ({}),
-    getChallenges: () => [] as Record<string, unknown>[],
-    getFinanceStats: () => ({ totalIncome: 0, totalExpense: 0 }),
+    listUsers: () => {
+      requireAdminGuard()
+      return localDB.admin.listUsers()
+    },
+    getStats: () => {
+      requireAdminGuard()
+      return localDB.admin.getStats()
+    },
+    getConfig: () => {
+      requireAdminGuard()
+      return {}
+    },
+    getChallenges: () => {
+      requireAdminGuard()
+      return [] as Record<string, unknown>[]
+    },
+    getFinanceStats: () => {
+      requireAdminGuard()
+      return { totalIncome: 0, totalExpense: 0 }
+    },
     getUserDetail: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
+      requireAdminGuard()
+      const a = args[0] as Record<string, unknown>
       const user =
         localDB.admin
           .listUsers()
-          .find((u: Record<string, unknown>) => u._id === a.userId) ?? null;
-      if (!user) return null;
-      return { user, tasks: [], habits: [], transactions: [] };
+          .find((u: Record<string, unknown>) => u._id === a.userId) ?? null
+      if (!user) return null
+      return { user, tasks: [], habits: [], transactions: [] }
     },
     grantPremium: (...args: unknown[]) => {
-      requireAdminGuard();
-      return localDB.admin.grantPremium(args[0] as Record<string, unknown>);
+      requireAdminGuard()
+      return localDB.admin.grantPremium(args[0] as Record<string, unknown>)
     },
     revokePremium: (...args: unknown[]) => {
-      requireAdminGuard();
-      return localDB.admin.revokePremium(args[0] as Record<string, unknown>);
+      requireAdminGuard()
+      return localDB.admin.revokePremium(args[0] as Record<string, unknown>)
     },
     deleteUser: (...args: unknown[]) => {
-      requireAdminGuard();
-      return localDB.admin.deleteUser(args[0] as Record<string, unknown>);
+      requireAdminGuard()
+      return localDB.admin.deleteUser(args[0] as Record<string, unknown>)
     },
     updateUser: (...args: unknown[]) => {
-      requireAdminGuard();
-      return Promise.resolve(args[0]);
+      requireAdminGuard()
+      return Promise.resolve(args[0])
     },
     setConfig: (...args: unknown[]) => {
-      requireAdminGuard();
-      return Promise.resolve(args[0]);
+      requireAdminGuard()
+      return Promise.resolve(args[0])
     },
     bulkSetConfig: (...args: unknown[]) => {
-      requireAdminGuard();
-      return Promise.resolve(args[0]);
+      requireAdminGuard()
+      return Promise.resolve(args[0])
     },
     createChallenge: (...args: unknown[]) => {
-      requireAdminGuard();
-      return Promise.resolve(args[0]);
+      requireAdminGuard()
+      return Promise.resolve(args[0])
     },
     updateChallenge: (...args: unknown[]) => {
-      requireAdminGuard();
-      return Promise.resolve(args[0]);
+      requireAdminGuard()
+      return Promise.resolve(args[0])
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     deleteChallenge: (...args: unknown[]) => Promise.resolve(),
@@ -200,13 +216,13 @@ export const api = {
     listByDate: (...args: unknown[]) =>
       localDB.waterLogs.listByDate(args[0] as number),
     log: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.waterLogs.addWater(Date.now(), a.glasses as number);
+      const a = args[0] as Record<string, unknown>
+      localDB.waterLogs.addWater(Date.now(), a.glasses as number)
     },
     getTodayTotal: () => localDB.waterLogs.getTodayTotal(),
     addWater: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.waterLogs.addWater(a.date as number, a.glasses as number);
+      const a = args[0] as Record<string, unknown>
+      localDB.waterLogs.addWater(a.date as number, a.glasses as number)
     },
     removeWater: (...args: unknown[]) =>
       localDB.waterLogs.removeWater(
@@ -219,8 +235,8 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.recurringTransactions.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.recurringTransactions.update(a.id as string, a);
+      const a = args[0] as Record<string, unknown>
+      localDB.recurringTransactions.update(a.id as string, a)
     },
     remove: (...args: unknown[]) =>
       localDB.recurringTransactions.remove(
@@ -233,8 +249,8 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.investments.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.investments.update(a.id as string, a);
+      const a = args[0] as Record<string, unknown>
+      localDB.investments.update(a.id as string, a)
     },
     remove: (...args: unknown[]) =>
       localDB.investments.remove(
@@ -247,12 +263,12 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.loans.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.loans.update(a.id as string, a);
+      const a = args[0] as Record<string, unknown>
+      localDB.loans.update(a.id as string, a)
     },
     addPayment: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.loans.addPayment(a.id as string, a.amount as number);
+      const a = args[0] as Record<string, unknown>
+      localDB.loans.addPayment(a.id as string, a.amount as number)
     },
     remove: (...args: unknown[]) =>
       localDB.loans.remove((args[0] as Record<string, unknown>).id as string),
@@ -322,8 +338,8 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.journal.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.journal.update(a.id as string, a);
+      const a = args[0] as Record<string, unknown>
+      localDB.journal.update(a.id as string, a)
     },
     remove: (...args: unknown[]) =>
       localDB.journal.remove((args[0] as Record<string, unknown>).id as string),
@@ -333,8 +349,8 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.readingList.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.readingList.update(a.id as string, a);
+      const a = args[0] as Record<string, unknown>
+      localDB.readingList.update(a.id as string, a)
     },
     remove: (...args: unknown[]) =>
       localDB.readingList.remove(
@@ -356,8 +372,8 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.contacts.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.contacts.update(a.id as string, a);
+      const a = args[0] as Record<string, unknown>
+      localDB.contacts.update(a.id as string, a)
     },
     remove: (...args: unknown[]) =>
       localDB.contacts.remove(
@@ -370,8 +386,8 @@ export const api = {
     create: (...args: unknown[]) =>
       localDB.savingsGoals.create(args[0] as Record<string, unknown>),
     update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>;
-      localDB.savingsGoals.update(a.id as string, a);
+      const a = args[0] as Record<string, unknown>
+      localDB.savingsGoals.update(a.id as string, a)
     },
     remove: (...args: unknown[]) =>
       localDB.savingsGoals.remove(
@@ -445,4 +461,4 @@ export const api = {
     clearLogs: (...args: unknown[]) =>
       localDB.apiManagement.clearLogs(args[0] as Record<string, unknown>),
   },
-};
+}

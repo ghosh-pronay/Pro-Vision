@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { generateId } from "@/lib/store/types";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { generateId } from "@/lib/utils"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   Leaf,
   Plus,
@@ -10,22 +10,16 @@ import {
   Beef,
   Zap,
   ShoppingCart,
-  TreePine,
-  TrendingDown,
-  TrendingUp,
   Target,
   Award,
   Share2,
   RotateCcw,
   Lightbulb,
   X,
-} from "lucide-react";
+} from "lucide-react"
 import {
   CarbonSummary,
   TRANSPORT_MODES,
-  FOOD_ITEMS,
-  ENERGY_ITEMS,
-  SHOPPING_ITEMS,
   TREES_PER_KG_PER_YEAR,
   AVG_BANGLADESHI_ANNUAL_TONS,
   ECO_TIPS_EN,
@@ -36,56 +30,56 @@ import {
   getItemsForCategory,
   fadeUp,
   staggerContainer,
-} from "@/components/carbon-footprint";
-import type { CarbonLog } from "@/components/carbon-footprint";
+} from "@/components/carbon-footprint"
+import type { CarbonLog } from "@/components/carbon-footprint"
 
 export default function CarbonFootprint() {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
-  const [dailyLogs, setDailyLogs] = useState<CarbonLog[]>([]);
-  const [monthlyGoal, setMonthlyGoal] = useState(50);
+  const [dailyLogs, setDailyLogs] = useState<CarbonLog[]>([])
+  const [monthlyGoal, setMonthlyGoal] = useState(50)
   const [selectedCategory, setSelectedCategory] = useState<
     "transport" | "food" | "energy" | "shopping"
-  >("transport");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showGoalModal, setShowGoalModal] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [tipIndex, setTipIndex] = useState(0);
+  >("transport")
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showGoalModal, setShowGoalModal] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [tipIndex, setTipIndex] = useState(0)
 
-  const [formAmount, setFormAmount] = useState("");
-  const [formNote, setFormNote] = useState("");
-  const [formSubCategory, setFormSubCategory] = useState("");
+  const [formAmount, setFormAmount] = useState("")
+  const [formNote, setFormNote] = useState("")
+  const [formSubCategory, setFormSubCategory] = useState("")
 
-  const today = useMemo(() => getDayStart(Date.now()), []);
+  const today = useMemo(() => getDayStart(Date.now()), []) // eslint-disable-line react-hooks/purity
 
   const todayLogs = useMemo(
     () => dailyLogs.filter((l) => getDayStart(l.date) === today),
     [dailyLogs, today],
-  );
+  )
 
   const yesterdayLogs = useMemo(
     () => dailyLogs.filter((l) => getDayStart(l.date) === today - 86400000),
     [dailyLogs, today],
-  );
+  )
 
   const todayTotal = useMemo(
     () => todayLogs.reduce((s, l) => s + l.carbonKg, 0),
     [todayLogs],
-  );
+  )
   const yesterdayTotal = useMemo(
     () => yesterdayLogs.reduce((s, l) => s + l.carbonKg, 0),
     [yesterdayLogs],
-  );
+  )
 
   const treesNeeded = useMemo(
     () => todayTotal / TREES_PER_KG_PER_YEAR,
     [todayTotal],
-  );
+  )
 
   const comparisonPercent = useMemo(() => {
-    if (yesterdayTotal === 0) return 0;
-    return ((todayTotal - yesterdayTotal) / yesterdayTotal) * 100;
-  }, [todayTotal, yesterdayTotal]);
+    if (yesterdayTotal === 0) return 0
+    return ((todayTotal - yesterdayTotal) / yesterdayTotal) * 100
+  }, [todayTotal, yesterdayTotal])
 
   const categoryBreakdown = useMemo(() => {
     const cats: Record<string, number> = {
@@ -93,105 +87,105 @@ export default function CarbonFootprint() {
       food: 0,
       energy: 0,
       shopping: 0,
-    };
+    }
     todayLogs.forEach((l) => {
-      cats[l.category] += l.carbonKg;
-    });
-    return cats;
-  }, [todayLogs]);
+      cats[l.category] += l.carbonKg
+    })
+    return cats
+  }, [todayLogs])
 
   const maxCat = useMemo(
     () => Math.max(...Object.values(categoryBreakdown), 1),
     [categoryBreakdown],
-  );
+  )
 
   const weeklyTrend = useMemo(() => {
-    const days: { day: string; total: number }[] = [];
+    const days: { day: string; total: number }[] = []
     for (let i = 6; i >= 0; i--) {
-      const dayStart = today - i * 86400000;
-      const dayLogs = dailyLogs.filter((l) => getDayStart(l.date) === dayStart);
-      const total = dayLogs.reduce((s, l) => s + l.carbonKg, 0);
-      days.push({ day: formatDay(dayStart), total });
+      const dayStart = today - i * 86400000
+      const dayLogs = dailyLogs.filter((l) => getDayStart(l.date) === dayStart)
+      const total = dayLogs.reduce((s, l) => s + l.carbonKg, 0)
+      days.push({ day: formatDay(dayStart), total })
     }
-    return days;
-  }, [dailyLogs, today]);
+    return days
+  }, [dailyLogs, today])
 
   const monthlyStats = useMemo(() => {
-    const monthStart = today - 30 * 86400000;
-    const monthLogs = dailyLogs.filter((l) => l.date >= monthStart);
-    const total = monthLogs.reduce((s, l) => s + l.carbonKg, 0);
-    const avg = monthLogs.length > 0 ? total / 30 : 0;
-    const dailyGoalKg = monthlyGoal / 30;
+    const monthStart = today - 30 * 86400000
+    const monthLogs = dailyLogs.filter((l) => l.date >= monthStart)
+    const total = monthLogs.reduce((s, l) => s + l.carbonKg, 0)
+    const avg = monthLogs.length > 0 ? total / 30 : 0
+    const dailyGoalKg = monthlyGoal / 30
     const daysOnTrack =
       monthlyLogs.filter((l) => getDayStart(l.date) === today).length > 0
         ? todayTotal <= dailyGoalKg
-        : false;
+        : false
     return {
       total: total.toFixed(1),
       avg: avg.toFixed(1),
       daysOnTrack,
       dailyGoalKg,
-    };
-  }, [dailyLogs, today, monthlyGoal, todayTotal]);
+    }
+  }, [dailyLogs, today, monthlyGoal, todayTotal])
 
   const avgBangladeshiDaily = useMemo(
     () => (AVG_BANGLADESHI_ANNUAL_TONS * 1000) / 365,
     [],
-  );
+  )
 
   const earnedAchievements = useMemo(() => {
-    const totalLogs = dailyLogs.length;
+    const totalLogs = dailyLogs.length
     const zeroDays = new Set(
       dailyLogs.filter((l) => l.carbonKg === 0).map((l) => getDayStart(l.date)),
-    ).size;
+    ).size
     const daysBelowAvg = new Set(
       dailyLogs
         .filter((l) => {
-          const dayStart = getDayStart(l.date);
+          const dayStart = getDayStart(l.date)
           const dayTotal = dailyLogs
             .filter((dl) => getDayStart(dl.date) === dayStart)
-            .reduce((s, dl) => s + dl.carbonKg, 0);
-          return dayTotal < avgBangladeshiDaily && dayTotal > 0;
+            .reduce((s, dl) => s + dl.carbonKg, 0)
+          return dayTotal < avgBangladeshiDaily && dayTotal > 0
         })
         .map((l) => getDayStart(l.date)),
-    ).size;
-    const totalOffset = dailyLogs.reduce((s, l) => s + l.carbonKg, 0);
-    const treesEarned = Math.floor(totalOffset / TREES_PER_KG_PER_YEAR);
+    ).size
+    const totalOffset = dailyLogs.reduce((s, l) => s + l.carbonKg, 0)
+    const treesEarned = Math.floor(totalOffset / TREES_PER_KG_PER_YEAR)
 
     return ACHIEVEMENTS.filter((a) => {
       switch (a.type) {
         case "count":
-          return totalLogs >= a.threshold;
+          return totalLogs >= a.threshold
         case "days-below-avg":
-          return daysBelowAvg >= a.threshold;
+          return daysBelowAvg >= a.threshold
         case "zero-days":
-          return zeroDays >= a.threshold;
+          return zeroDays >= a.threshold
         case "weekly-goals":
-          return daysBelowAvg >= 4;
+          return daysBelowAvg >= 4
         case "trees-earned":
-          return treesEarned >= a.threshold;
+          return treesEarned >= a.threshold
         default:
-          return false;
+          return false
       }
-    });
-  }, [dailyLogs, avgBangladeshiDaily]);
+    })
+  }, [dailyLogs, avgBangladeshiDaily])
 
   const currentTip = useMemo(() => {
-    const tips = lang === "bn" ? ECO_TIPS_BN : ECO_TIPS_EN;
-    return tips[tipIndex % tips.length];
-  }, [tipIndex, lang]);
+    const tips = lang === "bn" ? ECO_TIPS_BN : ECO_TIPS_EN
+    return tips[tipIndex % tips.length]
+  }, [tipIndex, lang])
 
-  const t = (en: string, bn: string) => (lang === "bn" ? bn : en);
+  const t = (en: string, bn: string) => (lang === "bn" ? bn : en)
 
   const handleAddLog = () => {
-    const amount = parseFloat(formAmount);
-    if (!amount || amount <= 0) return;
+    const amount = parseFloat(formAmount)
+    if (!amount || amount <= 0) return
 
-    const items = getItemsForCategory(selectedCategory);
-    const item = items.find((i) => i.key === formSubCategory);
-    if (!item) return;
+    const items = getItemsForCategory(selectedCategory)
+    const item = items.find((i) => i.key === formSubCategory)
+    if (!item) return
 
-    const carbonKg = amount * item.factor;
+    const carbonKg = amount * item.factor
 
     const newLog: CarbonLog = {
       id: generateId(),
@@ -200,44 +194,45 @@ export default function CarbonFootprint() {
       amount,
       unit: item.unit,
       carbonKg,
+      // eslint-disable-next-line react-hooks/purity
       date: Date.now(),
       note: formNote.trim() || undefined,
-    };
+    }
 
-    setDailyLogs((prev) => [newLog, ...prev]);
-    resetForm();
-    setShowAddModal(false);
-  };
+    setDailyLogs((prev) => [newLog, ...prev])
+    resetForm()
+    setShowAddModal(false)
+  }
 
   const handleDeleteLog = (id: string) => {
-    setDailyLogs((prev) => prev.filter((l) => l.id !== id));
-  };
+    setDailyLogs((prev) => prev.filter((l) => l.id !== id))
+  }
 
   const resetForm = () => {
-    setFormAmount("");
-    setFormNote("");
-    setFormSubCategory("");
-  };
+    setFormAmount("")
+    setFormNote("")
+    setFormSubCategory("")
+  }
 
   const handleShare = () => {
     const text = t(
       `🌍 My carbon footprint today: ${todayTotal.toFixed(1)} kg CO₂. That's like needing ${treesNeeded.toFixed(1)} trees to offset! #CarbonFootprint #EcoWarrior`,
       `🌍 আজকের আমার কার্বন ফুটপ্রিন্ট: ${todayTotal.toFixed(1)} কেজি CO₂। এটি অফসেট করতে ${treesNeeded.toFixed(1)}টি গাছ প্রয়োজন! #কার্বনফুটপ্রিন্ট #ইকোওয়ারিয়র`,
-    );
+    )
     if (navigator.share) {
       navigator
         .share({ text })
-        .catch((e) => console.error("[CarbonFootprint]", "share failed", e));
+        .catch((e) => console.error("[CarbonFootprint]", "share failed", e))
     } else {
       navigator.clipboard
         .writeText(text)
         .catch((e) =>
           console.error("[CarbonFootprint]", "clipboard write failed", e),
-        );
-      setShowShareModal(true);
-      setTimeout(() => setShowShareModal(false), 2000);
+        )
+      setShowShareModal(true)
+      setTimeout(() => setShowShareModal(false), 2000)
     }
-  };
+  }
 
   const categoryConfig = [
     {
@@ -268,7 +263,7 @@ export default function CarbonFootprint() {
       textColor: "text-purple-500",
       label: t("Shopping", "শপিং"),
     },
-  ];
+  ]
 
   return (
     <motion.div
@@ -311,9 +306,9 @@ export default function CarbonFootprint() {
           </button>
           <button
             onClick={() => {
-              resetForm();
-              setFormSubCategory(TRANSPORT_MODES[0].key);
-              setShowAddModal(true);
+              resetForm()
+              setFormSubCategory(TRANSPORT_MODES[0].key)
+              setShowAddModal(true)
             }}
             className="cursor-pointer flex items-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition-colors"
           >
@@ -339,16 +334,16 @@ export default function CarbonFootprint() {
         </h3>
         <div className="grid gap-3 sm:grid-cols-2">
           {categoryConfig.map((cat) => {
-            const CatIcon = cat.icon;
-            const value = categoryBreakdown[cat.key] || 0;
-            const percent = maxCat > 0 ? (value / maxCat) * 100 : 0;
+            const CatIcon = cat.icon
+            const value = categoryBreakdown[cat.key] || 0
+            const percent = maxCat > 0 ? (value / maxCat) * 100 : 0
             return (
               <div
                 key={cat.key}
                 className="rounded-xl border border-foreground/10 p-4 hover:bg-foreground/5 transition-colors cursor-pointer"
                 onClick={() => {
-                  setSelectedCategory(cat.key as typeof selectedCategory);
-                  setShowAddModal(true);
+                  setSelectedCategory(cat.key as typeof selectedCategory)
+                  setShowAddModal(true)
                 }}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -368,7 +363,7 @@ export default function CarbonFootprint() {
                   />
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       </motion.div>
@@ -380,8 +375,8 @@ export default function CarbonFootprint() {
         </h3>
         <div className="flex items-end gap-2 h-40">
           {weeklyTrend.map((day, i) => {
-            const maxWeek = Math.max(...weeklyTrend.map((d) => d.total), 1);
-            const height = (day.total / maxWeek) * 100;
+            const maxWeek = Math.max(...weeklyTrend.map((d) => d.total), 1)
+            const height = (day.total / maxWeek) * 100
             return (
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
                 <span className="text-xs text-muted-foreground">
@@ -401,7 +396,7 @@ export default function CarbonFootprint() {
                   {day.day.split(" ")[0]}
                 </span>
               </div>
-            );
+            )
           })}
         </div>
         <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
@@ -444,8 +439,8 @@ export default function CarbonFootprint() {
             <button
               key={item.key}
               onClick={() => {
-                setFormSubCategory(item.key);
-                setShowAddModal(true);
+                setFormSubCategory(item.key)
+                setShowAddModal(true)
               }}
               className="cursor-pointer rounded-xl border border-foreground/10 p-3 text-center hover:bg-foreground/5 transition-all hover:scale-105"
             >
@@ -668,8 +663,8 @@ export default function CarbonFootprint() {
                         onClick={() => {
                           setSelectedCategory(
                             cat.key as typeof selectedCategory,
-                          );
-                          setFormSubCategory("");
+                          )
+                          setFormSubCategory("")
                         }}
                         className={`cursor-pointer flex-1 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                           selectedCategory === cat.key
@@ -841,5 +836,5 @@ export default function CarbonFootprint() {
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }

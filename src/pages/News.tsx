@@ -1,40 +1,41 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t } from "@/i18n/translations";
-import { useState, useCallback, useEffect, useRef } from "react";
-import { Globe, RefreshCw, ExternalLink, Search, Clock } from "lucide-react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t } from "@/i18n/translations"
+import { useState, useCallback, useEffect, useRef } from "react"
+import { Globe, RefreshCw, ExternalLink, Search, Clock } from "lucide-react"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 interface Article {
-  title: string;
-  description: string;
-  url: string;
-  image: string;
-  publishedAt: string;
-  source: { name: string; url: string };
+  title: string
+  description: string
+  url: string
+  image: string
+  publishedAt: string
+  source: { name: string; url: string }
 }
 
 export default function News() {
-  const { lang } = useLang();
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [source, setSource] = useState<string>("");
+  const { lang } = useLang()
+  const [search, setSearch] = useState("")
+  const [category, setCategory] = useState("all")
+  const [articles, setArticles] = useState<Article[]>([])
+  const [loading, setLoading] = useState(false)
+  const [source, setSource] = useState<string>("")
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const fetchNews = async (_opts?: Record<string, unknown>) => ({
     articles: [],
     source: "demo",
-  });
+  })
 
   const categories =
     lang === "bn"
       ? ["all", "বিশ্ব", "প্রযুক্তি", "খেলাধুলা", "অর্থনীতি", "বিজ্ঞান"]
-      : ["all", "World", "Technology", "Sports", "Business", "Science"];
+      : ["all", "World", "Technology", "Sports", "Business", "Science"]
 
   const categoryMap: Record<string, string> = {
     all: "all",
@@ -48,47 +49,49 @@ export default function News() {
     অর্থনীতি: "business",
     Science: "science",
     বিজ্ঞান: "science",
-  };
+  }
 
   const loadNewsRef =
-    useRef<(query?: string, cat?: string) => Promise<void>>(undefined);
+    useRef<(query?: string, cat?: string) => Promise<void>>(undefined)
 
   const loadNews = useCallback(
     async (query?: string, cat?: string) => {
-      setLoading(true);
+      setLoading(true)
       try {
         const result = await fetchNews({
           query: query || undefined,
           lang,
           category:
             cat && cat !== "all" ? (categoryMap[cat] ?? cat) : undefined,
-        });
-        setArticles(result.articles);
-        setSource(result.source);
+        })
+        setArticles(result.articles)
+        setSource(result.source)
       } catch (err) {
-        console.error("Failed to load news:", err);
+        console.error("Failed to load news:", err)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     },
     [fetchNews, lang],
-  );
-
-  loadNewsRef.current = loadNews;
+  )
 
   useEffect(() => {
-    void loadNewsRef.current?.();
-  }, []);
+    loadNewsRef.current = loadNews
+  })
+
+  useEffect(() => {
+    void loadNewsRef.current?.()
+  }, [])
 
   const handleSearch = () => {
-    loadNews(search || undefined, category);
-  };
+    loadNews(search || undefined, category)
+  }
 
   const handleRefresh = () => {
-    setSearch("");
-    setCategory("all");
-    loadNews();
-  };
+    setSearch("")
+    setCategory("all")
+    loadNews()
+  }
 
   const filtered = articles.filter((a) => {
     if (
@@ -96,19 +99,20 @@ export default function News() {
       !a.title.toLowerCase().includes(search.toLowerCase()) &&
       !a.description?.toLowerCase().includes(search.toLowerCase())
     )
-      return false;
-    return true;
-  });
+      return false
+    return true
+  })
 
   const timeAgo = (dateStr: string) => {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `${mins}m ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-  };
+    // eslint-disable-next-line react-hooks/purity
+    const diff = Date.now() - new Date(dateStr).getTime()
+    const mins = Math.floor(diff / 60000)
+    if (mins < 60) return `${mins}m ago`
+    const hours = Math.floor(mins / 60)
+    if (hours < 24) return `${hours}h ago`
+    const days = Math.floor(hours / 24)
+    return `${days}d ago`
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -268,5 +272,5 @@ export default function News() {
         </div>
       )}
     </div>
-  );
+  )
 }

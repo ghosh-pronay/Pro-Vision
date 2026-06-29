@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   GraduationCap,
   BookOpen,
@@ -15,35 +15,35 @@ import {
   Target,
   Flame,
   Zap,
-} from "lucide-react";
+} from "lucide-react"
 
 interface Milestone {
-  id: string;
-  name: string;
-  nameBn?: string;
-  completed: boolean;
-  completedAt?: number;
+  id: string
+  name: string
+  nameBn?: string
+  completed: boolean
+  completedAt?: number
 }
 
 interface LearningPath {
-  id: string;
-  name: string;
-  nameBn?: string;
-  description: string;
-  descriptionBn?: string;
-  milestones: Milestone[];
-  estimatedHours: number;
-  resources: { name: string; url: string }[];
-  startDate?: number;
-  targetDate?: number;
-  status: "active" | "completed" | "paused";
-  completedAt?: number;
+  id: string
+  name: string
+  nameBn?: string
+  description: string
+  descriptionBn?: string
+  milestones: Milestone[]
+  estimatedHours: number
+  resources: { name: string; url: string }[]
+  startDate?: number
+  targetDate?: number
+  status: "active" | "completed" | "paused"
+  completedAt?: number
 }
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 const SUGGESTED_PATHS = [
   {
@@ -70,7 +70,7 @@ const SUGGESTED_PATHS = [
     icon: Zap,
     color: "text-green-500",
   },
-];
+]
 
 const INITIAL_PATHS: LearningPath[] = [
   {
@@ -218,10 +218,10 @@ const INITIAL_PATHS: LearningPath[] = [
     completedAt: Date.now() - 10 * 24 * 60 * 60 * 1000,
     status: "completed",
   },
-];
+]
 
 export default function LearningPaths() {
-  const { lang } = useLang();
+  const { lang } = useLang()
   const [paths, setPaths] = useState<LearningPath[]>(
     INITIAL_PATHS.map((p) => ({
       ...p,
@@ -233,9 +233,9 @@ export default function LearningPaths() {
         name: lang === "bn" ? m.nameBn || m.name : m.name,
       })),
     })),
-  );
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [expandedPath, setExpandedPath] = useState<string | null>(null);
+  )
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [expandedPath, setExpandedPath] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -243,20 +243,20 @@ export default function LearningPaths() {
     targetDate: "",
     milestones: [{ name: "" }],
     resources: [{ name: "", url: "" }],
-  });
+  })
 
   const stats = useMemo(() => {
-    const activePaths = paths.filter((p) => p.status === "active");
-    const completedPaths = paths.filter((p) => p.status === "completed");
-    const totalHours = paths.reduce((sum, p) => sum + p.estimatedHours, 0);
+    const activePaths = paths.filter((p) => p.status === "active")
+    const completedPaths = paths.filter((p) => p.status === "completed")
+    const totalHours = paths.reduce((sum, p) => sum + p.estimatedHours, 0)
     const completedMilestones = paths.reduce(
       (sum, p) => sum + p.milestones.filter((m) => m.completed).length,
       0,
-    );
+    )
     const totalMilestones = paths.reduce(
       (sum, p) => sum + p.milestones.length,
       0,
-    );
+    )
 
     return {
       activeCount: activePaths.length,
@@ -265,19 +265,20 @@ export default function LearningPaths() {
       completedMilestones,
       totalMilestones,
       currentStreak: 5,
-    };
-  }, [paths]);
+    }
+  }, [paths])
 
   const getProgress = (path: LearningPath) => {
-    const completed = path.milestones.filter((m) => m.completed).length;
-    return Math.round((completed / path.milestones.length) * 100);
-  };
+    const completed = path.milestones.filter((m) => m.completed).length
+    return Math.round((completed / path.milestones.length) * 100)
+  }
 
   const getDaysLeft = (targetDate?: number) => {
-    if (!targetDate) return null;
-    const diff = targetDate - Date.now();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  };
+    if (!targetDate) return null
+    // eslint-disable-next-line react-hooks/purity
+    const diff = targetDate - Date.now()
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
+  }
 
   const handleAddPath = () => {
     const newPath: LearningPath = {
@@ -301,9 +302,9 @@ export default function LearningPaths() {
         ? new Date(formData.targetDate).getTime()
         : undefined,
       status: "active",
-    };
-    setPaths([newPath, ...paths]);
-    setShowAddModal(false);
+    }
+    setPaths([newPath, ...paths])
+    setShowAddModal(false)
     setFormData({
       name: "",
       description: "",
@@ -311,8 +312,8 @@ export default function LearningPaths() {
       targetDate: "",
       milestones: [{ name: "" }],
       resources: [{ name: "", url: "" }],
-    });
-  };
+    })
+  }
 
   const toggleMilestone = (pathId: string, milestoneId: string) => {
     setPaths(
@@ -326,23 +327,23 @@ export default function LearningPaths() {
                   completedAt: !m.completed ? Date.now() : undefined,
                 }
               : m,
-          );
-          const allCompleted = updatedMilestones.every((m) => m.completed);
+          )
+          const allCompleted = updatedMilestones.every((m) => m.completed)
           return {
             ...p,
             milestones: updatedMilestones,
             status: allCompleted ? "completed" : "active",
             completedAt: allCompleted ? Date.now() : undefined,
-          };
+          }
         }
-        return p;
+        return p
       }),
-    );
-  };
+    )
+  }
 
   const handleDeletePath = (id: string) => {
-    setPaths(paths.filter((p) => p.id !== id));
-  };
+    setPaths(paths.filter((p) => p.id !== id))
+  }
 
   const handleStartPath = (suggestedPath: (typeof SUGGESTED_PATHS)[0]) => {
     setFormData({
@@ -350,9 +351,9 @@ export default function LearningPaths() {
       name: lang === "bn" ? suggestedPath.nameBn : suggestedPath.name,
       description:
         lang === "bn" ? suggestedPath.descriptionBn : suggestedPath.description,
-    });
-    setShowAddModal(true);
-  };
+    })
+    setShowAddModal(true)
+  }
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString(
@@ -362,11 +363,11 @@ export default function LearningPaths() {
         day: "numeric",
         year: "numeric",
       },
-    );
-  };
+    )
+  }
 
-  const activePaths = paths.filter((p) => p.status === "active");
-  const completedPaths = paths.filter((p) => p.status === "completed");
+  const activePaths = paths.filter((p) => p.status === "active")
+  const completedPaths = paths.filter((p) => p.status === "completed")
 
   return (
     <motion.div
@@ -437,9 +438,9 @@ export default function LearningPaths() {
             {lang === "bn" ? "সক্রিয় পথ" : "Active Paths"}
           </h2>
           {activePaths.map((path) => {
-            const progress = getProgress(path);
-            const daysLeft = getDaysLeft(path.targetDate);
-            const isExpanded = expandedPath === path.id;
+            const progress = getProgress(path)
+            const daysLeft = getDaysLeft(path.targetDate)
+            const isExpanded = expandedPath === path.id
 
             return (
               <motion.div
@@ -575,7 +576,7 @@ export default function LearningPaths() {
                   </div>
                 )}
               </motion.div>
-            );
+            )
           })}
         </motion.div>
       )}
@@ -620,7 +621,7 @@ export default function LearningPaths() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {SUGGESTED_PATHS.map((suggested, index) => {
-            const Icon = suggested.icon;
+            const Icon = suggested.icon
             return (
               <motion.div
                 key={index}
@@ -643,7 +644,7 @@ export default function LearningPaths() {
                     : suggested.description}
                 </p>
               </motion.div>
-            );
+            )
           })}
         </div>
       </motion.div>
@@ -740,9 +741,9 @@ export default function LearningPaths() {
                       type="text"
                       value={milestone.name}
                       onChange={(e) => {
-                        const milestones = [...formData.milestones];
-                        milestones[index].name = e.target.value;
-                        setFormData({ ...formData, milestones });
+                        const milestones = [...formData.milestones]
+                        milestones[index].name = e.target.value
+                        setFormData({ ...formData, milestones })
                       }}
                       placeholder={
                         lang === "bn"
@@ -777,9 +778,9 @@ export default function LearningPaths() {
                       type="text"
                       value={resource.name}
                       onChange={(e) => {
-                        const resources = [...formData.resources];
-                        resources[index].name = e.target.value;
-                        setFormData({ ...formData, resources });
+                        const resources = [...formData.resources]
+                        resources[index].name = e.target.value
+                        setFormData({ ...formData, resources })
                       }}
                       placeholder={lang === "bn" ? "নাম" : "Name"}
                       className="w-1/3 rounded-lg border bg-background px-3 py-2 text-sm"
@@ -788,9 +789,9 @@ export default function LearningPaths() {
                       type="url"
                       value={resource.url}
                       onChange={(e) => {
-                        const resources = [...formData.resources];
-                        resources[index].url = e.target.value;
-                        setFormData({ ...formData, resources });
+                        const resources = [...formData.resources]
+                        resources[index].url = e.target.value
+                        setFormData({ ...formData, resources })
                       }}
                       placeholder="https://..."
                       className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm"
@@ -826,5 +827,5 @@ export default function LearningPaths() {
         </div>
       )}
     </motion.div>
-  );
+  )
 }

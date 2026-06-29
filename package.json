@@ -9,9 +9,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "vitest run && vitest run --config vitest.functions.config.ts",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "test:functions": "vitest run --config vitest.functions.config.ts",
     "typecheck": "tsc -b",
     "verify": "npm run lint && npm run typecheck && npm test",
     "prepare": "husky"

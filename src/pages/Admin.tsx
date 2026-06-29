@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { useNavigate } from "react-router";
-import { api } from "@/convex/_generated/api";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
+import { useState } from "react"
+import { useQuery, useMutation } from "convex/react"
+import { useNavigate } from "react-router"
+import { api } from "@/convex/_generated/api"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
 import {
   Shield,
   Users,
@@ -29,10 +29,10 @@ import {
   Target,
   Zap,
   Trophy,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { LucideIcon } from "lucide-react";
-import type { Id } from "@/convex/_generated/dataModel";
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+import type { LucideIcon } from "lucide-react"
+import type { Id } from "@/convex/_generated/dataModel"
 
 type Tab =
   | "overview"
@@ -41,7 +41,7 @@ type Tab =
   | "content"
   | "system"
   | "finance"
-  | "settings";
+  | "settings"
 
 const TABS: { id: Tab; label: string; icon: LucideIcon }[] = [
   { id: "overview", label: "admin.tab.overview", icon: BarChart3 },
@@ -51,9 +51,9 @@ const TABS: { id: Tab; label: string; icon: LucideIcon }[] = [
   { id: "system", label: "admin.tab.system", icon: Settings },
   { id: "finance", label: "admin.tab.finance", icon: DollarSign },
   { id: "settings", label: "admin.tab.settings", icon: Globe },
-];
+]
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 const DEFAULT_FEATURES = {
   "features.habits": true,
@@ -66,18 +66,18 @@ const DEFAULT_FEATURES = {
   "features.coach": true,
   "features.challenges": true,
   "features.adRewards": true,
-};
+}
 
 const DEFAULT_LIMITS = {
   "limits.coachDailyMessages": 50,
   "limits.walletsPerUser": 10,
   "limits.freeTierWallets": 3,
-};
+}
 
 const DEFAULT_SYSTEM = {
   "system.maintenanceMode": false,
   "system.announcementBanner": "",
-};
+}
 
 const DEFAULT_ADS = {
   "ads.enabled": true,
@@ -86,40 +86,40 @@ const DEFAULT_ADS = {
   "ads.footer": true,
   "ads.inContent": true,
   "ads.rewardedVideo": true,
-};
+}
 
 export default function Admin() {
-  const { lang } = useLang();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const { lang } = useLang()
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState<Tab>("overview")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedUser, setSelectedUser] = useState<string | null>(null)
 
-  const adminApi = api.admin;
+  const adminApi = api.admin
 
-  const stats = useQuery(adminApi.getStats);
-  const users = useQuery(adminApi.listUsers);
-  const config = useQuery(adminApi.getConfig);
-  const challenges = useQuery(adminApi.getChallenges);
-  const financeStats = useQuery(adminApi.getFinanceStats);
+  const stats = useQuery(adminApi.getStats)
+  const users = useQuery(adminApi.listUsers)
+  const config = useQuery(adminApi.getConfig)
+  const challenges = useQuery(adminApi.getChallenges)
+  const financeStats = useQuery(adminApi.getFinanceStats)
   const userDetail = useQuery(
     adminApi.getUserDetail,
     selectedUser ? { userId: selectedUser } : "skip",
-  );
+  )
 
-  const grantPremium = useMutation(adminApi.grantPremium);
-  const revokePremium = useMutation(adminApi.revokePremium);
-  const deleteUser = useMutation(adminApi.deleteUser);
-  const updateUser = useMutation(adminApi.updateUser);
-  const setConfig = useMutation(adminApi.setConfig);
-  useMutation(adminApi.bulkSetConfig);
-  const createChallenge = useMutation(adminApi.createChallenge);
-  const updateChallenge = useMutation(adminApi.updateChallenge);
-  const deleteChallenge = useMutation(adminApi.deleteChallenge);
+  const grantPremium = useMutation(adminApi.grantPremium, "admin")
+  const revokePremium = useMutation(adminApi.revokePremium, "admin")
+  const deleteUser = useMutation(adminApi.deleteUser, "admin")
+  const updateUser = useMutation(adminApi.updateUser, "admin")
+  const setConfig = useMutation(adminApi.setConfig, "admin")
+  useMutation(adminApi.bulkSetConfig, "admin")
+  const createChallenge = useMutation(adminApi.createChallenge, "challenges")
+  const updateChallenge = useMutation(adminApi.updateChallenge, "challenges")
+  const deleteChallenge = useMutation(adminApi.deleteChallenge, "challenges")
 
-  const [editingUser, setEditingUser] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
-  const [editEmail, setEditEmail] = useState("");
+  const [editingUser, setEditingUser] = useState<string | null>(null)
+  const [editName, setEditName] = useState("")
+  const [editEmail, setEditEmail] = useState("")
   const [newChallenge, setNewChallenge] = useState({
     title: "",
     description: "",
@@ -128,26 +128,26 @@ export default function Admin() {
     unit: "days",
     startDate: NOW,
     endDate: NOW + 30 * 24 * 60 * 60 * 1000,
-  });
+  })
 
-  const features = { ...DEFAULT_FEATURES };
-  const limits = { ...DEFAULT_LIMITS };
-  const system = { ...DEFAULT_SYSTEM };
-  const ads = { ...DEFAULT_ADS };
+  const features = { ...DEFAULT_FEATURES }
+  const limits = { ...DEFAULT_LIMITS }
+  const system = { ...DEFAULT_SYSTEM }
+  const ads = { ...DEFAULT_ADS }
 
   if (config) {
     Object.entries(config).forEach(([key, value]) => {
       if (key.startsWith("features.") && typeof value === "boolean")
-        features[key as keyof typeof features] = value;
+        features[key as keyof typeof features] = value
       if (key.startsWith("limits.") && typeof value === "number")
-        limits[key as keyof typeof limits] = value;
+        limits[key as keyof typeof limits] = value
       if (key === "system.maintenanceMode" && typeof value === "boolean")
-        system["system.maintenanceMode"] = value;
+        system["system.maintenanceMode"] = value
       if (key === "system.announcementBanner" && typeof value === "string")
-        system["system.announcementBanner"] = value;
+        system["system.announcementBanner"] = value
       if (key.startsWith("ads.") && typeof value === "boolean")
-        ads[key as keyof typeof ads] = value;
-    });
+        ads[key as keyof typeof ads] = value
+    })
   }
 
   const filteredUsers = (users ?? []).filter(
@@ -155,39 +155,39 @@ export default function Admin() {
       u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.displayName?.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  )
 
   const handleToggleConfig = async (key: string, value: boolean | string) => {
-    await setConfig({ key, value });
-  };
+    await setConfig({ key, value })
+  }
 
   const handleSetLimit = async (key: string, value: number) => {
-    await setConfig({ key, value });
-  };
+    await setConfig({ key, value })
+  }
 
   const handleSaveUser = async (userId: string) => {
     await updateUser({
       userId: userId as Id<"users">,
       name: editName,
       email: editEmail,
-    });
-    setEditingUser(null);
-  };
+    })
+    setEditingUser(null)
+  }
 
   const handleGrantPremium = async (userId: string) => {
-    const expiresAt = NOW + 30 * 24 * 60 * 60 * 1000;
-    await grantPremium({ userId: userId as Id<"users">, expiresAt });
-  };
+    const expiresAt = NOW + 30 * 24 * 60 * 60 * 1000
+    await grantPremium({ userId: userId as Id<"users">, expiresAt })
+  }
 
   const handleRevokePremium = async (userId: string) => {
-    await revokePremium({ userId: userId as Id<"users"> });
-  };
+    await revokePremium({ userId: userId as Id<"users"> })
+  }
 
   const handleDeleteUser = async (userId: string) => {
     if (confirm("Are you sure you want to delete this user?")) {
-      await deleteUser({ userId: userId as Id<"users"> });
+      await deleteUser({ userId: userId as Id<"users"> })
     }
-  };
+  }
 
   const handleCreateChallenge = async () => {
     await createChallenge({
@@ -198,7 +198,7 @@ export default function Admin() {
       unit: newChallenge.unit,
       startDate: newChallenge.startDate,
       endDate: newChallenge.endDate,
-    });
+    })
     setNewChallenge({
       title: "",
       description: "",
@@ -207,14 +207,14 @@ export default function Admin() {
       unit: "days",
       startDate: Date.now(),
       endDate: Date.now() + 30 * 24 * 60 * 60 * 1000,
-    });
-  };
+    })
+  }
 
-  const formatRole = (role?: string) => (role === "admin" ? "Admin" : "User");
+  const formatRole = (role?: string) => (role === "admin" ? "Admin" : "User")
   const formatStatus = (user: { isPremium?: boolean }) => {
-    if (user.isPremium) return "premium";
-    return "active";
-  };
+    if (user.isPremium) return "premium"
+    return "active"
+  }
 
   return (
     <div className="space-y-6">
@@ -524,9 +524,9 @@ export default function Admin() {
                             <>
                               <button
                                 onClick={() => {
-                                  setEditingUser(user._id);
-                                  setEditName(user.name || "");
-                                  setEditEmail(user.email || "");
+                                  setEditingUser(user._id)
+                                  setEditName(user.name || "")
+                                  setEditEmail(user.email || "")
                                 }}
                                 className="rounded-lg p-1.5 hover:bg-blue-500/20 hover:text-blue-400 transition-colors cursor-pointer"
                                 title="Edit"
@@ -1061,5 +1061,5 @@ export default function Admin() {
         </div>
       )}
     </div>
-  );
+  )
 }

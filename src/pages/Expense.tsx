@@ -1,125 +1,123 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t } from "@/i18n/translations";
-import { useState, useMemo } from "react";
-import { Repeat, TrendingUp, TrendingDown, Wallet } from "lucide-react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { toastSuccess, toastError } from "@/lib/toast-helpers";
-import { AddWalletModal } from "@/components/wallet/AddWalletModal";
-import { WalletForm } from "@/components/wallet/WalletForm";
-import type { Wallet as WalletType } from "@/types/wallet";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t } from "@/i18n/translations"
+import { useState, useMemo } from "react"
+import { Repeat, TrendingUp, TrendingDown, Wallet } from "lucide-react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "../convex/_generated/api"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { toastSuccess, toastError } from "@/lib/toast-helpers"
+import { AddWalletModal } from "@/components/wallet/AddWalletModal"
+import { WalletForm } from "@/components/wallet/WalletForm"
+import type { Wallet as WalletType } from "@/types/wallet"
 import {
   ExpenseStats,
   TransactionForm,
   TransactionList,
   WalletManager,
-} from "@/components/expense";
-import type { ExpenseTransaction } from "@/components/expense";
+} from "@/components/expense"
+import type { ExpenseTransaction } from "@/components/expense"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function Expense() {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
-  const transactions = useQuery(api.transactions.list) ?? [];
-  const wallets = useQuery(api.wallets.list) ?? [];
-  const stats = useQuery(api.transactions.stats);
-  const createTx = useMutation(api.transactions.create);
-  const removeTx = useMutation(api.transactions.remove);
-  const createWallet = useMutation(api.wallets.create);
-  const updateWallet = useMutation(api.wallets.update);
-  const removeWallet = useMutation(api.wallets.remove);
+  const transactions = useQuery(api.transactions.list) ?? []
+  const wallets = useQuery(api.wallets.list) ?? []
+  const stats = useQuery(api.transactions.stats)
+  const createTx = useMutation(api.transactions.create, "transactions")
+  const removeTx = useMutation(api.transactions.remove, "transactions")
+  const createWallet = useMutation(api.wallets.create, "wallets")
+  const updateWallet = useMutation(api.wallets.update, "wallets")
+  const removeWallet = useMutation(api.wallets.remove, "wallets")
 
   const [activeTab, setActiveTab] = useState<"income" | "expense" | "transfer">(
     "income",
-  );
-  const [showForm, setShowForm] = useState(false);
-  const [showCalc, setShowCalc] = useState(false);
+  )
+  const [showForm, setShowForm] = useState(false)
+  const [showCalc, setShowCalc] = useState(false)
 
-  const [incomeWallet, setIncomeWallet] = useState("");
-  const [expenseWallet, setExpenseWallet] = useState("");
-  const [fromWallet, setFromWallet] = useState("");
-  const [toWallet, setToWallet] = useState("");
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(
-    () => new Date().toISOString().split("T")[0],
-  );
+  const [incomeWallet, setIncomeWallet] = useState("")
+  const [expenseWallet, setExpenseWallet] = useState("")
+  const [fromWallet, setFromWallet] = useState("")
+  const [toWallet, setToWallet] = useState("")
+  const [amount, setAmount] = useState("")
+  const [category, setCategory] = useState("")
+  const [description, setDescription] = useState("")
+  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0])
   const [txFilter, setTxFilter] = useState<
     "all" | "income" | "expense" | "transfer"
-  >("all");
+  >("all")
 
-  const [isAddingIncome, setIsAddingIncome] = useState(false);
-  const [isAddingExpense, setIsAddingExpense] = useState(false);
-  const [isTransferring, setIsTransferring] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [isAddingIncome, setIsAddingIncome] = useState(false)
+  const [isAddingExpense, setIsAddingExpense] = useState(false)
+  const [isTransferring, setIsTransferring] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
 
-  const [showAddWalletModal, setShowAddWalletModal] = useState(false);
-  const [editingWallet, setEditingWallet] = useState<WalletType | null>(null);
-  const [deleteWalletId, setDeleteWalletId] = useState<string | null>(null);
+  const [showAddWalletModal, setShowAddWalletModal] = useState(false)
+  const [editingWallet, setEditingWallet] = useState<WalletType | null>(null)
+  const [deleteWalletId, setDeleteWalletId] = useState<string | null>(null)
 
   const visibleWallets = useMemo(
     () => wallets.filter((w: WalletType) => !w.isHidden),
     [wallets],
-  );
+  )
 
   const defaultWallet = useMemo(
     () =>
       visibleWallets.find((w: WalletType) => w.isDefault) ?? visibleWallets[0],
     [visibleWallets],
-  );
+  )
 
   const effectiveIncomeWallet = useMemo(
     () => incomeWallet || defaultWallet?._id || "",
     [incomeWallet, defaultWallet],
-  );
+  )
   const effectiveExpenseWallet = useMemo(
     () => expenseWallet || defaultWallet?._id || "",
     [expenseWallet, defaultWallet],
-  );
+  )
   const effectiveFromWallet = useMemo(
     () => fromWallet || defaultWallet?._id || "",
     [fromWallet, defaultWallet],
-  );
+  )
   const secondWallet = useMemo(
     () =>
       visibleWallets.length > 1
         ? visibleWallets.find((w: WalletType) => w._id !== defaultWallet?._id)
         : undefined,
     [visibleWallets, defaultWallet],
-  );
+  )
   const effectiveToWallet = useMemo(
     () => toWallet || secondWallet?._id || "",
     [toWallet, secondWallet],
-  );
+  )
 
-  const totalIncome = stats?.totalIncome ?? 0;
-  const totalExpense = stats?.totalExpense ?? 0;
-  const netBalance = totalIncome - totalExpense;
+  const totalIncome = stats?.totalIncome ?? 0
+  const totalExpense = stats?.totalExpense ?? 0
+  const netBalance = totalIncome - totalExpense
 
   const filtered = useMemo(() => {
-    const result = (transactions as ExpenseTransaction[]) || [];
+    const result = (transactions as ExpenseTransaction[]) || []
     if (txFilter !== "all") {
       if (txFilter === "transfer") {
         return result
           .filter((tx) => tx.type === "income" && tx.toWalletId)
-          .slice(0, 10);
+          .slice(0, 10)
       }
-      return result.filter((tx) => tx.type === txFilter).slice(0, 10);
+      return result.filter((tx) => tx.type === txFilter).slice(0, 10)
     }
-    return result.slice(0, 10);
-  }, [transactions, txFilter]);
+    return result.slice(0, 10)
+  }, [transactions, txFilter])
 
   const handleAddIncome = async () => {
-    const amt = parseFloat(amount);
-    if (!amt || amt <= 0 || !effectiveIncomeWallet) return;
-    setIsAddingIncome(true);
+    const amt = parseFloat(amount)
+    if (!amt || amt <= 0 || !effectiveIncomeWallet) return
+    setIsAddingIncome(true)
     try {
       await createTx({
         walletId: effectiveIncomeWallet,
@@ -128,26 +126,24 @@ export default function Expense() {
         type: "income",
         description: description || undefined,
         date: new Date(date).getTime(),
-      });
-      setAmount("");
-      setDescription("");
-      setCategory("");
-      setShowForm(false);
-      toastSuccess(lang === "bn" ? "আয় যোগ হয়েছে!" : "Income added!");
+      })
+      setAmount("")
+      setDescription("")
+      setCategory("")
+      setShowForm(false)
+      toastSuccess(lang === "bn" ? "আয় যোগ হয়েছে!" : "Income added!")
     } catch (error) {
-      console.error("[Expense]", "Failed to add income", error);
-      toastError(
-        lang === "bn" ? "আয় যোগ করতে ব্যর্থ" : "Failed to add income",
-      );
+      console.error("[Expense]", "Failed to add income", error)
+      toastError(lang === "bn" ? "আয় যোগ করতে ব্যর্থ" : "Failed to add income")
     } finally {
-      setIsAddingIncome(false);
+      setIsAddingIncome(false)
     }
-  };
+  }
 
   const handleAddExpense = async () => {
-    const amt = parseFloat(amount);
-    if (!amt || amt <= 0 || !effectiveExpenseWallet) return;
-    setIsAddingExpense(true);
+    const amt = parseFloat(amount)
+    if (!amt || amt <= 0 || !effectiveExpenseWallet) return
+    setIsAddingExpense(true)
     try {
       await createTx({
         walletId: effectiveExpenseWallet,
@@ -156,21 +152,21 @@ export default function Expense() {
         type: "expense",
         description: description || undefined,
         date: new Date(date).getTime(),
-      });
-      setAmount("");
-      setDescription("");
-      setCategory("");
-      setShowForm(false);
-      toastSuccess(lang === "bn" ? "খরচ যোগ হয়েছে!" : "Expense added!");
+      })
+      setAmount("")
+      setDescription("")
+      setCategory("")
+      setShowForm(false)
+      toastSuccess(lang === "bn" ? "খরচ যোগ হয়েছে!" : "Expense added!")
     } catch (e) {
-      console.error("[Expense]", "Failed to add expense", e);
+      console.error("[Expense]", "Failed to add expense", e)
       toastError(
         lang === "bn" ? "খরচ যোগ করতে ব্যর্থ" : "Failed to add expense",
-      );
+      )
     } finally {
-      setIsAddingExpense(false);
+      setIsAddingExpense(false)
     }
-  };
+  }
 
   const transferFee = useMemo(() => {
     if (
@@ -178,22 +174,22 @@ export default function Expense() {
       !effectiveToWallet ||
       effectiveFromWallet === effectiveToWallet
     )
-      return 0;
+      return 0
     const from = wallets.find(
       (w: WalletType) => w._id === effectiveFromWallet && !w.isHidden,
-    );
+    )
     const to = wallets.find(
       (w: WalletType) => w._id === effectiveToWallet && !w.isHidden,
-    );
+    )
     if (from && to && from.type !== to.type) {
-      return parseFloat(amount || "0") * 0.01;
+      return parseFloat(amount || "0") * 0.01
     }
-    return 0;
-  }, [effectiveFromWallet, effectiveToWallet, wallets, amount]);
+    return 0
+  }, [effectiveFromWallet, effectiveToWallet, wallets, amount])
 
   const handleTransfer = async () => {
-    const amt = parseFloat(amount);
-    const totalAmount = amt + transferFee;
+    const amt = parseFloat(amount)
+    const totalAmount = amt + transferFee
     if (
       !amt ||
       amt <= 0 ||
@@ -201,8 +197,8 @@ export default function Expense() {
       !effectiveToWallet ||
       effectiveFromWallet === effectiveToWallet
     )
-      return;
-    setIsTransferring(true);
+      return
+    setIsTransferring(true)
     try {
       await createTx({
         walletId: effectiveFromWallet,
@@ -212,7 +208,7 @@ export default function Expense() {
         description: description || undefined,
         date: new Date(date).getTime(),
         toWalletId: effectiveToWallet,
-      });
+      })
       await createTx({
         walletId: effectiveToWallet,
         amount: amt,
@@ -221,36 +217,34 @@ export default function Expense() {
         description: description || undefined,
         date: new Date(date).getTime(),
         toWalletId: effectiveFromWallet,
-      });
-      setAmount("");
-      setDescription("");
-      setShowForm(false);
-      toastSuccess(
-        lang === "bn" ? "স্থানান্তর সম্পন্ন!" : "Transfer complete!",
-      );
+      })
+      setAmount("")
+      setDescription("")
+      setShowForm(false)
+      toastSuccess(lang === "bn" ? "স্থানান্তর সম্পন্ন!" : "Transfer complete!")
     } catch (e) {
-      console.error("[Expense]", "Failed to transfer", e);
-      toastError(lang === "bn" ? "স্থানান্তর ব্যর্থ" : "Transfer failed");
+      console.error("[Expense]", "Failed to transfer", e)
+      toastError(lang === "bn" ? "স্থানান্তর ব্যর্থ" : "Transfer failed")
     } finally {
-      setIsTransferring(false);
+      setIsTransferring(false)
     }
-  };
+  }
 
   const handleDelete = async (id: string) => {
     try {
-      await removeTx({ id });
+      await removeTx({ id })
       toastSuccess(
         lang === "bn" ? "লেনদেন মুছে ফেলা হয়েছে" : "Transaction deleted",
-      );
+      )
     } catch (e) {
-      console.error("[Expense]", "Failed to delete transaction", e);
+      console.error("[Expense]", "Failed to delete transaction", e)
       toastError(
         lang === "bn"
           ? "লেনদেন মুছে ফেলতে ব্যর্থ"
           : "Failed to delete transaction",
-      );
+      )
     }
-  };
+  }
 
   const handleAddWallet = async (
     data: Omit<WalletType, "_id" | "createdAt">,
@@ -264,21 +258,21 @@ export default function Expense() {
         icon: data.icon,
         color: data.color,
         isDefault: data.isDefault,
-      });
-      setShowAddWalletModal(false);
-      toastSuccess(lang === "bn" ? "ওয়ালেট যোগ হয়েছে" : "Wallet added");
+      })
+      setShowAddWalletModal(false)
+      toastSuccess(lang === "bn" ? "ওয়ালেট যোগ হয়েছে" : "Wallet added")
     } catch (e) {
-      console.error("[Expense]", "Failed to add wallet", e);
+      console.error("[Expense]", "Failed to add wallet", e)
       toastError(
         lang === "bn" ? "ওয়ালেট যোগ করতে ব্যর্থ" : "Failed to add wallet",
-      );
+      )
     }
-  };
+  }
 
   const handleEditWallet = async (
     data: Omit<WalletType, "_id" | "createdAt">,
   ) => {
-    if (!editingWallet) return;
+    if (!editingWallet) return
     try {
       await updateWallet({
         id: editingWallet._id,
@@ -288,91 +282,91 @@ export default function Expense() {
         icon: data.icon,
         color: data.color,
         isDefault: data.isDefault,
-      });
-      setEditingWallet(null);
-      toastSuccess(lang === "bn" ? "ওয়ালেট আপডেট হয়েছে" : "Wallet updated");
+      })
+      setEditingWallet(null)
+      toastSuccess(lang === "bn" ? "ওয়ালেট আপডেট হয়েছে" : "Wallet updated")
     } catch (e) {
-      console.error("[Expense]", "Failed to update wallet", e);
+      console.error("[Expense]", "Failed to update wallet", e)
       toastError(
         lang === "bn" ? "ওয়ালেট আপডেট করতে ব্যর্থ" : "Failed to update wallet",
-      );
+      )
     }
-  };
+  }
 
   const handleDeleteWallet = async (id: string) => {
     try {
-      await removeWallet({ id });
-      setDeleteWalletId(null);
+      await removeWallet({ id })
+      setDeleteWalletId(null)
       toastSuccess(
         lang === "bn" ? "ওয়ালেট মুছে ফেলা হয়েছে" : "Wallet deleted",
-      );
+      )
     } catch (e) {
-      console.error("[Expense]", "Failed to delete wallet", e);
+      console.error("[Expense]", "Failed to delete wallet", e)
       toastError(
         lang === "bn" ? "ওয়ালেট মুছে ফেলতে ব্যর্থ" : "Failed to delete wallet",
-      );
+      )
     }
-  };
+  }
 
   const handleSetDefault = async (wallet: WalletType) => {
     try {
-      await updateWallet({ id: wallet._id, isDefault: true });
+      await updateWallet({ id: wallet._id, isDefault: true })
       toastSuccess(
         lang === "bn" ? "ডিফল্ট ওয়ালেট সেট হয়েছে" : "Default wallet set",
-      );
+      )
     } catch (e) {
-      console.error("[Expense]", "Failed to set default wallet", e);
-      toastError(lang === "bn" ? "সেট করতে ব্যর্থ" : "Failed to set default");
+      console.error("[Expense]", "Failed to set default wallet", e)
+      toastError(lang === "bn" ? "সেট করতে ব্যর্থ" : "Failed to set default")
     }
-  };
+  }
 
   const formatDate = (ts: number) => {
     return new Date(ts).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   const todayDate = new Date().toLocaleDateString(
     lang === "bn" ? "bn-BD" : "en-US",
     { weekday: "long", year: "numeric", month: "long", day: "numeric" },
-  );
+  )
 
   const getWalletName = (walletId: string) => {
-    const w = wallets.find((w: WalletType) => w._id === walletId);
-    return w ? (lang === "bn" && w.nameBn ? w.nameBn : w.name) : "";
-  };
+    const w = wallets.find((w: WalletType) => w._id === walletId)
+    return w ? (lang === "bn" && w.nameBn ? w.nameBn : w.name) : ""
+  }
 
   const getWalletColor = (walletId: string) => {
-    const w = wallets.find((w: WalletType) => w._id === walletId);
-    return w?.color || "#6b7280";
-  };
+    const w = wallets.find((w: WalletType) => w._id === walletId)
+    return w?.color || "#6b7280"
+  }
 
   const openIncomeForm = () => {
-    setActiveTab("income");
-    setShowForm(true);
-    setCategory("Salary");
-  };
+    setActiveTab("income")
+    setShowForm(true)
+    setCategory("Salary")
+  }
   const openExpenseForm = () => {
-    setActiveTab("expense");
-    setShowForm(true);
-    setCategory("Food & Dining");
-  };
+    setActiveTab("expense")
+    setShowForm(true)
+    setCategory("Food & Dining")
+  }
   const openTransferForm = () => {
-    setActiveTab("transfer");
-    setShowForm(true);
-  };
+    setActiveTab("transfer")
+    setShowForm(true)
+  }
   const closeForm = () => {
-    setShowForm(false);
-    setAmount("");
-    setDescription("");
-    setCategory("");
-    setDate(new Date().toISOString().split("T")[0]);
-    setIncomeWallet("");
-    setExpenseWallet("");
-    setFromWallet("");
-    setToWallet("");
-  };
+    setShowForm(false)
+    setAmount("")
+    setDescription("")
+    setCategory("")
+    setDate(new Date().toISOString().split("T")[0])
+    setIncomeWallet("")
+    setExpenseWallet("")
+    setFromWallet("")
+    setToWallet("")
+  }
 
   if (visibleWallets.length === 0) {
     return (
@@ -391,7 +385,7 @@ export default function Expense() {
           </p>
         </motion.div>
       </div>
-    );
+    )
   }
 
   return (
@@ -536,8 +530,8 @@ export default function Expense() {
       <ConfirmDialog
         open={!!deleteTarget}
         onConfirm={() => {
-          if (deleteTarget) handleDelete(deleteTarget);
-          setDeleteTarget(null);
+          if (deleteTarget) handleDelete(deleteTarget)
+          setDeleteTarget(null)
         }}
         onCancel={() => setDeleteTarget(null)}
         title={lang === "bn" ? "লেনদেন মুছে ফেলুন?" : "Delete transaction?"}
@@ -577,8 +571,8 @@ export default function Expense() {
       <ConfirmDialog
         open={!!deleteWalletId}
         onConfirm={() => {
-          if (deleteWalletId) handleDeleteWallet(deleteWalletId);
-          setDeleteWalletId(null);
+          if (deleteWalletId) handleDeleteWallet(deleteWalletId)
+          setDeleteWalletId(null)
         }}
         onCancel={() => setDeleteWalletId(null)}
         title={lang === "bn" ? "ওয়ালেট মুছুন?" : "Delete wallet?"}
@@ -590,5 +584,5 @@ export default function Expense() {
         variant="danger"
       />
     </div>
-  );
+  )
 }

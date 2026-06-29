@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { localDB } from "@/lib/data-store";
+import { describe, it, expect, beforeEach } from "vitest"
+import { localDB } from "@/lib/store/index"
 
 describe("localDB.finance", () => {
   beforeEach(() => {
-    localStorage.clear();
-  });
+    localStorage.clear()
+  })
 
   describe("receivables", () => {
     it("creates and lists receivables", () => {
@@ -13,25 +13,25 @@ describe("localDB.finance", () => {
         amount: 5000,
         date: Date.now(),
         status: "pending",
-      });
-      expect(item._id).toBeDefined();
-      expect(item.from).toBe("John");
+      })
+      expect(item._id).toBeDefined()
+      expect(item.from).toBe("John")
 
-      const list = localDB.receivables.list();
-      expect(list.length).toBe(1);
-      expect(list[0].from).toBe("John");
-    });
+      const list = localDB.receivables.list()
+      expect(list.length).toBe(1)
+      expect(list[0].from).toBe("John")
+    })
 
     it("removes receivables", () => {
       const item = localDB.receivables.create({
         from: "Jane",
         amount: 1000,
         date: Date.now(),
-      });
-      localDB.receivables.remove(item._id);
-      expect(localDB.receivables.list().length).toBe(0);
-    });
-  });
+      })
+      localDB.receivables.remove(item._id)
+      expect(localDB.receivables.list().length).toBe(0)
+    })
+  })
 
   describe("payables", () => {
     it("creates and lists payables", () => {
@@ -40,24 +40,24 @@ describe("localDB.finance", () => {
         amount: 3000,
         date: Date.now(),
         status: "pending",
-      });
-      expect(item._id).toBeDefined();
+      })
+      expect(item._id).toBeDefined()
 
-      const list = localDB.payables.list();
-      expect(list.length).toBe(1);
-    });
+      const list = localDB.payables.list()
+      expect(list.length).toBe(1)
+    })
 
     it("updates payables", () => {
       const item = localDB.payables.create({
         to: "Vendor",
         amount: 3000,
         date: Date.now(),
-      });
-      localDB.payables.update(item._id, { status: "paid" });
-      const list = localDB.payables.list();
-      expect(list[0].status).toBe("paid");
-    });
-  });
+      })
+      localDB.payables.update(item._id, { status: "paid" })
+      const list = localDB.payables.list()
+      expect(list[0].status).toBe("paid")
+    })
+  })
 
   describe("loans", () => {
     it("creates and lists loans", () => {
@@ -67,14 +67,14 @@ describe("localDB.finance", () => {
         paidAmount: 0,
         date: Date.now(),
         status: "active",
-      });
-      expect(item._id).toBeDefined();
+      })
+      expect(item._id).toBeDefined()
 
-      const list = localDB.loans.list();
-      expect(list.length).toBe(1);
-      expect(list[0].name).toBe("Personal Loan");
-    });
-  });
+      const list = localDB.loans.list()
+      expect(list.length).toBe(1)
+      expect(list[0].name).toBe("Personal Loan")
+    })
+  })
 
   describe("investments", () => {
     it("creates and lists investments", () => {
@@ -83,13 +83,13 @@ describe("localDB.finance", () => {
         amount: 10000,
         date: Date.now(),
         type: "stock",
-      });
-      expect(item._id).toBeDefined();
+      })
+      expect(item._id).toBeDefined()
 
-      const list = localDB.investments.list();
-      expect(list.length).toBe(1);
-    });
-  });
+      const list = localDB.investments.list()
+      expect(list.length).toBe(1)
+    })
+  })
 
   describe("savingsGoals", () => {
     it("creates and lists savings goals", () => {
@@ -98,13 +98,13 @@ describe("localDB.finance", () => {
         targetAmount: 100000,
         currentAmount: 25000,
         date: Date.now(),
-      });
-      expect(item._id).toBeDefined();
+      })
+      expect(item._id).toBeDefined()
 
-      const list = localDB.savingsGoals.list();
-      expect(list.length).toBe(1);
-    });
-  });
+      const list = localDB.savingsGoals.list()
+      expect(list.length).toBe(1)
+    })
+  })
 
   describe("recurringTransactions", () => {
     it("creates and lists recurring transactions", () => {
@@ -113,11 +113,11 @@ describe("localDB.finance", () => {
         amount: 500,
         frequency: "monthly",
         date: Date.now(),
-      });
-      expect(item._id).toBeDefined();
+      })
+      expect(item._id).toBeDefined()
 
-      const list = localDB.recurringTransactions.list();
-      expect(list.length).toBe(1);
-    });
-  });
-});
+      const list = localDB.recurringTransactions.list()
+      expect(list.length).toBe(1)
+    })
+  })
+})

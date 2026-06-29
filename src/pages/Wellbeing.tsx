@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
+import { useState } from "react"
 import {
   Flame,
   Moon,
@@ -11,17 +11,17 @@ import {
   Dumbbell,
   Brain,
   HeartPulse,
-} from "lucide-react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
-import BreathingExercise from "@/components/BreathingExercise";
-import GuidedMeditation from "@/components/wellbeing/GuidedMeditation";
-import HealthTracker from "@/components/wellbeing/HealthTracker";
+} from "lucide-react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "../convex/_generated/api"
+import BreathingExercise from "@/components/BreathingExercise"
+import GuidedMeditation from "@/components/wellbeing/GuidedMeditation"
+import HealthTracker from "@/components/wellbeing/HealthTracker"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 const MOODS = [
   { emoji: "😞", label: "Very Sad", value: 1, moodKey: "terrible" as const },
@@ -29,24 +29,24 @@ const MOODS = [
   { emoji: "😐", label: "Neutral", value: 3, moodKey: "okay" as const },
   { emoji: "🙂", label: "Good", value: 4, moodKey: "good" as const },
   { emoji: "😄", label: "Great", value: 5, moodKey: "great" as const },
-];
+]
 
 interface BreathingPhase {
-  label: string;
-  labelBn: string;
-  seconds: number;
-  scale: number;
+  label: string
+  labelBn: string
+  seconds: number
+  scale: number
 }
 
 interface Exercise {
-  id: string;
-  icon: string;
-  titleKey: TranslationKey;
-  descKey: TranslationKey;
-  duration: string;
-  color: string;
-  durationMin: number;
-  phases: BreathingPhase[];
+  id: string
+  icon: string
+  titleKey: TranslationKey
+  descKey: TranslationKey
+  duration: string
+  color: string
+  durationMin: number
+  phases: BreathingPhase[]
 }
 
 const EXERCISES: Exercise[] = [
@@ -117,14 +117,14 @@ const EXERCISES: Exercise[] = [
       { label: "Hold", labelBn: "ধরুন", seconds: 4, scale: 1 },
     ],
   },
-];
+]
 
 const SLEEP_QUALITIES = [
   { val: "bad" as const, emoji: "😴", labelEn: "Poor", labelBn: "খারাপ" },
   { val: "okay" as const, emoji: "😐", labelEn: "Fair", labelBn: "মোটামুটি" },
   { val: "good" as const, emoji: "🙂", labelEn: "Good", labelBn: "ভালো" },
   { val: "great" as const, emoji: "😴✨", labelEn: "Great", labelBn: "দারুণ" },
-];
+]
 
 const EXERCISE_TYPES = [
   { type: "Running", emoji: "🏃", color: "var(--pv-orange)" },
@@ -133,63 +133,69 @@ const EXERCISE_TYPES = [
   { type: "Swimming", emoji: "🏊", color: "var(--pv-teal)" },
   { type: "Yoga", emoji: "🧘", color: "var(--pv-lavender)" },
   { type: "Gym", emoji: "🏋️", color: "var(--pv-pink)" },
-];
+]
 
 export default function Wellbeing() {
-  const { lang } = useLang();
-  const [selectedMood, setSelectedMood] = useState<number | null>(null);
-  const [moodLogged, setMoodLogged] = useState(false);
-  const [activeExercise, setActiveExercise] = useState<string | null>(null);
-  const [showSleepLog, setShowSleepLog] = useState(false);
-  const [sleepHours, setSleepHours] = useState(7);
+  const { lang } = useLang()
+  const [selectedMood, setSelectedMood] = useState<number | null>(null)
+  const [moodLogged, setMoodLogged] = useState(false)
+  const [activeExercise, setActiveExercise] = useState<string | null>(null)
+  const [showSleepLog, setShowSleepLog] = useState(false)
+  const [sleepHours, setSleepHours] = useState(7)
   const [sleepQuality, setSleepQuality] = useState<
     "bad" | "okay" | "good" | "great"
-  >("good");
-  const [bedtime, setBedtime] = useState("23:00");
-  const [wakeTime, setWakeTime] = useState("07:00");
-  const [sleepLogged, setSleepLogged] = useState(false);
-  const [showGratitude, setShowGratitude] = useState(false);
-  const [gratitudeText, setGratitudeText] = useState("");
-  const [gratitudeSaved, setGratitudeSaved] = useState(false);
-  const [showExerciseLog, setShowExerciseLog] = useState(false);
-  const [exerciseType, setExerciseType] = useState("Running");
-  const [exerciseDuration, setExerciseDuration] = useState(30);
-  const [exerciseCalories, setExerciseCalories] = useState("");
-  const [exerciseNotes, setExerciseNotes] = useState("");
-  const [exerciseLogged, setExerciseLogged] = useState(false);
-  const [showMeditation, setShowMeditation] = useState(false);
-  const [showHealthTracker, setShowHealthTracker] = useState(false);
+  >("good")
+  const [bedtime, setBedtime] = useState("23:00")
+  const [wakeTime, setWakeTime] = useState("07:00")
+  const [sleepLogged, setSleepLogged] = useState(false)
+  const [showGratitude, setShowGratitude] = useState(false)
+  const [gratitudeText, setGratitudeText] = useState("")
+  const [gratitudeSaved, setGratitudeSaved] = useState(false)
+  const [showExerciseLog, setShowExerciseLog] = useState(false)
+  const [exerciseType, setExerciseType] = useState("Running")
+  const [exerciseDuration, setExerciseDuration] = useState(30)
+  const [exerciseCalories, setExerciseCalories] = useState("")
+  const [exerciseNotes, setExerciseNotes] = useState("")
+  const [exerciseLogged, setExerciseLogged] = useState(false)
+  const [showMeditation, setShowMeditation] = useState(false)
+  const [showHealthTracker, setShowHealthTracker] = useState(false)
 
-  const moodStats = useQuery(api.moods.stats);
-  const sleepStats = useQuery(api.sleepLogs.stats);
-  const gratitudeEntries = useQuery(api.gratitudeEntries.list);
-  const gratitudeStats = useQuery(api.gratitudeEntries.stats);
-  const exerciseLogs = useQuery(api.exerciseLogs.list);
-  const exerciseStats = useQuery(api.exerciseLogs.stats);
+  const moodStats = useQuery(api.moods.stats)
+  const sleepStats = useQuery(api.sleepLogs.stats)
+  const gratitudeEntries = useQuery(api.gratitudeEntries.list)
+  const gratitudeStats = useQuery(api.gratitudeEntries.stats)
+  const exerciseLogs = useQuery(api.exerciseLogs.list)
+  const exerciseStats = useQuery(api.exerciseLogs.stats)
 
-  const createMood = useMutation(api.moods.create);
-  const createSleepLog = useMutation(api.sleepLogs.create);
-  const createGratitude = useMutation(api.gratitudeEntries.create);
-  const removeGratitude = useMutation(api.gratitudeEntries.remove);
-  const createExerciseLog = useMutation(api.exerciseLogs.create);
+  const createMood = useMutation(api.moods.create, "moods")
+  const createSleepLog = useMutation(api.sleepLogs.create, "sleepLogs")
+  const createGratitude = useMutation(
+    api.gratitudeEntries.create,
+    "gratitudeEntries",
+  )
+  const removeGratitude = useMutation(
+    api.gratitudeEntries.remove,
+    "gratitudeEntries",
+  )
+  const createExerciseLog = useMutation(api.exerciseLogs.create, "exerciseLogs")
 
   const logMood = async () => {
-    if (selectedMood === null) return;
-    const moodObj = MOODS.find((m) => m.value === selectedMood);
-    if (!moodObj) return;
+    if (selectedMood === null) return
+    const moodObj = MOODS.find((m) => m.value === selectedMood)
+    if (!moodObj) return
     await createMood({
       mood: moodObj.moodKey,
       value: selectedMood,
       date: Date.now(),
-    });
-    setMoodLogged(true);
-  };
+    })
+    setMoodLogged(true)
+  }
 
-  const moodStreak = moodStats?.moodStreak ?? 0;
-  const todayMood = moodStats?.todayMood ?? null;
-  const avgSleep = sleepStats?.avgHours ?? 0;
-  const sleepStreak = sleepStats?.streak ?? 0;
-  const lastNightHours = sleepStats?.todayHours ?? 0;
+  const moodStreak = moodStats?.moodStreak ?? 0
+  const todayMood = moodStats?.todayMood ?? null
+  const avgSleep = sleepStats?.avgHours ?? 0
+  const sleepStreak = sleepStats?.streak ?? 0
+  const lastNightHours = sleepStats?.todayHours ?? 0
 
   const logSleep = async () => {
     await createSleepLog({
@@ -198,21 +204,21 @@ export default function Wellbeing() {
       bedTime: bedtime,
       wakeTime,
       date: Date.now(),
-    });
-    setSleepLogged(true);
-    setShowSleepLog(false);
-  };
+    })
+    setSleepLogged(true)
+    setShowSleepLog(false)
+  }
 
   const saveGratitude = async () => {
-    if (!gratitudeText.trim()) return;
+    if (!gratitudeText.trim()) return
     await createGratitude({
       content: gratitudeText.trim(),
       date: Date.now(),
-    });
-    setGratitudeText("");
-    setGratitudeSaved(true);
-    setTimeout(() => setGratitudeSaved(false), 2000);
-  };
+    })
+    setGratitudeText("")
+    setGratitudeSaved(true)
+    setTimeout(() => setGratitudeSaved(false), 2000)
+  }
 
   const logExercise = async () => {
     await createExerciseLog({
@@ -221,14 +227,14 @@ export default function Wellbeing() {
       calories: exerciseCalories ? parseInt(exerciseCalories) : undefined,
       notes: exerciseNotes || undefined,
       date: Date.now(),
-    });
-    setExerciseLogged(true);
-    setShowExerciseLog(false);
-    setExerciseDuration(30);
-    setExerciseCalories("");
-    setExerciseNotes("");
-    setTimeout(() => setExerciseLogged(false), 2000);
-  };
+    })
+    setExerciseLogged(true)
+    setShowExerciseLog(false)
+    setExerciseDuration(30)
+    setExerciseCalories("")
+    setExerciseNotes("")
+    setTimeout(() => setExerciseLogged(false), 2000)
+  }
 
   const stats = [
     {
@@ -251,9 +257,9 @@ export default function Wellbeing() {
       labelKey: "wellbeing.stressLevel" as TranslationKey,
       color: "var(--pv-green)",
     },
-  ];
+  ]
 
-  const sliderPct = ((sleepHours - 1) / 11) * 100;
+  const sliderPct = ((sleepHours - 1) / 11) * 100
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -307,8 +313,8 @@ export default function Wellbeing() {
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                setSelectedMood(mood.value);
-                setMoodLogged(false);
+                setSelectedMood(mood.value)
+                setMoodLogged(false)
               }}
               className={`text-3xl p-2 rounded-xl transition-all ${selectedMood === mood.value ? "glass glow-green scale-110" : "hover:bg-foreground/5"}`}
             >
@@ -347,8 +353,8 @@ export default function Wellbeing() {
         <AnimatePresence mode="wait">
           {activeExercise ? (
             (() => {
-              const ex = EXERCISES.find((e) => e.id === activeExercise);
-              if (!ex) return null;
+              const ex = EXERCISES.find((e) => e.id === activeExercise)
+              if (!ex) return null
               return (
                 <BreathingExercise
                   key={activeExercise}
@@ -360,7 +366,7 @@ export default function Wellbeing() {
                   totalDurationMinutes={ex.durationMin}
                   onClose={() => setActiveExercise(null)}
                 />
-              );
+              )
             })()
           ) : (
             <motion.div
@@ -410,8 +416,8 @@ export default function Wellbeing() {
           </h3>
           <button
             onClick={() => {
-              setShowSleepLog(!showSleepLog);
-              setSleepLogged(false);
+              setShowSleepLog(!showSleepLog)
+              setSleepLogged(false)
             }}
             className="text-xs text-[var(--pv-blue)] font-medium flex items-center gap-1 min-h-[44px]"
           >
@@ -567,8 +573,8 @@ export default function Wellbeing() {
           </div>
           <button
             onClick={() => {
-              setShowGratitude(!showGratitude);
-              setGratitudeSaved(false);
+              setShowGratitude(!showGratitude)
+              setGratitudeSaved(false)
             }}
             className="text-xs text-[var(--pv-green)] font-medium flex items-center gap-1 min-h-[44px]"
           >
@@ -708,8 +714,8 @@ export default function Wellbeing() {
           </h3>
           <button
             onClick={() => {
-              setShowExerciseLog(!showExerciseLog);
-              setExerciseLogged(false);
+              setShowExerciseLog(!showExerciseLog)
+              setExerciseLogged(false)
             }}
             className="text-xs text-[var(--pv-orange)] font-medium flex items-center gap-1 min-h-[44px]"
           >
@@ -856,7 +862,7 @@ export default function Wellbeing() {
         {exerciseLogs && exerciseLogs.length > 0 && (
           <div className="space-y-2">
             {exerciseLogs.slice(0, 5).map((log) => {
-              const et = EXERCISE_TYPES.find((e) => e.type === log.type);
+              const et = EXERCISE_TYPES.find((e) => e.type === log.type)
               return (
                 <motion.div
                   key={log._id}
@@ -883,7 +889,7 @@ export default function Wellbeing() {
                     </div>
                   </div>
                 </motion.div>
-              );
+              )
             })}
           </div>
         )}
@@ -974,7 +980,7 @@ export default function Wellbeing() {
                 type: "Water",
                 duration: amount,
                 date: Date.now(),
-              });
+              })
             }}
             onAddExercise={(exercise) => {
               createExerciseLog({
@@ -982,7 +988,7 @@ export default function Wellbeing() {
                 duration: exercise.duration,
                 calories: exercise.calories,
                 date: Date.now(),
-              });
+              })
             }}
           />
         </motion.div>
@@ -994,5 +1000,5 @@ export default function Wellbeing() {
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }

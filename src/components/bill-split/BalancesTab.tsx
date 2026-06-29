@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
 import {
   Users,
   UserPlus,
@@ -7,35 +7,34 @@ import {
   ArrowRight,
   TrendingDown,
   CheckCircle,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { formatBanglaCurrency } from "@/lib/bangla-numbers";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { formatBanglaCurrency } from "@/lib/bangla-numbers"
 import {
   type Bill,
   type Friend,
   fadeUp,
   slideIn,
   formatCurrency,
-} from "./types";
+} from "./types"
 
 interface BalancesTabProps {
-  bills: Bill[];
-  friends: Friend[];
-  netBalances: { from: string; to: string; amount: number }[];
-  t: (key: string) => string;
-  onShowAddFriend: () => void;
-  onDeleteFriend: (id: string) => void;
+  bills: Bill[]
+  friends: Friend[]
+  netBalances: { from: string; to: string; amount: number }[]
+  t: (key: string) => string
+  onShowAddFriend: () => void
+  onDeleteFriend: (id: string) => void
 }
 
 export function BalancesTab({
-  bills,
   friends,
   netBalances,
   t,
   onShowAddFriend,
   onDeleteFriend,
 }: BalancesTabProps) {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   return (
     <motion.div
@@ -172,5 +171,5 @@ export function BalancesTab({
         )}
       </div>
     </motion.div>
-  );
+  )
 }

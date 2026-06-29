@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
-import { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
+import { useState, useEffect, useCallback } from "react"
 import {
   Wifi,
   WifiOff,
@@ -26,28 +26,28 @@ import {
   Brain,
   Loader2,
   Zap,
-} from "lucide-react";
+} from "lucide-react"
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 interface SyncItem {
-  id: string;
-  type: string;
-  action: string;
-  timestamp: number;
-  status: "pending" | "syncing" | "error";
+  id: string
+  type: string
+  action: string
+  timestamp: number
+  status: "pending" | "syncing" | "error"
 }
 
 interface StorageCategory {
-  name: string;
-  size: number;
-  icon: React.ElementType;
-  color: string;
+  name: string
+  size: number
+  icon: React.ElementType
+  color: string
 }
 
 const OFFLINE_FEATURES = [
@@ -74,15 +74,15 @@ const OFFLINE_FEATURES = [
   { key: "offlineMode.feature.focus", icon: Zap, color: "text-orange-500" },
   { key: "offlineMode.feature.goals", icon: Target, color: "text-red-500" },
   { key: "offlineMode.feature.wellbeing", icon: Brain, color: "text-pink-500" },
-];
+]
 
-const SYNC_INTERVALS = [15, 30, 60, 120, 300];
+const SYNC_INTERVALS = [15, 30, 60, 120, 300]
 
 export default function OfflineMode() {
-  const { lang } = useLang();
-  const tc = useCallback((key: TranslationKey) => t(key, lang), [lang]);
+  const { lang } = useLang()
+  const tc = useCallback((key: TranslationKey) => t(key, lang), [lang])
 
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [syncQueue, setSyncQueue] = useState<SyncItem[]>([
     {
       id: "1",
@@ -105,33 +105,7 @@ export default function OfflineMode() {
       timestamp: NOW - 900000,
       status: "pending",
     },
-  ]);
-  const [storageUsed, setStorageUsed] = useState(() => {
-    const total = storageCategories.reduce((sum, cat) => sum + cat.size, 0);
-    return total;
-  });
-  const [storageLimit] = useState(50 * 1024 * 1024);
-  const [autoSync, setAutoSync] = useState(true);
-  const [syncInterval, setSyncInterval] = useState(30);
-  const [wifiOnly, setWifiOnly] = useState(false);
-  const [lastSynced, setLastSynced] = useState<Date | null>(
-    new Date(NOW - 3600000),
-  );
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [featuresEnabled, setFeaturesEnabled] = useState<
-    Record<string, boolean>
-  >({
-    "offlineMode.feature.tasks": true,
-    "offlineMode.feature.habits": true,
-    "offlineMode.feature.journal": true,
-    "offlineMode.feature.expenses": true,
-    "offlineMode.feature.focus": true,
-    "offlineMode.feature.goals": true,
-    "offlineMode.feature.wellbeing": true,
-  });
-  const [showStorageBreakdown, setShowStorageBreakdown] = useState(false);
-  const [showAutoSyncSettings, setShowAutoSyncSettings] = useState(false);
-
+  ])
   const storageCategories: StorageCategory[] = [
     {
       name: tc("offlineMode.storage.tasks"),
@@ -163,79 +137,105 @@ export default function OfflineMode() {
       icon: Database,
       color: "bg-gray-500",
     },
-  ];
+  ]
+
+  const [storageUsed, setStorageUsed] = useState(() => {
+    const total = storageCategories.reduce((sum, cat) => sum + cat.size, 0)
+    return total
+  })
+  const [storageLimit] = useState(50 * 1024 * 1024)
+  const [autoSync, setAutoSync] = useState(true)
+  const [syncInterval, setSyncInterval] = useState(30)
+  const [wifiOnly, setWifiOnly] = useState(false)
+  const [lastSynced, setLastSynced] = useState<Date | null>(
+    new Date(NOW - 3600000),
+  )
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [featuresEnabled, setFeaturesEnabled] = useState<
+    Record<string, boolean>
+  >({
+    "offlineMode.feature.tasks": true,
+    "offlineMode.feature.habits": true,
+    "offlineMode.feature.journal": true,
+    "offlineMode.feature.expenses": true,
+    "offlineMode.feature.focus": true,
+    "offlineMode.feature.goals": true,
+    "offlineMode.feature.wellbeing": true,
+  })
+  const [showStorageBreakdown, setShowStorageBreakdown] = useState(false)
+  const [showAutoSyncSettings, setShowAutoSyncSettings] = useState(false)
 
   const handleSyncAll = useCallback(async () => {
-    setIsSyncing(true);
+    setIsSyncing(true)
     for (const item of syncQueue) {
       if (item.status === "pending") {
         setSyncQueue((prev) =>
           prev.map((i) => (i.id === item.id ? { ...i, status: "syncing" } : i)),
-        );
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        )
+        await new Promise((resolve) => setTimeout(resolve, 500))
         setSyncQueue((prev) =>
           prev.map((i) => (i.id === item.id ? { ...i, status: "pending" } : i)),
-        );
+        )
       }
     }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setSyncQueue([]);
-    setLastSynced(new Date());
-    setIsSyncing(false);
-  }, [syncQueue]);
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    setSyncQueue([])
+    setLastSynced(new Date())
+    setIsSyncing(false)
+  }, [syncQueue])
 
   useEffect(() => {
     const handleOnline = () => {
-      setIsOnline(true);
+      setIsOnline(true)
       if (autoSync && (!wifiOnly || navigator.onLine)) {
-        handleSyncAll();
+        handleSyncAll()
       }
-    };
-    const handleOffline = () => setIsOnline(false);
+    }
+    const handleOffline = () => setIsOnline(false)
 
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline)
+    window.addEventListener("offline", handleOffline)
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, [autoSync, wifiOnly, handleSyncAll]);
+      window.removeEventListener("online", handleOnline)
+      window.removeEventListener("offline", handleOffline)
+    }
+  }, [autoSync, wifiOnly, handleSyncAll])
 
   const formatBytes = (bytes: number) => {
-    if (bytes === 0) return "0 B";
-    const mb = bytes / (1024 * 1024);
-    return `${mb.toFixed(1)} MB`;
-  };
+    if (bytes === 0) return "0 B"
+    const mb = bytes / (1024 * 1024)
+    return `${mb.toFixed(1)} MB`
+  }
 
   const formatTimeAgo = (date: Date) => {
-    const seconds = Math.floor((NOW - date.getTime()) / 1000);
-    if (seconds < 60) return `${seconds}s`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
-    return `${Math.floor(seconds / 86400)}d`;
-  };
+    const seconds = Math.floor((NOW - date.getTime()) / 1000)
+    if (seconds < 60) return `${seconds}s`
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m`
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`
+    return `${Math.floor(seconds / 86400)}d`
+  }
 
   const formatTimestamp = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString(
       lang === "bn" ? "bn-BD" : "en-US",
       { hour: "2-digit", minute: "2-digit" },
-    );
-  };
+    )
+  }
 
   const handleClearCache = () => {
     const categories = storageCategories.find(
       (c) => c.name === tc("offlineMode.storage.cache"),
-    );
+    )
     if (categories) {
-      setStorageUsed((prev) => prev - categories.size);
+      setStorageUsed((prev) => prev - categories.size)
     }
-  };
+  }
 
   const handleClearAllData = () => {
-    setStorageUsed(0);
-    setSyncQueue([]);
-  };
+    setStorageUsed(0)
+    setSyncQueue([])
+  }
 
   const handleExportData = () => {
     const data = {
@@ -244,17 +244,17 @@ export default function OfflineMode() {
       featuresEnabled,
       lastSynced: lastSynced?.toISOString(),
       exportDate: new Date().toISOString(),
-    };
+    }
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pro-vision-offline-data-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+    })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `pro-vision-offline-data-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   const handleDownloadOfflineData = () => {
     const data = {
@@ -263,23 +263,23 @@ export default function OfflineMode() {
       journal: [],
       expenses: [],
       downloadedAt: new Date().toISOString(),
-    };
+    }
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pro-vision-offline-data-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+    })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `pro-vision-offline-data-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   const toggleFeature = (key: string) => {
-    setFeaturesEnabled((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+    setFeaturesEnabled((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
 
-  const storagePercent = Math.min((storageUsed / storageLimit) * 100, 100);
+  const storagePercent = Math.min((storageUsed / storageLimit) * 100, 100)
 
   return (
     <motion.div
@@ -443,7 +443,7 @@ export default function OfflineMode() {
             className="space-y-3 mb-4"
           >
             {storageCategories.map((cat) => {
-              const Icon = cat.icon;
+              const Icon = cat.icon
               return (
                 <div key={cat.name} className="flex items-center gap-3">
                   <div className={`${cat.color} rounded-lg p-2`}>
@@ -466,7 +466,7 @@ export default function OfflineMode() {
                     </div>
                   </div>
                 </div>
-              );
+              )
             })}
           </motion.div>
         )}
@@ -554,8 +554,8 @@ export default function OfflineMode() {
         </p>
         <div className="space-y-2">
           {OFFLINE_FEATURES.map((feature) => {
-            const Icon = feature.icon;
-            const isEnabled = featuresEnabled[feature.key] ?? true;
+            const Icon = feature.icon
+            const isEnabled = featuresEnabled[feature.key] ?? true
             return (
               <div
                 key={feature.key}
@@ -580,7 +580,7 @@ export default function OfflineMode() {
                   />
                 </button>
               </div>
-            );
+            )
           })}
         </div>
       </motion.div>
@@ -725,5 +725,5 @@ export default function OfflineMode() {
         </div>
       </motion.div>
     </motion.div>
-  );
+  )
 }

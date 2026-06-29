@@ -1,11 +1,8 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   Trophy,
-  Users,
-  Calendar,
-  Target,
   Clock,
   Award,
   Flame,
@@ -13,12 +10,10 @@ import {
   Plus,
   X,
   Share2,
-  Filter,
   Zap,
-  UserPlus,
   Copy,
-} from "lucide-react";
-import { toastSuccess } from "@/lib/toast-helpers";
+} from "lucide-react"
+import { toastSuccess } from "@/lib/toast-helpers"
 import {
   CHALLENGE_TYPES,
   ActiveChallenges,
@@ -27,56 +22,56 @@ import {
   Badges,
   History,
   CreateChallenge,
-} from "@/components/social-challenges";
+} from "@/components/social-challenges"
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-const NOW = Date.now();
+const DAY_MS = 24 * 60 * 60 * 1000
+const NOW = Date.now()
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 interface Challenge {
-  _id: string;
-  type: string;
-  name: string;
-  description: string;
-  goal: number;
-  unit: string;
-  duration: number;
-  startDate: number;
-  endDate: number;
-  progress: number;
-  streak: number;
-  joinedUsers: number;
-  createdBy: string;
-  isActive: boolean;
-  dailyLogs: boolean[];
+  _id: string
+  type: string
+  name: string
+  description: string
+  goal: number
+  unit: string
+  duration: number
+  startDate: number
+  endDate: number
+  progress: number
+  streak: number
+  joinedUsers: number
+  createdBy: string
+  isActive: boolean
+  dailyLogs: boolean[]
 }
 
 interface LeaderboardEntry {
-  rank: number;
-  name: string;
-  avatar: string;
-  streak: number;
-  completedChallenges: number;
-  points: number;
-  isCurrentUser: boolean;
+  rank: number
+  name: string
+  avatar: string
+  streak: number
+  completedChallenges: number
+  points: number
+  isCurrentUser: boolean
 }
 
 interface Badge {
-  id: string;
-  nameEn: string;
-  nameBn: string;
-  descriptionEn: string;
-  descriptionBn: string;
-  icon: string;
-  color: string;
-  unlocked: boolean;
-  unlockedAt?: number;
-  progress?: number;
-  maxProgress?: number;
+  id: string
+  nameEn: string
+  nameBn: string
+  descriptionEn: string
+  descriptionBn: string
+  icon: string
+  color: string
+  unlocked: boolean
+  unlockedAt?: number
+  progress?: number
+  maxProgress?: number
 }
 
 const BADGES: Badge[] = [
@@ -172,20 +167,20 @@ const BADGES: Badge[] = [
     progress: 5,
     maxProgress: 8,
   },
-];
+]
 
 export default function SocialChallenges() {
-  const { lang } = useLang();
+  const { lang } = useLang()
   const [activeTab, setActiveTab] = useState<
     "active" | "available" | "leaderboard" | "history" | "badges" | "create"
-  >("active");
-  const [filterType, setFilterType] = useState<string>("all");
-  const [showCheckInModal, setShowCheckInModal] = useState<string | null>(null);
-  const [showInviteModal, setShowInviteModal] = useState<string | null>(null);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [checkInValue, setCheckInValue] = useState("");
-  const [checkInNote, setCheckInNote] = useState("");
-  const [friendSearch, setFriendSearch] = useState("");
+  >("active")
+  const [filterType, setFilterType] = useState<string>("all")
+  const [showCheckInModal, setShowCheckInModal] = useState<string | null>(null)
+  const [showInviteModal, setShowInviteModal] = useState<string | null>(null)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [checkInValue, setCheckInValue] = useState("")
+  const [checkInNote, setCheckInNote] = useState("")
+  const [friendSearch, setFriendSearch] = useState("")
 
   const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([
     {
@@ -246,7 +241,7 @@ export default function SocialChallenges() {
       isActive: true,
       dailyLogs: Array(3).fill(true),
     },
-  ]);
+  ])
 
   const [availableChallenges, setAvailableChallenges] = useState<Challenge[]>([
     {
@@ -343,9 +338,9 @@ export default function SocialChallenges() {
       isActive: true,
       dailyLogs: [],
     },
-  ]);
+  ])
 
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([
+  const [leaderboard] = useState<LeaderboardEntry[]>([
     {
       rank: 1,
       name: "রাহাত",
@@ -418,11 +413,11 @@ export default function SocialChallenges() {
       points: 600,
       isCurrentUser: false,
     },
-  ]);
+  ])
 
-  const [badges, setBadges] = useState<Badge[]>(BADGES);
+  const [badges] = useState<Badge[]>(BADGES)
 
-  const [history, setHistory] = useState<Challenge[]>([
+  const [history] = useState<Challenge[]>([
     {
       _id: "h1",
       type: "fitness",
@@ -481,7 +476,7 @@ export default function SocialChallenges() {
       isActive: false,
       dailyLogs: Array(30).fill(true),
     },
-  ]);
+  ])
 
   const [customChallenge, setCustomChallenge] = useState({
     name: "",
@@ -491,7 +486,7 @@ export default function SocialChallenges() {
     unit: "times",
     duration: 7,
     inviteFriends: [] as string[],
-  });
+  })
 
   const friendsList = useMemo(
     () => [
@@ -503,12 +498,12 @@ export default function SocialChallenges() {
       { id: "f6", name: "মাহমুদা", avatar: "🌸" },
     ],
     [],
-  );
+  )
 
   const filteredAvailable = useMemo(() => {
-    if (filterType === "all") return availableChallenges;
-    return availableChallenges.filter((c) => c.type === filterType);
-  }, [availableChallenges, filterType]);
+    if (filterType === "all") return availableChallenges
+    return availableChallenges.filter((c) => c.type === filterType)
+  }, [availableChallenges, filterType])
 
   const stats = useMemo(
     () => ({
@@ -521,14 +516,14 @@ export default function SocialChallenges() {
       badgesEarned: badges.filter((b) => b.unlocked).length,
     }),
     [activeChallenges, history, badges],
-  );
+  )
 
   const getChallengeTypeInfo = (typeId: string) =>
-    CHALLENGE_TYPES.find((t) => t.id === typeId) || CHALLENGE_TYPES[0];
+    CHALLENGE_TYPES.find((t) => t.id === typeId) || CHALLENGE_TYPES[0]
 
   const handleJoinChallenge = (challengeId: string) => {
-    const challenge = availableChallenges.find((c) => c._id === challengeId);
-    if (!challenge) return;
+    const challenge = availableChallenges.find((c) => c._id === challengeId)
+    if (!challenge) return
     const joined: Challenge = {
       ...challenge,
       startDate: Date.now(),
@@ -537,37 +532,37 @@ export default function SocialChallenges() {
       streak: 0,
       dailyLogs: [],
       isActive: true,
-    };
-    setActiveChallenges((prev) => [...prev, joined]);
-    setAvailableChallenges((prev) => prev.filter((c) => c._id !== challengeId));
+    }
+    setActiveChallenges((prev) => [...prev, joined])
+    setAvailableChallenges((prev) => prev.filter((c) => c._id !== challengeId))
     toastSuccess(
       lang === "bn" ? "চ্যালেঞ্জে যোগ দেওয়া হয়েছে!" : "Challenge joined!",
-    );
-  };
+    )
+  }
 
   const handleCheckIn = (challengeId: string) => {
     setActiveChallenges((prev) =>
       prev.map((c) => {
         if (c._id === challengeId) {
-          const newProgress = Math.min(100, c.progress + 100 / c.duration);
+          const newProgress = Math.min(100, c.progress + 100 / c.duration)
           return {
             ...c,
             progress: Math.round(newProgress),
             streak: c.streak + 1,
             dailyLogs: [...c.dailyLogs, true],
-          };
+          }
         }
-        return c;
+        return c
       }),
-    );
-    setShowCheckInModal(null);
-    setCheckInValue("");
-    setCheckInNote("");
-    toastSuccess(lang === "bn" ? "চেক-ইন সফল হয়েছে!" : "Check-in successful!");
-  };
+    )
+    setShowCheckInModal(null)
+    setCheckInValue("")
+    setCheckInNote("")
+    toastSuccess(lang === "bn" ? "চেক-ইন সফল হয়েছে!" : "Check-in successful!")
+  }
 
   const handleCreateChallenge = () => {
-    if (!customChallenge.name || !customChallenge.goal) return;
+    if (!customChallenge.name || !customChallenge.goal) return
     const newChallenge: Challenge = {
       _id: Date.now().toString(),
       type: customChallenge.type,
@@ -584,8 +579,8 @@ export default function SocialChallenges() {
       createdBy: "you",
       isActive: true,
       dailyLogs: [],
-    };
-    setActiveChallenges((prev) => [...prev, newChallenge]);
+    }
+    setActiveChallenges((prev) => [...prev, newChallenge])
     setCustomChallenge({
       name: "",
       description: "",
@@ -594,23 +589,23 @@ export default function SocialChallenges() {
       unit: "times",
       duration: 7,
       inviteFriends: [],
-    });
-    setActiveTab("active");
+    })
+    setActiveTab("active")
     toastSuccess(
       lang === "bn"
         ? "কাস্টম চ্যালেঞ্জ তৈরি হয়েছে!"
         : "Custom challenge created!",
-    );
-  };
+    )
+  }
 
   const handleShareProgress = (challenge?: Challenge) => {
     const shareText = challenge
       ? `${challenge.name}: ${challenge.progress}% ${lang === "bn" ? "সম্পন্ন" : "completed"}! 🔥`
-      : `${lang === "bn" ? "আমি Pro-Vision চ্যালেঞ্জে অংশ নিচ্ছি!" : "I'm taking on Pro-Vision challenges!"}`;
-    navigator.clipboard.writeText(shareText);
-    setShowShareModal(false);
-    toastSuccess(lang === "bn" ? "কপি হয়েছে!" : "Copied to clipboard!");
-  };
+      : `${lang === "bn" ? "আমি Pro-Vision চ্যালেঞ্জে অংশ নিচ্ছি!" : "I'm taking on Pro-Vision challenges!"}`
+    navigator.clipboard.writeText(shareText)
+    setShowShareModal(false)
+    toastSuccess(lang === "bn" ? "কপি হয়েছে!" : "Copied to clipboard!")
+  }
 
   const toggleFriendInvite = (friendId: string) => {
     setCustomChallenge((prev) => ({
@@ -618,8 +613,8 @@ export default function SocialChallenges() {
       inviteFriends: prev.inviteFriends.includes(friendId)
         ? prev.inviteFriends.filter((id) => id !== friendId)
         : [...prev.inviteFriends, friendId],
-    }));
-  };
+    }))
+  }
 
   const tabs = [
     {
@@ -648,7 +643,7 @@ export default function SocialChallenges() {
     },
     { id: "badges" as const, labelEn: "Badges", labelBn: "ব্যাজ", icon: Award },
     { id: "create" as const, labelEn: "Create", labelBn: "তৈরি", icon: Plus },
-  ];
+  ]
 
   return (
     <motion.div
@@ -959,8 +954,8 @@ export default function SocialChallenges() {
                           lang === "bn"
                             ? `${friend.name}-কে আমন্ত্রণ পাঠানো হয়েছে`
                             : `Invitation sent to ${friend.name}`,
-                        );
-                        setShowInviteModal(null);
+                        )
+                        setShowInviteModal(null)
                       }}
                       className="px-3 py-1 rounded-lg bg-primary text-primary-foreground text-xs font-medium"
                     >
@@ -1040,5 +1035,5 @@ export default function SocialChallenges() {
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }

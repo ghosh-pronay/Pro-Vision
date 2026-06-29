@@ -1,40 +1,12 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
-import {
-  Receipt,
-  Plus,
-  Users,
-  Calculator,
-  History,
-  CheckCircle,
-  X,
-  Trash2,
-  ArrowRight,
-  QrCode,
-  Link2,
-  Wallet,
-  UserPlus,
-  ChevronDown,
-  ChevronUp,
-  FileText,
-  ShoppingBag,
-  Utensils,
-  Bus,
-  Clapperboard,
-  Tag,
-  Check,
-  AlertCircle,
-  TrendingDown,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { formatBanglaCurrency } from "@/lib/bangla-numbers";
-import { toastSuccess, toastError } from "@/lib/toast-helpers";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
+import { Plus, Calculator, History, X, Trash2 } from "lucide-react"
+import { formatBanglaCurrency } from "@/lib/bangla-numbers"
+import { toastError } from "@/lib/toast-helpers"
 import {
   type SplitMethod,
   type BillCategory,
-  type BillStatus,
   type Participant,
   type Bill,
   type Friend,
@@ -46,15 +18,15 @@ import {
   getCategoryColor,
   getStatusColor,
   formatCurrency,
-} from "./types";
+} from "./types"
 
 interface CreateTabProps {
-  bills: Bill[];
-  friends: Friend[];
-  t: (key: string) => string;
-  onCreateBill: (bill: Omit<Bill, "_id" | "status" | "paidAmount">) => void;
-  onNavigateToHistory: () => void;
-  onNavigateToBalances: () => void;
+  bills: Bill[]
+  friends: Friend[]
+  t: (key: string) => string
+  onCreateBill: (bill: Omit<Bill, "_id" | "status" | "paidAmount">) => void
+  onNavigateToHistory: () => void
+  onNavigateToBalances: () => void
 }
 
 export function CreateTab({
@@ -65,10 +37,10 @@ export function CreateTab({
   onNavigateToHistory,
   onNavigateToBalances,
 }: CreateTabProps) {
-  const { lang } = useLang();
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [splitMethod, setSplitMethod] = useState<SplitMethod>("equal");
-  const [participants, setParticipants] = useState<Participant[]>([]);
+  const { lang } = useLang()
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [splitMethod, setSplitMethod] = useState<SplitMethod>("equal")
+  const [participants, setParticipants] = useState<Participant[]>([])
 
   const [formData, setFormData] = useState({
     title: "",
@@ -76,35 +48,35 @@ export function CreateTab({
     category: "food" as BillCategory,
     currency: "BDT" as "BDT" | "USD",
     date: new Date().toISOString().split("T")[0],
-  });
+  })
 
   const remainingPercentage = useMemo(() => {
-    const total = participants.reduce((s, p) => s + p.percentage, 0);
-    return 100 - total;
-  }, [participants]);
+    const total = participants.reduce((s, p) => s + p.percentage, 0)
+    return 100 - total
+  }, [participants])
 
   const calculateSplit = () => {
-    const total = parseFloat(formData.totalAmount) || 0;
-    if (participants.length === 0 || total === 0) return;
+    const total = parseFloat(formData.totalAmount) || 0
+    if (participants.length === 0 || total === 0) return
 
     if (splitMethod === "equal") {
-      const share = total / participants.length;
+      const share = total / participants.length
       setParticipants(
         participants.map((p) => ({
           ...p,
           amount: Math.round(share * 100) / 100,
           percentage: 100 / participants.length,
         })),
-      );
+      )
     } else if (splitMethod === "percentage") {
       setParticipants(
         participants.map((p) => ({
           ...p,
           amount: Math.round(((total * p.percentage) / 100) * 100) / 100,
         })),
-      );
+      )
     }
-  };
+  }
 
   const addParticipant = (name?: string) => {
     const newParticipant: Participant = {
@@ -113,14 +85,14 @@ export function CreateTab({
       amount: 0,
       percentage: 0,
       paid: false,
-    };
-    setParticipants([...participants, newParticipant]);
-    if (name) calculateSplit();
-  };
+    }
+    setParticipants([...participants, newParticipant])
+    if (name) calculateSplit()
+  }
 
   const removeParticipant = (id: string) => {
-    setParticipants(participants.filter((p) => p.id !== id));
-  };
+    setParticipants(participants.filter((p) => p.id !== id))
+  }
 
   const updateParticipant = (
     id: string,
@@ -129,11 +101,11 @@ export function CreateTab({
   ) => {
     setParticipants(
       participants.map((p) => (p.id === id ? { ...p, [field]: value } : p)),
-    );
+    )
     if (field === "percentage" || field === "amount") {
-      setTimeout(calculateSplit, 0);
+      setTimeout(calculateSplit, 0)
     }
-  };
+  }
 
   const createBill = () => {
     if (!formData.title || !formData.totalAmount || participants.length === 0) {
@@ -141,23 +113,23 @@ export function CreateTab({
         lang === "bn"
           ? "অনুগ্রহ করে সব তথ্য পূরণ করুন"
           : "Please fill all fields",
-      );
-      return;
+      )
+      return
     }
 
-    const total = parseFloat(formData.totalAmount);
+    const total = parseFloat(formData.totalAmount)
     if (splitMethod === "percentage") {
-      const totalPct = participants.reduce((s, p) => s + p.percentage, 0);
+      const totalPct = participants.reduce((s, p) => s + p.percentage, 0)
       if (Math.abs(totalPct - 100) > 0.01) {
-        toastError(t("billSplit.percentageMismatch"));
-        return;
+        toastError(t("billSplit.percentageMismatch"))
+        return
       }
     }
     if (splitMethod === "custom") {
-      const totalCustom = participants.reduce((s, p) => s + p.amount, 0);
+      const totalCustom = participants.reduce((s, p) => s + p.amount, 0)
       if (Math.abs(totalCustom - total) > 0.01) {
-        toastError(t("billSplit.amountMismatch"));
-        return;
+        toastError(t("billSplit.amountMismatch"))
+        return
       }
     }
 
@@ -180,19 +152,19 @@ export function CreateTab({
       currency: formData.currency,
       date: new Date(formData.date).getTime(),
       createdBy: participants[0]?.name || "You",
-    });
+    })
 
-    setShowCreateForm(false);
+    setShowCreateForm(false)
     setFormData({
       title: "",
       totalAmount: "",
       category: "food",
       currency: "BDT",
       date: new Date().toISOString().split("T")[0],
-    });
-    setParticipants([]);
-    setSplitMethod("equal");
-  };
+    })
+    setParticipants([])
+    setSplitMethod("equal")
+  }
 
   return (
     <motion.div
@@ -244,7 +216,7 @@ export function CreateTab({
                 {lang === "bn" ? "সাম্প্রতিক বিল" : "Recent Bills"}
               </h3>
               {bills.slice(0, 3).map((bill) => {
-                const CatIcon = getCategoryIcon(bill.category);
+                const CatIcon = getCategoryIcon(bill.category)
                 return (
                   <motion.div
                     key={bill._id}
@@ -298,7 +270,7 @@ export function CreateTab({
                       </div>
                     </div>
                   </motion.div>
-                );
+                )
               })}
             </div>
           )}
@@ -315,8 +287,8 @@ export function CreateTab({
             </h3>
             <button
               onClick={() => {
-                setShowCreateForm(false);
-                setParticipants([]);
+                setShowCreateForm(false)
+                setParticipants([])
               }}
               className="cursor-pointer p-2 rounded-lg hover:bg-foreground/5"
             >
@@ -426,9 +398,9 @@ export function CreateTab({
                   <button
                     key={method}
                     onClick={() => {
-                      setSplitMethod(method);
+                      setSplitMethod(method)
                       if (method === "equal" && participants.length > 0) {
-                        setTimeout(calculateSplit, 0);
+                        setTimeout(calculateSplit, 0)
                       }
                     }}
                     className={`cursor-pointer flex-1 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
@@ -454,8 +426,8 @@ export function CreateTab({
                       <select
                         onChange={(e) => {
                           if (e.target.value) {
-                            addParticipant(e.target.value);
-                            e.target.value = "";
+                            addParticipant(e.target.value)
+                            e.target.value = ""
                           }
                         }}
                         className="cursor-pointer appearance-none rounded-lg glass px-3 py-1 text-xs focus:outline-none hover:bg-foreground/5 transition-colors"
@@ -583,5 +555,5 @@ export function CreateTab({
         </motion.div>
       )}
     </motion.div>
-  );
+  )
 }

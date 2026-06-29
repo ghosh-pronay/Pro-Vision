@@ -1,23 +1,23 @@
-import { motion } from "framer-motion";
-import { useI18n } from "@/hooks/use-i18n";
-import { useState, useMemo } from "react";
-import { Sparkles, BookOpen, Quote } from "lucide-react";
+import { motion } from "framer-motion"
+import { useI18n } from "@/hooks/use-i18n"
+import { useState, useMemo } from "react"
+import { Sparkles, BookOpen, Quote } from "lucide-react"
 
 interface HoroscopeData {
-  sign: string;
-  prediction: string;
-  lucky: string;
-  color: string;
+  sign: string
+  prediction: string
+  lucky: string
+  color: string
 }
 
 interface OnThisDayEvent {
-  year: number;
-  event: string;
+  year: number
+  event: string
 }
 
 interface QuoteData {
-  text: string;
-  author: string;
+  text: string
+  author: string
 }
 
 const ZODIAC_SIGNS = [
@@ -33,7 +33,7 @@ const ZODIAC_SIGNS = [
   { name: "Capricorn", symbol: "♑", dates: "Dec 22 - Jan 19" },
   { name: "Aquarius", symbol: "♒", dates: "Jan 20 - Feb 18" },
   { name: "Pisces", symbol: "♓", dates: "Feb 19 - Mar 20" },
-] as const;
+] as const
 
 const HOROSCOPE_PREDICTIONS: Record<string, string[]> = {
   Aries: [
@@ -96,7 +96,7 @@ const HOROSCOPE_PREDICTIONS: Record<string, string[]> = {
     "A spiritual or emotional insight brings clarity.",
     "Artistic expression flows naturally. Create something beautiful.",
   ],
-};
+}
 
 const QUOTES: QuoteData[] = [
   {
@@ -144,7 +144,7 @@ const QUOTES: QuoteData[] = [
     text: "If you look at what you have in life, you'll always have more.",
     author: "Oprah Winfrey",
   },
-];
+]
 
 const ON_THIS_DAY_EVENTS: OnThisDayEvent[] = [
   {
@@ -193,59 +193,58 @@ const ON_THIS_DAY_EVENTS: OnThisDayEvent[] = [
     event: "The first Earth Day-like event is held, focused on conservation.",
   },
   { year: 1885, event: "The Statue of Liberty arrives in New York Harbor." },
-];
+]
 
 function getDailyHoroscope(sign: string): HoroscopeData {
   const dayOfYear = Math.floor(
     (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
       86400000,
-  );
-  const predictions =
-    HOROSCOPE_PREDICTIONS[sign] || HOROSCOPE_PREDICTIONS.Aries;
-  const prediction = predictions[dayOfYear % predictions.length];
-  const colors = ["Red", "Blue", "Green", "Gold", "Purple", "Silver"];
-  const lucky = String(((dayOfYear * 7 + sign.charCodeAt(0)) % 10) + 1);
+  )
+  const predictions = HOROSCOPE_PREDICTIONS[sign] || HOROSCOPE_PREDICTIONS.Aries
+  const prediction = predictions[dayOfYear % predictions.length]
+  const colors = ["Red", "Blue", "Green", "Gold", "Purple", "Silver"]
+  const lucky = String(((dayOfYear * 7 + sign.charCodeAt(0)) % 10) + 1)
 
   return {
     sign,
     prediction,
     lucky,
     color: colors[dayOfYear % colors.length],
-  };
+  }
 }
 
 function getQuoteOfTheDay(): QuoteData {
   const dayOfYear = Math.floor(
     (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
       86400000,
-  );
-  return QUOTES[dayOfYear % QUOTES.length];
+  )
+  return QUOTES[dayOfYear % QUOTES.length]
 }
 
 function getOnThisDayEvent(): OnThisDayEvent {
   const dayOfYear = Math.floor(
     (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
       86400000,
-  );
-  return ON_THIS_DAY_EVENTS[dayOfYear % ON_THIS_DAY_EVENTS.length];
+  )
+  return ON_THIS_DAY_EVENTS[dayOfYear % ON_THIS_DAY_EVENTS.length]
 }
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function DailyInspiration() {
-  const { t, lang } = useI18n();
-  const [selectedSign, setSelectedSign] = useState<string>("Aries");
-  const [showSignPicker, setShowSignPicker] = useState(false);
+  const { t } = useI18n()
+  const [selectedSign, setSelectedSign] = useState<string>("Aries")
+  const [showSignPicker, setShowSignPicker] = useState(false)
 
   const horoscope = useMemo(
     () => getDailyHoroscope(selectedSign),
     [selectedSign],
-  );
-  const quote = useMemo(() => getQuoteOfTheDay(), []);
-  const onThisDay = useMemo(() => getOnThisDayEvent(), []);
+  )
+  const quote = useMemo(() => getQuoteOfTheDay(), [])
+  const onThisDay = useMemo(() => getOnThisDayEvent(), [])
 
   return (
     <motion.div variants={fadeUp} className="space-y-4">
@@ -294,8 +293,8 @@ export default function DailyInspiration() {
                     role="option"
                     aria-selected={selectedSign === sign.name}
                     onClick={() => {
-                      setSelectedSign(sign.name);
-                      setShowSignPicker(false);
+                      setSelectedSign(sign.name)
+                      setShowSignPicker(false)
                     }}
                     className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-foreground/5 transition-colors ${
                       selectedSign === sign.name
@@ -377,5 +376,5 @@ export default function DailyInspiration() {
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

@@ -1,51 +1,55 @@
-import { Component, type ReactNode } from "react";
-import { AlertTriangle, Copy, Home, RefreshCw } from "lucide-react";
+import { Component, type ReactNode } from "react"
+import { AlertTriangle, Copy, Home, RefreshCw } from "lucide-react"
 
 interface Props {
-  children: ReactNode;
-  fallback?: ReactNode;
+  children: ReactNode
+  fallback?: ReactNode
 }
 
 interface State {
-  hasError: boolean;
-  error: Error | null;
-  errorId: string;
+  hasError: boolean
+  error: Error | null
+  errorId: string
 }
 
 function generateErrorId(): string {
-  const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).slice(2, 8);
-  return `${timestamp}-${random}`;
+  const timestamp = Date.now().toString(36)
+  const random = Math.random().toString(36).slice(2, 8)
+  return `${timestamp}-${random}`
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false, error: null, errorId: "" };
+    super(props)
+    this.state = { hasError: false, error: null, errorId: "" }
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error, errorId: generateErrorId() };
+    return { hasError: true, error, errorId: generateErrorId() }
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ErrorBoundary caught:", error, errorInfo);
+    console.error("ErrorBoundary caught:", error, errorInfo)
   }
 
   handleCopyError = async () => {
-    const { errorId } = this.state;
-    const details = [`Error ID: ${errorId}`].join("\n\n");
+    const { errorId } = this.state
+    const details = [`Error ID: ${errorId}`].join("\n\n")
 
-    await navigator.clipboard.writeText(details);
-  };
+    try {
+      await navigator.clipboard.writeText(details)
+    } catch {
+      // Clipboard API may fail in non-HTTPS or permission-denied contexts
+    }
+  }
 
   handleGoHome = () => {
-    window.location.href = "/dashboard";
-  };
+    window.location.href = "/dashboard"
+  }
 
   render() {
     if (this.state.hasError) {
-      if (this.props.fallback) return this.props.fallback;
+      if (this.props.fallback) return this.props.fallback
 
       return (
         <div className="glass flex flex-col items-center justify-center p-8 text-center">
@@ -83,9 +87,9 @@ export class ErrorBoundary extends Component<Props, State> {
             </button>
           </div>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }

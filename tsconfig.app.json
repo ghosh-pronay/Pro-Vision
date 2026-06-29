@@ -31,6 +31,5 @@
       "lucide-react": ["./src/lucide-react.d.ts"]
     }
   },
-  "include": ["src"],
-  "exclude": ["src/../target-src"]
+  "include": ["src"]
 }

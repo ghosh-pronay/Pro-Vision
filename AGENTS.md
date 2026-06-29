@@ -46,9 +46,9 @@ npm run typecheck     # TypeScript check
 - **Location**: `src/**/__tests__/*.test.ts(x)`
 - **Setup file**: `src/setupTests.ts` (global mocks for matchMedia, clipboard, etc.)
 - **Helpers**: `src/test-utils.tsx` provides `renderWithProviders`
-- **Coverage thresholds**: Lines 50%, Functions 50%, Branches 40%, Statements 50%
+- **Coverage thresholds**: Lines 60%, Functions 60%, Branches 50%, Statements 60%
 - **Run**: `npm test` (single run), `npm run test:watch` (watch), `npm run test:coverage` (with coverage)
-- **CI**: Both workflows run `npm run lint` + `npm run verify` + `npm run test:coverage` + `npm run build`
+- **CI**: Both workflows run `npm run lint && npm run typecheck && npm run test:coverage` then `npm run build`
 
 ## Known Gotchas
 
