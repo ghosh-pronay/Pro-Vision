@@ -1,27 +1,27 @@
-import { v } from "convex/values";
-import { query, mutation, internalAction } from "./_generated/server";
+import { v } from "convex/values"
+import { query, mutation, internalAction } from "./_generated/server"
 
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) return []
 
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
         q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
-      .unique();
+      .unique()
 
-    if (!user) return [];
+    if (!user) return []
 
     return await ctx.db
       .query("recurringTransactions")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
-      .collect();
+      .collect()
   },
-});
+})
 
 export const create = mutation({
   args: {
@@ -40,17 +40,17 @@ export const create = mutation({
     isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error("Not authenticated")
 
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
         q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
-      .unique();
+      .unique()
 
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error("User not found")
 
     return await ctx.db.insert("recurringTransactions", {
       userId: user._id,
@@ -63,9 +63,9 @@ export const create = mutation({
       nextDate: args.nextDate,
       lastProcessed: undefined,
       isActive: args.isActive,
-    });
+    })
   },
-});
+})
 
 export const update = mutation({
   args: {
@@ -87,120 +87,126 @@ export const update = mutation({
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error("Not authenticated")
 
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
         q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
-      .unique();
+      .unique()
 
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error("User not found")
 
-    const recurring = await ctx.db.get(args.id);
-    if (!recurring) throw new Error("Recurring transaction not found");
-    if (recurring.userId !== user._id) throw new Error("Unauthorized");
+    const recurring = await ctx.db.get(args.id)
+    if (!recurring) throw new Error("Recurring transaction not found")
+    if (recurring.userId !== user._id) throw new Error("Unauthorized")
 
-    const updates: Record<string, unknown> = {};
-    if (args.walletId !== undefined) updates.walletId = args.walletId;
-    if (args.type !== undefined) updates.type = args.type;
-    if (args.amount !== undefined) updates.amount = args.amount;
-    if (args.category !== undefined) updates.category = args.category;
-    if (args.description !== undefined) updates.description = args.description;
-    if (args.frequency !== undefined) updates.frequency = args.frequency;
-    if (args.nextDate !== undefined) updates.nextDate = args.nextDate;
-    if (args.isActive !== undefined) updates.isActive = args.isActive;
+    const updates: Record<string, unknown> = {}
+    if (args.walletId !== undefined) updates.walletId = args.walletId
+    if (args.type !== undefined) updates.type = args.type
+    if (args.amount !== undefined) updates.amount = args.amount
+    if (args.category !== undefined) updates.category = args.category
+    if (args.description !== undefined) updates.description = args.description
+    if (args.frequency !== undefined) updates.frequency = args.frequency
+    if (args.nextDate !== undefined) updates.nextDate = args.nextDate
+    if (args.isActive !== undefined) updates.isActive = args.isActive
 
-    await ctx.db.patch(args.id, updates);
-    return args.id;
+    await ctx.db.patch(args.id, updates)
+    return args.id
   },
-});
+})
 
 export const remove = mutation({
   args: { id: v.id("recurringTransactions") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error("Not authenticated")
 
     const user = await ctx.db
       .query("users")
       .withIndex("by_tokenIdentifier", (q) =>
         q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
-      .unique();
+      .unique()
 
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error("User not found")
 
-    const recurring = await ctx.db.get(args.id);
-    if (!recurring) throw new Error("Recurring transaction not found");
-    if (recurring.userId !== user._id) throw new Error("Unauthorized");
+    const recurring = await ctx.db.get(args.id)
+    if (!recurring) throw new Error("Recurring transaction not found")
+    if (recurring.userId !== user._id) throw new Error("Unauthorized")
 
-    await ctx.db.delete(args.id);
-    return args.id;
+    await ctx.db.delete(args.id)
+    return args.id
   },
-});
+})
 
 export const processDueRecurring = internalAction({
   args: {},
   handler: async (ctx) => {
-    const now = Date.now();
-    const dueRecurring = await ctx.db
-      .query("recurringTransactions")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("isActive"), true),
-          q.lte(q.field("nextDate"), now),
-        ),
+    const now = Date.now()
+    const dueRecurring = await (ctx as any).runQuery(
+      "recurringTransactions:list",
+    )
+
+    const results = []
+
+    const dueItems = Array.isArray(dueRecurring)
+      ? dueRecurring.filter((r: any) => r.isActive && r.nextDate <= now)
+      : []
+
+    for (const recurring of dueItems) {
+      const wallet =
+        (await (ctx as any).runQuery("wallets:get", {
+          walletId: recurring.walletId,
+        })) ?? (await (ctx as any).db?.get(recurring.walletId))
+      if (!wallet) continue
+
+      const transactionId = await (ctx as any).runMutation(
+        "transactions:create",
+        {
+          userId: recurring.userId,
+          walletId: recurring.walletId,
+          type: recurring.type,
+          amount: recurring.amount,
+          category: recurring.category,
+          description: recurring.description,
+          date: now,
+        },
       )
-      .collect();
-
-    const results = [];
-
-    for (const recurring of dueRecurring) {
-      const wallet = await ctx.db.get(recurring.walletId);
-      if (!wallet) continue;
-
-      const transactionId = await ctx.db.insert("transactions", {
-        userId: recurring.userId,
-        walletId: recurring.walletId,
-        type: recurring.type,
-        amount: recurring.amount,
-        category: recurring.category,
-        description: recurring.description,
-        date: now,
-      });
 
       const balanceChange =
-        recurring.type === "income" ? recurring.amount : -recurring.amount;
-      await ctx.db.patch(wallet._id, {
+        recurring.type === "income" ? recurring.amount : -recurring.amount
+      await (ctx as any).runMutation("wallets:update", {
+        id: wallet._id,
         balance: wallet.balance + balanceChange,
-      });
+      })
 
-      let nextDate = recurring.nextDate;
+      let nextDate = recurring.nextDate
       if (recurring.frequency === "daily") {
-        nextDate = now + 24 * 60 * 60 * 1000;
+        nextDate = now + 24 * 60 * 60 * 1000
       } else if (recurring.frequency === "weekly") {
-        nextDate = now + 7 * 24 * 60 * 60 * 1000;
+        nextDate = now + 7 * 24 * 60 * 60 * 1000
       } else if (recurring.frequency === "monthly") {
-        const date = new Date(now);
-        date.setMonth(date.getMonth() + 1);
-        nextDate = date.getTime();
+        const date = new Date(now)
+        date.setMonth(date.getMonth() + 1)
+        nextDate = date.getTime()
       } else if (recurring.frequency === "yearly") {
-        const date = new Date(now);
-        date.setFullYear(date.getFullYear() + 1);
-        nextDate = date.getTime();
+        const date = new Date(now)
+        date.setFullYear(date.getFullYear() + 1)
+        nextDate = date.getTime()
       }
 
-      await ctx.db.patch(recurring._id, {
+      await (ctx as any).runMutation("recurringTransactions:update", {
+        id: recurring._id,
         lastProcessed: now,
         nextDate,
-      });
+      })
 
-      results.push({ recurringId: recurring._id, transactionId });
+      results.push({ recurringId: recurring._id, transactionId })
     }
 
-    return results;
+    return results
   },
-});
+})

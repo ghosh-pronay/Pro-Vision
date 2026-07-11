@@ -97,15 +97,15 @@ export default function Admin() {
 
   const adminApi = api.admin
 
-  const stats = useQuery(adminApi.getStats)
-  const users = useQuery(adminApi.listUsers)
-  const config = useQuery(adminApi.getConfig)
-  const challenges = useQuery(adminApi.getChallenges)
-  const financeStats = useQuery(adminApi.getFinanceStats)
+  const stats = useQuery(adminApi.getStats) as any
+  const users = useQuery(adminApi.listUsers) as any
+  const config = useQuery(adminApi.getConfig) as any
+  const challenges = useQuery(adminApi.getChallenges) as any
+  const financeStats = useQuery(adminApi.getFinanceStats) as any
   const userDetail = useQuery(
     adminApi.getUserDetail,
-    selectedUser ? { userId: selectedUser } : "skip",
-  )
+    (selectedUser ? { userId: selectedUser } : undefined) as any,
+  ) as any
 
   const grantPremium = useMutation(adminApi.grantPremium, "admin")
   const revokePremium = useMutation(adminApi.revokePremium, "admin")
@@ -151,7 +151,7 @@ export default function Admin() {
   }
 
   const filteredUsers = (users ?? []).filter(
-    (u) =>
+    (u: any) =>
       u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.displayName?.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -319,7 +319,7 @@ export default function Admin() {
                 {t("admin.recentUsers", lang)}
               </h3>
               <div className="space-y-3">
-                {(users ?? []).slice(0, 5).map((user) => (
+                {(users ?? []).slice(0, 5).map((user: any) => (
                   <div
                     key={user._id}
                     className="flex items-center justify-between rounded-lg bg-white/5 p-3"
@@ -447,7 +447,7 @@ export default function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user) => (
+                  {filteredUsers.map((user: any) => (
                     <tr
                       key={user._id}
                       className="border-b border-white/5 hover:bg-white/5"
@@ -755,7 +755,7 @@ export default function Admin() {
               </button>
             </div>
             <div className="space-y-3">
-              {(challenges ?? []).map((c) => (
+              {(challenges ?? []).map((c: any) => (
                 <div
                   key={c._id}
                   className="flex items-center justify-between p-3 rounded-lg bg-white/5"

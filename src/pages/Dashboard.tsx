@@ -1,22 +1,15 @@
-import { Suspense, lazy, useMemo } from "react";
-import { motion } from "framer-motion";
-import { useI18n } from "@/hooks/use-i18n";
-import {
-  CheckCircle,
-  Target,
-  Timer,
-  Heart,
-  Wallet,
-  Trophy,
-} from "lucide-react";
-const DailyInspiration = lazy(() => import("@/components/DailyInspiration"));
-import SmartInsights from "@/components/SmartInsights";
-import SectionSuggestion from "@/components/SectionSuggestion";
-import DashboardDateTime from "@/components/DashboardDateTime";
-import { getUpcomingHolidays } from "@/lib/bangladesh-holidays";
-import { getTimeBasedGreeting, getNameWithTitle } from "@/lib/bangla-greetings";
-import { useDashboardStats } from "./use-dashboard-stats";
-import { formatFocusTime } from "./dashboard-utils";
+import { Suspense, lazy, useMemo } from "react"
+import { motion } from "framer-motion"
+import { useI18n } from "@/hooks/use-i18n"
+import { CheckCircle, Target, Timer, Heart, Wallet, Trophy } from "lucide-react"
+const DailyInspiration = lazy(() => import("@/components/DailyInspiration"))
+import SmartInsights from "@/components/SmartInsights"
+import SectionSuggestion from "@/components/SectionSuggestion"
+import DashboardDateTime from "@/components/DashboardDateTime"
+import { getUpcomingHolidays } from "@/lib/bangladesh-holidays"
+import { getTimeBasedGreeting, getNameWithTitle } from "@/lib/bangla-greetings"
+import { useDashboardStats } from "./use-dashboard-stats"
+import { formatFocusTime } from "./dashboard-utils"
 import {
   LifeScoreRing,
   ModuleCard,
@@ -28,13 +21,13 @@ import {
   HolidayCard,
   QuickActionBanner,
   buildRecentActivity,
-} from "./dashboard-sections";
+} from "./dashboard-sections"
 
 const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.05 } },
-};
-const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
+}
+const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
 
 function SectionSkeleton({ className }: { className?: string }) {
   return (
@@ -42,11 +35,11 @@ function SectionSkeleton({ className }: { className?: string }) {
       <div className="h-4 bg-muted-foreground/10 rounded w-1/3 m-4" />
       <div className="h-8 bg-muted-foreground/10 rounded w-2/3 m-4" />
     </div>
-  );
+  )
 }
 
 export default function Dashboard() {
-  const { t, lang } = useI18n();
+  const { t, lang } = useI18n()
 
   const {
     tasks,
@@ -66,48 +59,48 @@ export default function Dashboard() {
     moodStats,
     sleepStats,
     isLoading,
-  } = useDashboardStats();
+  } = useDashboardStats()
 
   const taskScore =
     taskStats.total > 0
       ? Math.round((taskStats.completed / taskStats.total) * 100)
-      : 0;
+      : 0
   const habitScore =
     habitStats.total > 0
       ? Math.round((habitStats.todayCompleted / habitStats.total) * 100)
-      : 0;
+      : 0
   const focusScore =
     focusStats.todayMinutes > 0
       ? Math.min(100, Math.round((focusStats.todayMinutes / 120) * 100))
-      : 0;
+      : 0
   const wellbeingScore =
-    moodStats.avgMood > 0 ? Math.round((moodStats.avgMood / 5) * 100) : 0;
+    moodStats.avgMood > 0 ? Math.round((moodStats.avgMood / 5) * 100) : 0
 
-  const scores = [taskScore, habitScore, focusScore, wellbeingScore];
-  const activeScores = scores.filter((s) => s > 0);
+  const scores = [taskScore, habitScore, focusScore, wellbeingScore]
+  const activeScores = scores.filter((s) => s > 0)
   const lifeScore =
     activeScores.length > 0
       ? Math.round(
           activeScores.reduce((a, b) => a + b, 0) / activeScores.length,
         )
-      : 0;
+      : 0
 
-  const greeting = getTimeBasedGreeting(new Date().getHours());
+  const greeting = getTimeBasedGreeting(new Date().getHours())
   const nameWithTitle = getNameWithTitle(
-    profile?.displayName,
-    profile?.gender,
+    (profile as any)?.displayName,
+    (profile as any)?.gender,
     lang,
-  );
-  const userAvatar = profile?.avatar || "👋";
+  )
+  const userAvatar = (profile as any)?.avatar || "👋"
   const upcomingHolidays = useMemo(() => {
-    const holidays = getUpcomingHolidays();
-    const now = new Date();
-    const sevenDaysLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const holidays = getUpcomingHolidays()
+    const now = new Date()
+    const sevenDaysLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
     return holidays.filter((h) => {
-      const hDate = new Date(h.date + "T00:00:00");
-      return hDate >= now && hDate <= sevenDaysLater;
-    });
-  }, []);
+      const hDate = new Date(h.date + "T00:00:00")
+      return hDate >= now && hDate <= sevenDaysLater
+    })
+  }, [])
 
   const modules = useMemo(
     () => [
@@ -190,20 +183,20 @@ export default function Dashboard() {
       wellbeingScore,
       transactionStats.expenseScore,
     ],
-  );
+  )
 
   const recentActivity = useMemo(
     () =>
       buildRecentActivity(
-        tasks,
-        focusSessions,
-        transactions,
-        moods,
-        habits,
-        sleepLogs,
+        tasks as any,
+        focusSessions as any,
+        transactions as any,
+        moods as any,
+        habits as any,
+        sleepLogs as any,
       ),
     [tasks, focusSessions, transactions, moods, habits, sleepLogs],
-  );
+  )
 
   const profileFlags = useMemo(() => {
     if (!profile)
@@ -213,15 +206,16 @@ export default function Dashboard() {
         hasGoals: false,
         hasBudget: false,
         hasCurrency: false,
-      };
+      }
     return {
-      hasAge: !!profile.dateOfBirth,
-      hasGender: !!profile.gender,
-      hasGoals: goals !== undefined && goals.length > 0,
+      hasAge: !!(profile as any).dateOfBirth,
+      hasGender: !!(profile as any).gender,
+      hasGoals: goals !== undefined && (goals as any)?.length > 0,
       hasBudget: false,
-      hasCurrency: !!profile.currency && profile.currency !== "BDT",
-    };
-  }, [profile, goals]);
+      hasCurrency:
+        !!(profile as any).currency && (profile as any).currency !== "BDT",
+    }
+  }, [profile, goals])
 
   return (
     <motion.div
@@ -308,12 +302,12 @@ export default function Dashboard() {
 
       <Suspense fallback={<SectionSkeleton className="h-40" />}>
         <SmartInsights
-          tasks={tasks}
-          habits={habits}
-          transactions={transactions}
-          focusSessions={focusSessions}
-          moods={moods}
-          sleepLogs={sleepLogs}
+          tasks={tasks as any}
+          habits={habits as any}
+          transactions={transactions as any}
+          focusSessions={focusSessions as any}
+          moods={moods as any}
+          sleepLogs={sleepLogs as any}
         />
       </Suspense>
 
@@ -330,7 +324,7 @@ export default function Dashboard() {
                 habitStats={habitStats}
                 focusStats={focusStats}
                 moodStats={moodStats}
-                transactions={transactions}
+                transactions={transactions as any}
                 goalStats={goalStats}
                 profileFlags={profileFlags}
               />
@@ -362,5 +356,5 @@ export default function Dashboard() {
         <RecentActivitySection activities={recentActivity} />
       </motion.div>
     </motion.div>
-  );
+  )
 }

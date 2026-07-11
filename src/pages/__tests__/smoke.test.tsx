@@ -49,23 +49,20 @@ vi.mock("@/store", () => ({
   }),
 }))
 
-const translationsProxy: Record<string, unknown> = new Proxy(
-  {},
-  {
-    get: (_target: unknown, prop: string) => {
-      if (typeof prop === "string") {
-        return new Proxy(
-          {},
-          {
-            get: (_t: unknown, child: string) =>
-              `${String(prop)}.${String(child)}`,
-          },
-        )
-      }
-      return ""
-    },
+const translationsProxy = new Proxy({} as Record<string, unknown>, {
+  get: (_target: unknown, prop: string) => {
+    if (typeof prop === "string") {
+      return new Proxy(
+        {},
+        {
+          get: (_t: unknown, child: string) =>
+            `${String(prop)}.${String(child)}`,
+        },
+      )
+    }
+    return ""
   },
-)
+})
 
 vi.mock("@/hooks/use-i18n", () => ({
   useI18n: () => ({

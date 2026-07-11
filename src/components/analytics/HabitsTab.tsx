@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useMemo } from "react"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import {
   BarChart,
   Bar,
@@ -9,46 +9,48 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
-import { subDays } from "date-fns";
-import { ChartCard } from "./Charts";
-import { useHeatmap, HeatmapCalendar } from "./Heatmap";
-import type { Period } from "./PeriodSelector";
+} from "recharts"
+import { subDays } from "date-fns"
+import { ChartCard } from "./Charts"
+import { useHeatmap, HeatmapCalendar } from "./Heatmap"
+import type { Period } from "./PeriodSelector"
 
 export function HabitsTab({ period }: { period: Period }) {
-  const habits = useQuery(api.habits.list);
-  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90;
+  const habits = useQuery(api.habits.list)
+  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
   const completionData = useMemo(() => {
-    if (!habits) return [];
-    const cutoff = subDays(new Date(), days).getTime();
-    return habits.map((h) => {
-      const recentCheckins = h.completedDates.filter((d) => d >= cutoff).length;
-      const rate = Math.round((recentCheckins / days) * 100);
+    if (!Array.isArray(habits)) return []
+    const cutoff = subDays(new Date(), days).getTime()
+    return habits.map((h: any) => {
+      const recentCheckins = h.completedDates.filter(
+        (d: number) => d >= cutoff,
+      ).length
+      const rate = Math.round((recentCheckins / days) * 100)
       return {
         name: h.name.length > 12 ? h.name.slice(0, 12) + "…" : h.name,
         rate: Math.min(rate, 100),
-      };
-    });
-  }, [habits, days]);
+      }
+    })
+  }, [habits, days])
 
   const heatmapData = useMemo(() => {
-    if (!habits) return [];
-    const entries: { date: number; value?: number }[] = [];
-    habits.forEach((h) => {
-      h.completedDates.forEach((d) => entries.push({ date: d }));
-    });
-    return entries;
-  }, [habits]);
+    if (!Array.isArray(habits)) return []
+    const entries: { date: number; value?: number }[] = []
+    habits.forEach((h: any) => {
+      h.completedDates.forEach((d: number) => entries.push({ date: d }))
+    })
+    return entries
+  }, [habits])
 
-  const { heatmapData: heatData, getIntensity } = useHeatmap(heatmapData);
+  const { heatmapData: heatData, getIntensity } = useHeatmap(heatmapData)
 
   if (habits === undefined) {
     return (
       <div className="glass rounded-2xl p-6 text-muted-foreground text-sm">
         Loading...
       </div>
-    );
+    )
   }
 
   return (
@@ -96,5 +98,5 @@ export function HabitsTab({ period }: { period: Period }) {
         />
       </ChartCard>
     </div>
-  );
+  )
 }

@@ -171,7 +171,7 @@ export function CalendarTab({
                       ? "bg-white/5"
                       : "bg-white/5 opacity-50"
                 }`}
-                style={isActive ? { ringColor: lvl.color } : undefined}
+                style={isActive ? { outlineColor: lvl.color } : undefined}
               >
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center"

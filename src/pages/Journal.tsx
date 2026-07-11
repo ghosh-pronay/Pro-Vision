@@ -70,7 +70,7 @@ const fadeUp = {
 
 export default function Journal() {
   const { lang } = useLang()
-  const entries = useQuery(api.journal.list)
+  const entries = useQuery(api.journal.list) as any[]
   const createEntry = useMutation(api.journal.create, "journal")
   const updateEntry = useMutation(api.journal.update, "journal")
   const deleteEntry = useMutation(api.journal.remove, "journal")

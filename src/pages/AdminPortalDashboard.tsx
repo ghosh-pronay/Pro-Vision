@@ -1,44 +1,44 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useAuth } from "@/hooks/use-auth";
-import { Shield, LogOut, Users, Activity } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Suspense } from "react";
-import { lazy } from "react";
+import { useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { useAuth } from "@/hooks/use-auth"
+import { Shield, LogOut, Users, Activity } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Suspense } from "react"
+import { lazy } from "react"
 
-const Admin = lazy(() => import("@/pages/Admin"));
-const AdminAPI = lazy(() => import("@/pages/AdminAPI"));
+const Admin = lazy(() => import("@/pages/Admin"))
+const AdminAPI = lazy(() => import("@/pages/AdminAPI"))
 
-type AdminTab = "admin" | "api";
+type AdminTab = "admin" | "api"
 
 const ADMIN_TABS: { id: AdminTab; label: string; icon: typeof Shield }[] = [
   { id: "admin", label: "Admin Panel", icon: Users },
   { id: "api", label: "API Management", icon: Activity },
-];
+]
 
 export default function AdminPortalDashboard() {
-  const navigate = useNavigate();
-  const { signOut } = useAuth();
-  const currentUser = useQuery(api.users.currentUser);
-  const [activeTab, setActiveTab] = useState<AdminTab>("admin");
+  const navigate = useNavigate()
+  const { signOut } = useAuth()
+  const currentUser = useQuery(api.users.currentUser) as any
+  const [activeTab, setActiveTab] = useState<AdminTab>("admin")
 
-  const isAdmin = currentUser != null && currentUser.role === "admin";
+  const isAdmin = currentUser != null && currentUser.role === "admin"
 
   useEffect(() => {
     if (currentUser !== undefined && !isAdmin) {
-      navigate("/admin-portal", { replace: true });
+      navigate("/admin-portal", { replace: true })
     }
-  }, [currentUser, isAdmin, navigate]);
+  }, [currentUser, isAdmin, navigate])
 
   const handleLogout = async () => {
-    await signOut();
-    navigate("/admin-portal", { replace: true });
-  };
+    await signOut()
+    navigate("/admin-portal", { replace: true })
+  }
 
   if (!isAdmin) {
-    return null;
+    return null
   }
 
   return (
@@ -63,7 +63,7 @@ export default function AdminPortalDashboard() {
 
           <div className="flex items-center gap-2">
             {ADMIN_TABS.map((tab) => {
-              const Icon = tab.icon;
+              const Icon = tab.icon
               return (
                 <button
                   key={tab.id}
@@ -78,7 +78,7 @@ export default function AdminPortalDashboard() {
                   <Icon className="w-3.5 h-3.5" />
                   {tab.label}
                 </button>
-              );
+              )
             })}
 
             <div className="w-px h-6 bg-white/10 mx-2" />
@@ -108,5 +108,5 @@ export default function AdminPortalDashboard() {
         </Suspense>
       </div>
     </div>
-  );
+  )
 }

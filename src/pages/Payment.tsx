@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState } from "react"
 import {
   CreditCard,
   Crown,
@@ -22,28 +22,29 @@ import {
   Check,
   AlertCircle,
   Eye,
-} from "lucide-react";
+  Infinity as InfinityIcon,
+} from "lucide-react"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 const stagger = {
   visible: { transition: { staggerChildren: 0.06 } },
-};
+}
 
 interface Plan {
-  id: string;
-  name: { en: string; bn: string };
-  priceBdt: number;
-  priceUsd: number;
-  period: { en: string; bn: string };
-  features: Array<{ en: string; bn: string }>;
-  highlight?: boolean;
-  icon: React.ReactNode;
-  color: string;
-  glow: string;
+  id: string
+  name: { en: string; bn: string }
+  priceBdt: number
+  priceUsd: number
+  period: { en: string; bn: string }
+  features: Array<{ en: string; bn: string }>
+  highlight?: boolean
+  icon: React.ReactNode
+  color: string
+  glow: string
 }
 
 const PLANS: Plan[] = [
@@ -101,14 +102,14 @@ const PLANS: Plan[] = [
     color: "var(--pv-lavender)",
     glow: "glow-purple",
   },
-];
+]
 
 interface PaymentMethod {
-  id: string;
-  name: { en: string; bn: string };
-  icon: React.ReactNode;
-  type: "mfs" | "bank" | "international";
-  description: { en: string; bn: string };
+  id: string
+  name: { en: string; bn: string }
+  icon: React.ReactNode
+  type: "mfs" | "bank" | "international"
+  description: { en: string; bn: string }
 }
 
 const PAYMENT_METHODS: PaymentMethod[] = [
@@ -185,16 +186,16 @@ const PAYMENT_METHODS: PaymentMethod[] = [
     type: "international",
     description: { en: "International Transfer", bn: "আন্তর্জাতিক ট্রান্সফার" },
   },
-];
+]
 
 interface Transaction {
-  id: string;
-  plan: { en: string; bn: string };
-  amount: number;
-  currency: string;
-  status: "completed" | "pending" | "failed";
-  date: string;
-  method: string;
+  id: string
+  plan: { en: string; bn: string }
+  amount: number
+  currency: string
+  status: "completed" | "pending" | "failed"
+  date: string
+  method: string
 }
 
 const DEMO_TRANSACTIONS: Transaction[] = [
@@ -243,107 +244,107 @@ const DEMO_TRANSACTIONS: Transaction[] = [
     date: "2026-02-15",
     method: "Rocket",
   },
-];
+]
 
 const CURRENCIES = [
   { code: "BDT", symbol: "৳", name: "Bangladeshi Taka" },
   { code: "USD", symbol: "$", name: "US Dollar" },
   { code: "EUR", symbol: "€", name: "Euro" },
   { code: "GBP", symbol: "£", name: "British Pound" },
-];
+]
 
 export default function Payment() {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
-  const [currentPlan] = useState<string | null>("pro");
-  const [pricingCurrency, setPricingCurrency] = useState<"BDT" | "USD">("BDT");
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [currentPlan] = useState<string | null>("pro")
+  const [pricingCurrency, setPricingCurrency] = useState<"BDT" | "USD">("BDT")
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [paymentTab, setPaymentTab] = useState<
     "mfs" | "bank" | "international"
-  >("mfs");
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
-  const [paymentCurrency, setPaymentCurrency] = useState("BDT");
-  const [promoCode, setPromoCode] = useState("");
-  const [promoApplied, setPromoApplied] = useState(false);
-  const [promoDiscount, setPromoDiscount] = useState(0);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
-  const [accountNumber, setAccountNumber] = useState("");
-  const [routingNumber, setRoutingNumber] = useState("");
-  const [isPaying, setIsPaying] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [showAllTransactions, setShowAllTransactions] = useState(false);
+  >("mfs")
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null)
+  const [paymentCurrency, setPaymentCurrency] = useState("BDT")
+  const [promoCode, setPromoCode] = useState("")
+  const [promoApplied, setPromoApplied] = useState(false)
+  const [promoDiscount, setPromoDiscount] = useState(0)
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [cardNumber, setCardNumber] = useState("")
+  const [cardExpiry, setCardExpiry] = useState("")
+  const [cardCvv, setCardCvv] = useState("")
+  const [accountNumber, setAccountNumber] = useState("")
+  const [routingNumber, setRoutingNumber] = useState("")
+  const [isPaying, setIsPaying] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [showAllTransactions, setShowAllTransactions] = useState(false)
 
-  const currentPlanData = PLANS.find((p) => p.id === currentPlan);
-  const selectedPlanData = PLANS.find((p) => p.id === selectedPlan);
-  const filteredMethods = PAYMENT_METHODS.filter((m) => m.type === paymentTab);
+  const currentPlanData = PLANS.find((p) => p.id === currentPlan)
+  const selectedPlanData = PLANS.find((p) => p.id === selectedPlan)
+  const filteredMethods = PAYMENT_METHODS.filter((m) => m.type === paymentTab)
 
   const getAmount = (plan: Plan) => {
-    return pricingCurrency === "BDT" ? plan.priceBdt : plan.priceUsd;
-  };
+    return pricingCurrency === "BDT" ? plan.priceBdt : plan.priceUsd
+  }
 
   const getCurrencySymbol = () => {
-    const c = CURRENCIES.find((c) => c.code === paymentCurrency);
-    return c?.symbol || "";
-  };
+    const c = CURRENCIES.find((c) => c.code === paymentCurrency)
+    return c?.symbol || ""
+  }
 
   const applyPromo = () => {
     if (promoCode.toUpperCase() === "PRO20") {
-      setPromoApplied(true);
-      setPromoDiscount(20);
+      setPromoApplied(true)
+      setPromoDiscount(20)
     } else if (promoCode.toUpperCase() === "WELCOME10") {
-      setPromoApplied(true);
-      setPromoDiscount(10);
+      setPromoApplied(true)
+      setPromoDiscount(10)
     } else {
-      setPromoApplied(false);
-      setPromoDiscount(0);
+      setPromoApplied(false)
+      setPromoDiscount(0)
     }
-  };
+  }
 
   const handlePay = async () => {
-    setIsPaying(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    setIsPaying(false);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-  };
+    setIsPaying(true)
+    await new Promise((r) => setTimeout(r, 2000))
+    setIsPaying(false)
+    setShowSuccess(true)
+    setTimeout(() => setShowSuccess(false), 3000)
+  }
 
   const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
+    const d = new Date(dateStr)
     return d.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
-    });
-  };
+    })
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-        return "text-[var(--pv-green)] bg-[var(--pv-green)]/10";
+        return "text-[var(--pv-green)] bg-[var(--pv-green)]/10"
       case "pending":
-        return "text-[var(--pv-orange)] bg-[var(--pv-orange)]/10";
+        return "text-[var(--pv-orange)] bg-[var(--pv-orange)]/10"
       case "failed":
-        return "text-red-400 bg-red-500/10";
+        return "text-red-400 bg-red-500/10"
       default:
-        return "text-muted-foreground bg-muted/10";
+        return "text-muted-foreground bg-muted/10"
     }
-  };
+  }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "completed":
-        return lang === "bn" ? "সম্পন্ন" : "Completed";
+        return lang === "bn" ? "সম্পন্ন" : "Completed"
       case "pending":
-        return lang === "bn" ? "বিচারাধীন" : "Pending";
+        return lang === "bn" ? "বিচারাধীন" : "Pending"
       case "failed":
-        return lang === "bn" ? "ব্যর্থ" : "Failed";
+        return lang === "bn" ? "ব্যর্থ" : "Failed"
       default:
-        return status;
+        return status
     }
-  };
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -455,7 +456,7 @@ export default function Payment() {
           <div className="mt-4 pt-4 border-t border-border/20">
             <div className="flex items-center gap-6 text-sm">
               <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Infinity className="size-3.5" />
+                <InfinityIcon className="size-3.5" />
                 <span>
                   {lang === "bn" ? "অসীম ওয়ালেট" : "Unlimited Wallets"}
                 </span>
@@ -641,8 +642,8 @@ export default function Payment() {
               </div>
               <button
                 onClick={() => {
-                  setSelectedPlan(null);
-                  setSelectedMethod(null);
+                  setSelectedPlan(null)
+                  setSelectedMethod(null)
                 }}
                 className="size-8 rounded-lg glass flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               >
@@ -684,8 +685,8 @@ export default function Payment() {
                   <button
                     key={tab.id}
                     onClick={() => {
-                      setPaymentTab(tab.id);
-                      setSelectedMethod(null);
+                      setPaymentTab(tab.id)
+                      setSelectedMethod(null)
                     }}
                     className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
                       paymentTab === tab.id
@@ -1063,5 +1064,5 @@ export default function Payment() {
         ))}
       </motion.div>
     </div>
-  );
+  )
 }

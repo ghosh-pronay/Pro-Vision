@@ -224,11 +224,11 @@ export default function Reports() {
       const fullWidth = doc.getTextWidth(prefix + name)
       const startX = 105 - fullWidth / 2
       doc.text(prefix, startX, 290)
-      doc.setFont(undefined, "bold")
+      doc.setFont("helvetica", "bold")
       doc.textWithLink(name, startX + doc.getTextWidth(prefix), 290, {
         url: "https://pronayghosh.site/",
       })
-      doc.setFont(undefined, "normal")
+      doc.setFont("helvetica", "normal")
 
       doc.save(
         `pro-vision-analytics-${tab}-${period}-${new Date().toISOString().slice(0, 10)}.pdf`,

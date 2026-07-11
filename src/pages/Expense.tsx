@@ -26,9 +26,9 @@ const fadeUp = {
 export default function Expense() {
   const { lang } = useLang()
 
-  const transactions = useQuery(api.transactions.list) ?? []
-  const wallets = useQuery(api.wallets.list) ?? []
-  const stats = useQuery(api.transactions.stats)
+  const transactions = (useQuery(api.transactions.list) ?? []) as any[]
+  const wallets = (useQuery(api.wallets.list) ?? []) as any[]
+  const stats = useQuery(api.transactions.stats) as any
   const createTx = useMutation(api.transactions.create, "transactions")
   const removeTx = useMutation(api.transactions.remove, "transactions")
   const createWallet = useMutation(api.wallets.create, "wallets")

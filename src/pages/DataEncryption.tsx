@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
-import { useState, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
+import { useState, useCallback, useMemo } from "react"
 import {
   Shield,
   Lock,
@@ -28,37 +28,37 @@ import {
   History,
   Link2,
   Timer,
-} from "lucide-react";
-import { toastSuccess, toastError } from "@/lib/toast-helpers";
+} from "lucide-react"
+import { toastSuccess, toastError } from "@/lib/toast-helpers"
 
-const NOW = Date.now();
-const SHARE_RANDOM_ID = Math.random().toString(36).substring(2, 15);
+const NOW = Date.now()
+const SHARE_RANDOM_ID = Math.random().toString(36).substring(2, 15)
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 interface EncryptionEvent {
-  id: string;
-  action: "encrypt" | "decrypt" | "password_change" | "auto_lock" | "share";
-  dataType?: string;
-  timestamp: number;
-  details?: string;
+  id: string
+  action: "encrypt" | "decrypt" | "password_change" | "auto_lock" | "share"
+  dataType?: string
+  timestamp: number
+  details?: string
 }
 
 interface EncryptedFieldType {
-  key: keyof EncryptedFields;
-  labelKey: TranslationKey;
-  icon: React.ElementType;
-  color: string;
+  key: keyof EncryptedFields
+  labelKey: TranslationKey
+  icon: React.ElementType
+  color: string
 }
 
 interface EncryptedFields {
-  financial: boolean;
-  notes: boolean;
-  health: boolean;
-  contacts: boolean;
+  financial: boolean
+  notes: boolean
+  health: boolean
+  contacts: boolean
 }
 
 const ENCRYPTED_FIELDS: EncryptedFieldType[] = [
@@ -86,72 +86,73 @@ const ENCRYPTED_FIELDS: EncryptedFieldType[] = [
     icon: Phone,
     color: "text-purple-500",
   },
-];
+]
 
-const AUTO_LOCK_TIMEOUTS = [1, 5, 10, 15, 30];
+const AUTO_LOCK_TIMEOUTS = [1, 5, 10, 15, 30]
 
 const SHARE_EXPIRATIONS = [
   { value: 1, labelKey: "encryption.hours" as TranslationKey },
   { value: 24, labelKey: "encryption.hours" as TranslationKey },
   { value: 72, labelKey: "encryption.hours" as TranslationKey },
   { value: 168, labelKey: "encryption.hours" as TranslationKey },
-];
+]
 
 function getPasswordStrength(password: string): {
-  level: number;
-  label: TranslationKey;
-  color: string;
+  level: number
+  label: TranslationKey
+  color: string
 } {
   if (!password)
-    return { level: 0, label: "encryption.weak", color: "bg-gray-400" };
-  let score = 0;
-  if (password.length >= 8) score++;
-  if (password.length >= 12) score++;
-  if (/[A-Z]/.test(password)) score++;
-  if (/[a-z]/.test(password)) score++;
-  if (/[0-9]/.test(password)) score++;
-  if (/[^A-Za-z0-9]/.test(password)) score++;
+    return { level: 0, label: "encryption.weak", color: "bg-gray-400" }
+  let score = 0
+  if (password.length >= 8) score++
+  if (password.length >= 12) score++
+  if (/[A-Z]/.test(password)) score++
+  if (/[a-z]/.test(password)) score++
+  if (/[0-9]/.test(password)) score++
+  if (/[^A-Za-z0-9]/.test(password)) score++
 
   if (score <= 2)
-    return { level: 1, label: "encryption.weak", color: "bg-red-500" };
+    return { level: 1, label: "encryption.weak", color: "bg-red-500" }
   if (score <= 3)
-    return { level: 2, label: "encryption.fair", color: "bg-orange-500" };
+    return { level: 2, label: "encryption.fair", color: "bg-orange-500" }
   if (score <= 4)
-    return { level: 3, label: "encryption.strong", color: "bg-blue-500" };
-  return { level: 4, label: "encryption.excellent", color: "bg-green-500" };
+    return { level: 3, label: "encryption.strong", color: "bg-blue-500" }
+  return { level: 4, label: "encryption.excellent", color: "bg-green-500" }
 }
 
 export default function DataEncryption() {
-  const { lang } = useLang();
-  const tc = useCallback((key: TranslationKey) => t(key, lang), [lang]);
+  const { lang } = useLang()
+  const tc = useCallback((key: TranslationKey) => t(key, lang), [lang])
+  const [nowRef] = useState(() => Date.now())
 
-  const [encryptionEnabled, setEncryptionEnabled] = useState(true);
+  const [encryptionEnabled, setEncryptionEnabled] = useState(true)
   const [encryptedFields, setEncryptedFields] = useState<EncryptedFields>({
     financial: true,
     notes: false,
     health: false,
     contacts: false,
-  });
-  const [passwordSet, setPasswordSet] = useState(true);
-  const [autoLock, setAutoLock] = useState(true);
-  const [autoLockTimeout, setAutoLockTimeout] = useState(5);
+  })
+  const [passwordSet, setPasswordSet] = useState(true)
+  const [autoLock, setAutoLock] = useState(true)
+  const [autoLockTimeout, setAutoLockTimeout] = useState(5)
   const [lockAction, setLockAction] = useState<"encrypt" | "lockscreen">(
     "encrypt",
-  );
-  const [backupEncryption, setBackupEncryption] = useState(true);
+  )
+  const [backupEncryption, setBackupEncryption] = useState(true)
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
 
-  const [sharePassword, setSharePassword] = useState("");
-  const [shareExpiration, setShareExpiration] = useState(24);
-  const [generatedLink, setGeneratedLink] = useState("");
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [showAutoLockSettings, setShowAutoLockSettings] = useState(false);
-  const [showBackupSettings, setShowBackupSettings] = useState(false);
+  const [sharePassword, setSharePassword] = useState("")
+  const [shareExpiration, setShareExpiration] = useState(24)
+  const [generatedLink, setGeneratedLink] = useState("")
+  const [copiedLink, setCopiedLink] = useState(false)
+  const [showAutoLockSettings, setShowAutoLockSettings] = useState(false)
+  const [showBackupSettings, setShowBackupSettings] = useState(false)
 
   const [encryptionHistory, setEncryptionHistory] = useState<EncryptionEvent[]>(
     [
@@ -186,79 +187,78 @@ export default function DataEncryption() {
         details: "72h expiration",
       },
     ],
-  );
+  )
 
   const newStrength = useMemo(
     () => getPasswordStrength(newPassword),
     [newPassword],
-  );
+  )
 
   const securityScore = useMemo(() => {
-    let score = 0;
-    if (passwordSet) score += 25;
-    const encryptedCount =
-      Object.values(encryptedFields).filter(Boolean).length;
-    score += (encryptedCount / 4) * 40;
-    if (autoLock) score += 15;
-    if (backupEncryption) score += 20;
-    return Math.min(100, Math.round(score));
-  }, [passwordSet, encryptedFields, autoLock, backupEncryption]);
+    let score = 0
+    if (passwordSet) score += 25
+    const encryptedCount = Object.values(encryptedFields).filter(Boolean).length
+    score += (encryptedCount / 4) * 40
+    if (autoLock) score += 15
+    if (backupEncryption) score += 20
+    return Math.min(100, Math.round(score))
+  }, [passwordSet, encryptedFields, autoLock, backupEncryption])
 
   const handlePasswordChange = () => {
     if (!newPassword) {
-      toastError(tc("encryption.passwordRequired"));
-      return;
+      toastError(tc("encryption.passwordRequired"))
+      return
     }
     if (newPassword !== confirmPassword) {
-      toastError(tc("encryption.passwordsDoNotMatch"));
-      return;
+      toastError(tc("encryption.passwordsDoNotMatch"))
+      return
     }
-    setPasswordSet(true);
-    setNewPassword("");
-    setConfirmPassword("");
-    setCurrentPassword("");
-    addHistoryEvent("password_change");
-    toastSuccess(tc("encryption.passwordChanged"));
-  };
+    setPasswordSet(true)
+    setNewPassword("")
+    setConfirmPassword("")
+    setCurrentPassword("")
+    addHistoryEvent("password_change")
+    toastSuccess(tc("encryption.passwordChanged"))
+  }
 
   const handleToggleField = (field: keyof EncryptedFields) => {
     setEncryptedFields((prev) => {
-      const newVal = !prev[field];
-      addHistoryEvent(newVal ? "encrypt" : "decrypt", `encryption.${field}`);
-      return { ...prev, [field]: newVal };
-    });
-  };
+      const newVal = !prev[field]
+      addHistoryEvent(newVal ? "encrypt" : "decrypt", `encryption.${field}`)
+      return { ...prev, [field]: newVal }
+    })
+  }
 
   const handleToggleEncryption = () => {
     setEncryptionEnabled((prev) => {
-      addHistoryEvent(prev ? "decrypt" : "encrypt");
-      return !prev;
-    });
-  };
+      addHistoryEvent(prev ? "decrypt" : "encrypt")
+      return !prev
+    })
+  }
 
   const generateShareLink = () => {
     if (!sharePassword) {
-      toastError(tc("encryption.passwordRequired"));
-      return;
+      toastError(tc("encryption.passwordRequired"))
+      return
     }
-    const link = `https://pro-vision.app/share/${SHARE_RANDOM_ID}`;
-    setGeneratedLink(link);
-    setCopiedLink(false);
-    addHistoryEvent("share", undefined, `${shareExpiration}h`);
-    toastSuccess(tc("encryption.linkGenerated"));
-  };
+    const link = `https://pro-vision.app/share/${SHARE_RANDOM_ID}`
+    setGeneratedLink(link)
+    setCopiedLink(false)
+    addHistoryEvent("share", undefined, `${shareExpiration}h`)
+    toastSuccess(tc("encryption.linkGenerated"))
+  }
 
   const copyShareLink = async () => {
     try {
-      await navigator.clipboard.writeText(generatedLink);
-      setCopiedLink(true);
-      toastSuccess(tc("encryption.linkCopied"));
-      setTimeout(() => setCopiedLink(false), 2000);
+      await navigator.clipboard.writeText(generatedLink)
+      setCopiedLink(true)
+      toastSuccess(tc("encryption.linkCopied"))
+      setTimeout(() => setCopiedLink(false), 2000)
     } catch (e) {
-      console.error("[DataEncryption]", "encryption operation failed", e);
-      toastError("Failed to copy link");
+      console.error("[DataEncryption]", "encryption operation failed", e)
+      toastError("Failed to copy link")
     }
-  };
+  }
 
   const addHistoryEvent = (
     action: EncryptionEvent["action"],
@@ -271,68 +271,68 @@ export default function DataEncryption() {
       dataType,
       timestamp: Date.now(),
       details,
-    };
-    setEncryptionHistory((prev) => [event, ...prev].slice(0, 20));
-  };
+    }
+    setEncryptionHistory((prev) => [event, ...prev].slice(0, 20))
+  }
 
   const getScoreColor = () => {
-    if (securityScore >= 80) return "from-green-500 to-emerald-500";
-    if (securityScore >= 60) return "from-blue-500 to-cyan-500";
-    if (securityScore >= 40) return "from-orange-500 to-yellow-500";
-    return "from-red-500 to-pink-500";
-  };
+    if (securityScore >= 80) return "from-green-500 to-emerald-500"
+    if (securityScore >= 60) return "from-blue-500 to-cyan-500"
+    if (securityScore >= 40) return "from-orange-500 to-yellow-500"
+    return "from-red-500 to-pink-500"
+  }
 
   const getScoreLabel = () => {
-    if (securityScore >= 80) return tc("encryption.excellent");
-    if (securityScore >= 60) return tc("encryption.strong");
-    if (securityScore >= 40) return tc("encryption.fair");
-    return tc("encryption.weak");
-  };
+    if (securityScore >= 80) return tc("encryption.excellent")
+    if (securityScore >= 60) return tc("encryption.strong")
+    if (securityScore >= 40) return tc("encryption.fair")
+    return tc("encryption.weak")
+  }
 
   const formatTime = (ms: number) => {
-    const seconds = Math.floor((nowRef.current - ms) / 1000);
-    if (seconds < 60) return `${seconds}s`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h`;
-    const days = Math.floor(hours / 24);
-    return `${days}d`;
-  };
+    const seconds = Math.floor((nowRef - ms) / 1000)
+    if (seconds < 60) return `${seconds}s`
+    const minutes = Math.floor(seconds / 60)
+    if (minutes < 60) return `${minutes}m`
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) return `${hours}h`
+    const days = Math.floor(hours / 24)
+    return `${days}d`
+  }
 
   const getActionIcon = (action: EncryptionEvent["action"]) => {
     switch (action) {
       case "encrypt":
-        return Lock;
+        return Lock
       case "decrypt":
-        return Unlock;
+        return Unlock
       case "password_change":
-        return Key;
+        return Key
       case "auto_lock":
-        return Clock;
+        return Clock
       case "share":
-        return Share2;
+        return Share2
       default:
-        return Shield;
+        return Shield
     }
-  };
+  }
 
   const getActionColor = (action: EncryptionEvent["action"]) => {
     switch (action) {
       case "encrypt":
-        return "text-green-500 bg-green-500/10";
+        return "text-green-500 bg-green-500/10"
       case "decrypt":
-        return "text-orange-500 bg-orange-500/10";
+        return "text-orange-500 bg-orange-500/10"
       case "password_change":
-        return "text-blue-500 bg-blue-500/10";
+        return "text-blue-500 bg-blue-500/10"
       case "auto_lock":
-        return "text-purple-500 bg-purple-500/10";
+        return "text-purple-500 bg-purple-500/10"
       case "share":
-        return "text-cyan-500 bg-cyan-500/10";
+        return "text-cyan-500 bg-cyan-500/10"
       default:
-        return "text-gray-500 bg-gray-500/10";
+        return "text-gray-500 bg-gray-500/10"
     }
-  };
+  }
 
   const SECURITY_TIPS = [
     tc("encryption.tip1"),
@@ -340,7 +340,7 @@ export default function DataEncryption() {
     tc("encryption.tip3"),
     tc("encryption.tip4"),
     tc("encryption.tip5"),
-  ];
+  ]
 
   return (
     <div className="space-y-6 pb-24">
@@ -514,8 +514,8 @@ export default function DataEncryption() {
           </div>
           <div className="space-y-3">
             {ENCRYPTED_FIELDS.map((field) => {
-              const Icon = field.icon;
-              const isActive = encryptedFields[field.key];
+              const Icon = field.icon
+              const isActive = encryptedFields[field.key]
               return (
                 <div
                   key={field.key}
@@ -548,7 +548,7 @@ export default function DataEncryption() {
                     />
                   </button>
                 </div>
-              );
+              )
             })}
           </div>
         </div>
@@ -698,8 +698,8 @@ export default function DataEncryption() {
             <div className="flex items-center gap-3">
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
-                  setAutoLock(!autoLock);
+                  e.stopPropagation()
+                  setAutoLock(!autoLock)
                 }}
                 className={`relative w-12 h-6 rounded-full transition-colors ${
                   autoLock ? "bg-green-500" : "bg-muted"
@@ -809,8 +809,8 @@ export default function DataEncryption() {
             <div className="flex items-center gap-3">
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
-                  setBackupEncryption(!backupEncryption);
+                  e.stopPropagation()
+                  setBackupEncryption(!backupEncryption)
                 }}
                 className={`relative w-12 h-6 rounded-full transition-colors ${
                   backupEncryption ? "bg-green-500" : "bg-muted"
@@ -883,9 +883,10 @@ export default function DataEncryption() {
             </div>
           ) : (
             <div className="space-y-2">
+              {/* eslint-disable-next-line react-hooks/refs */}
               {encryptionHistory.map((event) => {
-                const ActionIcon = getActionIcon(event.action);
-                const colorClass = getActionColor(event.action);
+                const ActionIcon = getActionIcon(event.action)
+                const colorClass = getActionColor(event.action)
                 return (
                   <div
                     key={event.id}
@@ -917,7 +918,7 @@ export default function DataEncryption() {
                       )}
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           )}
@@ -1036,5 +1037,5 @@ export default function DataEncryption() {
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

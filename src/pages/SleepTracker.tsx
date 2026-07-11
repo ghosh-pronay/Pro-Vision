@@ -1,17 +1,17 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
-import { Moon, Sun, Plus, TrendingUp, Clock, Bed, Zap } from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
+import { Moon, Sun, Plus, TrendingUp, Clock, Bed, Zap } from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
 
 interface SleepLog {
-  _id: string;
-  hours: number;
-  quality: "great" | "good" | "okay" | "bad";
-  bedTime: string;
-  wakeTime: string;
-  date: number;
-  notes?: string;
+  _id: string
+  hours: number
+  quality: "great" | "good" | "okay" | "bad"
+  bedTime: string
+  wakeTime: string
+  date: number
+  notes?: string
 }
 
 const QUALITY_CONFIG = {
@@ -19,18 +19,18 @@ const QUALITY_CONFIG = {
   good: { color: "text-blue-500", bg: "bg-blue-500/10", label: "Good" },
   okay: { color: "text-yellow-500", bg: "bg-yellow-500/10", label: "Okay" },
   bad: { color: "text-red-500", bg: "bg-red-500/10", label: "Bad" },
-};
+}
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function SleepTracker() {
-  const { lang } = useLang();
-  const [showAddModal, setShowAddModal] = useState(false);
+  const { lang } = useLang()
+  const [showAddModal, setShowAddModal] = useState(false)
   const [logs, setLogs] = useState<SleepLog[]>([
     {
       _id: "1",
@@ -56,28 +56,28 @@ export default function SleepTracker() {
       wakeTime: "06:30",
       date: NOW - 3 * 24 * 60 * 60 * 1000,
     },
-  ]);
+  ])
 
   const [formData, setFormData] = useState({
     hours: "7",
-    quality: "good" as const,
+    quality: "good" as "great" | "good" | "okay" | "bad",
     bedTime: "23:00",
     wakeTime: "06:30",
     notes: "",
-  });
+  })
 
   const stats = useMemo(() => {
-    if (logs.length === 0) return null;
-    const avgHours = logs.reduce((sum, l) => sum + l.hours, 0) / logs.length;
-    const bestQuality = logs.filter((l) => l.quality === "great").length;
-    const totalHours = logs.reduce((sum, l) => sum + l.hours, 0);
+    if (logs.length === 0) return null
+    const avgHours = logs.reduce((sum, l) => sum + l.hours, 0) / logs.length
+    const bestQuality = logs.filter((l) => l.quality === "great").length
+    const totalHours = logs.reduce((sum, l) => sum + l.hours, 0)
     return {
       avgHours: avgHours.toFixed(1),
       bestQuality,
       totalHours: totalHours.toFixed(0),
       totalDays: logs.length,
-    };
-  }, [logs]);
+    }
+  }, [logs])
 
   const handleAdd = () => {
     const newLog: SleepLog = {
@@ -88,26 +88,26 @@ export default function SleepTracker() {
       wakeTime: formData.wakeTime,
       date: Date.now(),
       notes: formData.notes || undefined,
-    };
-    setLogs([newLog, ...logs]);
-    setShowAddModal(false);
+    }
+    setLogs([newLog, ...logs])
+    setShowAddModal(false)
     setFormData({
       hours: "7",
       quality: "good",
       bedTime: "23:00",
       wakeTime: "06:30",
       notes: "",
-    });
-  };
+    })
+  }
 
   const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp)
     return date.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   return (
     <motion.div
@@ -191,7 +191,7 @@ export default function SleepTracker() {
           />
         ) : (
           logs.map((log) => {
-            const qualityConfig = QUALITY_CONFIG[log.quality];
+            const qualityConfig = QUALITY_CONFIG[log.quality]
             return (
               <motion.div
                 key={log._id}
@@ -226,7 +226,7 @@ export default function SleepTracker() {
                   </div>
                 </div>
               </motion.div>
-            );
+            )
           })
         )}
       </motion.div>
@@ -315,5 +315,5 @@ export default function SleepTracker() {
         </div>
       )}
     </motion.div>
-  );
+  )
 }

@@ -34,7 +34,7 @@ const fadeUp = {
 export default function Goals() {
   const { t } = useI18n()
 
-  const goals = useQuery(api.goals.list)
+  const goals = useQuery(api.goals.list) as any
   const createGoal = useMutation(api.goals.create, "goals")
   const updateGoal = useMutation(api.goals.update, "goals")
   const removeGoal = useMutation(api.goals.remove, "goals")
@@ -125,10 +125,12 @@ export default function Goals() {
     goal: GoalItem,
     milestoneIndex: number,
   ) => {
-    const updatedMilestones = goal.milestones.map((m, i) =>
+    const updatedMilestones = goal.milestones.map((m: any, i: number) =>
       i === milestoneIndex ? { ...m, completed: !m.completed } : m,
     )
-    const completedCount = updatedMilestones.filter((m) => m.completed).length
+    const completedCount = updatedMilestones.filter(
+      (m: any) => m.completed,
+    ).length
     const newProgress =
       updatedMilestones.length > 0
         ? Math.round((completedCount / updatedMilestones.length) * 100)
@@ -265,7 +267,7 @@ export default function Goals() {
         {filteredGoals.map((goal, i) => {
           const isExpanded = expandedGoalId === goal._id
           const completedMilestones =
-            goal.milestones?.filter((m) => m.completed).length ?? 0
+            goal.milestones?.filter((m: any) => m.completed).length ?? 0
           const totalMilestones = goal.milestones?.length ?? 0
 
           return (

@@ -1,101 +1,101 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { BarChart3, TrendingUp } from "lucide-react"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 const generateHeatmapData = (): {
-  date: Date;
-  count: number;
-  level: number;
+  date: Date
+  count: number
+  level: number
 }[] => {
-  const data: { date: Date; count: number; level: number }[] = [];
-  const now = new Date();
+  const data: { date: Date; count: number; level: number }[] = []
+  const now = new Date()
 
   for (let i = 364; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
+    const date = new Date(now)
+    date.setDate(date.getDate() - i)
 
-    const random = Math.random();
-    let count = 0;
-    let level = 0;
+    const random = Math.random()
+    let count = 0
+    let level = 0
 
     if (random > 0.3) {
-      count = Math.floor(Math.random() * 5) + 1;
-      if (count >= 4) level = 4;
-      else if (count >= 3) level = 3;
-      else if (count >= 2) level = 2;
-      else level = 1;
+      count = Math.floor(Math.random() * 5) + 1
+      if (count >= 4) level = 4
+      else if (count >= 3) level = 3
+      else if (count >= 2) level = 2
+      else level = 1
     }
 
-    data.push({ date, count, level });
+    data.push({ date, count, level })
   }
 
-  return data;
-};
+  return data
+}
 
-const heatmapData = generateHeatmapData();
+const heatmapData = generateHeatmapData()
 
 export default function HabitHeatmap() {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   const getMonthLabel = (date: Date, index: number) => {
     if (index === 0 || date.getDate() === 1) {
       return date.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
         month: "short",
-      });
+      })
     }
-    return "";
-  };
+    return ""
+  }
 
   const getWeeks = () => {
-    const weeks: (typeof heatmapData)[] = [];
-    let currentWeek: (typeof heatmapData)[] = [];
+    const weeks: (typeof heatmapData)[] = []
+    let currentWeek: typeof heatmapData = []
 
     heatmapData.forEach((data, index) => {
-      currentWeek.push(data);
+      currentWeek.push(data)
       if (data.date.getDay() === 6 || index === heatmapData.length - 1) {
-        weeks.push(currentWeek);
-        currentWeek = [];
+        weeks.push(currentWeek)
+        currentWeek = []
       }
-    });
+    })
 
-    return weeks;
-  };
+    return weeks
+  }
 
-  const weeks = getWeeks();
-  const totalHabits = heatmapData.reduce((sum, d) => sum + d.count, 0);
-  const activeDays = heatmapData.filter((d) => d.count > 0).length;
-  const currentStreak = calculateCurrentStreak();
-  const longestStreak = calculateLongestStreak();
+  const weeks = getWeeks()
+  const totalHabits = heatmapData.reduce((sum, d) => sum + d.count, 0)
+  const activeDays = heatmapData.filter((d) => d.count > 0).length
+  const currentStreak = calculateCurrentStreak()
+  const longestStreak = calculateLongestStreak()
 
   function calculateCurrentStreak() {
-    let streak = 0;
+    let streak = 0
     for (let i = heatmapData.length - 1; i >= 0; i--) {
       if (heatmapData[i].count > 0) {
-        streak++;
+        streak++
       } else {
-        break;
+        break
       }
     }
-    return streak;
+    return streak
   }
 
   function calculateLongestStreak() {
-    let longest = 0;
-    let current = 0;
+    let longest = 0
+    let current = 0
     heatmapData.forEach((d) => {
       if (d.count > 0) {
-        current++;
-        longest = Math.max(longest, current);
+        current++
+        longest = Math.max(longest, current)
       } else {
-        current = 0;
+        current = 0
       }
-    });
-    return longest;
+    })
+    return longest
   }
 
   return (
@@ -180,10 +180,10 @@ export default function HabitHeatmap() {
           <div className="min-w-[700px]">
             <div className="flex gap-1 mb-2">
               {weeks.map((week, weekIndex) => {
-                const firstDay = week[0];
+                const firstDay = week[0]
                 const monthLabel = firstDay
                   ? getMonthLabel(firstDay.date, heatmapData.indexOf(firstDay))
-                  : "";
+                  : ""
 
                 return (
                   <div key={weekIndex} className="flex flex-col gap-1">
@@ -211,7 +211,7 @@ export default function HabitHeatmap() {
                       ))}
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
@@ -271,14 +271,11 @@ export default function HabitHeatmap() {
             .slice(0, 6)
             .map((month, index) => {
               const monthData = heatmapData.filter((d) => {
-                const date = new Date(d.date);
-                return date.getMonth() === index;
-              });
-              const totalHabits = monthData.reduce(
-                (sum, d) => sum + d.count,
-                0,
-              );
-              const activeDays = monthData.filter((d) => d.count > 0).length;
+                const date = new Date(d.date)
+                return date.getMonth() === index
+              })
+              const totalHabits = monthData.reduce((sum, d) => sum + d.count, 0)
+              const activeDays = monthData.filter((d) => d.count > 0).length
 
               return (
                 <div key={month} className="text-center">
@@ -297,10 +294,10 @@ export default function HabitHeatmap() {
                     {activeDays} {lang === "bn" ? "দিন" : "days"}
                   </p>
                 </div>
-              );
+              )
             })}
         </div>
       </motion.div>
     </motion.div>
-  );
+  )
 }

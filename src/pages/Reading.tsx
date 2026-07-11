@@ -61,7 +61,7 @@ const fadeUp = {
 
 export default function Reading() {
   const { lang } = useLang()
-  const items = useQuery(api.readingList.list)
+  const items = useQuery(api.readingList.list) as any[]
   const createItem = useMutation(api.readingList.create, "readingList")
   const updateItem = useMutation(api.readingList.update, "readingList")
   const deleteItem = useMutation(api.readingList.remove, "readingList")
@@ -310,7 +310,7 @@ export default function Reading() {
           />
         ) : (
           filteredItems.map((item) => {
-            const Icon = TYPE_ICONS[item.type]
+            const Icon = TYPE_ICONS[item.type as keyof typeof TYPE_ICONS]
             return (
               <motion.div
                 key={item._id}
@@ -320,7 +320,7 @@ export default function Reading() {
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className={`rounded-xl p-3 bg-foreground/5 ${TYPE_COLORS[item.type]}`}
+                    className={`rounded-xl p-3 bg-foreground/5 ${TYPE_COLORS[item.type as keyof typeof TYPE_COLORS]}`}
                   >
                     <Icon className="h-5 w-5" />
                   </div>

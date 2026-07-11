@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useMemo } from "react"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import {
   BarChart,
   Bar,
@@ -12,55 +12,55 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-} from "recharts";
-import { format, subDays, startOfDay } from "date-fns";
-import { ChartCard } from "./Charts";
-import type { Period } from "./PeriodSelector";
+} from "recharts"
+import { format, subDays, startOfDay } from "date-fns"
+import { ChartCard } from "./Charts"
+import type { Period } from "./PeriodSelector"
 
 export function TasksTab({ period }: { period: Period }) {
-  const tasks = useQuery(api.tasks.list);
-  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90;
+  const tasks = useQuery(api.tasks.list)
+  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
   const statusData = useMemo(() => {
-    if (!tasks) return [];
+    if (!Array.isArray(tasks)) return []
     // eslint-disable-next-line react-hooks/purity -- time snapshot is intentional
-    const now = Date.now();
+    const now = Date.now()
     const pending = tasks.filter(
       (t) => !t.completed && (!t.dueDate || t.dueDate > now),
-    ).length;
+    ).length
     const overdue = tasks.filter(
       (t) => !t.completed && t.dueDate && t.dueDate <= now,
-    ).length;
-    const completed = tasks.filter((t) => t.completed).length;
+    ).length
+    const completed = tasks.filter((t) => t.completed).length
     return [
       { status: "Pending", count: pending, fill: "#f97316" },
       { status: "Overdue", count: overdue, fill: "#ef4444" },
       { status: "Completed", count: completed, fill: "#22c55e" },
-    ];
-  }, [tasks]);
+    ]
+  }, [tasks])
 
   const createdPerDay = useMemo(() => {
-    if (!tasks) return [];
-    const cutoff = subDays(new Date(), days).getTime();
-    const recent = tasks.filter((t) => t.createdAt >= cutoff);
-    const dayMap: Record<string, number> = {};
+    if (!Array.isArray(tasks)) return []
+    const cutoff = subDays(new Date(), days).getTime()
+    const recent = tasks.filter((t: any) => t.createdAt >= cutoff)
+    const dayMap: Record<string, number> = {}
     for (let i = days - 1; i >= 0; i--) {
-      const d = startOfDay(subDays(new Date(), i));
-      dayMap[format(d, "MMM dd")] = 0;
+      const d = startOfDay(subDays(new Date(), i))
+      dayMap[format(d, "MMM dd")] = 0
     }
-    recent.forEach((t) => {
-      const key = format(new Date(t.createdAt), "MMM dd");
-      if (key in dayMap) dayMap[key]++;
-    });
-    return Object.entries(dayMap).map(([date, count]) => ({ date, count }));
-  }, [tasks, days]);
+    recent.forEach((t: any) => {
+      const key = format(new Date(t.createdAt), "MMM dd")
+      if (key in dayMap) dayMap[key]++
+    })
+    return Object.entries(dayMap).map(([date, count]) => ({ date, count }))
+  }, [tasks, days])
 
   if (tasks === undefined) {
     return (
       <div className="glass rounded-2xl p-6 text-muted-foreground text-sm">
         Loading...
       </div>
-    );
+    )
   }
 
   return (
@@ -115,5 +115,5 @@ export function TasksTab({ period }: { period: Period }) {
         )}
       </ChartCard>
     </div>
-  );
+  )
 }

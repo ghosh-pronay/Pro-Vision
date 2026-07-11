@@ -1,8 +1,5 @@
 import { localDB } from "@/lib/store/index"
-
-// This file provides a Convex-compatible API shape backed by localStorage.
-// When real Convex is deployed, remove the Vite aliases in vite.config.ts
-// and this file will be replaced by the auto-generated Convex API.
+import type { StoredRecord } from "@/lib/store/types"
 
 function requireAdminGuard() {
   const profile = localDB.userProfiles.get()
@@ -13,452 +10,465 @@ function requireAdminGuard() {
 
 export const api = {
   users: {
-    currentUser: () => localDB.users.currentUser(),
-    upsertUser: (...args: unknown[]) =>
-      localDB.users.upsertUser(args[0] as Record<string, unknown>),
-    listPremiumUsers: () => localDB.users.listPremiumUsers(),
+    currentUser: (): StoredRecord | null => localDB.users.currentUser(),
+    upsertUser: (..._args: unknown[]): void =>
+      localDB.users.upsertUser(_args[0] as Record<string, unknown>),
+    listPremiumUsers: (): StoredRecord[] => localDB.users.listPremiumUsers(),
   },
   userProfiles: {
-    get: () => localDB.userProfiles.get(),
-    upsert: (...args: unknown[]) =>
-      localDB.userProfiles.upsert(args[0] as Record<string, unknown>),
+    get: (): StoredRecord | null => localDB.userProfiles.get(),
+    upsert: (..._args: unknown[]): void =>
+      localDB.userProfiles.upsert(_args[0] as Record<string, unknown>),
   },
   tasks: {
-    list: () => localDB.tasks.list(),
-    create: (...args: unknown[]) =>
-      localDB.tasks.create(args[0] as Record<string, unknown>),
-    toggle: (...args: unknown[]) =>
-      localDB.tasks.toggle((args[0] as Record<string, unknown>).id as string),
-    remove: (...args: unknown[]) =>
-      localDB.tasks.remove((args[0] as Record<string, unknown>).id as string),
-    stats: () => localDB.tasks.stats(),
+    list: (): StoredRecord[] => localDB.tasks.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.tasks.create(_args[0] as Record<string, unknown>),
+    toggle: (..._args: unknown[]): void =>
+      localDB.tasks.toggle((_args[0] as Record<string, unknown>).id as string),
+    remove: (..._args: unknown[]): void =>
+      localDB.tasks.remove((_args[0] as Record<string, unknown>).id as string),
+    stats: (): {
+      total: number
+      completed: number
+      pending: number
+      overdue: number
+    } => localDB.tasks.stats(),
   },
   habits: {
-    list: () => localDB.habits.list(),
-    create: (...args: unknown[]) =>
-      localDB.habits.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      localDB.habits.update?.(a.id as string, a) ?? Promise.resolve()
+    list: (): StoredRecord[] => localDB.habits.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.habits.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
+      localDB.habits.update(a.id as string, a)
     },
-    archive: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      localDB.habits.archive?.(a.id as string) ?? Promise.resolve()
+    archive: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
+      localDB.habits.remove(a.id as string)
     },
-    checkIn: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    checkIn: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.habits.checkIn(a.id as string, a.date as number)
     },
-    remove: (...args: unknown[]) =>
-      localDB.habits.remove((args[0] as Record<string, unknown>).id as string),
-    useStreakFreeze: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      localDB.habits.useStreakFreeze?.(a.id as string, a.date as number) ??
-        Promise.resolve()
+    remove: (..._args: unknown[]): void =>
+      localDB.habits.remove((_args[0] as Record<string, unknown>).id as string),
+    useStreakFreeze: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
+      localDB.habits.checkIn(a.id as string, a.date as number)
     },
-    stats: () => localDB.habits.stats(),
+    stats: (): {
+      total: number
+      totalStreak: number
+      avgRate: number
+      todayCompleted: number
+    } => localDB.habits.stats(),
   },
   wallets: {
-    list: () => localDB.wallets.list(),
-    create: (...args: unknown[]) =>
-      localDB.wallets.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.wallets.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.wallets.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.wallets.update(a.id as string, a)
     },
-    remove: (...args: unknown[]) =>
-      localDB.wallets.remove((args[0] as Record<string, unknown>).id as string),
+    remove: (..._args: unknown[]): void =>
+      localDB.wallets.remove(
+        (_args[0] as Record<string, unknown>).id as string,
+      ),
   },
   transactions: {
-    list: () => localDB.transactions.list(),
-    create: (...args: unknown[]) =>
-      localDB.transactions.create(args[0] as Record<string, unknown>),
-    remove: (...args: unknown[]) =>
+    list: (): StoredRecord[] => localDB.transactions.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.transactions.create(_args[0] as Record<string, unknown>),
+    remove: (..._args: unknown[]): void =>
       localDB.transactions.remove(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    stats: () => localDB.transactions.stats(),
+    stats: (): Record<string, unknown> => localDB.transactions.stats(),
   },
   goals: {
-    list: () => localDB.goals.list(),
-    create: (...args: unknown[]) =>
-      localDB.goals.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.goals.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.goals.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.goals.update(a.id as string, a)
     },
-    remove: (...args: unknown[]) =>
-      localDB.goals.remove((args[0] as Record<string, unknown>).id as string),
+    remove: (..._args: unknown[]): void =>
+      localDB.goals.remove((_args[0] as Record<string, unknown>).id as string),
   },
   focusSessions: {
-    list: () => localDB.focusSessions.list(),
-    create: (...args: unknown[]) =>
-      localDB.focusSessions.create(args[0] as Record<string, unknown>),
-    stats: () => localDB.focusSessions.stats(),
+    list: (): StoredRecord[] => localDB.focusSessions.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.focusSessions.create(_args[0] as Record<string, unknown>),
+    stats: (): Record<string, unknown> => localDB.focusSessions.stats(),
   },
   moods: {
-    list: () => localDB.moods.list(),
-    create: (...args: unknown[]) =>
-      localDB.moods.create(args[0] as Record<string, unknown>),
-    stats: () => localDB.moods.stats(),
+    list: (): StoredRecord[] => localDB.moods.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.moods.create(_args[0] as Record<string, unknown>),
+    stats: (): Record<string, unknown> => localDB.moods.stats(),
   },
   sleepLogs: {
-    list: () => localDB.sleepLogs.list(),
-    create: (...args: unknown[]) =>
-      localDB.sleepLogs.create(args[0] as Record<string, unknown>),
-    stats: () => localDB.sleepLogs.stats(),
+    list: (): StoredRecord[] => localDB.sleepLogs.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.sleepLogs.create(_args[0] as Record<string, unknown>),
+    stats: (): Record<string, unknown> => localDB.sleepLogs.stats(),
   },
   gratitudeEntries: {
-    list: () => localDB.gratitudeEntries.list(),
-    create: (...args: unknown[]) =>
-      localDB.gratitudeEntries.create(args[0] as Record<string, unknown>),
-    remove: (...args: unknown[]) =>
+    list: (): StoredRecord[] => localDB.gratitudeEntries.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.gratitudeEntries.create(_args[0] as Record<string, unknown>),
+    remove: (..._args: unknown[]): void =>
       localDB.gratitudeEntries.remove(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    stats: () => localDB.gratitudeEntries.stats(),
+    stats: (): Record<string, unknown> => localDB.gratitudeEntries.stats(),
   },
   news: {
-    fetchNews: (...args: unknown[]) =>
-      localDB.news.fetchNews(args[0] as Record<string, unknown>),
+    fetchNews: (..._args: unknown[]): Record<string, unknown> =>
+      localDB.news.fetchNews(),
   },
   admin: {
-    listUsers: () => {
+    listUsers: (): StoredRecord[] => {
       requireAdminGuard()
       return localDB.admin.listUsers()
     },
-    getStats: () => {
+    getStats: (): Record<string, number> => {
       requireAdminGuard()
       return localDB.admin.getStats()
     },
-    getConfig: () => {
+    getConfig: (): Record<string, unknown> => {
       requireAdminGuard()
       return {}
     },
-    getChallenges: () => {
+    getChallenges: (): Record<string, unknown>[] => {
       requireAdminGuard()
-      return [] as Record<string, unknown>[]
+      return []
     },
-    getFinanceStats: () => {
+    getFinanceStats: (): { totalIncome: number; totalExpense: number } => {
       requireAdminGuard()
       return { totalIncome: 0, totalExpense: 0 }
     },
-    getUserDetail: (...args: unknown[]) => {
+    getUserDetail: (
+      ..._args: unknown[]
+    ): {
+      user: StoredRecord | null
+      tasks: never[]
+      habits: never[]
+      transactions: never[]
+    } | null => {
       requireAdminGuard()
-      const a = args[0] as Record<string, unknown>
+      const a = _args[0] as Record<string, unknown>
       const user =
         localDB.admin
           .listUsers()
           .find((u: Record<string, unknown>) => u._id === a.userId) ?? null
       if (!user) return null
-      return { user, tasks: [], habits: [], transactions: [] }
+      return {
+        user: user as StoredRecord,
+        tasks: [],
+        habits: [],
+        transactions: [],
+      }
     },
-    grantPremium: (...args: unknown[]) => {
+    grantPremium: (..._args: unknown[]): Promise<void> => {
       requireAdminGuard()
-      return localDB.admin.grantPremium(args[0] as Record<string, unknown>)
+      return Promise.resolve()
     },
-    revokePremium: (...args: unknown[]) => {
+    revokePremium: (..._args: unknown[]): Promise<void> => {
       requireAdminGuard()
-      return localDB.admin.revokePremium(args[0] as Record<string, unknown>)
+      return Promise.resolve()
     },
-    deleteUser: (...args: unknown[]) => {
+    deleteUser: (..._args: unknown[]): Promise<void> => {
       requireAdminGuard()
-      return localDB.admin.deleteUser(args[0] as Record<string, unknown>)
+      return Promise.resolve()
     },
-    updateUser: (...args: unknown[]) => {
+    updateUser: (..._args: unknown[]): Promise<unknown> => {
       requireAdminGuard()
-      return Promise.resolve(args[0])
+      return Promise.resolve(_args[0])
     },
-    setConfig: (...args: unknown[]) => {
+    setConfig: (..._args: unknown[]): Promise<unknown> => {
       requireAdminGuard()
-      return Promise.resolve(args[0])
+      return Promise.resolve(_args[0])
     },
-    bulkSetConfig: (...args: unknown[]) => {
+    bulkSetConfig: (..._args: unknown[]): Promise<unknown> => {
       requireAdminGuard()
-      return Promise.resolve(args[0])
+      return Promise.resolve(_args[0])
     },
-    createChallenge: (...args: unknown[]) => {
+    createChallenge: (..._args: unknown[]): Promise<unknown> => {
       requireAdminGuard()
-      return Promise.resolve(args[0])
+      return Promise.resolve(_args[0])
     },
-    updateChallenge: (...args: unknown[]) => {
+    updateChallenge: (..._args: unknown[]): Promise<unknown> => {
       requireAdminGuard()
-      return Promise.resolve(args[0])
+      return Promise.resolve(_args[0])
     },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    deleteChallenge: (...args: unknown[]) => Promise.resolve(),
-    setupFirstAdmin: () => Promise.resolve(),
-    hasAdmin: () => true,
+    deleteChallenge: (..._args: unknown[]): Promise<void> => Promise.resolve(),
+    setupFirstAdmin: (): Promise<void> => Promise.resolve(),
+    hasAdmin: (): true => true,
   },
   kanban: {
-    list: () => localDB.kanban.list(),
-    createColumn: (...args: unknown[]) =>
-      localDB.kanban.createColumn(args[0] as Record<string, unknown>),
-    updateColumn: (...args: unknown[]) =>
-      localDB.kanban.updateColumn(args[0] as Record<string, unknown>),
-    deleteColumn: (...args: unknown[]) =>
-      localDB.kanban.deleteColumn(args[0] as Record<string, unknown>),
-    createTask: (...args: unknown[]) =>
-      localDB.kanban.createTask(args[0] as Record<string, unknown>),
-    updateTask: (...args: unknown[]) =>
-      localDB.kanban.updateTask(args[0] as Record<string, unknown>),
-    moveTask: (...args: unknown[]) =>
-      localDB.kanban.moveTask(args[0] as Record<string, unknown>),
-    deleteTask: (...args: unknown[]) =>
-      localDB.kanban.deleteTask(args[0] as Record<string, unknown>),
-    initializeDefaultColumns: () => localDB.kanban.initializeDefaultColumns(),
+    list: (): StoredRecord[] => localDB.kanban.list(),
+    createColumn: (..._args: unknown[]): StoredRecord =>
+      localDB.kanban.createColumn(_args[0] as Record<string, unknown>),
+    updateColumn: (..._args: unknown[]): void => localDB.kanban.updateColumn(),
+    deleteColumn: (..._args: unknown[]): void => localDB.kanban.deleteColumn(),
+    createTask: (..._args: unknown[]): void => localDB.kanban.createTask(),
+    updateTask: (..._args: unknown[]): void => localDB.kanban.updateTask(),
+    moveTask: (..._args: unknown[]): void => localDB.kanban.moveTask(),
+    deleteTask: (..._args: unknown[]): void => localDB.kanban.deleteTask(),
+    initializeDefaultColumns: (): void =>
+      localDB.kanban.initializeDefaultColumns(),
   },
   waterLogs: {
-    list: () => localDB.waterLogs.listByDate(Date.now()),
-    listByDate: (...args: unknown[]) =>
-      localDB.waterLogs.listByDate(args[0] as number),
-    log: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.waterLogs.listByDate(Date.now()),
+    listByDate: (..._args: unknown[]): StoredRecord[] =>
+      localDB.waterLogs.listByDate(_args[0] as number),
+    log: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.waterLogs.addWater(Date.now(), a.glasses as number)
     },
-    getTodayTotal: () => localDB.waterLogs.getTodayTotal(),
-    addWater: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    getTodayTotal: (): number => localDB.waterLogs.getTodayTotal(),
+    addWater: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.waterLogs.addWater(a.date as number, a.glasses as number)
     },
-    removeWater: (...args: unknown[]) =>
+    removeWater: (..._args: unknown[]): void =>
       localDB.waterLogs.removeWater(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    getWeeklyStats: () => localDB.waterLogs.getWeeklyStats(),
+    getWeeklyStats: (): Record<string, number> =>
+      localDB.waterLogs.getWeeklyStats(),
   },
   recurringTransactions: {
-    list: () => localDB.recurringTransactions.list(),
-    create: (...args: unknown[]) =>
-      localDB.recurringTransactions.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.recurringTransactions.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.recurringTransactions.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.recurringTransactions.update(a.id as string, a)
     },
-    remove: (...args: unknown[]) =>
+    remove: (..._args: unknown[]): void =>
       localDB.recurringTransactions.remove(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    processDue: () => localDB.recurringTransactions.processDue(),
+    processDue: (): void => localDB.recurringTransactions.processDue(),
   },
   investments: {
-    list: () => localDB.investments.list(),
-    create: (...args: unknown[]) =>
-      localDB.investments.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.investments.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.investments.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.investments.update(a.id as string, a)
     },
-    remove: (...args: unknown[]) =>
+    remove: (..._args: unknown[]): void =>
       localDB.investments.remove(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    stats: () => localDB.investments.stats(),
+    stats: (): Record<string, unknown> => localDB.investments.stats(),
   },
   loans: {
-    list: () => localDB.loans.list(),
-    create: (...args: unknown[]) =>
-      localDB.loans.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.loans.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.loans.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.loans.update(a.id as string, a)
     },
-    addPayment: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    addPayment: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.loans.addPayment(a.id as string, a.amount as number)
     },
-    remove: (...args: unknown[]) =>
-      localDB.loans.remove((args[0] as Record<string, unknown>).id as string),
-    stats: () => localDB.loans.stats(),
+    remove: (..._args: unknown[]): void =>
+      localDB.loans.remove((_args[0] as Record<string, unknown>).id as string),
+    stats: (): Record<string, unknown> => localDB.loans.stats(),
   },
   automation: {
-    listRules: () => localDB.automation.listRules(),
-    createRule: (...args: unknown[]) =>
-      localDB.automation.createRule(args[0] as Record<string, unknown>),
-    updateRule: (...args: unknown[]) =>
-      localDB.automation.updateRule(args[0] as Record<string, unknown>),
-    deleteRule: (...args: unknown[]) =>
+    listRules: (): StoredRecord[] => localDB.automation.listRules(),
+    createRule: (..._args: unknown[]): StoredRecord =>
+      localDB.automation.createRule(_args[0] as Record<string, unknown>),
+    updateRule: (..._args: unknown[]): void => localDB.automation.updateRule(),
+    deleteRule: (..._args: unknown[]): void =>
       localDB.automation.deleteRule(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    getSmartSuggestions: () => localDB.automation.getSmartSuggestions(),
+    getSmartSuggestions: (): string[] =>
+      localDB.automation.getSmartSuggestions(),
   },
   challenges: {
-    listChallenges: () => localDB.challenges.listChallenges(),
-    listActive: () => localDB.challenges.listChallenges(),
-    create: (...args: unknown[]) =>
-      localDB.challenges.create(args[0] as Record<string, unknown>),
-    join: (...args: unknown[]) =>
-      localDB.challenges.join(args[0] as Record<string, unknown>),
-    leave: (...args: unknown[]) =>
-      localDB.challenges.leave(args[0] as Record<string, unknown>),
-    updateProgress: (...args: unknown[]) =>
-      localDB.challenges.updateProgress(args[0] as Record<string, unknown>),
-    getLeaderboard: (...args: unknown[]) =>
-      localDB.challenges.getLeaderboard(args[0] as Record<string, unknown>),
+    listChallenges: (): StoredRecord[] => localDB.challenges.listChallenges(),
+    listActive: (): StoredRecord[] => localDB.challenges.listChallenges(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.challenges.create(_args[0] as Record<string, unknown>),
+    join: (..._args: unknown[]): void => localDB.challenges.join(),
+    leave: (..._args: unknown[]): void => localDB.challenges.leave(),
+    updateProgress: (..._args: unknown[]): void =>
+      localDB.challenges.updateProgress(),
+    getLeaderboard: (..._args: unknown[]): StoredRecord[] =>
+      localDB.challenges.getLeaderboard(),
   },
   challengeParticipants: {
-    listByUser: () => [] as Record<string, unknown>[],
-    join: (...args: unknown[]) => Promise.resolve(args[0]),
+    listByUser: (): StoredRecord[] => [],
+    join: (..._args: unknown[]): Promise<unknown> => Promise.resolve(_args[0]),
   },
   achievements: {
-    listAchievements: () => localDB.achievements.listAchievements(),
-    listUserAchievements: () => localDB.achievements.listUserAchievements(),
-    unlockAchievement: (...args: unknown[]) =>
+    listAchievements: (): StoredRecord[] =>
+      localDB.achievements.listAchievements(),
+    listUserAchievements: (): StoredRecord[] =>
+      localDB.achievements.listUserAchievements(),
+    unlockAchievement: (..._args: unknown[]): void =>
       localDB.achievements.unlockAchievement(
-        args[0] as Record<string, unknown>,
+        _args[0] as Record<string, unknown>,
       ),
-    checkAndUnlockAchievements: () =>
+    checkAndUnlockAchievements: (): void =>
       localDB.achievements.checkAndUnlockAchievements(),
   },
   insights: {
-    getMoodInsights: () => localDB.insights.getMoodInsights(),
-    getHabitInsights: () => localDB.insights.getHabitInsights(),
+    getMoodInsights: (): Record<string, unknown> =>
+      localDB.insights.getMoodInsights(),
+    getHabitInsights: (): Record<string, unknown> =>
+      localDB.insights.getHabitInsights(),
   },
   expenseGroups: {
-    listGroups: () => localDB.expenseGroups.listGroups(),
-    createGroup: (...args: unknown[]) =>
-      localDB.expenseGroups.createGroup(args[0] as Record<string, unknown>),
-    inviteMember: (...args: unknown[]) =>
-      localDB.expenseGroups.inviteMember(args[0] as Record<string, unknown>),
-    addExpense: (...args: unknown[]) =>
-      localDB.expenseGroups.addExpense(args[0] as Record<string, unknown>),
-    settleBalance: (...args: unknown[]) =>
-      localDB.expenseGroups.settleBalance(args[0] as Record<string, unknown>),
-    getBalances: (...args: unknown[]) =>
-      localDB.expenseGroups.getBalances(args[0] as Record<string, unknown>),
-    getGroupStats: (...args: unknown[]) =>
-      localDB.expenseGroups.getGroupStats(args[0] as Record<string, unknown>),
+    listGroups: (): StoredRecord[] => localDB.expenseGroups.listGroups(),
+    createGroup: (..._args: unknown[]): StoredRecord =>
+      localDB.expenseGroups.createGroup(_args[0] as Record<string, unknown>),
+    inviteMember: (..._args: unknown[]): void =>
+      localDB.expenseGroups.inviteMember(),
+    addExpense: (..._args: unknown[]): void =>
+      localDB.expenseGroups.addExpense(),
+    settleBalance: (..._args: unknown[]): void =>
+      localDB.expenseGroups.settleBalance(),
+    getBalances: (..._args: unknown[]): StoredRecord[] =>
+      localDB.expenseGroups.getBalances(),
+    getGroupStats: (..._args: unknown[]): Record<string, number> =>
+      localDB.expenseGroups.getGroupStats(),
   },
   journal: {
-    list: () => localDB.journal.list(),
-    create: (...args: unknown[]) =>
-      localDB.journal.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.journal.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.journal.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.journal.update(a.id as string, a)
     },
-    remove: (...args: unknown[]) =>
-      localDB.journal.remove((args[0] as Record<string, unknown>).id as string),
+    remove: (..._args: unknown[]): void =>
+      localDB.journal.remove(
+        (_args[0] as Record<string, unknown>).id as string,
+      ),
   },
   readingList: {
-    list: () => localDB.readingList.list(),
-    create: (...args: unknown[]) =>
-      localDB.readingList.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.readingList.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.readingList.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.readingList.update(a.id as string, a)
     },
-    remove: (...args: unknown[]) =>
+    remove: (..._args: unknown[]): void =>
       localDB.readingList.remove(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
   },
   mealLogs: {
-    list: () => localDB.mealLogs.list(),
-    create: (...args: unknown[]) =>
-      localDB.mealLogs.create(args[0] as Record<string, unknown>),
-    remove: (...args: unknown[]) =>
+    list: (): StoredRecord[] => localDB.mealLogs.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.mealLogs.create(_args[0] as Record<string, unknown>),
+    remove: (..._args: unknown[]): void =>
       localDB.mealLogs.remove(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    stats: () => localDB.mealLogs.stats(),
+    stats: (): Record<string, unknown> => localDB.mealLogs.stats(),
   },
   contacts: {
-    list: () => localDB.contacts.list(),
-    create: (...args: unknown[]) =>
-      localDB.contacts.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.contacts.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.contacts.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.contacts.update(a.id as string, a)
     },
-    remove: (...args: unknown[]) =>
+    remove: (..._args: unknown[]): void =>
       localDB.contacts.remove(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    upcomingBirthdays: () => localDB.contacts.upcomingBirthdays(),
+    upcomingBirthdays: (): StoredRecord[] =>
+      localDB.contacts.upcomingBirthdays(),
   },
   savingsGoals: {
-    list: () => localDB.savingsGoals.list(),
-    create: (...args: unknown[]) =>
-      localDB.savingsGoals.create(args[0] as Record<string, unknown>),
-    update: (...args: unknown[]) => {
-      const a = args[0] as Record<string, unknown>
+    list: (): StoredRecord[] => localDB.savingsGoals.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.savingsGoals.create(_args[0] as Record<string, unknown>),
+    update: (..._args: unknown[]): void => {
+      const a = _args[0] as Record<string, unknown>
       localDB.savingsGoals.update(a.id as string, a)
     },
-    remove: (...args: unknown[]) =>
+    remove: (..._args: unknown[]): void =>
       localDB.savingsGoals.remove(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    stats: () => localDB.savingsGoals.stats(),
+    stats: (): Record<string, unknown> => localDB.savingsGoals.stats(),
   },
   studySessions: {
-    list: () => localDB.studySessions.list(),
-    create: (...args: unknown[]) =>
-      localDB.studySessions.create(args[0] as Record<string, unknown>),
-    remove: (...args: unknown[]) =>
+    list: (): StoredRecord[] => localDB.studySessions.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.studySessions.create(_args[0] as Record<string, unknown>),
+    remove: (..._args: unknown[]): void =>
       localDB.studySessions.remove(
-        (args[0] as Record<string, unknown>).id as string,
+        (_args[0] as Record<string, unknown>).id as string,
       ),
-    stats: () => localDB.studySessions.stats(),
+    stats: (): Record<string, unknown> => localDB.studySessions.stats(),
   },
   dailyCheckins: {
-    list: () => localDB.dailyCheckins.list(),
-    create: (...args: unknown[]) =>
-      localDB.dailyCheckins.create(args[0] as Record<string, unknown>),
-    today: () => localDB.dailyCheckins.today(),
-    stats: () => localDB.dailyCheckins.stats(),
+    list: (): StoredRecord[] => localDB.dailyCheckins.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.dailyCheckins.create(_args[0] as Record<string, unknown>),
+    today: (): StoredRecord | null => localDB.dailyCheckins.today(),
+    stats: (): Record<string, unknown> => localDB.dailyCheckins.stats(),
   },
   weeklyReport: {
-    sendWeeklyReport: () => localDB.weeklyReport.sendWeeklyReport(),
-    sendWeeklyReportEmail: (...args: unknown[]) =>
-      localDB.weeklyReport.sendWeeklyReportEmail(
-        args[0] as Record<string, unknown>,
-      ),
+    sendWeeklyReport: (): void => localDB.weeklyReport.sendWeeklyReport(),
+    sendWeeklyReportEmail: (..._args: unknown[]): void =>
+      localDB.weeklyReport.sendWeeklyReportEmail(),
   },
   exerciseLogs: {
-    list: () => localDB.exerciseLogs.list(),
-    create: (...args: unknown[]) =>
-      localDB.exerciseLogs.create(args[0] as Record<string, unknown>),
-    stats: () => localDB.exerciseLogs.stats(),
+    list: (): StoredRecord[] => localDB.exerciseLogs.list(),
+    create: (..._args: unknown[]): StoredRecord =>
+      localDB.exerciseLogs.create(_args[0] as Record<string, unknown>),
+    stats: (): Record<string, unknown> => localDB.exerciseLogs.stats(),
   },
   financialReports: {
-    balanceSheet: (...args: unknown[]) =>
-      localDB.financialReports.balanceSheet(args[0] as Record<string, unknown>),
-    incomeExpense: (...args: unknown[]) =>
-      localDB.financialReports.incomeExpense(
-        args[0] as Record<string, unknown>,
-      ),
+    balanceSheet: (..._args: unknown[]): Record<string, unknown> =>
+      localDB.financialReports.balanceSheet(),
+    incomeExpense: (..._args: unknown[]): Record<string, unknown> =>
+      localDB.financialReports.incomeExpense(),
   },
   apiManagement: {
-    getConfig: (...args: unknown[]) =>
-      localDB.apiManagement.getConfig(args[0] as Record<string, unknown>),
-    updateConfig: (...args: unknown[]) =>
-      localDB.apiManagement.updateConfig(args[0] as Record<string, unknown>),
-    getHealth: (...args: unknown[]) =>
-      localDB.apiManagement.getHealth(args[0] as Record<string, unknown>),
-    listKeys: (...args: unknown[]) =>
-      localDB.apiManagement.listKeys(args[0] as Record<string, unknown>),
-    createKey: (...args: unknown[]) =>
-      localDB.apiManagement.createKey(args[0] as Record<string, unknown>),
-    revokeKey: (...args: unknown[]) =>
-      localDB.apiManagement.revokeKey(args[0] as Record<string, unknown>),
-    deleteKey: (...args: unknown[]) =>
-      localDB.apiManagement.deleteKey(args[0] as Record<string, unknown>),
-    getLogs: (...args: unknown[]) =>
-      localDB.apiManagement.getLogs(args[0] as Record<string, unknown>),
-    getStats: (...args: unknown[]) =>
-      localDB.apiManagement.getStats(args[0] as Record<string, unknown>),
-    getDeploymentInfo: (...args: unknown[]) =>
-      localDB.apiManagement.getDeploymentInfo(
-        args[0] as Record<string, unknown>,
-      ),
-    logRequest: (...args: unknown[]) =>
-      localDB.apiManagement.logRequest(args[0] as Record<string, unknown>),
-    clearLogs: (...args: unknown[]) =>
-      localDB.apiManagement.clearLogs(args[0] as Record<string, unknown>),
+    getConfig: (..._args: unknown[]): StoredRecord[] =>
+      localDB.apiManagement.getConfig(),
+    updateConfig: (..._args: unknown[]): void =>
+      localDB.apiManagement.updateConfig(_args[0] as Record<string, unknown>),
+    getHealth: (..._args: unknown[]): StoredRecord[] =>
+      localDB.apiManagement.getHealth(),
+    listKeys: (..._args: unknown[]): StoredRecord[] =>
+      localDB.apiManagement.listKeys(),
+    createKey: (..._args: unknown[]): StoredRecord =>
+      localDB.apiManagement.createKey(_args[0] as Record<string, unknown>),
+    revokeKey: (..._args: unknown[]): void =>
+      localDB.apiManagement.revokeKey(_args[0] as Record<string, unknown>),
+    deleteKey: (..._args: unknown[]): void =>
+      localDB.apiManagement.deleteKey(_args[0] as Record<string, unknown>),
+    getLogs: (..._args: unknown[]): StoredRecord[] =>
+      localDB.apiManagement.getLogs(_args[0] as Record<string, unknown>),
+    getStats: (..._args: unknown[]): Record<string, unknown> =>
+      localDB.apiManagement.getStats(),
+    getDeploymentInfo: (..._args: unknown[]): Record<string, unknown> =>
+      localDB.apiManagement.getDeploymentInfo(),
+    logRequest: (..._args: unknown[]): void =>
+      localDB.apiManagement.logRequest(_args[0] as Record<string, unknown>),
+    clearLogs: (..._args: unknown[]): void => localDB.apiManagement.clearLogs(),
   },
 }

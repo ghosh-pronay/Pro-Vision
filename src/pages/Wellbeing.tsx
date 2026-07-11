@@ -160,12 +160,12 @@ export default function Wellbeing() {
   const [showMeditation, setShowMeditation] = useState(false)
   const [showHealthTracker, setShowHealthTracker] = useState(false)
 
-  const moodStats = useQuery(api.moods.stats)
-  const sleepStats = useQuery(api.sleepLogs.stats)
-  const gratitudeEntries = useQuery(api.gratitudeEntries.list)
-  const gratitudeStats = useQuery(api.gratitudeEntries.stats)
-  const exerciseLogs = useQuery(api.exerciseLogs.list)
-  const exerciseStats = useQuery(api.exerciseLogs.stats)
+  const moodStats = useQuery(api.moods.stats) as any
+  const sleepStats = useQuery(api.sleepLogs.stats) as any
+  const gratitudeEntries = useQuery(api.gratitudeEntries.list) as any
+  const gratitudeStats = useQuery(api.gratitudeEntries.stats) as any
+  const exerciseLogs = useQuery(api.exerciseLogs.list) as any
+  const exerciseStats = useQuery(api.exerciseLogs.stats) as any
 
   const createMood = useMutation(api.moods.create, "moods")
   const createSleepLog = useMutation(api.sleepLogs.create, "sleepLogs")
@@ -652,7 +652,7 @@ export default function Wellbeing() {
 
         {gratitudeEntries && gratitudeEntries.length > 0 && (
           <div className="space-y-2">
-            {gratitudeEntries.slice(0, 5).map((entry) => (
+            {gratitudeEntries.slice(0, 5).map((entry: any) => (
               <motion.div
                 key={entry._id}
                 initial={{ opacity: 0, y: 8 }}
@@ -861,7 +861,7 @@ export default function Wellbeing() {
 
         {exerciseLogs && exerciseLogs.length > 0 && (
           <div className="space-y-2">
-            {exerciseLogs.slice(0, 5).map((log) => {
+            {exerciseLogs.slice(0, 5).map((log: any) => {
               const et = EXERCISE_TYPES.find((e) => e.type === log.type)
               return (
                 <motion.div
@@ -963,12 +963,12 @@ export default function Wellbeing() {
           <HealthTracker
             waterGoal={2500}
             waterIntakes={(exerciseLogs ?? [])
-              .filter((log) => log.type === "Water")
-              .map((log) => ({
+              .filter((log: any) => log.type === "Water")
+              .map((log: any) => ({
                 amount: log.duration,
                 timestamp: log.createdAt,
               }))}
-            exercises={(exerciseLogs ?? []).map((log) => ({
+            exercises={(exerciseLogs ?? []).map((log: any) => ({
               id: log._id,
               type: log.type?.toLowerCase() ?? "other",
               duration: log.duration,

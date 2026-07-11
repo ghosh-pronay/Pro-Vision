@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useMemo } from "react"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import {
   BarChart,
   Bar,
@@ -12,10 +12,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
-import { subDays } from "date-fns";
-import { ChartCard } from "./Charts";
-import type { Period } from "./PeriodSelector";
+} from "recharts"
+import { subDays } from "date-fns"
+import { ChartCard } from "./Charts"
+import type { Period } from "./PeriodSelector"
 
 const CHART_COLORS = [
   "#6366f1",
@@ -26,7 +26,7 @@ const CHART_COLORS = [
   "#06b6d4",
   "#ec4899",
   "#eab308",
-];
+]
 
 const MOOD_EMOJI: Record<string, string> = {
   great: "\u{1F604}",
@@ -34,107 +34,107 @@ const MOOD_EMOJI: Record<string, string> = {
   okay: "\u{1F610}",
   bad: "\u{1F614}",
   terrible: "\u{1F622}",
-};
+}
 
 export function WellbeingTab({ period }: { period: Period }) {
-  const moods = useQuery(api.moods.list);
-  const sleepLogs = useQuery(api.sleepLogs.list);
-  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90;
+  const moods = useQuery(api.moods.list)
+  const sleepLogs = useQuery(api.sleepLogs.list)
+  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
   const moodData = useMemo(() => {
-    if (!moods) return [];
-    const cutoff = subDays(new Date(), days).getTime();
+    if (!Array.isArray(moods)) return []
+    const cutoff = subDays(new Date(), days).getTime()
     const recent = moods
-      .filter((m) => m.date >= cutoff)
-      .sort((a, b) => a.date - b.date);
-    const dayMap: Record<string, { sum: number; count: number }> = {};
+      .filter((m: any) => m.date >= cutoff)
+      .sort((a: any, b: any) => a.date - b.date)
+    const dayMap: Record<string, { sum: number; count: number }> = {}
     for (let i = days - 1; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      d.setHours(0, 0, 0, 0);
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      d.setHours(0, 0, 0, 0)
       const key = d.toLocaleDateString("en-US", {
         month: "short",
         day: "2-digit",
-      });
-      dayMap[key] = { sum: 0, count: 0 };
+      })
+      dayMap[key] = { sum: 0, count: 0 }
     }
     recent.forEach((m) => {
-      const d = new Date(m.date);
+      const d = new Date(m.date)
       const key = d.toLocaleDateString("en-US", {
         month: "short",
         day: "2-digit",
-      });
+      })
       if (key in dayMap) {
-        dayMap[key].sum += m.value;
-        dayMap[key].count++;
+        dayMap[key].sum += m.value
+        dayMap[key].count++
       }
-    });
+    })
     return Object.entries(dayMap)
       .map(([date, v]) => ({
         date,
         mood: v.count > 0 ? Math.round((v.sum / v.count) * 10) / 10 : null,
       }))
-      .filter((d) => d.mood !== null);
-  }, [moods, days]);
+      .filter((d) => d.mood !== null)
+  }, [moods, days])
 
   const sleepData = useMemo(() => {
-    if (!sleepLogs) return [];
-    const cutoff = subDays(new Date(), days).getTime();
+    if (!Array.isArray(sleepLogs)) return []
+    const cutoff = subDays(new Date(), days).getTime()
     const recent = sleepLogs
-      .filter((s) => s.date >= cutoff)
-      .sort((a, b) => a.date - b.date);
-    const dayMap: Record<string, number> = {};
+      .filter((s: any) => s.date >= cutoff)
+      .sort((a: any, b: any) => a.date - b.date)
+    const dayMap: Record<string, number> = {}
     for (let i = days - 1; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      d.setHours(0, 0, 0, 0);
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      d.setHours(0, 0, 0, 0)
       const key = d.toLocaleDateString("en-US", {
         month: "short",
         day: "2-digit",
-      });
-      dayMap[key] = 0;
+      })
+      dayMap[key] = 0
     }
-    recent.forEach((s) => {
-      const d = new Date(s.date);
+    recent.forEach((s: any) => {
+      const d = new Date(s.date)
       const key = d.toLocaleDateString("en-US", {
         month: "short",
         day: "2-digit",
-      });
-      if (key in dayMap) dayMap[key] = s.hours;
-    });
+      })
+      if (key in dayMap) dayMap[key] = s.hours
+    })
     return Object.entries(dayMap)
       .map(([date, hours]) => ({ date, hours }))
-      .filter((d) => d.hours > 0);
-  }, [sleepLogs, days]);
+      .filter((d) => d.hours > 0)
+  }, [sleepLogs, days])
 
   const moodDistribution = useMemo(() => {
-    if (!moods) return [];
-    const cutoff = subDays(new Date(), days).getTime();
-    const recent = moods.filter((m) => m.date >= cutoff);
+    if (!Array.isArray(moods)) return []
+    const cutoff = subDays(new Date(), days).getTime()
+    const recent = moods.filter((m: any) => m.date >= cutoff)
     const counts: Record<string, number> = {
       great: 0,
       good: 0,
       okay: 0,
       bad: 0,
       terrible: 0,
-    };
-    recent.forEach((m) => {
-      if (m.mood in counts) counts[m.mood]++;
-    });
+    }
+    recent.forEach((m: any) => {
+      if (m.mood in counts) counts[m.mood]++
+    })
     return Object.entries(counts)
       .map(([mood, count]) => ({
         name: `${MOOD_EMOJI[mood] || ""} ${mood}`,
         value: count,
       }))
-      .filter((d) => d.value > 0);
-  }, [moods, days]);
+      .filter((d) => d.value > 0)
+  }, [moods, days])
 
   if (moods === undefined || sleepLogs === undefined) {
     return (
       <div className="glass rounded-2xl p-6 text-muted-foreground text-sm">
         Loading...
       </div>
-    );
+    )
   }
 
   return (
@@ -223,7 +223,7 @@ export function WellbeingTab({ period }: { period: Period }) {
             </ResponsiveContainer>
             <div className="flex-1 space-y-2">
               {moodDistribution.map((item, index) => {
-                const total = moodDistribution.reduce((s, d) => s + d.value, 0);
+                const total = moodDistribution.reduce((s, d) => s + d.value, 0)
                 return (
                   <div
                     key={item.name}
@@ -243,12 +243,12 @@ export function WellbeingTab({ period }: { period: Period }) {
                       {total > 0 ? Math.round((item.value / total) * 100) : 0}%
                     </span>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
         )}
       </ChartCard>
     </div>
-  );
+  )
 }

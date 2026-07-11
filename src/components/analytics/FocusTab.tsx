@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useMemo } from "react"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import {
   BarChart,
   Bar,
@@ -12,10 +12,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
-import { subDays } from "date-fns";
-import { ChartCard } from "./Charts";
-import type { Period } from "./PeriodSelector";
+} from "recharts"
+import { subDays } from "date-fns"
+import { ChartCard } from "./Charts"
+import type { Period } from "./PeriodSelector"
 
 const CHART_COLORS = [
   "#6366f1",
@@ -26,57 +26,57 @@ const CHART_COLORS = [
   "#06b6d4",
   "#ec4899",
   "#eab308",
-];
+]
 
 export function FocusTab({ period }: { period: Period }) {
-  const sessions = useQuery(api.focusSessions.list);
-  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90;
+  const sessions = useQuery(api.focusSessions.list)
+  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
   const sessionsPerDay = useMemo(() => {
-    if (!sessions) return [];
-    const cutoff = subDays(new Date(), days).getTime();
-    const recent = sessions.filter((s) => s.createdAt >= cutoff);
-    const dayMap: Record<string, number> = {};
+    if (!Array.isArray(sessions)) return []
+    const cutoff = subDays(new Date(), days).getTime()
+    const recent = sessions.filter((s) => s.createdAt >= cutoff)
+    const dayMap: Record<string, number> = {}
     for (let i = days - 1; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      d.setHours(0, 0, 0, 0);
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      d.setHours(0, 0, 0, 0)
       const key = d.toLocaleDateString("en-US", {
         month: "short",
         day: "2-digit",
-      });
-      dayMap[key] = 0;
+      })
+      dayMap[key] = 0
     }
     recent.forEach((s) => {
-      const d = new Date(s.createdAt);
+      const d = new Date(s.createdAt)
       const key = d.toLocaleDateString("en-US", {
         month: "short",
         day: "2-digit",
-      });
-      if (key in dayMap) dayMap[key]++;
-    });
-    return Object.entries(dayMap).map(([date, count]) => ({ date, count }));
-  }, [sessions, days]);
+      })
+      if (key in dayMap) dayMap[key]++
+    })
+    return Object.entries(dayMap).map(([date, count]) => ({ date, count }))
+  }, [sessions, days])
 
   const modeData = useMemo(() => {
-    if (!sessions) return [];
-    const cutoff = subDays(new Date(), days).getTime();
-    const recent = sessions.filter((s) => s.createdAt >= cutoff);
-    const counts: Record<string, number> = {};
-    recent.forEach((s) => {
-      counts[s.type] = (counts[s.type] || 0) + 1;
-    });
+    if (!Array.isArray(sessions)) return []
+    const cutoff = subDays(new Date(), days).getTime()
+    const recent = sessions.filter((s: any) => s.createdAt >= cutoff)
+    const counts: Record<string, number> = {}
+    recent.forEach((s: any) => {
+      counts[s.type] = (counts[s.type] || 0) + 1
+    })
     return Object.entries(counts)
       .map(([type, count]) => ({ name: type, value: count }))
-      .sort((a, b) => b.value - a.value);
-  }, [sessions, days]);
+      .sort((a, b) => b.value - a.value)
+  }, [sessions, days])
 
   if (sessions === undefined) {
     return (
       <div className="glass rounded-2xl p-6 text-muted-foreground text-sm">
         Loading...
       </div>
-    );
+    )
   }
 
   return (
@@ -139,7 +139,7 @@ export function FocusTab({ period }: { period: Period }) {
             </ResponsiveContainer>
             <div className="flex-1 space-y-2">
               {modeData.map((item, index) => {
-                const total = modeData.reduce((s, d) => s + d.value, 0);
+                const total = modeData.reduce((s, d) => s + d.value, 0)
                 return (
                   <div
                     key={item.name}
@@ -159,12 +159,12 @@ export function FocusTab({ period }: { period: Period }) {
                       {total > 0 ? Math.round((item.value / total) * 100) : 0}%
                     </span>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
         )}
       </ChartCard>
     </div>
-  );
+  )
 }

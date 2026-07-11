@@ -4,15 +4,15 @@ import { api } from "@/convex/_generated/api"
 import { calculateStreak } from "./dashboard-utils"
 
 export function useDashboardStats() {
-  const tasks = useQuery(api.tasks.list)
-  const habits = useQuery(api.habits.list)
-  const transactions = useQuery(api.transactions.list)
-  const focusSessions = useQuery(api.focusSessions.list)
-  const goals = useQuery(api.goals.list)
-  const wallets = useQuery(api.wallets.list)
-  const moods = useQuery(api.moods.list)
-  const sleepLogs = useQuery(api.sleepLogs.list)
-  const profile = useQuery(api.userProfiles.get)
+  const tasks = useQuery(api.tasks.list) as any
+  const habits = useQuery(api.habits.list) as any
+  const transactions = useQuery(api.transactions.list) as any
+  const focusSessions = useQuery(api.focusSessions.list) as any
+  const goals = useQuery(api.goals.list) as any
+  const wallets = useQuery(api.wallets.list) as any
+  const moods = useQuery(api.moods.list) as any
+  const sleepLogs = useQuery(api.sleepLogs.list) as any
+  const profile = useQuery(api.userProfiles.get) as any
 
   const taskStats = useMemo(() => {
     if (!tasks) return { total: 0, completed: 0, pending: 0, overdue: 0 }
@@ -21,7 +21,7 @@ export function useDashboardStats() {
     let completed = 0
     let pending = 0
     let overdue = 0
-    for (const t of tasks) {
+    for (const t of tasks ?? []) {
       if (t.completed) {
         completed++
       } else {
@@ -36,8 +36,10 @@ export function useDashboardStats() {
     if (!habits)
       return { total: 0, totalStreak: 0, avgRate: 0, todayCompleted: 0 }
     const today = new Date().setHours(0, 0, 0, 0)
-    const todayCompleted = habits.filter((h) =>
-      h.completedDates.some((d) => new Date(d).setHours(0, 0, 0, 0) === today),
+    const todayCompleted = habits.filter((h: any) =>
+      h.completedDates.some(
+        (d: number) => new Date(d).setHours(0, 0, 0, 0) === today,
+      ),
     ).length
     let bestStreak = 0
     for (const habit of habits) {
@@ -117,9 +119,12 @@ export function useDashboardStats() {
       return { sessions: 0, totalMinutes: 0, totalHours: 0, todayMinutes: 0 }
     const todayStart = new Date().setHours(0, 0, 0, 0)
     const todayMinutes = focusSessions
-      .filter((s) => s.completedAt >= todayStart)
-      .reduce((sum, s) => sum + s.duration, 0)
-    const totalMinutes = focusSessions.reduce((sum, s) => sum + s.duration, 0)
+      .filter((s: any) => s.completedAt >= todayStart)
+      .reduce((sum: number, s: any) => sum + s.duration, 0)
+    const totalMinutes = focusSessions.reduce(
+      (sum: number, s: any) => sum + s.duration,
+      0,
+    )
     return {
       sessions: focusSessions.length,
       totalMinutes,
@@ -132,25 +137,28 @@ export function useDashboardStats() {
     if (!goals) return { total: 0, completed: 0, active: 0 }
     return {
       total: goals.length,
-      completed: goals.filter((g) => g.status === "completed").length,
-      active: goals.filter((g) => g.status === "active").length,
+      completed: goals.filter((g: any) => g.status === "completed").length,
+      active: goals.filter((g: any) => g.status === "active").length,
     }
   }, [goals])
 
   const walletBalance = useMemo(() => {
     if (!wallets) return 0
-    return wallets.reduce((sum, w) => sum + w.balance, 0)
+    return wallets.reduce((sum: number, w: any) => sum + w.balance, 0)
   }, [wallets])
 
   const moodStats = useMemo(() => {
     if (!moods) return { todayMood: null, avgMood: 0, totalLogged: 0 }
     const today = new Date().setHours(0, 0, 0, 0)
     const todayMood = moods.find(
-      (m) => new Date(m.date).setHours(0, 0, 0, 0) === today,
+      (m: any) => new Date(m.date).setHours(0, 0, 0, 0) === today,
     )
     const avgMood =
       moods.length > 0
-        ? Math.round(moods.reduce((sum, m) => sum + m.value, 0) / moods.length)
+        ? Math.round(
+            moods.reduce((sum: number, m: any) => sum + m.value, 0) /
+              moods.length,
+          )
         : 0
     return {
       todayMood: todayMood?.mood ?? null,
@@ -163,12 +171,12 @@ export function useDashboardStats() {
     if (!sleepLogs) return { todayHours: 0, avgHours: 0, totalLogged: 0 }
     const today = new Date().setHours(0, 0, 0, 0)
     const todayLog = sleepLogs.find(
-      (l) => new Date(l.date).setHours(0, 0, 0, 0) === today,
+      (l: any) => new Date(l.date).setHours(0, 0, 0, 0) === today,
     )
     const avgHours =
       sleepLogs.length > 0
         ? Math.round(
-            (sleepLogs.reduce((sum, l) => sum + l.hours, 0) /
+            (sleepLogs.reduce((sum: number, l: any) => sum + l.hours, 0) /
               sleepLogs.length) *
               10,
           ) / 10

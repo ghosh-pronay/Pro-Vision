@@ -33,8 +33,8 @@ const fadeUp = {
 export default function Nutrition() {
   const { lang } = useLang()
   const today = new Date().setHours(0, 0, 0, 0)
-  const meals = useQuery(api.mealLogs.list)
-  const waterLogs = useQuery(api.waterLogs.listByDate, { date: today })
+  const meals = useQuery(api.mealLogs.list) as any[]
+  const waterLogs = useQuery(api.waterLogs.listByDate, { date: today }) as any
   const createMeal = useMutation(api.mealLogs.create, "mealLogs")
   const deleteMeal = useMutation(api.mealLogs.remove, "mealLogs")
   const logWater = useMutation(api.waterLogs.addWater, "waterLogs")

@@ -235,7 +235,8 @@ const fadeUp = {
 }
 
 export default function DailyInspiration() {
-  const { t } = useI18n()
+  const i18n = useI18n()
+  const t = i18n.t as any
   const [selectedSign, setSelectedSign] = useState<string>("Aries")
   const [showSignPicker, setShowSignPicker] = useState(false)
 

@@ -1,39 +1,39 @@
-import { useState, useEffect, useCallback, useRef, memo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, X } from "lucide-react";
+import { useState, useEffect, useCallback, useRef, memo } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Mic, MicOff, X } from "lucide-react"
 
 interface SpeechRecognitionLike {
-  start(): void;
-  stop(): void;
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onstart: (() => void) | null;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: ((event: { error: string }) => void) | null;
-  onend: (() => void) | null;
+  start(): void
+  stop(): void
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  onstart: (() => void) | null
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onerror: ((event: { error: string }) => void) | null
+  onend: (() => void) | null
 }
 
 interface SpeechRecognitionEvent {
-  resultIndex: number;
-  results: Array<{ isFinal: boolean; [index: number]: { transcript: string } }>;
+  resultIndex: number
+  results: Array<{ isFinal: boolean; [index: number]: { transcript: string } }>
 }
 
 interface VoiceCommand {
-  command: string;
-  action: string;
-  params?: Record<string, string>;
+  command: string
+  action: string
+  params?: Record<string, string>
 }
 
 interface VoiceCommandsProps {
-  onCommand: (command: VoiceCommand) => void;
-  onClose: () => void;
+  onCommand: (command: VoiceCommand) => void
+  onClose: () => void
 }
 
 const COMMAND_PATTERNS: Array<{
-  patterns: RegExp[];
-  action: string;
-  extractParams?: (match: RegExpMatchArray) => Record<string, string>;
+  patterns: RegExp[]
+  action: string
+  extractParams?: (match: RegExpMatchArray) => Record<string, string>
 }> = [
   {
     patterns: [/add task (.+)/i, /create task (.+)/i, /new task (.+)/i],
@@ -103,125 +103,126 @@ const COMMAND_PATTERNS: Array<{
     patterns: [/help/i, /what can you do/i, /commands/i],
     action: "showHelp",
   },
-];
+]
 
 const VoiceCommands = memo(function VoiceCommands({
   onCommand,
   onClose,
 }: VoiceCommandsProps) {
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState("");
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
-  const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isListening, setIsListening] = useState(false)
+  const [transcript, setTranscript] = useState("")
+  const [feedback, setFeedback] = useState<string | null>(null)
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null)
+  const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const clearFeedbackTimeout = () => {
     if (feedbackTimeoutRef.current) {
-      clearTimeout(feedbackTimeoutRef.current);
-      feedbackTimeoutRef.current = null;
+      clearTimeout(feedbackTimeoutRef.current)
+      feedbackTimeoutRef.current = null
     }
-  };
+  }
 
   const processTranscript = useCallback(
     (text: string) => {
-      const normalizedText = text.toLowerCase().trim();
+      const normalizedText = text.toLowerCase().trim()
 
       for (const { patterns, action, extractParams } of COMMAND_PATTERNS) {
         for (const pattern of patterns) {
-          const match = normalizedText.match(pattern);
+          const match = normalizedText.match(pattern)
           if (match) {
             const command: VoiceCommand = {
               command: text,
               action,
               params: extractParams?.(match),
-            };
-            onCommand(command);
-            clearFeedbackTimeout();
-            setFeedback(`Executing: ${action}`);
+            }
+            onCommand(command)
+            clearFeedbackTimeout()
+            setFeedback(`Executing: ${action}`)
             feedbackTimeoutRef.current = setTimeout(
               () => setFeedback(null),
               2000,
-            );
-            return;
+            )
+            return
           }
         }
       }
 
-      clearFeedbackTimeout();
-      setFeedback("Command not recognized. Try 'help' for available commands.");
-      feedbackTimeoutRef.current = setTimeout(() => setFeedback(null), 3000);
+      clearFeedbackTimeout()
+      setFeedback("Command not recognized. Try 'help' for available commands.")
+      feedbackTimeoutRef.current = setTimeout(() => setFeedback(null), 3000)
     },
     [onCommand],
-  );
+  )
 
   const startListening = useCallback(() => {
     if (
       !("webkitSpeechRecognition" in window) &&
       !("SpeechRecognition" in window)
     ) {
-      setFeedback("Speech recognition not supported in this browser.");
-      return;
+      setFeedback("Speech recognition not supported in this browser.")
+      return
     }
 
     const Win = window as unknown as {
-      SpeechRecognition?: new () => SpeechRecognitionLike;
-      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
-    };
+      SpeechRecognition?: new () => SpeechRecognitionLike
+      webkitSpeechRecognition?: new () => SpeechRecognitionLike
+    }
     const SpeechRecognition =
-      Win.SpeechRecognition || Win.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
+      Win.SpeechRecognition || Win.webkitSpeechRecognition
+    if (!SpeechRecognition) return
+    const recognition = new SpeechRecognition()
 
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
+    recognition.continuous = false
+    recognition.interimResults = true
+    recognition.lang = "en-US"
 
     recognition.onstart = () => {
-      setIsListening(true);
-      setTranscript("");
-    };
+      setIsListening(true)
+      setTranscript("")
+    }
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const current = event.resultIndex;
-      const result = event.results[current];
-      const text = result[0].transcript;
-      setTranscript(text);
+      const current = event.resultIndex
+      const result = event.results[current]
+      const text = result[0].transcript
+      setTranscript(text)
 
       if (result.isFinal) {
-        processTranscript(text);
-        setIsListening(false);
+        processTranscript(text)
+        setIsListening(false)
       }
-    };
+    }
 
     recognition.onerror = (event: { error: string }) => {
       if (event.error === "not-allowed") {
-        setFeedback("Microphone access denied. Please enable it in settings.");
+        setFeedback("Microphone access denied. Please enable it in settings.")
       }
-      setIsListening(false);
-    };
+      setIsListening(false)
+    }
 
     recognition.onend = () => {
-      setIsListening(false);
-    };
+      setIsListening(false)
+    }
 
-    recognitionRef.current = recognition;
-    recognition.start();
-  }, [processTranscript]);
+    recognitionRef.current = recognition
+    recognition.start()
+  }, [processTranscript])
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      recognitionRef.current.stop()
     }
-    setIsListening(false);
-  }, []);
+    setIsListening(false)
+  }, [])
 
   useEffect(() => {
     return () => {
-      clearFeedbackTimeout();
+      clearFeedbackTimeout()
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        recognitionRef.current.stop()
       }
-    };
-  }, []);
+    }
+  }, [])
 
   return (
     <motion.div
@@ -309,8 +310,8 @@ const VoiceCommands = memo(function VoiceCommands({
         </div>
       </motion.div>
     </motion.div>
-  );
-});
+  )
+})
 
-export default VoiceCommands;
-export type { VoiceCommand };
+export default VoiceCommands
+export type { VoiceCommand }

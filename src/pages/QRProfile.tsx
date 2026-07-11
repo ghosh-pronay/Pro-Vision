@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo, useRef, useEffect } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo, useRef, useEffect } from "react"
 import {
   QrCode,
   Download,
@@ -19,44 +19,44 @@ import {
   Globe,
   Briefcase,
   MapPin,
-} from "lucide-react";
+} from "lucide-react"
 
 interface ProfileData {
-  name: string;
-  email: string;
-  phone: string;
-  bio: string;
-  website: string;
-  jobTitle: string;
-  location: string;
-  includeEmail: boolean;
-  includePhone: boolean;
-  includeWebsite: boolean;
-  includeJobTitle: boolean;
-  includeLocation: boolean;
+  name: string
+  email: string
+  phone: string
+  bio: string
+  website: string
+  jobTitle: string
+  location: string
+  includeEmail: boolean
+  includePhone: boolean
+  includeWebsite: boolean
+  includeJobTitle: boolean
+  includeLocation: boolean
 }
 
 interface QRHistoryItem {
-  id: string;
-  timestamp: number;
-  profileData: ProfileData;
+  id: string
+  timestamp: number
+  profileData: ProfileData
 }
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 function generateQRPattern(size: number, data: string): boolean[][] {
-  const modules: boolean[][] = [];
-  const moduleCount = size;
+  const modules: boolean[][] = []
+  const moduleCount = size
 
   for (let row = 0; row < moduleCount; row++) {
-    modules[row] = [];
+    modules[row] = []
     for (let col = 0; col < moduleCount; col++) {
-      modules[row][col] = false;
+      modules[row][col] = false
     }
   }
 
@@ -70,49 +70,49 @@ function generateQRPattern(size: number, data: string): boolean[][] {
           c === 6 ||
           (r >= 2 && r <= 4 && c >= 2 && c <= 4)
         ) {
-          modules[startRow + r][startCol + c] = true;
+          modules[startRow + r][startCol + c] = true
         }
       }
     }
-  };
+  }
 
-  drawFinderPattern(0, 0);
-  drawFinderPattern(0, moduleCount - 7);
-  drawFinderPattern(moduleCount - 7, 0);
+  drawFinderPattern(0, 0)
+  drawFinderPattern(0, moduleCount - 7)
+  drawFinderPattern(moduleCount - 7, 0)
 
   for (let i = 0; i < moduleCount; i++) {
-    if (i === 6 || i === moduleCount - 7) continue;
-    modules[6][i] = i % 2 === 0;
-    modules[i][6] = i % 2 === 0;
+    if (i === 6 || i === moduleCount - 7) continue
+    modules[6][i] = i % 2 === 0
+    modules[i][6] = i % 2 === 0
   }
 
-  let hash = 0;
+  let hash = 0
   for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
+    const char = data.charCodeAt(i)
+    hash = (hash << 5) - hash + char
+    hash = hash & hash
   }
 
-  const seed = Math.abs(hash);
-  let rng = seed;
+  const seed = Math.abs(hash)
+  let rng = seed
   const nextRandom = () => {
-    rng = (rng * 1103515245 + 12345) & 0x7fffffff;
-    return rng / 0x7fffffff;
-  };
+    rng = (rng * 1103515245 + 12345) & 0x7fffffff
+    return rng / 0x7fffffff
+  }
 
   for (let row = 0; row < moduleCount; row++) {
     for (let col = 0; col < moduleCount; col++) {
-      if (modules[row][col]) continue;
-      if (row < 9 && col < 9) continue;
-      if (row < 9 && col > moduleCount - 9) continue;
-      if (row > moduleCount - 9 && col < 9) continue;
-      if (row === 6 || col === 6) continue;
+      if (modules[row][col]) continue
+      if (row < 9 && col < 9) continue
+      if (row < 9 && col > moduleCount - 9) continue
+      if (row > moduleCount - 9 && col < 9) continue
+      if (row === 6 || col === 6) continue
 
-      modules[row][col] = nextRandom() > 0.55;
+      modules[row][col] = nextRandom() > 0.55
     }
   }
 
-  return modules;
+  return modules
 }
 
 function drawQRCode(
@@ -123,31 +123,31 @@ function drawQRCode(
   bgColor: string,
   margin: number,
 ) {
-  const moduleCount = modules.length;
-  const moduleSize = (canvasSize - margin * 2) / moduleCount;
+  const moduleCount = modules.length
+  const moduleSize = (canvasSize - margin * 2) / moduleCount
 
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, canvasSize, canvasSize);
+  ctx.fillStyle = bgColor
+  ctx.fillRect(0, 0, canvasSize, canvasSize)
 
-  ctx.fillStyle = fgColor;
+  ctx.fillStyle = fgColor
   for (let row = 0; row < moduleCount; row++) {
     for (let col = 0; col < moduleCount; col++) {
       if (modules[row][col]) {
-        const x = margin + col * moduleSize;
-        const y = margin + row * moduleSize;
-        ctx.fillRect(x, y, moduleSize + 0.5, moduleSize + 0.5);
+        const x = margin + col * moduleSize
+        const y = margin + row * moduleSize
+        ctx.fillRect(x, y, moduleSize + 0.5, moduleSize + 0.5)
       }
     }
   }
 }
 
 export default function QRProfile() {
-  const { lang } = useLang();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [copied, setCopied] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [activeTab, setActiveTab] = useState<"preview" | "qr">("qr");
+  const { lang } = useLang()
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [copied, setCopied] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [activeTab, setActiveTab] = useState<"preview" | "qr">("qr")
 
   const [profile, setProfile] = useState<ProfileData>({
     name: "Pronay Ghosh",
@@ -162,7 +162,7 @@ export default function QRProfile() {
     includeWebsite: true,
     includeJobTitle: true,
     includeLocation: false,
-  });
+  })
 
   const [qrHistory, setQrHistory] = useState<QRHistoryItem[]>([
     {
@@ -183,78 +183,78 @@ export default function QRProfile() {
         bio: "React Developer",
       },
     },
-  ]);
+  ])
 
   const qrData = useMemo(() => {
-    const parts: string[] = [];
-    parts.push(`FN:${profile.name}`);
-    if (profile.includeJobTitle) parts.push(`TITLE:${profile.jobTitle}`);
-    if (profile.includeEmail) parts.push(`EMAIL:${profile.email}`);
-    if (profile.includePhone) parts.push(`TEL:${profile.phone}`);
-    if (profile.includeWebsite) parts.push(`URL:${profile.website}`);
-    if (profile.includeLocation) parts.push(`ADR:${profile.location}`);
-    parts.push(`NOTE:${profile.bio}`);
-    return `BEGIN:VCARD\nVERSION:3.0\n${parts.join("\n")}\nEND:VCARD`;
-  }, [profile]);
+    const parts: string[] = []
+    parts.push(`FN:${profile.name}`)
+    if (profile.includeJobTitle) parts.push(`TITLE:${profile.jobTitle}`)
+    if (profile.includeEmail) parts.push(`EMAIL:${profile.email}`)
+    if (profile.includePhone) parts.push(`TEL:${profile.phone}`)
+    if (profile.includeWebsite) parts.push(`URL:${profile.website}`)
+    if (profile.includeLocation) parts.push(`ADR:${profile.location}`)
+    parts.push(`NOTE:${profile.bio}`)
+    return `BEGIN:VCARD\nVERSION:3.0\n${parts.join("\n")}\nEND:VCARD`
+  }, [profile])
 
   const qrUrl = useMemo(() => {
-    return `https://pro-vision.app/profile/${btoa(profile.name).replace(/=/g, "")}`;
-  }, [profile.name]);
+    return `https://pro-vision.app/profile/${btoa(profile.name).replace(/=/g, "")}`
+  }, [profile.name])
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
 
-    const size = 280;
-    canvas.width = size;
-    canvas.height = size;
+    const size = 280
+    canvas.width = size
+    canvas.height = size
 
-    const modules = generateQRPattern(25, qrData);
-    drawQRCode(ctx, modules, size, "#1e293b", "#ffffff", 16);
+    const modules = generateQRPattern(25, qrData)
+    drawQRCode(ctx, modules, size, "#1e293b", "#ffffff", 16)
 
-    const centerX = size / 2;
-    const centerY = size / 2;
-    const iconSize = 32;
-    const padding = 6;
+    const centerX = size / 2
+    const centerY = size / 2
+    const iconSize = 32
+    const padding = 6
 
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
+    ctx.fillStyle = "#ffffff"
+    ctx.beginPath()
     ctx.roundRect(
       centerX - iconSize / 2 - padding,
       centerY - iconSize / 2 - padding,
       iconSize + padding * 2,
       iconSize + padding * 2,
       8,
-    );
-    ctx.fill();
+    )
+    ctx.fill()
 
-    ctx.fillStyle = "#6366f1";
-    ctx.font = `bold ${iconSize}px sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("P", centerX, centerY + 2);
-  }, [qrData, profile.name]);
+    ctx.fillStyle = "#6366f1"
+    ctx.font = `bold ${iconSize}px sans-serif`
+    ctx.textAlign = "center"
+    ctx.textBaseline = "middle"
+    ctx.fillText("P", centerX, centerY + 2)
+  }, [qrData, profile.name])
 
   const handleDownload = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const link = document.createElement("a");
-    link.download = `qr-profile-${profile.name.replace(/\s+/g, "-").toLowerCase()}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  };
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const link = document.createElement("a")
+    link.download = `qr-profile-${profile.name.replace(/\s+/g, "-").toLowerCase()}.png`
+    link.href = canvas.toDataURL("image/png")
+    link.click()
+  }
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(qrUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(qrUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     } catch (e) {
-      console.error("[QRProfile]", "clipboard/share failed", e);
+      console.error("[QRProfile]", "clipboard/share failed", e)
     }
-  };
+  }
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -266,42 +266,42 @@ export default function QRProfile() {
               ? `${profile.name} এর QR প্রোফাইল দেখুন`
               : `Check out ${profile.name}'s QR Profile`,
           url: qrUrl,
-        });
+        })
       } catch (e) {
-        console.error("[QRProfile]", "clipboard/share failed", e);
+        console.error("[QRProfile]", "clipboard/share failed", e)
       }
     } else {
-      handleCopyLink();
+      handleCopyLink()
     }
-  };
+  }
 
   const handleDownloadVCard = () => {
-    const blob = new Blob([qrData], { type: "text/vcard" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = `${profile.name.replace(/\s+/g, "-").toLowerCase()}.vcf`;
-    link.href = url;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
+    const blob = new Blob([qrData], { type: "text/vcard" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.download = `${profile.name.replace(/\s+/g, "-").toLowerCase()}.vcf`
+    link.href = url
+    link.click()
+    URL.revokeObjectURL(url)
+  }
 
   const handleSaveToHistory = () => {
     const newItem: QRHistoryItem = {
       id: Date.now().toString(),
       timestamp: Date.now(),
       profileData: { ...profile },
-    };
-    setQrHistory([newItem, ...qrHistory]);
-  };
+    }
+    setQrHistory([newItem, ...qrHistory])
+  }
 
   const handleRestoreFromHistory = (item: QRHistoryItem) => {
-    setProfile(item.profileData);
-    setShowHistory(false);
-  };
+    setProfile(item.profileData)
+    setShowHistory(false)
+  }
 
   const handleDeleteHistoryItem = (id: string) => {
-    setQrHistory(qrHistory.filter((h) => h.id !== id));
-  };
+    setQrHistory(qrHistory.filter((h) => h.id !== id))
+  }
 
   const getInitials = (name: string) => {
     return name
@@ -309,8 +309,8 @@ export default function QRProfile() {
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2);
-  };
+      .slice(0, 2)
+  }
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString(
@@ -321,8 +321,8 @@ export default function QRProfile() {
         hour: "2-digit",
         minute: "2-digit",
       },
-    );
-  };
+    )
+  }
 
   const toggleFields = [
     {
@@ -350,7 +350,7 @@ export default function QRProfile() {
       icon: MapPin,
       label: lang === "bn" ? "লোকেশন" : "Location",
     },
-  ];
+  ]
 
   return (
     <motion.div
@@ -760,7 +760,7 @@ export default function QRProfile() {
                     {lang === "bn" ? "শেয়ার করুন" : "Share Profile"}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {navigator.share
+                    {typeof navigator.share === "function"
                       ? lang === "bn"
                         ? "সোশ্যাল মিডিয়ায় শেয়ার করুন"
                         : "Share via social media"
@@ -873,5 +873,5 @@ export default function QRProfile() {
         </motion.div>
       </div>
     </motion.div>
-  );
+  )
 }

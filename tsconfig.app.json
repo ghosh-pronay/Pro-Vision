@@ -28,7 +28,7 @@
       "@/*": ["./src/*"],
       "convex/react": ["./src/convex/react.ts"],
       "convex/_generated/api": ["./src/convex/_generated/api.ts"],
-      "lucide-react": ["./src/lucide-react.d.ts"]
+      "lucide-react": ["./node_modules/lucide-react/dist/lucide-react.d.ts"]
     }
   },
   "include": ["src"]

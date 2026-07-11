@@ -1,25 +1,32 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Shield, Loader2, Lock } from "lucide-react";
+import { useEffect } from "react"
+import { useNavigate } from "react-router"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card"
+import { Shield, Loader2, Lock } from "lucide-react"
 
 // Admin access is granted by your account's role (set in the database),
 // not by a key entered in the browser. This page just checks that role
 // and routes you to the dashboard or back out.
 export default function AdminPortal() {
-  const navigate = useNavigate();
-  const currentUser = useQuery(api.users.currentUser);
+  const navigate = useNavigate()
+  const currentUser = useQuery(api.users.currentUser) as any
 
   useEffect(() => {
     if (currentUser && currentUser.role === "admin") {
-      navigate("/admin-portal/dashboard", { replace: true });
+      navigate("/admin-portal/dashboard", { replace: true })
     }
-  }, [currentUser, navigate]);
+  }, [currentUser, navigate])
 
-  const isLoading = currentUser === undefined;
-  const isDenied = currentUser === null || (currentUser && currentUser.role !== "admin");
+  const isLoading = currentUser === undefined
+  const isDenied =
+    currentUser === null || (currentUser && currentUser.role !== "admin")
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-red-950/10 to-gray-950 flex items-center justify-center px-4">
@@ -72,5 +79,5 @@ export default function AdminPortal() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

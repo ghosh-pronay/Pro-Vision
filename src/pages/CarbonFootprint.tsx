@@ -117,7 +117,10 @@ export default function CarbonFootprint() {
     const avg = monthLogs.length > 0 ? total / 30 : 0
     const dailyGoalKg = monthlyGoal / 30
     const daysOnTrack =
-      monthlyLogs.filter((l) => getDayStart(l.date) === today).length > 0
+      monthLogs.filter(
+        (l: { date: number; carbonKg: number }) =>
+          getDayStart(l.date) === today,
+      ).length > 0
         ? todayTotal <= dailyGoalKg
         : false
     return {

@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   X,
   Send,
@@ -12,139 +12,139 @@ import {
   FileText,
   Sparkles,
   ChevronDown,
-} from "lucide-react";
-import { useAppStore } from "@/store";
-import { useI18n } from "@/hooks/use-i18n";
-import { cn } from "@/lib/utils";
-import { useCoachRateLimit } from "@/hooks/use-coach-rate-limit";
+} from "lucide-react"
+import { useAppStore } from "@/store"
+import { useI18n } from "@/hooks/use-i18n"
+import { cn } from "@/lib/utils"
+import { useCoachRateLimit } from "@/hooks/use-coach-rate-limit"
 import {
   generateGeminiResponse,
   isAIConfigured,
   type GeminiMessage,
-} from "@/lib/ai";
+} from "@/lib/ai"
 
 interface Attachment {
-  id: string;
-  name: string;
-  type: "image" | "document" | "file";
-  data: string;
-  preview?: string;
+  id: string
+  name: string
+  type: "image" | "document" | "file"
+  data: string
+  preview?: string
 }
 
 interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
-  attachments?: Attachment[];
+  id: string
+  role: "user" | "assistant"
+  content: string
+  timestamp: Date
+  attachments?: Attachment[]
 }
 
 const ACCEPTED_FILE_TYPES =
-  "image/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.xls,.ppt,.pptx,.json";
+  "image/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.xls,.ppt,.pptx,.json"
 
 const COACH_GRADIENT =
-  "linear-gradient(135deg, #0f172a 0%, #1e3a5f 25%, #1a6fb5 50%, #2abfbf 75%, #9b8ec4 100%)";
+  "linear-gradient(135deg, #0f172a 0%, #1e3a5f 25%, #1a6fb5 50%, #2abfbf 75%, #9b8ec4 100%)"
 
 function fileToAttachment(file: File): Promise<Attachment> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = () => {
-      const dataUrl = reader.result as string;
-      const isImage = file.type.startsWith("image/");
+      const dataUrl = reader.result as string
+      const isImage = file.type.startsWith("image/")
       resolve({
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         name: file.name,
         type: isImage ? "image" : "document",
         data: dataUrl,
         preview: isImage ? dataUrl : undefined,
-      });
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+      })
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
 }
 
 const CoachFloating = memo(function CoachFloating() {
-  const { t } = useI18n();
-  const { coachOpen, setCoachOpen } = useAppStore();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
-  const recognitionRef = useRef<unknown>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { t } = useI18n()
+  const { coachOpen, setCoachOpen } = useAppStore()
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState("")
+  const [isTyping, setIsTyping] = useState(false)
+  const [attachments, setAttachments] = useState<Attachment[]>([])
+  const [isRecording, setIsRecording] = useState(false)
+  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false)
+  const [dragOver, setDragOver] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  const recognitionRef = useRef<{ stop: () => void } | null>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const isPremium = false;
+  const isPremium = false
   const { remaining, isLimitReached, incrementUsage } =
-    useCoachRateLimit(isPremium);
+    useCoachRateLimit(isPremium)
 
   useEffect(() => {
     return () => {
-      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
       if (recognitionRef.current) {
         try {
-          (recognitionRef.current as { stop: () => void }).stop();
+          ;(recognitionRef.current as { stop: () => void }).stop()
         } catch {
           // Recognition may not be running
         }
       }
-    };
-  }, []);
+    }
+  }, [])
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
   useEffect(() => {
     if (coachOpen && inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.focus()
     }
-  }, [coachOpen]);
+  }, [coachOpen])
 
   const addFiles = useCallback(async (files: FileList | File[]) => {
-    const newAttachments: Attachment[] = [];
+    const newAttachments: Attachment[] = []
     for (let i = 0; i < files.length; i++) {
-      if (files[i].size > 10 * 1024 * 1024) continue;
+      if (files[i].size > 10 * 1024 * 1024) continue
       try {
-        newAttachments.push(await fileToAttachment(files[i]));
+        newAttachments.push(await fileToAttachment(files[i]))
       } catch (e) {
-        console.error("[CoachFloating] Failed to read file:", e);
+        console.error("[CoachFloating] Failed to read file:", e)
       }
     }
-    setAttachments((prev) => [...prev, ...newAttachments]);
-  }, []);
+    setAttachments((prev) => [...prev, ...newAttachments])
+  }, [])
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault();
-      setDragOver(false);
-      if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+      e.preventDefault()
+      setDragOver(false)
+      if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files)
     },
     [addFiles],
-  );
+  )
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(true);
-  }, []);
+    e.preventDefault()
+    setDragOver(true)
+  }, [])
 
-  const handleDragLeave = useCallback(() => setDragOver(false), []);
+  const handleDragLeave = useCallback(() => setDragOver(false), [])
 
   const removeAttachment = useCallback((id: string) => {
-    setAttachments((prev) => prev.filter((a) => a.id !== id));
-  }, []);
+    setAttachments((prev) => prev.filter((a) => a.id !== id))
+  }, [])
 
   const toggleVoiceRecording = useCallback(() => {
     const SpeechRecognitionConstructor =
-      (window as Record<string, unknown>).SpeechRecognition ||
-      (window as Record<string, unknown>).webkitSpeechRecognition;
+      (window as unknown as Record<string, unknown>).SpeechRecognition ||
+      (window as unknown as Record<string, unknown>).webkitSpeechRecognition
 
     if (!SpeechRecognitionConstructor) {
       setMessages((prev) => [
@@ -156,54 +156,54 @@ const CoachFloating = memo(function CoachFloating() {
             "Voice input is not supported in this browser. Please try Chrome or Edge.",
           timestamp: new Date(),
         },
-      ]);
-      return;
+      ])
+      return
     }
 
     if (isRecording && recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-      return;
+      recognitionRef.current.stop()
+      setIsRecording(false)
+      return
     }
 
     const recognition = new (SpeechRecognitionConstructor as {
-      new (): unknown;
-    })();
-    recognition.lang = "bn-BD";
-    recognition.interimResults = true;
-    recognition.continuous = true;
+      new (): any
+    })()
+    recognition.lang = "bn-BD"
+    recognition.interimResults = true
+    recognition.continuous = true
 
     recognition.onresult = (event: {
-      resultIndex: number;
-      results: Array<{ isFinal: boolean; 0: { transcript: string } }>;
+      resultIndex: number
+      results: Array<{ isFinal: boolean; 0: { transcript: string } }>
     }) => {
-      let finalTranscript = "";
-      let interimTranscript = "";
+      let finalTranscript = ""
+      let interimTranscript = ""
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
+          finalTranscript += event.results[i][0].transcript
         } else {
-          interimTranscript += event.results[i][0].transcript;
+          interimTranscript += event.results[i][0].transcript
         }
       }
       if (finalTranscript) {
-        setInput((prev) => prev + finalTranscript);
+        setInput((prev) => prev + finalTranscript)
       } else if (interimTranscript) {
-        setInput((prev) => prev.replace(/\|?$/, "") + interimTranscript);
+        setInput((prev) => prev.replace(/\|?$/, "") + interimTranscript)
       }
-    };
+    }
 
-    recognition.onerror = () => setIsRecording(false);
-    recognition.onend = () => setIsRecording(false);
+    recognition.onerror = () => setIsRecording(false)
+    recognition.onend = () => setIsRecording(false)
 
-    recognitionRef.current = recognition;
-    recognition.start();
-    setIsRecording(true);
-  }, [isRecording]);
+    recognitionRef.current = recognition
+    recognition.start()
+    setIsRecording(true)
+  }, [isRecording])
 
   const sendMessage = useCallback(async () => {
-    const trimmed = input.trim();
-    if ((!trimmed && attachments.length === 0) || isLimitReached) return;
+    const trimmed = input.trim()
+    if ((!trimmed && attachments.length === 0) || isLimitReached) return
 
     const userMsg: Message = {
       id: Date.now().toString(),
@@ -211,21 +211,21 @@ const CoachFloating = memo(function CoachFloating() {
       content: trimmed,
       timestamp: new Date(),
       attachments: attachments.length > 0 ? [...attachments] : undefined,
-    };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
-    setAttachments([]);
+    }
+    setMessages((prev) => [...prev, userMsg])
+    setInput("")
+    setAttachments([])
 
-    if (!incrementUsage()) return;
+    if (!incrementUsage()) return
 
-    setIsTyping(true);
+    setIsTyping(true)
 
     const attachmentContext =
       userMsg.attachments && userMsg.attachments.length > 0
         ? `\n[User attached ${userMsg.attachments.length} file(s): ${userMsg.attachments.map((a) => a.name).join(", ")}]`
-        : "";
+        : ""
 
-    const userText = trimmed + attachmentContext;
+    const userText = trimmed + attachmentContext
 
     const geminiMessages: GeminiMessage[] = [
       ...messages.map((m) => ({
@@ -233,7 +233,7 @@ const CoachFloating = memo(function CoachFloating() {
         parts: m.content,
       })),
       { role: "user" as const, parts: userText },
-    ];
+    ]
 
     const systemPrompt = `You are Pro-Vision AI Coach, a friendly and motivational productivity assistant. You speak naturally in a mix of English and Bengali when the user prefers it. You help with:
 - Task management and productivity
@@ -243,56 +243,56 @@ const CoachFloating = memo(function CoachFloating() {
 - Study tracking and learning
 - Goal setting and achievement
 
-Be concise, warm, and encouraging. Use simple language. If the user writes in Bengali, respond in Bengali. If they write in English, respond in English. Keep responses under 200 words unless more detail is needed.`;
+Be concise, warm, and encouraging. Use simple language. If the user writes in Bengali, respond in Bengali. If they write in English, respond in English. Keep responses under 200 words unless more detail is needed.`
 
     try {
       const response = await generateGeminiResponse(
         geminiMessages,
         systemPrompt,
-      );
+      )
       const reply: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: response,
         timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, reply]);
+      }
+      setMessages((prev) => [...prev, reply])
     } catch (error) {
-      console.error("[CoachFloating]", error);
+      console.error("[CoachFloating]", error)
       const reply: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content:
           "Sorry, I couldn't process your request right now. Please try again.",
         timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, reply]);
+      }
+      setMessages((prev) => [...prev, reply])
     } finally {
-      setIsTyping(false);
+      setIsTyping(false)
     }
-  }, [input, attachments, isLimitReached, incrementUsage, messages]);
+  }, [input, attachments, isLimitReached, incrementUsage, messages])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+      e.preventDefault()
+      sendMessage()
     }
-  };
+  }
 
   const starters = useMemo(
     () => [
-      t.coach.starters.plan,
-      t.coach.starters.finance,
-      t.coach.starters.habit,
-      t.coach.starters.stress,
+      (t.coach as any).starters.plan,
+      (t.coach as any).starters.finance,
+      (t.coach as any).starters.habit,
+      (t.coach as any).starters.stress,
     ],
     [
-      t.coach.starters.plan,
-      t.coach.starters.finance,
-      t.coach.starters.habit,
-      t.coach.starters.stress,
+      (t.coach as any).starters.plan,
+      (t.coach as any).starters.finance,
+      (t.coach as any).starters.habit,
+      (t.coach as any).starters.stress,
     ],
-  );
+  )
 
   return (
     <>
@@ -369,7 +369,7 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-sm leading-tight">
-                  {t.coach.title}
+                  {(t.coach as Record<string, string>).title}
                 </span>
                 <span className="text-[11px] text-white/70">
                   AI-Powered Life Coach
@@ -466,8 +466,8 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.1 * (i + 1) }}
                       onClick={() => {
-                        setInput(s);
-                        inputRef.current?.focus();
+                        setInput(s)
+                        inputRef.current?.focus()
                       }}
                       className="w-full rounded-xl border border-[var(--pv-teal)]/20 bg-white/50 px-3 py-2.5 text-left text-sm text-foreground backdrop-blur-sm transition-all hover:border-[var(--pv-teal)]/40 hover:bg-[var(--pv-teal)]/5 cursor-pointer"
                     >
@@ -608,8 +608,8 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
                   >
                     <button
                       onClick={() => {
-                        imageInputRef.current?.click();
-                        setShowAttachmentMenu(false);
+                        imageInputRef.current?.click()
+                        setShowAttachmentMenu(false)
                       }}
                       className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-[var(--pv-teal)]/10 cursor-pointer transition-colors"
                     >
@@ -618,8 +618,8 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
                     </button>
                     <button
                       onClick={() => {
-                        fileInputRef.current?.click();
-                        setShowAttachmentMenu(false);
+                        fileInputRef.current?.click()
+                        setShowAttachmentMenu(false)
                       }}
                       className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-[var(--pv-teal)]/10 cursor-pointer transition-colors"
                     >
@@ -653,15 +653,15 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={t.coach.placeholder}
+                  placeholder={(t.coach as Record<string, string>).placeholder}
                   rows={1}
                   className="flex-1 resize-none rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm outline-none backdrop-blur-sm placeholder:text-muted-foreground focus:border-[var(--pv-teal)] focus:ring-1 focus:ring-[var(--pv-teal)]/30 min-h-[36px] max-h-[100px]"
                   style={{ lineHeight: "1.4" }}
                   onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = "auto";
+                    const target = e.target as HTMLTextAreaElement
+                    target.style.height = "auto"
                     target.style.height =
-                      Math.min(target.scrollHeight, 100) + "px";
+                      Math.min(target.scrollHeight, 100) + "px"
                   }}
                 />
 
@@ -710,8 +710,8 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
                 multiple
                 className="hidden"
                 onChange={(e) => {
-                  if (e.target.files) addFiles(e.target.files);
-                  e.target.value = "";
+                  if (e.target.files) addFiles(e.target.files)
+                  e.target.value = ""
                 }}
               />
               <input
@@ -721,8 +721,8 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
                 multiple
                 className="hidden"
                 onChange={(e) => {
-                  if (e.target.files) addFiles(e.target.files);
-                  e.target.value = "";
+                  if (e.target.files) addFiles(e.target.files)
+                  e.target.value = ""
                 }}
               />
             </div>
@@ -730,7 +730,7 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
         )}
       </AnimatePresence>
     </>
-  );
-});
+  )
+})
 
-export default CoachFloating;
+export default CoachFloating

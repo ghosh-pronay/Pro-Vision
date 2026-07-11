@@ -227,8 +227,8 @@ function WeeklyBar({ completedDates, lang }: WeeklyBarProps) {
 export default function Habits() {
   const { lang } = useLang()
 
-  const habits = useQuery(api.habits.list)
-  const habitStats = useQuery(api.habits.stats)
+  const habits = useQuery(api.habits.list) as any
+  const habitStats = useQuery(api.habits.stats) as any
   const createHabit = useMutation(api.habits.create, "habits")
   const updateHabit = useMutation(api.habits.update, "habits")
   const archiveHabit = useMutation(api.habits.archive, "habits")
@@ -282,21 +282,21 @@ export default function Habits() {
     () =>
       new Set(
         allHabits
-          .filter((h) =>
+          .filter((h: any) =>
             (h.completedDates ?? []).some((d: number) => d >= todayStart),
           )
-          .map((h) => h._id),
+          .map((h: any) => h._id),
       ),
     [allHabits, todayStart],
   )
 
   const activeHabits = useMemo(
-    () => allHabits.filter((h) => (showArchived ? true : !h.archived)),
+    () => allHabits.filter((h: any) => (showArchived ? true : !h.archived)),
     [allHabits, showArchived],
   )
 
   const allCompletedDates = useMemo(
-    () => allHabits.flatMap((h) => h.completedDates ?? []),
+    () => allHabits.flatMap((h: any) => h.completedDates ?? []),
     [allHabits],
   )
 
@@ -324,7 +324,7 @@ export default function Habits() {
     const todayMs = todayStart
     for (let i = 0; i <= 365; i++) {
       const dayMs = todayMs - i * 86400000
-      const anyCompleted = allHabits.some((h) =>
+      const anyCompleted = allHabits.some((h: any) =>
         (h.completedDates ?? []).some(
           (d: number) => new Date(d).setHours(0, 0, 0, 0) === dayMs,
         ),
@@ -372,10 +372,10 @@ export default function Habits() {
     let result = activeHabits
 
     if (filterCategory) {
-      result = result.filter((h) => h.category === filterCategory)
+      result = result.filter((h: any) => h.category === filterCategory)
     }
     if (filterFrequency) {
-      result = result.filter((h) => h.frequency === filterFrequency)
+      result = result.filter((h: any) => h.frequency === filterFrequency)
     }
 
     result = [...result].sort((a, b) => {
@@ -580,7 +580,7 @@ export default function Habits() {
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
           {SUGGESTED_HABITS.map((habit) => {
             const alreadyAdded = allHabits.some(
-              (h) =>
+              (h: any) =>
                 h.name === habit.name[lang] ||
                 h.name === habit.name.en ||
                 h.name === habit.name.bn,
@@ -845,7 +845,7 @@ export default function Habits() {
           },
           {
             icon: Target,
-            value: `${stats.todayCompleted}/${allHabits.filter((h) => !h.archived).length}`,
+            value: `${stats.todayCompleted}/${allHabits.filter((h: any) => !h.archived).length}`,
             labelKey: "habits.todayProgress" as TranslationKey,
             color: "var(--pv-green)",
           },
@@ -917,7 +917,7 @@ export default function Habits() {
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
-                {ArrowUpDown.icon ? "" : ""} {opt.label[lang]}
+                {(ArrowUpDown as any).icon ? "" : ""} {opt.label[lang]}
               </option>
             ))}
           </select>
@@ -1026,7 +1026,7 @@ export default function Habits() {
 
       {detailHabit &&
         (() => {
-          const habit = allHabits.find((h) => h._id === detailHabit)
+          const habit = allHabits.find((h: any) => h._id === detailHabit)
           if (!habit) return null
           const completedDates = (habit.completedDates ?? []) as number[]
           const notes = (habit.checkInNotes ?? []) as {
@@ -1193,7 +1193,7 @@ export default function Habits() {
           </div>
         )}
         {(() => {
-          const todayHabits = filteredHabits.filter((h) => {
+          const todayHabits = filteredHabits.filter((h: any) => {
             const isChecked = checkedToday.has(h._id)
             return !isChecked && !h.archived
           })
@@ -1212,7 +1212,7 @@ export default function Habits() {
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {todayHabits.slice(0, 8).map((habit) => (
+                {todayHabits.slice(0, 8).map((habit: any) => (
                   <button
                     key={habit._id}
                     onClick={() => toggleCheckIn(habit._id)}
@@ -1236,9 +1236,9 @@ export default function Habits() {
         })()}
         {(() => {
           const completedCount = allHabits.filter(
-            (h) => checkedToday.has(h._id) && !h.archived,
+            (h: any) => checkedToday.has(h._id) && !h.archived,
           ).length
-          const totalActive = allHabits.filter((h) => !h.archived).length
+          const totalActive = allHabits.filter((h: any) => !h.archived).length
           if (completedCount === 0 || totalActive === 0) return null
           return (
             <div className="glass rounded-xl p-3 flex items-center gap-3 hover-blue">
@@ -1275,7 +1275,7 @@ export default function Habits() {
                   ({groupedHabits[cat.id].length})
                 </span>
               </div>
-              {groupedHabits[cat.id].map((habit, i) => {
+              {groupedHabits[cat.id].map((habit: any, i: number) => {
                 const isChecked = checkedToday.has(habit._id)
                 const completedDates = (habit.completedDates ?? []) as number[]
                 const completionRate = getCompletionRate(completedDates)

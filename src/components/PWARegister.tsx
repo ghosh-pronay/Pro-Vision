@@ -1,76 +1,76 @@
-import { useEffect, useState, memo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Download, X, RefreshCw } from "lucide-react";
-import { useLang } from "@/i18n/LanguageContext";
-import { t } from "@/i18n/translations";
+import { useEffect, useState, memo } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Download, X, RefreshCw } from "lucide-react"
+import { useLang } from "@/i18n/LanguageContext"
+import { t } from "@/i18n/translations"
 
 interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+  prompt(): Promise<void>
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
 }
 
 declare global {
   interface WindowEventMap {
-    beforeinstallprompt: BeforeInstallPromptEvent;
+    beforeinstallprompt: BeforeInstallPromptEvent
   }
 }
 
 const PWARegister = memo(function PWARegister() {
   const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
-  const [showInstall, setShowInstall] = useState(false);
-  const [showUpdate, setShowUpdate] = useState(false);
-  const { lang } = useLang();
+    useState<BeforeInstallPromptEvent | null>(null)
+  const [showInstall, setShowInstall] = useState(false)
+  const [showUpdate, setShowUpdate] = useState(false)
+  const { lang } = useLang()
 
   useEffect(() => {
     const handleBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstall(true);
-    };
+      e.preventDefault()
+      setDeferredPrompt(e as BeforeInstallPromptEvent)
+      setShowInstall(true)
+    }
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstall)
     return () =>
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-  }, []);
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstall)
+  }, [])
 
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
+    if (!("serviceWorker" in navigator)) return
 
     navigator.serviceWorker.ready
       .then((reg) => {
         reg.addEventListener("updatefound", () => {
-          const newWorker = reg.installing;
+          const newWorker = reg.installing
           if (newWorker) {
             newWorker.addEventListener("statechange", () => {
               if (
                 newWorker.state === "installed" &&
                 navigator.serviceWorker.controller
               ) {
-                setShowUpdate(true);
+                setShowUpdate(true)
               }
-            });
+            })
           }
-        });
+        })
       })
       .catch((e) => {
-        console.error("[PWARegister]", "service worker registration failed", e);
-      });
-  }, []);
+        console.error("[PWARegister]", "service worker registration failed", e)
+      })
+  }, [])
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
+    if (!deferredPrompt) return
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
     if (outcome === "accepted") {
-      setShowInstall(false);
+      setShowInstall(false)
     }
-    setDeferredPrompt(null);
-  };
+    setDeferredPrompt(null)
+  }
 
   const handleUpdate = () => {
-    window.location.reload();
-  };
+    window.location.reload()
+  }
 
   return (
     <AnimatePresence>
@@ -144,7 +144,7 @@ const PWARegister = memo(function PWARegister() {
         </motion.div>
       )}
     </AnimatePresence>
-  );
-});
+  )
+})
 
-export default PWARegister;
+export default PWARegister

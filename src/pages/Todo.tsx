@@ -156,7 +156,7 @@ const SUGGESTED_TASKS = [
 
 export default function Todo() {
   const { lang } = useLang()
-  const allTasks = useQuery(api.tasks.list)
+  const allTasks = useQuery(api.tasks.list) as any[]
   const createTask = useMutation(api.tasks.create, "tasks")
   const toggleTask = useMutation(api.tasks.toggle, "tasks")
   const removeTask = useMutation(api.tasks.remove, "tasks")
@@ -548,7 +548,7 @@ export default function Todo() {
                 }
               }
             }}
-            onTaskAdd={async (columnId, task) => {
+            onTaskAdd={async (_columnId, task) => {
               try {
                 await createTask({
                   title: task.title,

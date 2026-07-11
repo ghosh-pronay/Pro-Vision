@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo, useCallback } from "react"
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,7 +11,7 @@ import {
   Info,
   Sparkles,
   PartyPopper,
-} from "lucide-react";
+} from "lucide-react"
 
 const BENGALI_MONTHS = [
   { bn: "বৈশাখ", en: "Baishakh", days: 30 },
@@ -26,7 +26,7 @@ const BENGALI_MONTHS = [
   { bn: "মাঘ", en: "Magh", days: 30 },
   { bn: "ফাল্গুন", en: "Falgun", days: 30 },
   { bn: "চৈত্র", en: "Choitro", days: 30 },
-];
+]
 
 const BENGALI_DAYS = [
   { bn: "রবিবার", en: "Sun", short: "S" },
@@ -36,24 +36,24 @@ const BENGALI_DAYS = [
   { bn: "বৃহস্পতিবার", en: "Thu", short: "T" },
   { bn: "শুক্রবার", en: "Fri", short: "F" },
   { bn: "শনিবার", en: "Sat", short: "S" },
-];
+]
 
-const AUSPICIOUS_DAYS = [0, 4];
+const AUSPICIOUS_DAYS = [0, 4]
 
 interface BengaliDate {
-  year: number;
-  month: number;
-  day: number;
+  year: number
+  month: number
+  day: number
 }
 
 interface Festival {
-  name: string;
-  nameEn: string;
-  month: number;
-  day: number;
-  description: string;
-  descriptionEn: string;
-  icon: string;
+  name: string
+  nameEn: string
+  month: number
+  day: number
+  description: string
+  descriptionEn: string
+  icon: string
 }
 
 const FESTIVALS: Festival[] = [
@@ -120,186 +120,186 @@ const FESTIVALS: Festival[] = [
     descriptionEn: "Worship of Goddess Durga",
     icon: "🪷",
   },
-];
+]
 
 const toBanglaDigit = (n: number): string => {
-  const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-  return n.toString().replace(/\d/g, (d) => banglaDigits[parseInt(d)]);
-};
+  const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"]
+  return n.toString().replace(/\d/g, (d) => banglaDigits[parseInt(d)])
+}
 
 function getDaysInBengaliMonth(monthIndex: number): number {
-  return BENGALI_MONTHS[monthIndex].days;
+  return BENGALI_MONTHS[monthIndex].days
 }
 
 function getBengaliMonth1stWeekday(
   bengaliYear: number,
   monthIndex: number,
 ): number {
-  const gregorianYear = bengaliYear + 593;
-  let monthOffset = 0;
+  const gregorianYear = bengaliYear + 593
+  let monthOffset = 0
   for (let i = 0; i < monthIndex; i++) {
-    monthOffset += BENGALI_MONTHS[i].days;
+    monthOffset += BENGALI_MONTHS[i].days
   }
-  const april1 = new Date(gregorianYear, 3, 14);
-  const targetDate = new Date(april1.getTime() + monthOffset * 86400000);
-  return targetDate.getDay();
+  const april1 = new Date(gregorianYear, 3, 14)
+  const targetDate = new Date(april1.getTime() + monthOffset * 86400000)
+  return targetDate.getDay()
 }
 
 function gregorianToBengali(date: Date): BengaliDate {
-  const y = date.getFullYear();
-  const m = date.getMonth() + 1;
-  const d = date.getDate();
+  const y = date.getFullYear()
+  const m = date.getMonth() + 1
+  const d = date.getDate()
 
-  let bengaliYear: number;
-  let bengaliMonth: number;
-  let bengaliDay: number;
+  let bengaliYear: number
+  let bengaliMonth: number
+  let bengaliDay = 0
 
   if (m > 3 || (m === 3 && d >= 14)) {
-    bengaliYear = y - 593;
+    bengaliYear = y - 593
   } else {
-    bengaliYear = y - 594;
+    bengaliYear = y - 594
   }
 
-  const april1 = new Date(y, 3, 14);
-  const diff = Math.floor((date.getTime() - april1.getTime()) / 86400000);
+  const april1 = new Date(y, 3, 14)
+  const diff = Math.floor((date.getTime() - april1.getTime()) / 86400000)
 
-  let accumulated = 0;
-  bengaliMonth = 0;
+  let accumulated = 0
+  bengaliMonth = 0
   for (let i = 0; i < 12; i++) {
-    const monthDays = BENGALI_MONTHS[i].days;
+    const monthDays = BENGALI_MONTHS[i].days
     if (diff < accumulated + monthDays) {
-      bengaliMonth = i;
-      bengaliDay = diff - accumulated + 1;
-      break;
+      bengaliMonth = i
+      bengaliDay = diff - accumulated + 1
+      break
     }
-    accumulated += monthDays;
+    accumulated += monthDays
     if (i === 11) {
-      bengaliMonth = 11;
-      bengaliDay = diff - accumulated + 1;
+      bengaliMonth = 11
+      bengaliDay = diff - accumulated + 1
     }
   }
 
   if (bengaliDay < 1) {
-    bengaliDay = 1;
+    bengaliDay = 1
   }
 
-  return { year: bengaliYear, month: bengaliMonth, day: bengaliDay };
+  return { year: bengaliYear, month: bengaliMonth, day: bengaliDay }
 }
 
 function bengaliToGregorian(bengaliDate: BengaliDate): Date {
-  const gregorianYear = bengaliDate.year + 593;
-  const april1 = new Date(gregorianYear, 3, 14);
+  const gregorianYear = bengaliDate.year + 593
+  const april1 = new Date(gregorianYear, 3, 14)
 
-  let daysOffset = 0;
+  let daysOffset = 0
   for (let i = 0; i < bengaliDate.month; i++) {
-    daysOffset += BENGALI_MONTHS[i].days;
+    daysOffset += BENGALI_MONTHS[i].days
   }
-  daysOffset += bengaliDate.day - 1;
+  daysOffset += bengaliDate.day - 1
 
-  return new Date(april1.getTime() + daysOffset * 86400000);
+  return new Date(april1.getTime() + daysOffset * 86400000)
 }
 
 function getNextFestival(
   currentBengaliDate: BengaliDate,
 ): { festival: Festival; daysUntil: number } | null {
-  let minDays = Infinity;
-  let nearest: Festival | null = null;
+  let minDays = Infinity
+  let nearest: Festival | null = null
 
   for (const festival of FESTIVALS) {
-    let daysUntil = 0;
+    let daysUntil = 0
     if (
       festival.month > currentBengaliDate.month ||
       (festival.month === currentBengaliDate.month &&
         festival.day >= currentBengaliDate.day)
     ) {
       for (let i = currentBengaliDate.month; i < festival.month; i++) {
-        daysUntil += BENGALI_MONTHS[i].days;
+        daysUntil += BENGALI_MONTHS[i].days
       }
-      daysUntil += festival.day - currentBengaliDate.day;
+      daysUntil += festival.day - currentBengaliDate.day
     } else {
       for (let i = currentBengaliDate.month; i < 12; i++) {
-        daysUntil += BENGALI_MONTHS[i].days;
+        daysUntil += BENGALI_MONTHS[i].days
       }
       for (let i = 0; i <= festival.month; i++) {
-        daysUntil += BENGALI_MONTHS[i].days;
+        daysUntil += BENGALI_MONTHS[i].days
       }
-      daysUntil += festival.day - currentBengaliDate.day;
+      daysUntil += festival.day - currentBengaliDate.day
     }
 
     if (daysUntil >= 0 && daysUntil < minDays) {
-      minDays = daysUntil;
-      nearest = festival;
+      minDays = daysUntil
+      nearest = festival
     }
   }
 
   if (nearest && minDays >= 0) {
-    return { festival: nearest, daysUntil: minDays };
+    return { festival: nearest, daysUntil: minDays }
   }
-  return null;
+  return null
 }
 
 const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.05 } },
-};
+}
 
 const item = {
   hidden: { opacity: 0, y: 12 },
   show: { opacity: 1, y: 0 },
-};
+}
 
 export default function BengaliCalendar() {
-  const { lang } = useLang();
-  const today = new Date();
-  const todayBengali = gregorianToBengali(today);
+  const { lang } = useLang()
+  const today = new Date()
+  const todayBengali = gregorianToBengali(today)
 
-  const [selectedMonth, setSelectedMonth] = useState(todayBengali.month);
-  const [selectedYear, setSelectedYear] = useState(todayBengali.year);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [showDetail, setShowDetail] = useState(false);
-  const [showConverter, setShowConverter] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(todayBengali.month)
+  const [selectedYear, setSelectedYear] = useState(todayBengali.year)
+  const [selectedDay, setSelectedDay] = useState<number | null>(null)
+  const [showDetail, setShowDetail] = useState(false)
+  const [showConverter, setShowConverter] = useState(false)
 
   const [convGregorian, setConvGregorian] = useState(
     `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`,
-  );
+  )
   const [convBengaliYear, setConvBengaliYear] = useState(
     todayBengali.year.toString(),
-  );
+  )
   const [convBengaliMonth, setConvBengaliMonth] = useState(
     todayBengali.month.toString(),
-  );
+  )
   const [convBengaliDay, setConvBengaliDay] = useState(
     todayBengali.day.toString(),
-  );
+  )
 
   const calendarDays = useMemo(() => {
-    const totalDays = getDaysInBengaliMonth(selectedMonth);
-    const firstWeekday = getBengaliMonth1stWeekday(selectedYear, selectedMonth);
-    const days: (number | null)[] = [];
+    const totalDays = getDaysInBengaliMonth(selectedMonth)
+    const firstWeekday = getBengaliMonth1stWeekday(selectedYear, selectedMonth)
+    const days: (number | null)[] = []
     for (let i = 0; i < firstWeekday; i++) {
-      days.push(null);
+      days.push(null)
     }
     for (let i = 1; i <= totalDays; i++) {
-      days.push(i);
+      days.push(i)
     }
-    return days;
-  }, [selectedYear, selectedMonth]);
+    return days
+  }, [selectedYear, selectedMonth])
 
   const festivalsThisMonth = useMemo(
     () => FESTIVALS.filter((f) => f.month === selectedMonth),
     [selectedMonth],
-  );
+  )
 
   const nextFestival = useMemo(
     () => getNextFestival(todayBengali),
     [todayBengali],
-  );
+  )
 
   const getFestivalForDay = useCallback(
     (day: number) =>
       FESTIVALS.find((f) => f.month === selectedMonth && f.day === day),
     [selectedMonth],
-  );
+  )
 
   const isToday = useCallback(
     (day: number) =>
@@ -307,61 +307,61 @@ export default function BengaliCalendar() {
       selectedMonth === todayBengali.month &&
       selectedYear === todayBengali.year,
     [todayBengali, selectedMonth, selectedYear],
-  );
+  )
 
   const isAuspicious = useCallback(
     (dayOfWeek: number) => AUSPICIOUS_DAYS.includes(dayOfWeek),
     [],
-  );
+  )
 
   const selectedDayOfWeek = useMemo(() => {
-    if (selectedDay === null) return -1;
+    if (selectedDay === null) return -1
     return (
       getBengaliMonth1stWeekday(selectedYear, selectedMonth) + (selectedDay - 1)
-    );
-  }, [selectedDay, selectedYear, selectedMonth]);
+    )
+  }, [selectedDay, selectedYear, selectedMonth])
 
   const selectedDayFestival = useMemo(
     () => (selectedDay !== null ? getFestivalForDay(selectedDay) : undefined),
     [selectedDay, getFestivalForDay],
-  );
+  )
 
   const handlePrevMonth = () => {
     if (selectedMonth === 0) {
-      setSelectedMonth(11);
-      setSelectedYear((y) => y - 1);
+      setSelectedMonth(11)
+      setSelectedYear((y) => y - 1)
     } else {
-      setSelectedMonth((m) => m - 1);
+      setSelectedMonth((m) => m - 1)
     }
-    setSelectedDay(null);
-  };
+    setSelectedDay(null)
+  }
 
   const handleNextMonth = () => {
     if (selectedMonth === 11) {
-      setSelectedMonth(0);
-      setSelectedYear((y) => y + 1);
+      setSelectedMonth(0)
+      setSelectedYear((y) => y + 1)
     } else {
-      setSelectedMonth((m) => m + 1);
+      setSelectedMonth((m) => m + 1)
     }
-    setSelectedDay(null);
-  };
+    setSelectedDay(null)
+  }
 
   const handleConvertToBengali = () => {
-    const parts = convGregorian.split("-");
+    const parts = convGregorian.split("-")
     if (parts.length === 3) {
       const d = new Date(
         Number(parts[0]),
         Number(parts[1]) - 1,
         Number(parts[2]),
-      );
+      )
       if (!isNaN(d.getTime())) {
-        const bengali = gregorianToBengali(d);
-        setConvBengaliYear(bengali.year.toString());
-        setConvBengaliMonth(bengali.month.toString());
-        setConvBengaliDay(bengali.day.toString());
+        const bengali = gregorianToBengali(d)
+        setConvBengaliYear(bengali.year.toString())
+        setConvBengaliMonth(bengali.month.toString())
+        setConvBengaliDay(bengali.day.toString())
       }
     }
-  };
+  }
 
   const handleConvertToGregorian = () => {
     const bengali: BengaliDate = {
@@ -371,12 +371,12 @@ export default function BengaliCalendar() {
         BENGALI_MONTHS[Number(convBengaliMonth) || 0].days,
         Math.max(1, Number(convBengaliDay) || 1),
       ),
-    };
-    const greg = bengaliToGregorian(bengali);
+    }
+    const greg = bengaliToGregorian(bengali)
     setConvGregorian(
       `${greg.getFullYear()}-${String(greg.getMonth() + 1).padStart(2, "0")}-${String(greg.getDate()).padStart(2, "0")}`,
-    );
-  };
+    )
+  }
 
   return (
     <motion.div
@@ -462,8 +462,8 @@ export default function BengaliCalendar() {
               <select
                 value={selectedMonth}
                 onChange={(e) => {
-                  setSelectedMonth(Number(e.target.value));
-                  setSelectedDay(null);
+                  setSelectedMonth(Number(e.target.value))
+                  setSelectedDay(null)
                 }}
                 className="bg-transparent text-lg font-bold text-[var(--pv-text)] rounded-lg px-3 py-1 border border-[var(--pv-glass-border)] focus:outline-none focus:ring-2 focus:ring-[var(--pv-primary)]/50"
               >
@@ -480,8 +480,8 @@ export default function BengaliCalendar() {
               <select
                 value={selectedYear}
                 onChange={(e) => {
-                  setSelectedYear(Number(e.target.value));
-                  setSelectedDay(null);
+                  setSelectedYear(Number(e.target.value))
+                  setSelectedDay(null)
                 }}
                 className="bg-transparent text-lg font-bold text-[var(--pv-text)] rounded-lg px-3 py-1 border border-[var(--pv-glass-border)] focus:outline-none focus:ring-2 focus:ring-[var(--pv-primary)]/50"
               >
@@ -528,16 +528,16 @@ export default function BengaliCalendar() {
           <div className="grid grid-cols-7 gap-1">
             {calendarDays.map((day, i) => {
               if (day === null) {
-                return <div key={`empty-${i}`} className="aspect-square" />;
+                return <div key={`empty-${i}`} className="aspect-square" />
               }
 
               const dayOfWeek =
                 getBengaliMonth1stWeekday(selectedYear, selectedMonth) +
-                (day - 1);
-              const festival = getFestivalForDay(day);
-              const todayFlag = isToday(day);
-              const auspicious = isAuspicious(dayOfWeek % 7);
-              const selected = selectedDay === day;
+                (day - 1)
+              const festival = getFestivalForDay(day)
+              const todayFlag = isToday(day)
+              const auspicious = isAuspicious(dayOfWeek % 7)
+              const selected = selectedDay === day
 
               return (
                 <motion.button
@@ -545,8 +545,8 @@ export default function BengaliCalendar() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
-                    setSelectedDay(day);
-                    setShowDetail(true);
+                    setSelectedDay(day)
+                    setShowDetail(true)
                   }}
                   className={`aspect-square rounded-xl flex flex-col items-center justify-center text-sm font-medium relative transition-all ${
                     todayFlag
@@ -575,7 +575,7 @@ export default function BengaliCalendar() {
                     />
                   )}
                 </motion.button>
-              );
+              )
             })}
           </div>
         </div>
@@ -592,17 +592,17 @@ export default function BengaliCalendar() {
             </div>
             <div className="space-y-3">
               {festivalsThisMonth.map((festival, i) => {
-                let daysUntil = festival.day - todayBengali.day;
+                let daysUntil = festival.day - todayBengali.day
                 if (
                   selectedMonth !== todayBengali.month ||
                   selectedYear !== todayBengali.year
                 ) {
-                  daysUntil = festival.day - 1;
+                  daysUntil = festival.day - 1
                 }
                 const isPast =
                   selectedMonth === todayBengali.month &&
                   selectedYear === todayBengali.year &&
-                  todayBengali.day > festival.day;
+                  todayBengali.day > festival.day
 
                 return (
                   <motion.div
@@ -612,8 +612,8 @@ export default function BengaliCalendar() {
                     transition={{ delay: i * 0.05 }}
                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--pv-glass)] transition-colors cursor-pointer"
                     onClick={() => {
-                      setSelectedDay(festival.day);
-                      setShowDetail(true);
+                      setSelectedDay(festival.day)
+                      setShowDetail(true)
                     }}
                   >
                     <span className="text-2xl">{festival.icon}</span>
@@ -642,7 +642,7 @@ export default function BengaliCalendar() {
                       )}
                     </div>
                   </motion.div>
-                );
+                )
               })}
             </div>
           </div>
@@ -779,7 +779,7 @@ export default function BengaliCalendar() {
                         year: selectedYear,
                         month: selectedMonth,
                         day: selectedDay,
-                      });
+                      })
                       return gregDate.toLocaleDateString(
                         lang === "bn" ? "bn-BD" : "en-US",
                         {
@@ -788,7 +788,7 @@ export default function BengaliCalendar() {
                           month: "long",
                           day: "numeric",
                         },
-                      );
+                      )
                     })()}
                   </div>
                 </div>
@@ -906,5 +906,5 @@ export default function BengaliCalendar() {
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }

@@ -1,16 +1,16 @@
-import { useRef, useState } from "react";
-import { Download, Upload, CheckCircle, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "./button";
-import { ConfirmDialog } from "./ConfirmDialog";
-import { useLang } from "@/i18n/LanguageContext";
-import { cn } from "@/lib/utils";
+import { useRef, useState } from "react"
+import { Download, Upload, CheckCircle, AlertCircle } from "lucide-react"
+import { toast } from "sonner"
+import { Button } from "./button"
+import { ConfirmDialog } from "./ConfirmDialog"
+import { useLang } from "@/i18n/LanguageContext"
+import { cn } from "@/lib/utils"
 
 interface BackupData {
-  version: string;
-  timestamp: string;
-  localStorage: Record<string, string>;
-  indexedDB?: Record<string, unknown>;
+  version: string
+  timestamp: string
+  localStorage: Record<string, string>
+  indexedDB?: Record<string, unknown>
 }
 
 const labels = {
@@ -42,137 +42,137 @@ const labels = {
     cancelBtn: "বাতিল",
     fileInput: "ব্যাকআপ ফাইল নির্বাচন করুন",
   },
-};
+}
 
-const EXCLUDED_KEYS = ["emailForSignIn", "pv-fcm-token"];
+const EXCLUDED_KEYS = ["emailForSignIn", "pv-fcm-token"]
 
 async function collectLocalStorageData(): Promise<Record<string, string>> {
-  const data: Record<string, string> = {};
+  const data: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
+    const key = localStorage.key(i)
     if (key && !EXCLUDED_KEYS.includes(key)) {
-      data[key] = localStorage.getItem(key) ?? "";
+      data[key] = localStorage.getItem(key) ?? ""
     }
   }
-  return data;
+  return data
 }
 
 async function collectIndexedDBData(): Promise<Record<string, unknown>> {
-  const data: Record<string, unknown> = {};
+  const data: Record<string, unknown> = {}
   try {
-    const databases = await indexedDB.databases();
+    const databases = await indexedDB.databases()
     for (const dbInfo of databases) {
-      if (!dbInfo.name) continue;
+      if (!dbInfo.name) continue
       const db = await new Promise<IDBDatabase>((resolve, reject) => {
-        const req = indexedDB.open(dbInfo.name);
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
+        const req = indexedDB.open(dbInfo.name!)
+        req.onsuccess = () => resolve(req.result)
+        req.onerror = () => reject(req.error)
+      })
 
-      const storeData: Record<string, unknown> = {};
+      const storeData: Record<string, unknown> = {}
       for (const storeName of Array.from(db.objectStoreNames)) {
-        const tx = db.transaction(storeName, "readonly");
-        const store = tx.objectStore(storeName);
+        const tx = db.transaction(storeName, "readonly")
+        const store = tx.objectStore(storeName)
         const allData = await new Promise<unknown[]>((resolve, reject) => {
-          const req = store.getAll();
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => reject(req.error);
-        });
-        storeData[storeName] = allData;
+          const req = store.getAll()
+          req.onsuccess = () => resolve(req.result)
+          req.onerror = () => reject(req.error)
+        })
+        storeData[storeName] = allData
       }
-      data[dbInfo.name] = { version: dbInfo.version, stores: storeData };
-      db.close();
+      data[dbInfo.name] = { version: dbInfo.version, stores: storeData }
+      db.close()
     }
   } catch (e) {
-    console.error("[DataBackup] IndexedDB not available or empty:", e);
+    console.error("[DataBackup] IndexedDB not available or empty:", e)
   }
-  return data;
+  return data
 }
 
 function triggerDownload(data: BackupData, filename: string) {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
     type: "application/json",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }
 
 function readFileAsJSON(file: File): Promise<BackupData> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = () => {
       try {
-        const data = JSON.parse(reader.result as string);
+        const data = JSON.parse(reader.result as string)
         if (!data.version || !data.timestamp) {
-          reject(new Error("Invalid backup format"));
+          reject(new Error("Invalid backup format"))
         }
-        resolve(data);
+        resolve(data)
       } catch (e) {
-        console.error("[DataBackup]", "Failed to parse backup JSON", e);
-        reject(new Error("Invalid JSON"));
+        console.error("[DataBackup]", "Failed to parse backup JSON", e)
+        reject(new Error("Invalid JSON"))
       }
-    };
-    reader.onerror = () => reject(new Error("Failed to read file"));
-    reader.readAsText(file);
-  });
+    }
+    reader.onerror = () => reject(new Error("Failed to read file"))
+    reader.readAsText(file)
+  })
 }
 
 export function DataBackup({ className }: { className?: string }) {
-  const { lang } = useLang();
-  const t = labels[lang];
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [pendingData, setPendingData] = useState<BackupData | null>(null);
+  const { lang } = useLang()
+  const t = labels[lang]
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [pendingData, setPendingData] = useState<BackupData | null>(null)
 
   const handleExport = async () => {
     try {
       const [lsData, idbData] = await Promise.all([
         collectLocalStorageData(),
         collectIndexedDBData(),
-      ]);
+      ])
 
       const backup: BackupData = {
         version: "1.0.0",
         timestamp: new Date().toISOString(),
         localStorage: lsData,
         indexedDB: idbData,
-      };
+      }
 
-      const filename = `pro-vision-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      triggerDownload(backup, filename);
-      toast.success(t.exportSuccess, { icon: CheckCircle });
+      const filename = `pro-vision-backup-${new Date().toISOString().slice(0, 10)}.json`
+      triggerDownload(backup, filename)
+      toast.success(t.exportSuccess, { icon: <CheckCircle /> })
     } catch (e) {
-      console.error("[DataBackup]", "Export failed", e);
-      toast.error(t.exportError, { icon: AlertCircle });
+      console.error("[DataBackup]", "Export failed", e)
+      toast.error(t.exportError, { icon: <AlertCircle /> })
     }
-  };
+  }
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const file = e.target.files?.[0]
+    if (!file) return
 
     try {
-      const data = await readFileAsJSON(file);
-      setPendingData(data);
-      setShowConfirm(true);
+      const data = await readFileAsJSON(file)
+      setPendingData(data)
+      setShowConfirm(true)
     } catch (e) {
-      console.error("[DataBackup]", "Invalid file", e);
-      toast.error(t.invalidFile, { icon: AlertCircle });
+      console.error("[DataBackup]", "Invalid file", e)
+      toast.error(t.invalidFile, { icon: <AlertCircle /> })
     }
 
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = ""
     }
-  };
+  }
 
   const confirmRestore = async () => {
-    if (!pendingData) return;
+    if (!pendingData) return
 
     try {
       if (pendingData.localStorage) {
@@ -182,22 +182,22 @@ export function DataBackup({ className }: { className?: string }) {
           "__CONVEX_SHIM_ACTIVE__",
           "pv-encryption-key",
           "pv-accessibility",
-        ];
+        ]
         for (const [key, value] of Object.entries(pendingData.localStorage)) {
-          if (typeof value !== "string") continue;
-          if (BLOCKED_KEYS.some((blocked) => key.startsWith(blocked))) continue;
-          localStorage.setItem(key, value);
+          if (typeof value !== "string") continue
+          if (BLOCKED_KEYS.some((blocked) => key.startsWith(blocked))) continue
+          localStorage.setItem(key, value)
         }
       }
-      setShowConfirm(false);
-      setPendingData(null);
-      toast.success(t.importSuccess, { icon: CheckCircle });
-      setTimeout(() => window.location.reload(), 800);
+      setShowConfirm(false)
+      setPendingData(null)
+      toast.success(t.importSuccess, { icon: <CheckCircle /> })
+      setTimeout(() => window.location.reload(), 800)
     } catch (e) {
-      console.error("[DataBackup]", "Import failed", e);
-      toast.error(t.importError, { icon: AlertCircle });
+      console.error("[DataBackup]", "Import failed", e)
+      toast.error(t.importError, { icon: <AlertCircle /> })
     }
-  };
+  }
 
   return (
     <div className={cn("flex flex-col sm:flex-row gap-3", className)}>
@@ -226,8 +226,8 @@ export function DataBackup({ className }: { className?: string }) {
         open={showConfirm}
         onConfirm={confirmRestore}
         onCancel={() => {
-          setShowConfirm(false);
-          setPendingData(null);
+          setShowConfirm(false)
+          setPendingData(null)
         }}
         title={t.confirmTitle}
         description={t.confirmDesc}
@@ -236,5 +236,5 @@ export function DataBackup({ className }: { className?: string }) {
         variant="warning"
       />
     </div>
-  );
+  )
 }

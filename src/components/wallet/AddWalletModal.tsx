@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Zap } from "lucide-react";
-import { WalletForm } from "./WalletForm";
-import { WALLET_PRESETS } from "@/lib/wallet-presets";
-import type { Wallet } from "@/types/wallet";
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { X, Plus, Zap } from "lucide-react"
+import { WalletForm } from "./WalletForm"
+import { WALLET_PRESETS } from "@/lib/wallet-presets"
+import type { Wallet } from "@/types/wallet"
 import {
   Banknote,
   PiggyBank,
@@ -13,9 +13,12 @@ import {
   CreditCard,
   MoreHorizontal,
   Landmark,
-} from "lucide-react";
+} from "lucide-react"
 
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+const ICON_MAP: Record<
+  string,
+  React.ComponentType<{ className?: string; style?: React.CSSProperties }>
+> = {
   Banknote,
   PiggyBank,
   Smartphone,
@@ -24,16 +27,16 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   CreditCard,
   MoreHorizontal,
   Landmark,
-};
+}
 
 interface AddWalletModalProps {
-  lang: "en" | "bn";
-  onAdd: (data: Omit<Wallet, "_id" | "createdAt">) => void;
-  onClose: () => void;
+  lang: "en" | "bn"
+  onAdd: (data: Omit<Wallet, "_id" | "createdAt">) => void
+  onClose: () => void
 }
 
 export function AddWalletModal({ lang, onAdd, onClose }: AddWalletModalProps) {
-  const [mode, setMode] = useState<"quick" | "custom">("quick");
+  const [mode, setMode] = useState<"quick" | "custom">("quick")
 
   const handleQuickAdd = (preset: (typeof WALLET_PRESETS)[0]) => {
     onAdd({
@@ -46,8 +49,8 @@ export function AddWalletModal({ lang, onAdd, onClose }: AddWalletModalProps) {
       icon: preset.icon,
       isDefault: false,
       presetId: preset.id,
-    });
-  };
+    })
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -110,7 +113,7 @@ export function AddWalletModal({ lang, onAdd, onClose }: AddWalletModalProps) {
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {WALLET_PRESETS.map((preset) => {
-                  const Icon = ICON_MAP[preset.icon] || Wallet;
+                  const Icon = ICON_MAP[preset.icon] || MoreHorizontal
                   return (
                     <motion.button
                       key={preset.id}
@@ -132,7 +135,7 @@ export function AddWalletModal({ lang, onAdd, onClose }: AddWalletModalProps) {
                         {lang === "bn" ? preset.nameBn : preset.name}
                       </p>
                     </motion.button>
-                  );
+                  )
                 })}
               </div>
             </motion.div>
@@ -149,5 +152,5 @@ export function AddWalletModal({ lang, onAdd, onClose }: AddWalletModalProps) {
         </AnimatePresence>
       </motion.div>
     </div>
-  );
+  )
 }

@@ -61,8 +61,8 @@ export default function Focus() {
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const sessions = useQuery(api.focusSessions.list)
-  const stats = useQuery(api.focusSessions.stats)
+  const sessions = useQuery(api.focusSessions.list) as any[]
+  const stats = useQuery(api.focusSessions.stats) as any
   const createSession = useMutation(api.focusSessions.create, "focusSessions")
 
   const current = MODES[mode]
