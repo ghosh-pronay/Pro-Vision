@@ -1,6 +1,4 @@
-import type { TranslationKey } from "./translations";
-
-export const en: Record<TranslationKey, string> = {
+export const en = {
   "app.name": "Pro-Vision",
   "app.tagline": "Plan · Focus · Achieve",
   "nav.features": "Features",
@@ -41,7 +39,8 @@ export const en: Record<TranslationKey, string> = {
   "hero.badge": "Made for Everyone · Works Offline",
   "hero.title1": "All your goals.",
   "hero.title2": "One vision.",
-  "hero.subtitle": "Track tasks, habits, finances, and well-being — guided by your personal AI Coach. Available in Bengali & English.",
+  "hero.subtitle":
+    "Track tasks, habits, finances, and well-being — guided by your personal AI Coach. Available in Bengali & English.",
   "hero.cta": "Start Free — No Card Needed",
   "hero.explore": "Explore Features",
   "hero.trust.encrypted": "End-to-End Encrypted",
@@ -55,36 +54,49 @@ export const en: Record<TranslationKey, string> = {
   "features.badge": "7 Features · 1 App",
   "features.title": "Everything you need.",
   "features.titleSub": "Nothing you don't.",
-  "features.desc": "Replace 6 apps with one. Track your tasks, habits, money, focus, news, and well-being — all in one place.",
+  "features.desc":
+    "Replace 6 apps with one. Track your tasks, habits, money, focus, news, and well-being — all in one place.",
   "features.todo.title": "Smart To-Do List",
-  "features.todo.desc": "AI breaks big goals into actionable tasks. Priority sorting, reminders, and deadline tracking.",
+  "features.todo.desc":
+    "AI breaks big goals into actionable tasks. Priority sorting, reminders, and deadline tracking.",
   "features.habits.title": "Habit Tracker",
-  "features.habits.desc": "Build streaks with calendar heatmaps, AI suggestions, and streak recovery. Never break the chain.",
+  "features.habits.desc":
+    "Build streaks with calendar heatmaps, AI suggestions, and streak recovery. Never break the chain.",
   "features.expense.title": "Expense Tracker",
-  "features.expense.desc": "bKash, Nagad, Bank — all wallets. Budget alerts, AI insights, 13 report types, PDF export.",
+  "features.expense.desc":
+    "bKash, Nagad, Bank — all wallets. Budget alerts, AI insights, 13 report types, PDF export.",
   "features.focus.title": "Focus Timer",
-  "features.focus.desc": "Pomodoro, Deep Work, Custom modes. Ambient sounds, task linking, and phone-call auto-pause.",
+  "features.focus.desc":
+    "Pomodoro, Deep Work, Custom modes. Ambient sounds, task linking, and phone-call auto-pause.",
   "features.news.title": "Today's World",
-  "features.news.desc": "Personalised news feed in Bengali & English. AI-curated from GNews, NewsAPI, and local sources.",
+  "features.news.desc":
+    "Personalised news feed in Bengali & English. AI-curated from GNews, NewsAPI, and local sources.",
   "features.reports.title": "Reports & Analysis",
-  "features.reports.desc": "30-day trends, goal progress, life score history, and weekly email reports — all visualised beautifully.",
+  "features.reports.desc":
+    "30-day trends, goal progress, life score history, and weekly email reports — all visualised beautifully.",
   "features.wellbeing.title": "Well-being",
-  "features.wellbeing.desc": "Mood tracking, breathing exercises, sleep logging, gratitude journal. AI-powered emotional support.",
+  "features.wellbeing.desc":
+    "Mood tracking, breathing exercises, sleep logging, gratitude journal. AI-powered emotional support.",
   "features.coach.title": "AI Coach",
-  "features.coach.desc": "Your personal productivity guide. Bengali-aware, goal-driven, crisis-sensitive. Always floating, always ready.",
+  "features.coach.desc":
+    "Your personal productivity guide. Bengali-aware, goal-driven, crisis-sensitive. Always floating, always ready.",
   "coach.badge": "Powered by Google Gemini",
   "coach.title": "Meet your AI Coach.",
   "coach.titleSub": "Always floating. Always ready.",
-  "coach.desc": "A draggable assistant on every page. It remembers your goals, speaks Bengali, tracks your mood, and gives data-backed advice. Crisis-aware and culturally intelligent.",
+  "coach.desc":
+    "A draggable assistant on every page. It remembers your goals, speaks Bengali, tracks your mood, and gives data-backed advice. Crisis-aware and culturally intelligent.",
   "coach.point1": "50 messages/day free — 200 with Premium",
   "coach.point2": "Memory system remembers your goals & preferences",
   "coach.point3": "Proactive nudges: morning plans, evening reviews",
   "coach.point4": "Bengali cultural context & local references",
   "coach.point5": "Crisis detection with mental health resources",
   "coach.cta": "Try Coach Free",
-  "coach.mock.greeting": "Good morning! 🌅 You've completed 3 habits this week — your best streak yet. Want me to plan your day?",
-  "coach.mock.user": "Yes! And review my finances too — I want to save ৳50K by December.",
-  "coach.mock.reply": "Great goal! 🎯 You're saving ৳8.5K/month on average. At this rate, you'll hit ৳50K by November. I'll create a focused plan for you.",
+  "coach.mock.greeting":
+    "Good morning! 🌅 You've completed 3 habits this week — your best streak yet. Want me to plan your day?",
+  "coach.mock.user":
+    "Yes! And review my finances too — I want to save ৳50K by December.",
+  "coach.mock.reply":
+    "Great goal! 🎯 You're saving ৳8.5K/month on average. At this rate, you'll hit ৳50K by November. I'll create a focused plan for you.",
   "coach.chips": "💡 Plan my day|💰 Budget review|🔥 New habit",
   "coach.panelTitle": "AI Coach",
   "coach.online": "Online",
@@ -102,11 +114,15 @@ export const en: Record<TranslationKey, string> = {
   "coach.starters.finance": "Review my finances",
   "coach.starters.habit": "Suggest a new habit",
   "coach.starters.stress": "I'm feeling stressed",
-  "coach.demo.welcome": "Hey there! 👋 I'm your AI Coach. I can see you've completed 3 habits this week — great consistency! Want me to help plan your day or review your finances?",
-  "coach.demo.user1": "Yes! Help me plan my day. I have a big presentation at 3 PM.",
-  "coach.demo.reply1": "Let's structure your day around that presentation! 📋\\n\\n🌅 Morning routine + exercise (6-8 AM)\\n📝 Prepare presentation notes (8-10 AM)\\n🎯 Deep work on key slides (10 AM-12 PM)\\n🍽️ Lunch break (12-1 PM)\\n⚡ Review + practice run (1-2:30 PM)\\n🎤 PRESENTATION (3 PM)\\n🌆 Relax + habit check-in\\n\\nWant me to set reminders?",
+  "coach.demo.welcome":
+    "Hey there! 👋 I'm your AI Coach. I can see you've completed 3 habits this week — great consistency! Want me to help plan your day or review your finances?",
+  "coach.demo.user1":
+    "Yes! Help me plan my day. I have a big presentation at 3 PM.",
+  "coach.demo.reply1":
+    "Let's structure your day around that presentation! 📋\\n\\n🌅 Morning routine + exercise (6-8 AM)\\n📝 Prepare presentation notes (8-10 AM)\\n🎯 Deep work on key slides (10 AM-12 PM)\\n🍽️ Lunch break (12-1 PM)\\n⚡ Review + practice run (1-2:30 PM)\\n🎤 PRESENTATION (3 PM)\\n🌆 Relax + habit check-in\\n\\nWant me to set reminders?",
   "coach.demo.user2": "Perfect! Also, how am I doing with my savings goal?",
-  "coach.demo.reply2": "You're doing great! 💰 You've saved ৳8,500 this month — that's 17% of your ৳50K goal. At this rate, you'll reach it by November. One tip: if you reduce food delivery by ৳2,000/month, you'll hit ৳50K by October! Want me to break down your spending categories?",
+  "coach.demo.reply2":
+    "You're doing great! 💰 You've saved ৳8,500 this month — that's 17% of your ৳50K goal. At this rate, you'll reach it by November. One tip: if you reduce food delivery by ৳2,000/month, you'll hit ৳50K by October! Want me to break down your spending categories?",
   "stats.features": "Features in One App",
   "stats.languages": "Languages Supported",
   "stats.offline": "Offline Capable",
@@ -114,7 +130,8 @@ export const en: Record<TranslationKey, string> = {
   "wellbeing.title": "Productivity means nothing",
   "wellbeing.titleSub": "without well-being.",
   "wellbeing.badge": "Feature 7 · Well-being",
-  "wellbeing.desc": "Track your mood, breathe deeply, sleep better, and journal gratitude. Coach adapts when you're stressed. Safety resources always available — never paywalled.",
+  "wellbeing.desc":
+    "Track your mood, breathe deeply, sleep better, and journal gratitude. Coach adapts when you're stressed. Safety resources always available — never paywalled.",
   "wellbeing.mood": "Mood Check-in",
   "wellbeing.breathing": "Breathing Exercises",
   "wellbeing.sleep": "Sleep Tracker",
@@ -128,7 +145,8 @@ export const en: Record<TranslationKey, string> = {
   "wellbeing.stressValue": "Low — 3/10",
   "pricing.badge": "Simple Pricing",
   "pricing.title": "Free forever. Premium when you're ready.",
-  "pricing.desc": "Core features are always free. Upgrade for the full experience.",
+  "pricing.desc":
+    "Core features are always free. Upgrade for the full experience.",
   "pricing.free": "Free",
   "pricing.freeSub": "forever",
   "pricing.freeDesc": "Everything you need to get started",
@@ -157,7 +175,8 @@ export const en: Record<TranslationKey, string> = {
   "pricing.studentFeature4": "Bengali-first experience",
   "pricing.studentCta": "Verify Student Status",
   "cta.title": "Ready to see your future?",
-  "cta.desc": "Join thousands of people planning smarter, focusing deeper, and achieving more — all in one app.",
+  "cta.desc":
+    "Join thousands of people planning smarter, focusing deeper, and achieving more — all in one app.",
   "cta.button": "Get Started Free",
   "cta.note": "No credit card required · Free forever for core features",
   "footer.privacy": "Privacy Policy",
@@ -195,7 +214,8 @@ export const en: Record<TranslationKey, string> = {
   "auth.signInLink": "Sign in",
   "notFound.title": "404",
   "notFound.heading": "Lost in the void",
-  "notFound.desc": "The page you're looking for doesn't exist or has been moved.",
+  "notFound.desc":
+    "The page you're looking for doesn't exist or has been moved.",
   "notFound.home": "Back to Home",
   "notFound.dashboard": "Go to Dashboard",
   "dash.welcome": "Good morning, Pronay 👋",
@@ -216,7 +236,8 @@ export const en: Record<TranslationKey, string> = {
   "dash.startFocus": "Start Focus",
   "dash.addExpense": "Add Expense",
   "dash.coachNudge": "💡 Coach Insight",
-  "dash.coachNudgeText": "You've been consistent with 3 habits this week. Keep it up! Want me to suggest a new habit?",
+  "dash.coachNudgeText":
+    "You've been consistent with 3 habits this week. Keep it up! Want me to suggest a new habit?",
   "dash.recentActivity": "Recent Activity",
   "dash.quickActionsDesc": "Habits + Quick Expense + Mood",
   "dash.start": "Start",
@@ -232,12 +253,18 @@ export const en: Record<TranslationKey, string> = {
   "dash.avgSleep": "Avg sleep",
   "dash.noData": "No data",
   "dash.days": "days",
-  "dash.suggest.profileAgeGender": "Add your age & gender for personalized insights",
-  "dash.suggest.profileWorkSchedule": "Set your work schedule in profile for smart reminders",
-  "dash.suggest.profileGoals": "Set your goals in profile to auto-suggest tasks",
-  "dash.suggest.profileBudget": "Set your budget in profile for spending alerts",
-  "dash.suggest.profileCurrency": "Set your currency in profile for accurate tracking",
-  "dash.suggest.tipMoodSleep": "Log mood + sleep daily to boost your wellbeing score",
+  "dash.suggest.profileAgeGender":
+    "Add your age & gender for personalized insights",
+  "dash.suggest.profileWorkSchedule":
+    "Set your work schedule in profile for smart reminders",
+  "dash.suggest.profileGoals":
+    "Set your goals in profile to auto-suggest tasks",
+  "dash.suggest.profileBudget":
+    "Set your budget in profile for spending alerts",
+  "dash.suggest.profileCurrency":
+    "Set your currency in profile for accurate tracking",
+  "dash.suggest.tipMoodSleep":
+    "Log mood + sleep daily to boost your wellbeing score",
   "dash.suggest.tipHabitStreak": "Complete 3 habits today to build your streak",
   "dash.suggest.tipDailyCheckin": "Check in daily to build longer streaks",
   "dash.suggest.tipAllModules": "Use all modules to unlock smart insights",
@@ -252,7 +279,7 @@ export const en: Record<TranslationKey, string> = {
   "dash.suggest.emptyAddWallet": "Add a wallet to track finances",
   "dash.suggest.emptyStartModule": "Start using modules to see your activity",
   "dash.suggest.goToSettings": "Settings",
-  "dash.activity1": "Completed \"Finish proposal\" task",
+  "dash.activity1": 'Completed "Finish proposal" task',
   "dash.activity2": "Morning Exercise habit checked in",
   "dash.activity3": "2-hour focus session completed",
   "dash.activity4": "Mood logged: Good 😊",
@@ -312,7 +339,8 @@ export const en: Record<TranslationKey, string> = {
   "expense.transferring": "Transferring...",
   "expense.emptyTransactions": "No transactions yet. Add one!",
   "expense.createWallet": "Create a Wallet",
-  "expense.createWalletDesc": "Create a wallet first to start tracking expenses",
+  "expense.createWalletDesc":
+    "Create a wallet first to start tracking expenses",
   "expense.addIncomeDesc": "Add new income",
   "expense.addExpenseDesc": "Add new expense",
   "expense.transferDesc": "Transfer between wallets",
@@ -454,7 +482,8 @@ export const en: Record<TranslationKey, string> = {
   "settings.saving": "Saving...",
   "settings.saved": "Saved!",
   "settings.smartNotifications": "Smart Notifications",
-  "settings.smartNotificationsDescription": "Manage your notification preferences",
+  "settings.smartNotificationsDescription":
+    "Manage your notification preferences",
   "settings.dataBackup": "Data Backup",
   "settings.dataBackupDescription": "Export and import your data",
   "settings.widgets": "Widgets",
@@ -520,7 +549,8 @@ export const en: Record<TranslationKey, string> = {
   "admin.grantPremium": "Grant Premium",
   "admin.revokePremium": "Revoke Premium",
   "admin.featureFlags": "Feature Flags",
-  "admin.featureFlagsDesc": "Toggle features on/off for all users. Changes apply instantly.",
+  "admin.featureFlagsDesc":
+    "Toggle features on/off for all users. Changes apply instantly.",
   "admin.enabled": "Enabled",
   "admin.disabled": "Disabled",
   "admin.adPlacements": "Ad Placements",
@@ -550,7 +580,8 @@ export const en: Record<TranslationKey, string> = {
   "admin.appSettings": "App-Wide Settings",
   "admin.defaultLanguage": "Default Language",
   "admin.requireEmailVerification": "Require Email Verification",
-  "admin.requireEmailVerificationDesc": "Users must verify email before accessing app",
+  "admin.requireEmailVerificationDesc":
+    "Users must verify email before accessing app",
   "admin.enableOnboarding": "Enable Onboarding",
   "admin.enableOnboardingDesc": "Show onboarding flow to new users",
   "admin.confirmDelete": "Are you sure you want to delete this user?",
@@ -932,7 +963,8 @@ export const en: Record<TranslationKey, string> = {
   "subscriptions.education": "Education",
   "subscriptions.other": "Other",
   "subscriptions.noSubscriptions": "No subscriptions yet",
-  "subscriptions.noSubscriptionsDesc": "Start by adding your first subscription",
+  "subscriptions.noSubscriptionsDesc":
+    "Start by adding your first subscription",
   "subscriptions.daysLeft": "days left",
   "subscriptions.expired": "Expired",
   "subscriptions.inDays": "in {days} days",
@@ -970,7 +1002,8 @@ export const en: Record<TranslationKey, string> = {
   "voiceNotes.deleted": "Note deleted",
   "voiceNotes.titlePlaceholder": "Enter note title",
   "voiceNotes.empty": "No voice notes yet",
-  "voiceNotes.emptyDesc": "Tap the record button to create your first voice note",
+  "voiceNotes.emptyDesc":
+    "Tap the record button to create your first voice note",
   "voiceNotes.noTranscription": "No transcription yet",
   "voiceNotes.editTitle": "Edit Title",
   "voiceNotes.copied": "Copied to clipboard!",
@@ -983,8 +1016,10 @@ export const en: Record<TranslationKey, string> = {
   "voiceNotes.yes": "Yes",
   "voiceNotes.no": "No",
   "voiceNotes.recognizing": "Recognizing speech...",
-  "voiceNotes.browserNotSupported": "Voice recording not supported in this browser",
-  "voiceNotes.micPermissionDenied": "Microphone permission denied. Please allow access.",
+  "voiceNotes.browserNotSupported":
+    "Voice recording not supported in this browser",
+  "voiceNotes.micPermissionDenied":
+    "Microphone permission denied. Please allow access.",
   "nav.offline": "Offline Mode",
   "offlineMode.title": "Offline Mode",
   "offlineMode.subtitle": "Manage offline data and sync",
@@ -1007,7 +1042,8 @@ export const en: Record<TranslationKey, string> = {
   "offlineMode.downloadData": "Download Offline Data",
   "offlineMode.clearData": "Clear All Local Data",
   "offlineMode.exportData": "Export Data",
-  "offlineMode.autoSyncDesc": "Sync data automatically when connection is restored",
+  "offlineMode.autoSyncDesc":
+    "Sync data automatically when connection is restored",
   "offlineMode.wifiOnlyDesc": "Only sync when connected to WiFi",
   "offlineMode.syncIntervalDesc": "How often to check for sync",
   "offlineMode.seconds": "seconds",
@@ -1037,13 +1073,15 @@ export const en: Record<TranslationKey, string> = {
   "offlineMode.storage.expenses": "Expenses",
   "offlineMode.storage.cache": "Cache",
   "offlineMode.confirmClearCache": "Are you sure you want to clear the cache?",
-  "offlineMode.confirmClearData": "This will delete ALL local data. Are you sure?",
+  "offlineMode.confirmClearData":
+    "This will delete ALL local data. Are you sure?",
   "offlineMode.mb": "MB",
   "offlineMode.of": "of",
   "encryption.title": "Data Encryption & Security",
   "encryption.subtitle": "Protect your sensitive data with AES-256 encryption",
   "encryption.securityScore": "Security Score",
-  "encryption.securityScoreDesc": "Based on password strength, encrypted fields, and backup status",
+  "encryption.securityScoreDesc":
+    "Based on password strength, encrypted fields, and backup status",
   "encryption.status": "Encryption Status",
   "encryption.enabled": "Enabled",
   "encryption.disabled": "Disabled",
@@ -1080,15 +1118,18 @@ export const en: Record<TranslationKey, string> = {
   "encryption.securityTips": "Security Tips",
   "encryption.tip1": "Use a strong, unique password for encryption",
   "encryption.tip2": "Enable auto-lock to protect data when you're away",
-  "encryption.tip3": "Encrypt sensitive data fields like financial and health data",
-  "encryption.tip4": "Regularly review encryption history for suspicious activity",
+  "encryption.tip3":
+    "Encrypt sensitive data fields like financial and health data",
+  "encryption.tip4":
+    "Regularly review encryption history for suspicious activity",
   "encryption.tip5": "Always encrypt backup files before sharing",
   "encryption.financial": "Financial Data",
   "encryption.notes": "Personal Notes",
   "encryption.health": "Health Data",
   "encryption.contacts": "Contact Information",
   "encryption.algorithm": "Encryption Algorithm",
-  "encryption.algorithmDesc": "AES-256 is the industry standard for data encryption",
+  "encryption.algorithmDesc":
+    "AES-256 is the industry standard for data encryption",
   "encryption.backupEncryption": "Backup Encryption",
   "encryption.backupEncryptionDesc": "Encrypt all backup files automatically",
   "encryption.enableBackupEncryption": "Enable Backup Encryption",
@@ -1275,4 +1316,4 @@ export const en: Record<TranslationKey, string> = {
   "api.environment": "Environment",
   "api.backendFunctions": "Backend Functions",
   "api.time.ago": "just now",
-};
+} as const

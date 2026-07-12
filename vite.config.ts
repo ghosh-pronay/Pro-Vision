@@ -1,7 +1,7 @@
-import tailwindcss from "@tailwindcss/vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
-import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite"
+import react from "@vitejs/plugin-react"
+import path from "path"
+import { defineConfig } from "vite"
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -26,19 +26,34 @@ export default defineConfig({
           !id.includes("_generated") &&
           !id.includes("react")
         ) {
-          return true;
+          return true
         }
-        return false;
+        return false
       },
       output: {
-        manualChunks: {
-          "react-vendor": ["react", "react-dom", "react-router"],
-          "framer-motion": ["framer-motion"],
-          "lucide-react": ["lucide-react"],
-          "ui-libs": ["sonner", "zustand", "zustand/middleware"],
-          charts: ["recharts"],
+        manualChunks(id) {
+          if (
+            id.includes("recharts") ||
+            id.includes("victory") ||
+            id.includes("/d3-") ||
+            id.includes("d3/") ||
+            id.includes("vendor")
+          ) {
+            return "charts"
+          }
+          if (id === "react" || id === "react-dom" || id === "react-router") {
+            return "react-vendor"
+          }
+          if (id.includes("framer-motion")) {
+            return "framer-motion"
+          }
+          if (id.includes("lucide-react")) {
+            return "lucide-react"
+          }
+          if (id === "sonner" || id === "zustand" || id.includes("/zustand/")) {
+            return "ui-libs"
+          }
         },
-        chunkFileNames: "assets/[name]-[hash].js",
         entryFileNames: "assets/[name]-[hash].js",
         assetFileNames: "assets/[name]-[hash].[ext]",
       },
@@ -54,4 +69,4 @@ export default defineConfig({
   server: {
     hmr: true,
   },
-});
+})

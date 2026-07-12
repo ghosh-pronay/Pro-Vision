@@ -1,6 +1,4 @@
-import type { TranslationKey } from "./translations";
-
-export const bn: Record<TranslationKey, string> = {
+export const bn = {
   "app.name": "প্রো-ভিশন",
   "app.tagline": "পরিকল্পনা · ফোকাস · সফলতা",
   "nav.features": "বৈশিষ্ট্য",
@@ -41,7 +39,8 @@ export const bn: Record<TranslationKey, string> = {
   "hero.badge": "সবার জন্য তৈরি · অফলাইনে কাজ করে",
   "hero.title1": "আপনার সব লক্ষ্য।",
   "hero.title2": "একটি দৃষ্টি।",
-  "hero.subtitle": "কাজ, অভ্যাস, আর্থিক এবং সুস্থতা ট্র্যাক করুন — আপনার ব্যক্তিগত AI কোচ দ্বারা নির্দেশিত। বাংলা ও ইংরেজিতে উপলব্ধ।",
+  "hero.subtitle":
+    "কাজ, অভ্যাস, আর্থিক এবং সুস্থতা ট্র্যাক করুন — আপনার ব্যক্তিগত AI কোচ দ্বারা নির্দেশিত। বাংলা ও ইংরেজিতে উপলব্ধ।",
   "hero.cta": "বিনামূল্যে শুরু করুন — কার্ডের প্রয়োজন নেই",
   "hero.explore": "বৈশিষ্ট্য দেখুন",
   "hero.trust.encrypted": "এন্ড-টু-এন্ড এনক্রিপ্টেড",
@@ -55,37 +54,51 @@ export const bn: Record<TranslationKey, string> = {
   "features.badge": "৭টি বৈশিষ্ট্য · ১টি অ্যাপ",
   "features.title": "আপনার প্রয়োজনীয় সবকিছু।",
   "features.titleSub": "অপ্রয়োজনীয় কিছু নেই।",
-  "features.desc": "৬টি অ্যাপের বদলে একটি। আপনার কাজ, অভ্যাস, টাকা, ফোকাস, খবর এবং সুস্থতা ট্র্যাক করুন — সব এক জায়গায়।",
+  "features.desc":
+    "৬টি অ্যাপের বদলে একটি। আপনার কাজ, অভ্যাস, টাকা, ফোকাস, খবর এবং সুস্থতা ট্র্যাক করুন — সব এক জায়গায়।",
   "features.todo.title": "স্মার্ট টু-ডু লিস্ট",
-  "features.todo.desc": "AI বড় লক্ষ্যকে কার্যকর কাজে ভাগ করে। অগ্রাধিকার সাজানো, রিমাইন্ডার এবং ডেডলাইন ট্র্যাকিং।",
+  "features.todo.desc":
+    "AI বড় লক্ষ্যকে কার্যকর কাজে ভাগ করে। অগ্রাধিকার সাজানো, রিমাইন্ডার এবং ডেডলাইন ট্র্যাকিং।",
   "features.habits.title": "অভ্যাস ট্র্যাকার",
-  "features.habits.desc": "ক্যালেন্ডার হিটম্যাপ, AI পরামর্শ এবং স্ট্রিক রিকভারি দিয়ে স্ট্রিক তৈরি করুন। কখনো চেইন ভাঙবেন না।",
+  "features.habits.desc":
+    "ক্যালেন্ডার হিটম্যাপ, AI পরামর্শ এবং স্ট্রিক রিকভারি দিয়ে স্ট্রিক তৈরি করুন। কখনো চেইন ভাঙবেন না।",
   "features.expense.title": "খরচ ট্র্যাকার",
-  "features.expense.desc": "বিকাশ, নগদ, ব্যাংক — সব ওয়ালেট। বাজেট সতর্কতা, AI অন্তর্দৃষ্টি, ১৩ ধরনের রিপোর্ট, PDF এক্সপোর্ট।",
+  "features.expense.desc":
+    "বিকাশ, নগদ, ব্যাংক — সব ওয়ালেট। বাজেট সতর্কতা, AI অন্তর্দৃষ্টি, ১৩ ধরনের রিপোর্ট, PDF এক্সপোর্ট।",
   "features.focus.title": "ফোকাস টাইমার",
-  "features.focus.desc": "পোমোডোরো, ডিপ ওয়ার্ক, কাস্টম মোড। এম্বিয়েন্ট সাউন্ড, কাজ লিঙ্ক এবং ফোন কল অটো-পজ।",
+  "features.focus.desc":
+    "পোমোডোরো, ডিপ ওয়ার্ক, কাস্টম মোড। এম্বিয়েন্ট সাউন্ড, কাজ লিঙ্ক এবং ফোন কল অটো-পজ।",
   "features.news.title": "আজকের বিশ্ব",
-  "features.news.desc": "বাংলা ও ইংরেজিতে ব্যক্তিগতকৃত নিউজ ফিড। GNews, NewsAPI এবং স্থানীয় উৎস থেকে AI-কিউরেটেড।",
+  "features.news.desc":
+    "বাংলা ও ইংরেজিতে ব্যক্তিগতকৃত নিউজ ফিড। GNews, NewsAPI এবং স্থানীয় উৎস থেকে AI-কিউরেটেড।",
   "features.reports.title": "রিপোর্ট ও বিশ্লেষণ",
-  "features.reports.desc": "৩০ দিনের ট্রেন্ড, লক্ষ্যের অগ্রগতি, লাইফ স্কোর ইতিহাস এবং সাপ্তাহিক ইমেইল রিপোর্ট — সব সুন্দরভাবে ভিজুয়ালাইজড।",
+  "features.reports.desc":
+    "৩০ দিনের ট্রেন্ড, লক্ষ্যের অগ্রগতি, লাইফ স্কোর ইতিহাস এবং সাপ্তাহিক ইমেইল রিপোর্ট — সব সুন্দরভাবে ভিজুয়ালাইজড।",
   "features.wellbeing.title": "সুস্থতা",
-  "features.wellbeing.desc": "মেজাজ ট্র্যাকিং, শ্বাস-প্রশ্বাস ব্যায়াম, ঘুমের লগ, কৃতজ্ঞতা জার্নাল। AI-চালিত আবেগময় সহায়তা।",
+  "features.wellbeing.desc":
+    "মেজাজ ট্র্যাকিং, শ্বাস-প্রশ্বাস ব্যায়াম, ঘুমের লগ, কৃতজ্ঞতা জার্নাল। AI-চালিত আবেগময় সহায়তা।",
   "features.coach.title": "AI কোচ",
-  "features.coach.desc": "আপনার ব্যক্তিগত উৎপাদনশীলতা গাইড। বাংলাভাষী, লক্ষ্যচালিত, সংকট-সচেতন। সবসময় ভাসমান, সবসময় প্রস্তুত।",
+  "features.coach.desc":
+    "আপনার ব্যক্তিগত উৎপাদনশীলতা গাইড। বাংলাভাষী, লক্ষ্যচালিত, সংকট-সচেতন। সবসময় ভাসমান, সবসময় প্রস্তুত।",
   "coach.badge": "Google Gemini দ্বারা চালিত",
   "coach.title": "আপনার AI কোচের সাথে পরিচিত হোন।",
   "coach.titleSub": "সবসময় ভাসমান। সবসময় প্রস্তুত।",
-  "coach.desc": "প্রতিটি পৃষ্ঠায় একটি টেনে নেওয়া যায় এমন সহকারী। আপনার লক্ষ্য মনে রাখে, বাংলায় কথা বলে, আপনার মেজাজ ট্র্যাক করে এবং তথ্য-সমর্থিত পরামর্শ দেয়। সংকট-সচেতন এবং সাংস্কৃতিকভাবে বুদ্ধিমান।",
+  "coach.desc":
+    "প্রতিটি পৃষ্ঠায় একটি টেনে নেওয়া যায় এমন সহকারী। আপনার লক্ষ্য মনে রাখে, বাংলায় কথা বলে, আপনার মেজাজ ট্র্যাক করে এবং তথ্য-সমর্থিত পরামর্শ দেয়। সংকট-সচেতন এবং সাংস্কৃতিকভাবে বুদ্ধিমান।",
   "coach.point1": "প্রতিদিন ৫০টি বার্তা বিনামূল্যে — Premium-এ ২০০টি",
   "coach.point2": "মেমরি সিস্টেম আপনার লক্ষ্য ও পছন্দ মনে রাখে",
   "coach.point3": "সক্রিয় অনুপ্রেরণা: সকালের পরিকল্পনা, সন্ধ্যার পর্যালোচনা",
   "coach.point4": "বাংলা সাংস্কৃতিক প্রসঙ্গ ও স্থানীয় রেফারেন্স",
   "coach.point5": "মানসিক স্বাস্থ্য সম্পদ সহ সংকট সনাক্তকরণ",
   "coach.cta": "কোচ বিনামূল্যে চেষ্টা করুন",
-  "coach.mock.greeting": "সুপ্রভাত! 🌅 আপনি এই সপ্তাহে ৩টি অভ্যাস সম্পন্ন করেছেন — আপনার এখন পর্যন্ত সেরা স্ট্রিক। আমি কি আপনার দিনটি পরিকল্পনা করব?",
-  "coach.mock.user": "হ্যাঁ! এবং আমার আর্থিক পর্যালোচনাও করুন — আমি ডিসেম্বরের মধ্যে ৳৫০,০০০ সঞ্চয় করতে চাই।",
-  "coach.mock.reply": "দারুণ লক্ষ্য! 🎯 আপনি গড়ে প্রতি মাসে ৳৮,৫০০ সঞ্চয় করছেন। এই হারে, আপনি নভেম্বরের মধ্যে ৳৫০,০০০ পৌঁছাবেন। আমি আপনার জন্য একটি ফোকাসড পরিকল্পনা তৈরি করব।",
-  "coach.chips": "💡 আমার দিন পরিকল্পনা করুন|💰 বাজেট পর্যালোচনা|🔥 নতুন অভ্যাস",
+  "coach.mock.greeting":
+    "সুপ্রভাত! 🌅 আপনি এই সপ্তাহে ৩টি অভ্যাস সম্পন্ন করেছেন — আপনার এখন পর্যন্ত সেরা স্ট্রিক। আমি কি আপনার দিনটি পরিকল্পনা করব?",
+  "coach.mock.user":
+    "হ্যাঁ! এবং আমার আর্থিক পর্যালোচনাও করুন — আমি ডিসেম্বরের মধ্যে ৳৫০,০০০ সঞ্চয় করতে চাই।",
+  "coach.mock.reply":
+    "দারুণ লক্ষ্য! 🎯 আপনি গড়ে প্রতি মাসে ৳৮,৫০০ সঞ্চয় করছেন। এই হারে, আপনি নভেম্বরের মধ্যে ৳৫০,০০০ পৌঁছাবেন। আমি আপনার জন্য একটি ফোকাসড পরিকল্পনা তৈরি করব।",
+  "coach.chips":
+    "💡 আমার দিন পরিকল্পনা করুন|💰 বাজেট পর্যালোচনা|🔥 নতুন অভ্যাস",
   "coach.panelTitle": "AI কোচ",
   "coach.online": "অনলাইন",
   "coach.emptyTitle": "যেকোনো কিছু জিজ্ঞাসা করুন!",
@@ -102,11 +115,15 @@ export const bn: Record<TranslationKey, string> = {
   "coach.starters.finance": "আমার আর্থিক পরিস্থিতি পর্যালোচনা করুন",
   "coach.starters.habit": "একটি নতুন অভ্যাস সাজান",
   "coach.starters.stress": "আমি চাপগ্রস্ত বোধ করছি",
-  "coach.demo.welcome": "হাই! 👋 আমি আপনার AI কোচ। আমি দেখতে পাচ্ছি এই সপ্তাহে আপনি ৩টি অভ্যাস সম্পন্ন করেছেন — দারুণ ধারাবাহিকতা! আমি কি আপনার দিন পরিকল্পনা করতে বা আর্থিক পর্যালোচনা করতে পারি?",
-  "coach.demo.user1": "হ্যাঁ! আমার দিন পরিকল্পনা করুন। বিকাল ৩টায় আমার একটি বড় প্রেজেন্টেশন আছে।",
-  "coach.demo.reply1": "আসুন আপনার দিনটি সেই প্রেজেন্টেশনের চারপাশে গড়ে তুলি! 📋\\n\\n🌅 সকালের রুটিন + ব্যায়াম (৬-৮টা)\\n📝 প্রেজেন্টেশন নোট প্রস্তুত করুন (৮-১০টা)\\n🎯 গুরুত্বপূর্ণ স্লাইডে ফোকাস (১০টা-১২টা)\\n🍽️ দুপুরের খাবার (১২-১টা)\\n⚡ রিভিউ + প্র্যাকটিস (১-২:৩০টা)\\n🎤 প্রেজেন্টেশন (৩টা)\\n🌆 বিশ্রাম + অভ্যাস চেক-ইন\\n\\nআমি কি রিমাইন্ডার সেট করব?",
+  "coach.demo.welcome":
+    "হাই! 👋 আমি আপনার AI কোচ। আমি দেখতে পাচ্ছি এই সপ্তাহে আপনি ৩টি অভ্যাস সম্পন্ন করেছেন — দারুণ ধারাবাহিকতা! আমি কি আপনার দিন পরিকল্পনা করতে বা আর্থিক পর্যালোচনা করতে পারি?",
+  "coach.demo.user1":
+    "হ্যাঁ! আমার দিন পরিকল্পনা করুন। বিকাল ৩টায় আমার একটি বড় প্রেজেন্টেশন আছে।",
+  "coach.demo.reply1":
+    "আসুন আপনার দিনটি সেই প্রেজেন্টেশনের চারপাশে গড়ে তুলি! 📋\\n\\n🌅 সকালের রুটিন + ব্যায়াম (৬-৮টা)\\n📝 প্রেজেন্টেশন নোট প্রস্তুত করুন (৮-১০টা)\\n🎯 গুরুত্বপূর্ণ স্লাইডে ফোকাস (১০টা-১২টা)\\n🍽️ দুপুরের খাবার (১২-১টা)\\n⚡ রিভিউ + প্র্যাকটিস (১-২:৩০টা)\\n🎤 প্রেজেন্টেশন (৩টা)\\n🌆 বিশ্রাম + অভ্যাস চেক-ইন\\n\\nআমি কি রিমাইন্ডার সেট করব?",
   "coach.demo.user2": "দারুণ! আরও, আমার সঞ্চয়ের লক্ষ্য কেমন চলছে?",
-  "coach.demo.reply2": "আপনি দারুণ করছেন! 💰 এই মাসে আপনি ৳৮,৫০০ সঞ্চয় করেছেন — এটি আপনার ৳৫০,০০০ লক্ষ্যের ১৭%। এই হারে, আপনি নভেম্বরের মধ্যে পৌঁছাবেন। একটু টিপস: ফুড ডেলিভারি ৳২,০০০/মাস কমালে অক্টোবরেই ৳৫০,০০০ পৌঁছাবেন! আমি কি আপনার খরচের ব্রেকডাউন দেখাব?",
+  "coach.demo.reply2":
+    "আপনি দারুণ করছেন! 💰 এই মাসে আপনি ৳৮,৫০০ সঞ্চয় করেছেন — এটি আপনার ৳৫০,০০০ লক্ষ্যের ১৭%। এই হারে, আপনি নভেম্বরের মধ্যে পৌঁছাবেন। একটু টিপস: ফুড ডেলিভারি ৳২,০০০/মাস কমালে অক্টোবরেই ৳৫০,০০০ পৌঁছাবেন! আমি কি আপনার খরচের ব্রেকডাউন দেখাব?",
   "stats.features": "এক অ্যাপে বৈশিষ্ট্য",
   "stats.languages": "ভাষা সমর্থিত",
   "stats.offline": "অফলাইনে কাজ করে",
@@ -114,7 +131,8 @@ export const bn: Record<TranslationKey, string> = {
   "wellbeing.title": "উৎপাদনশীলতার কোনো অর্থ নেই",
   "wellbeing.titleSub": "সুস্থতা ছাড়া।",
   "wellbeing.badge": "বৈশিষ্ট্য ৭ · সুস্থতা",
-  "wellbeing.desc": "আপনার মেজাজ ট্র্যাক করুন, গভীর শ্বাস নিন, ভালো ঘুমান এবং কৃতজ্ঞতা জার্নাল লিখুন। স্ট্রেসে থাকলে কোচ মানিয়ে নেয়। নিরাপত্তা সম্পদ সবসময় উপলব্ধ — কখনো পেওয়াল নয়।",
+  "wellbeing.desc":
+    "আপনার মেজাজ ট্র্যাক করুন, গভীর শ্বাস নিন, ভালো ঘুমান এবং কৃতজ্ঞতা জার্নাল লিখুন। স্ট্রেসে থাকলে কোচ মানিয়ে নেয়। নিরাপত্তা সম্পদ সবসময় উপলব্ধ — কখনো পেওয়াল নয়।",
   "wellbeing.mood": "মেজাজ চেক-ইন",
   "wellbeing.breathing": "শ্বাস-প্রশ্বাস ব্যায়াম",
   "wellbeing.sleep": "ঘুম ট্র্যাকার",
@@ -128,7 +146,8 @@ export const bn: Record<TranslationKey, string> = {
   "wellbeing.stressValue": "কম — ৩/১০",
   "pricing.badge": "সহজ মূল্য",
   "pricing.title": "সবসময় বিনামূল্যে। প্রস্তুত হলে Premium।",
-  "pricing.desc": "মূল বৈশিষ্ট্য সবসময় বিনামূল্যে। পূর্ণ অভিজ্ঞতার জন্য আপগ্রেড করুন।",
+  "pricing.desc":
+    "মূল বৈশিষ্ট্য সবসময় বিনামূল্যে। পূর্ণ অভিজ্ঞতার জন্য আপগ্রেড করুন।",
   "pricing.free": "বিনামূল্যে",
   "pricing.freeSub": "সবসময়",
   "pricing.freeDesc": "শুরু করার জন্য প্রয়োজনীয় সবকিছু",
@@ -157,7 +176,8 @@ export const bn: Record<TranslationKey, string> = {
   "pricing.studentFeature4": "বাংলা-প্রথম অভিজ্ঞতা",
   "pricing.studentCta": "ছাত্র স্ট্যাটাস যাচাই করুন",
   "cta.title": "আপনার ভবিষ্যৎ দেখতে প্রস্তুত?",
-  "cta.desc": "হাজার হাজার মানুষের সাথে যোগ দিন যারা স্মার্টভাবে পরিকল্পনা করছে, গভীরভাবে ফোকাস করছে এবং আরো বেশি অর্জন করছে — সব এক অ্যাপে।",
+  "cta.desc":
+    "হাজার হাজার মানুষের সাথে যোগ দিন যারা স্মার্টভাবে পরিকল্পনা করছে, গভীরভাবে ফোকাস করছে এবং আরো বেশি অর্জন করছে — সব এক অ্যাপে।",
   "cta.button": "বিনামূল্যে শুরু করুন",
   "cta.note": "ক্রেডিট কার্ডের প্রয়োজন নেই · মূল বৈশিষ্ট্য সবসময় বিনামূল্যে",
   "footer.privacy": "গোপনীয়তা নীতি",
@@ -195,7 +215,8 @@ export const bn: Record<TranslationKey, string> = {
   "auth.signInLink": "সাইন ইন",
   "notFound.title": "৪০৪",
   "notFound.heading": "শূন্যতায় হারিয়ে গেছেন",
-  "notFound.desc": "আপনি যে পৃষ্ঠা খুঁজছেন তা বিদ্যমান নেই বা সরিয়ে ফেলা হয়েছে।",
+  "notFound.desc":
+    "আপনি যে পৃষ্ঠা খুঁজছেন তা বিদ্যমান নেই বা সরিয়ে ফেলা হয়েছে।",
   "notFound.home": "হোমে ফিরুন",
   "notFound.dashboard": "ড্যাশবোর্ডে যান",
   "dash.welcome": "সুপ্রভাত, প্রনয় 👋",
@@ -216,7 +237,8 @@ export const bn: Record<TranslationKey, string> = {
   "dash.startFocus": "ফোকাস শুরু করুন",
   "dash.addExpense": "খরচ যোগ করুন",
   "dash.coachNudge": "💡 কোচ অন্তর্দৃষ্টি",
-  "dash.coachNudgeText": "আপনি এই সপ্তাহে ৩টি অভ্যাসে ধারাবাহিক ছেলেন। এভাবেই চালিয়ে যান! আমি কি একটি নতুন অভ্যাস প্রস্তাব করব?",
+  "dash.coachNudgeText":
+    "আপনি এই সপ্তাহে ৩টি অভ্যাসে ধারাবাহিক ছেলেন। এভাবেই চালিয়ে যান! আমি কি একটি নতুন অভ্যাস প্রস্তাব করব?",
   "dash.recentActivity": "সাম্প্রতিক কার্যক্রম",
   "dash.quickActionsDesc": "অভ্যাস + দ্রুত খরচ + মেজাজ",
   "dash.start": "শুরু",
@@ -232,27 +254,38 @@ export const bn: Record<TranslationKey, string> = {
   "dash.avgSleep": "গড় ঘুম",
   "dash.noData": "কোনো তথ্য নেই",
   "dash.days": "দিন",
-  "dash.suggest.profileAgeGender": "ব্যক্তিগতকৃত অন্তর্দৃষ্টির জন্য বয়স ও লিঙ্গ যোগ করুন",
-  "dash.suggest.profileWorkSchedule": "স্মার্ট রিমাইন্ডারের জন্য প্রোফাইলে কাজের সময়সূচী সেট করুন",
-  "dash.suggest.profileGoals": "স্বয়ংক্রিয় কাজ প্রস্তাবের জন্য প্রোফাইলে লক্ষ্য সেট করুন",
+  "dash.suggest.profileAgeGender":
+    "ব্যক্তিগতকৃত অন্তর্দৃষ্টির জন্য বয়স ও লিঙ্গ যোগ করুন",
+  "dash.suggest.profileWorkSchedule":
+    "স্মার্ট রিমাইন্ডারের জন্য প্রোফাইলে কাজের সময়সূচী সেট করুন",
+  "dash.suggest.profileGoals":
+    "স্বয়ংক্রিয় কাজ প্রস্তাবের জন্য প্রোফাইলে লক্ষ্য সেট করুন",
   "dash.suggest.profileBudget": "খরচের সতর্কতার জন্য প্রোফাইলে বাজেট সেট করুন",
-  "dash.suggest.profileCurrency": "সঠিক ট্র্যাকিংয়ের জন্য প্রোফাইলে মুদ্রা সেট করুন",
-  "dash.suggest.tipMoodSleep": "সুস্থতা স্কোর বাড়াতে প্রতিদিন মেজাজ ও ঘুম লগ করুন",
+  "dash.suggest.profileCurrency":
+    "সঠিক ট্র্যাকিংয়ের জন্য প্রোফাইলে মুদ্রা সেট করুন",
+  "dash.suggest.tipMoodSleep":
+    "সুস্থতা স্কোর বাড়াতে প্রতিদিন মেজাজ ও ঘুম লগ করুন",
   "dash.suggest.tipHabitStreak": "স্ট্রিক তৈরি করতে আজ ৩টি অভ্যাস সম্পন্ন করুন",
-  "dash.suggest.tipDailyCheckin": "দীর্ঘ স্ট্রিক তৈরি করতে প্রতিদিন চেক-ইন করুন",
-  "dash.suggest.tipAllModules": "স্মার্ট অন্তর্দৃষ্টি আনলক করতে সব মডিউল ব্যবহার করুন",
-  "dash.suggest.tipMoodDaily": "ভালো অন্তর্দৃষ্টির জন্য প্রতিদিন মেজাজ ও ঘুম লগ করুন",
+  "dash.suggest.tipDailyCheckin":
+    "দীর্ঘ স্ট্রিক তৈরি করতে প্রতিদিন চেক-ইন করুন",
+  "dash.suggest.tipAllModules":
+    "স্মার্ট অন্তর্দৃষ্টি আনলক করতে সব মডিউল ব্যবহার করুন",
+  "dash.suggest.tipMoodDaily":
+    "ভালো অন্তর্দৃষ্টির জন্য প্রতিদিন মেজাজ ও ঘুম লগ করুন",
   "dash.suggest.tipSleep7days": "প্রবণতা দেখতে ৭ দিন ঘুম ট্র্যাক করুন",
-  "dash.suggest.emptyAddTask": "উৎপাদনশীলতা ট্র্যাক করতে আপনার প্রথম কাজ যোগ করুন",
-  "dash.suggest.emptyAddHabit": "ট্র্যাকিং শুরু করতে আপনার প্রথম অভ্যাস যোগ করুন",
+  "dash.suggest.emptyAddTask":
+    "উৎপাদনশীলতা ট্র্যাক করতে আপনার প্রথম কাজ যোগ করুন",
+  "dash.suggest.emptyAddHabit":
+    "ট্র্যাকিং শুরু করতে আপনার প্রথম অভ্যাস যোগ করুন",
   "dash.suggest.emptyStartFocus": "আপনার প্রথম ফোকাস সেশন শুরু করুন",
   "dash.suggest.emptyLogMood": "ট্র্যাকিং শুরু করতে আপনার প্রথম মেজাজ লগ করুন",
   "dash.suggest.emptyAddExpense": "আপনার প্রথম লেনদেন যোগ করুন",
   "dash.suggest.emptySetGoal": "আপনার প্রথম লক্ষ্য সেট করুন",
   "dash.suggest.emptyAddWallet": "আর্থিক ট্র্যাক করতে একটি ওয়ালেট যোগ করুন",
-  "dash.suggest.emptyStartModule": "আপনার কার্যক্রম দেখতে মডিউল ব্যবহার শুরু করুন",
+  "dash.suggest.emptyStartModule":
+    "আপনার কার্যক্রম দেখতে মডিউল ব্যবহার শুরু করুন",
   "dash.suggest.goToSettings": "সেটিংস",
-  "dash.activity1": "\"প্রস্তাব সম্পন্ন করুন\" কাজ সম্পন্ন হয়েছে",
+  "dash.activity1": '"প্রস্তাব সম্পন্ন করুন" কাজ সম্পন্ন হয়েছে',
   "dash.activity2": "সকালের ব্যায়াম অভ্যাস চেক-ইন হয়েছে",
   "dash.activity3": "২ ঘণ্টার ফোকাস সেশন সম্পন্ন",
   "dash.activity4": "মেজাজ লগ হয়েছে: ভালো 😊",
@@ -312,7 +345,8 @@ export const bn: Record<TranslationKey, string> = {
   "expense.transferring": "স্থানান্তর হচ্ছে...",
   "expense.emptyTransactions": "এখনো কোনো লেনদেন নেই। একটি যোগ করুন!",
   "expense.createWallet": "ওয়ালেট তৈরি করুন",
-  "expense.createWalletDesc": "ব্যয় ট্র্যাক করতে প্রথমে একটি ওয়ালেট তৈরি করুন",
+  "expense.createWalletDesc":
+    "ব্যয় ট্র্যাক করতে প্রথমে একটি ওয়ালেট তৈরি করুন",
   "expense.addIncomeDesc": "আয় যোগ করুন",
   "expense.addExpenseDesc": "খরচ যোগ করুন",
   "expense.transferDesc": "ওয়ালেটে টাকা পাঠান",
@@ -454,13 +488,15 @@ export const bn: Record<TranslationKey, string> = {
   "settings.saving": "সংরক্ষণ হচ্ছে...",
   "settings.saved": "সংরক্ষিত!",
   "settings.smartNotifications": "স্মার্ট বিজ্ঞপ্তি",
-  "settings.smartNotificationsDescription": "আপনার বিজ্ঞপ্তি পছন্দ পরিচালনা করুন",
+  "settings.smartNotificationsDescription":
+    "আপনার বিজ্ঞপ্তি পছন্দ পরিচালনা করুন",
   "settings.dataBackup": "ডাটা ব্যাকআপ",
   "settings.dataBackupDescription": "আপনার ডাটা এক্সপোর্ট ও ইম্পোর্ট করুন",
   "settings.widgets": "উইজেট",
   "settings.widgetsDescription": "আপনার ড্যাশবোর্ড উইজেট কাস্টমাইজ করুন",
   "settings.streakFreeze": "স্ট্রিক ফ্রিজ",
-  "settings.streakFreezeDescription": "আপনার স্ট্রিক ফ্রিজ সেটিংস পরিচালনা করুন",
+  "settings.streakFreezeDescription":
+    "আপনার স্ট্রিক ফ্রিজ সেটিংস পরিচালনা করুন",
   "common.loading": "লোড হচ্ছে...",
   "common.error": "কিছু ভুল হয়েছে",
   "common.retry": "আবার চেষ্টা করুন",
@@ -489,7 +525,8 @@ export const bn: Record<TranslationKey, string> = {
   "admin.demote": "ডিমোট",
   "admin.delete": "মুছুন",
   "admin.clearData": "ডাটা পরিষ্কার",
-  "admin.noAdmin": "কোনো অ্যাডমিন পাওয়া যায়নি। প্রথম অ্যাডমিন হতে নিচে ক্লিক করুন।",
+  "admin.noAdmin":
+    "কোনো অ্যাডমিন পাওয়া যায়নি। প্রথম অ্যাডমিন হতে নিচে ক্লিক করুন।",
   "admin.becomeAdmin": "অ্যাডমিন হোন",
   "admin.customKey": "কাস্টম কী যোগ করুন",
   "admin.dashboardTitle": "অ্যাডমিন ড্যাশবোর্ড",
@@ -520,7 +557,8 @@ export const bn: Record<TranslationKey, string> = {
   "admin.grantPremium": "প্রিমিয়াম দিন",
   "admin.revokePremium": "প্রিমিয়াম বাতিল",
   "admin.featureFlags": "ফিচার ফ্ল্যাগ",
-  "admin.featureFlagsDesc": "সকল ব্যবহারকারীর জন্য ফিচার চালু/বন্ধ করুন। পরিবর্তন তৎক্ষণাৎ প্রযোজ্য হয়।",
+  "admin.featureFlagsDesc":
+    "সকল ব্যবহারকারীর জন্য ফিচার চালু/বন্ধ করুন। পরিবর্তন তৎক্ষণাৎ প্রযোজ্য হয়।",
   "admin.enabled": "চালু",
   "admin.disabled": "বন্ধ",
   "admin.adPlacements": "বিজ্ঞাপন স্থান",
@@ -550,7 +588,8 @@ export const bn: Record<TranslationKey, string> = {
   "admin.appSettings": "অ্যাপ সেটিংস",
   "admin.defaultLanguage": "ডিফল্ট ভাষা",
   "admin.requireEmailVerification": "ইমেইল যাচাইকরণ প্রয়োজন",
-  "admin.requireEmailVerificationDesc": "অ্যাপে প্রবেশের আগে ব্যবহারকারীদের ইমেইল যাচাই করতে হবে",
+  "admin.requireEmailVerificationDesc":
+    "অ্যাপে প্রবেশের আগে ব্যবহারকারীদের ইমেইল যাচাই করতে হবে",
   "admin.enableOnboarding": "অনবোর্ডিং চালু",
   "admin.enableOnboardingDesc": "নতুন ব্যবহারকারীদের অনবোর্ডিং ফ্লো দেখান",
   "admin.confirmDelete": "আপনি কি নিশ্চিত এই ব্যবহারকারীকে মুছে ফেলতে চান?",
@@ -710,7 +749,8 @@ export const bn: Record<TranslationKey, string> = {
   "export.success": "ডেটা সফলভাবে এক্সপোর্ট হয়েছে!",
   "export.error": "এক্সপোর্ট ব্যর্থ হয়েছে",
   "theme.schedule": "থিম শিডিউল",
-  "theme.scheduleDesc": "লাইট এবং ডার্ক মোডের মধ্যে স্বয়ংক্রিয়ভাবে পরিবর্তন করুন",
+  "theme.scheduleDesc":
+    "লাইট এবং ডার্ক মোডের মধ্যে স্বয়ংক্রিয়ভাবে পরিবর্তন করুন",
   "theme.lightStart": "লাইট মোড শুরু",
   "theme.darkStart": "ডার্ক মোড শুরু",
   "habits.streakFreeze": "স্ট্রিক ফ্রিজ",
@@ -932,7 +972,8 @@ export const bn: Record<TranslationKey, string> = {
   "subscriptions.education": "শিক্ষা",
   "subscriptions.other": "অন্যান্য",
   "subscriptions.noSubscriptions": "এখনো কোনো সাবস্ক্রিপশন নেই",
-  "subscriptions.noSubscriptionsDesc": "আপনার প্রথম সাবস্ক্রিপশন যোগ করে শুরু করুন",
+  "subscriptions.noSubscriptionsDesc":
+    "আপনার প্রথম সাবস্ক্রিপশন যোগ করে শুরু করুন",
   "subscriptions.daysLeft": "দিন বাকি",
   "subscriptions.expired": "মেয়াদোত্তীর্ণ",
   "subscriptions.inDays": "{days} দিনে",
@@ -970,7 +1011,8 @@ export const bn: Record<TranslationKey, string> = {
   "voiceNotes.deleted": "নোট মুছে ফেলা হয়েছে",
   "voiceNotes.titlePlaceholder": "নোটের শিরোনাম লিখুন",
   "voiceNotes.empty": "এখনো কোনো ভয়েস নোট নেই",
-  "voiceNotes.emptyDesc": "আপনার প্রথম ভয়েস নোট তৈরি করতে রেকর্ড বোতামে ট্যাপ করুন",
+  "voiceNotes.emptyDesc":
+    "আপনার প্রথম ভয়েস নোট তৈরি করতে রেকর্ড বোতামে ট্যাপ করুন",
   "voiceNotes.noTranscription": "এখনো কোনো ট্রান্সক্রিপশন নেই",
   "voiceNotes.editTitle": "শিরোনাম সম্পাদনা",
   "voiceNotes.copied": "ক্লিপবোর্ডে কপি হয়েছে!",
@@ -984,7 +1026,8 @@ export const bn: Record<TranslationKey, string> = {
   "voiceNotes.no": "না",
   "voiceNotes.recognizing": "কথা চিহ্নিত করা হচ্ছে...",
   "voiceNotes.browserNotSupported": "এই ব্রাউজারে ভয়েস রেকর্ডিং সমর্থিত নয়",
-  "voiceNotes.micPermissionDenied": "মাইক্রোফোন অনুমতি প্রত্যাখ্ত। অনুগ্রহ করে অ্যাক্সেস দিন।",
+  "voiceNotes.micPermissionDenied":
+    "মাইক্রোফোন অনুমতি প্রত্যাখ্ত। অনুগ্রহ করে অ্যাক্সেস দিন।",
   "nav.offline": "অফলাইন মোড",
   "offlineMode.title": "অফলাইন মোড",
   "offlineMode.subtitle": "অফলাইন ডেটা ও সিঙ্ক পরিচালনা করুন",
@@ -1007,7 +1050,8 @@ export const bn: Record<TranslationKey, string> = {
   "offlineMode.downloadData": "অফলাইন ডেটা ডাউনলোড করুন",
   "offlineMode.clearData": "সব স্থানীয় ডেটা মুছুন",
   "offlineMode.exportData": "ডেটা এক্সপোর্ট করুন",
-  "offlineMode.autoSyncDesc": "সংযোগ পুনরুদ্ধার হলে স্বয়ংক্রিয়ভাবে ডেটা সিঙ্ক করুন",
+  "offlineMode.autoSyncDesc":
+    "সংযোগ পুনরুদ্ধার হলে স্বয়ংক্রিয়ভাবে ডেটা সিঙ্ক করুন",
   "offlineMode.wifiOnlyDesc": "শুধু WiFi-তে সংযুক্ত থাকলে সিঙ্ক করুন",
   "offlineMode.syncIntervalDesc": "কত ঘন ঘন সিঙ্ক চেক করবে",
   "offlineMode.seconds": "সেকেন্ড",
@@ -1017,7 +1061,8 @@ export const bn: Record<TranslationKey, string> = {
   "offlineMode.syncComplete": "সব আইটেম সফলভাবে সিঙ্ক হয়েছে!",
   "offlineMode.noPendingItems": "সিঙ্ক করার জন্য কোনো মুলতুবি আইটেম নেই",
   "offlineMode.dataManagement": "ডেটা পরিচালনা",
-  "offlineMode.connectionRestored": "সংযোগ পুনরুদ্ধার হয়েছে! ডেটা সিঙ্ক হচ্ছে...",
+  "offlineMode.connectionRestored":
+    "সংযোগ পুনরুদ্ধার হয়েছে! ডেটা সিঙ্ক হচ্ছে...",
   "offlineMode.conflictDetected": "সিঙ্ক কনফ্লিক্ট সনাক্ত হয়েছে",
   "offlineMode.resolveConflict": "কনফ্লিক্ট সমাধান করুন",
   "offlineMode.keepLocal": "স্থানীয় রাখুন",
@@ -1037,13 +1082,16 @@ export const bn: Record<TranslationKey, string> = {
   "offlineMode.storage.expenses": "খরচ",
   "offlineMode.storage.cache": "ক্যাশে",
   "offlineMode.confirmClearCache": "আপনি কি নিশ্চিত ক্যাশে পরিষ্কার করতে চান?",
-  "offlineMode.confirmClearData": "এটি সব স্থানীয় ডেটা মুছে ফেলবে। আপনি কি নিশ্চিত?",
+  "offlineMode.confirmClearData":
+    "এটি সব স্থানীয় ডেটা মুছে ফেলবে। আপনি কি নিশ্চিত?",
   "offlineMode.mb": "MB",
   "offlineMode.of": "এর",
   "encryption.title": "ডেটা এনক্রিপশন ও নিরাপত্তা",
-  "encryption.subtitle": "AES-256 এনক্রিপশন দিয়ে আপনার সংবেদনশীল ডেটা রক্ষা করুন",
+  "encryption.subtitle":
+    "AES-256 এনক্রিপশন দিয়ে আপনার সংবেদনশীল ডেটা রক্ষা করুন",
   "encryption.securityScore": "নিরাপত্তা স্কোর",
-  "encryption.securityScoreDesc": "পাসওয়ার্ড শক্তি, এনক্রিপ্টেড ফিল্ড এবং ব্যাকআপ অবস্থার উপর ভিত্তি করে",
+  "encryption.securityScoreDesc":
+    "পাসওয়ার্ড শক্তি, এনক্রিপ্টেড ফিল্ড এবং ব্যাকআপ অবস্থার উপর ভিত্তি করে",
   "encryption.status": "এনক্রিপশন অবস্থা",
   "encryption.enabled": "সক্রিয়",
   "encryption.disabled": "নিষ্ক্রিয়",
@@ -1078,19 +1126,25 @@ export const bn: Record<TranslationKey, string> = {
   "encryption.copyLink": "লিঙ্ক কপি করুন",
   "encryption.linkCopied": "লিঙ্ক ক্লিপবোর্ডে কপি হয়েছে!",
   "encryption.securityTips": "নিরাপত্তা টিপস",
-  "encryption.tip1": "এনক্রিপশনের জন্য একটি শক্তিশালী, অনন্য পাসওয়ার্ড ব্যবহার করুন",
-  "encryption.tip2": "আপনি অনুপস্থিত থাকাকালীন ডেটা রক্ষা করতে অটো-লক সক্রিয় করুন",
-  "encryption.tip3": "আর্থিক এবং স্বাস্থ্য ডেটার মতো সংবেদনশীল ডেটা ফিল্ড এনক্রিপ্ট করুন",
-  "encryption.tip4": "সন্দেহজনক কার্যকলাপের জন্য নিয়মিতভাবে এনক্রিপশন ইতিহাস পর্যালোচনা করুন",
+  "encryption.tip1":
+    "এনক্রিপশনের জন্য একটি শক্তিশালী, অনন্য পাসওয়ার্ড ব্যবহার করুন",
+  "encryption.tip2":
+    "আপনি অনুপস্থিত থাকাকালীন ডেটা রক্ষা করতে অটো-লক সক্রিয় করুন",
+  "encryption.tip3":
+    "আর্থিক এবং স্বাস্থ্য ডেটার মতো সংবেদনশীল ডেটা ফিল্ড এনক্রিপ্ট করুন",
+  "encryption.tip4":
+    "সন্দেহজনক কার্যকলাপের জন্য নিয়মিতভাবে এনক্রিপশন ইতিহাস পর্যালোচনা করুন",
   "encryption.tip5": "শেয়ার করার আগে সবসময় ব্যাকআপ ফাইল এনক্রিপ্ট করুন",
   "encryption.financial": "আর্থিক ডেটা",
   "encryption.notes": "ব্যক্তিগত নোট",
   "encryption.health": "স্বাস্থ্য ডেটা",
   "encryption.contacts": "যোগাযোগ তথ্য",
   "encryption.algorithm": "এনক্রিপশন অ্যালগরিদম",
-  "encryption.algorithmDesc": "AES-256 হলো ডেটা এনক্রিপশনের জন্য শিল্পের মানদণ্ড",
+  "encryption.algorithmDesc":
+    "AES-256 হলো ডেটা এনক্রিপশনের জন্য শিল্পের মানদণ্ড",
   "encryption.backupEncryption": "ব্যাকআপ এনক্রিপশন",
-  "encryption.backupEncryptionDesc": "সব ব্যাকআপ ফাইল স্বয়ংক্রিয়ভাবে এনক্রিপ্ট করুন",
+  "encryption.backupEncryptionDesc":
+    "সব ব্যাকআপ ফাইল স্বয়ংক্রিয়ভাবে এনক্রিপ্ট করুন",
   "encryption.enableBackupEncryption": "ব্যাকআপ এনক্রিপশন সক্রিয় করুন",
   "encryption.minutes": "মিনিট",
   "encryption.noHistory": "এখনো কোনো এনক্রিপশন ইভেন্ট নেই",
@@ -1098,7 +1152,8 @@ export const bn: Record<TranslationKey, string> = {
   "encryption.cancel": "বাতিল",
   "encryption.min": "মিনিট",
   "encryption.encryptedFields": "এনক্রিপ্টেড ফিল্ড",
-  "encryption.encryptedFieldsDesc": "কোন ডেটা ফিল্ড এনক্রিপ্ট করবেন তা নির্বাচন করুন",
+  "encryption.encryptedFieldsDesc":
+    "কোন ডেটা ফিল্ড এনক্রিপ্ট করবেন তা নির্বাচন করুন",
   "encryption.sharePassword": "শেয়ার পাসওয়ার্ড",
   "encryption.sharePasswordDesc": "শেয়ার করা লিঙ্কের জন্য পাসওয়ার্ড সেট করুন",
   "encryption.passwordRequired": "পাসওয়ার্ড প্রয়োজন",
@@ -1275,4 +1330,4 @@ export const bn: Record<TranslationKey, string> = {
   "api.environment": "এনভায়রনমেন্ট",
   "api.backendFunctions": "ব্যাকএন্ড ফাংশন",
   "api.time.ago": "এইমাত্র",
-};
+} as const

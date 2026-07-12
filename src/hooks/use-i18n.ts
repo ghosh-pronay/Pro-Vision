@@ -1,8 +1,8 @@
 import { useMemo } from "react"
 import { useLang } from "@/i18n/LanguageContext"
-import { translations, type TranslationKey } from "@/i18n/translations"
+import { en } from "@/i18n/translations-en"
+import { bn } from "@/i18n/translations-bn"
 
-// Recursive type for nested translation objects
 interface TranslationNode {
   [key: string]: TranslationNode | string
 }
@@ -24,9 +24,9 @@ export function useI18n() {
   const { lang } = useLang()
   const nested = useMemo(() => {
     const obj: TranslationNode = {}
-    for (const key of Object.keys(translations) as TranslationKey[]) {
-      const val = translations[key]?.[lang] ?? translations[key]?.["en"] ?? key
-      setNested(obj, key, val)
+    const map = lang === "bn" ? bn : en
+    for (const key of Object.keys(map) as Array<keyof typeof map>) {
+      setNested(obj, key, map[key])
     }
     return obj
   }, [lang])
