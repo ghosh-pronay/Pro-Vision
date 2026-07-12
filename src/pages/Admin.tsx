@@ -33,6 +33,47 @@ import {
 import { cn } from "@/lib/utils"
 import type { LucideIcon } from "lucide-react"
 import type { Id } from "@/convex/_generated/dataModel"
+import type {
+  User,
+  UserProfile,
+  Challenge,
+  Task,
+  Habit,
+  Transaction,
+} from "@/types"
+
+interface AdminStats {
+  totalUsers: number
+  activeToday: number
+  premiumUsers: number
+  totalTasks: number
+  totalHabits: number
+  totalTransactions: number
+  totalGoals: number
+  totalFocusSessions: number
+}
+
+interface AdminUser extends User {
+  displayName?: string
+  phone?: string
+  onboarded?: boolean
+}
+
+interface FinanceStats {
+  premiumUsers: number
+  freeUsers: number
+  totalIncome: number
+  totalExpense: number
+  totalTransactions: number
+}
+
+interface UserDetail {
+  user: User
+  profile: UserProfile | null
+  tasks: Task[]
+  habits: Habit[]
+  transactions: Transaction[]
+}
 
 type Tab =
   | "overview"
@@ -97,15 +138,19 @@ export default function Admin() {
 
   const adminApi = api.admin
 
-  const stats = useQuery(adminApi.getStats) as any
-  const users = useQuery(adminApi.listUsers) as any
-  const config = useQuery(adminApi.getConfig) as any
-  const challenges = useQuery(adminApi.getChallenges) as any
-  const financeStats = useQuery(adminApi.getFinanceStats) as any
+  const stats = useQuery(adminApi.getStats) as AdminStats | undefined
+  const users = useQuery(adminApi.listUsers) as AdminUser[] | undefined
+  const config = useQuery(adminApi.getConfig) as
+    | Record<string, unknown>
+    | undefined
+  const challenges = useQuery(adminApi.getChallenges) as Challenge[] | undefined
+  const financeStats = useQuery(adminApi.getFinanceStats) as
+    | FinanceStats
+    | undefined
   const userDetail = useQuery(
     adminApi.getUserDetail,
-    (selectedUser ? { userId: selectedUser } : undefined) as any,
-  ) as any
+    selectedUser ? { userId: selectedUser as Id<"users"> } : undefined,
+  ) as UserDetail | undefined
 
   const grantPremium = useMutation(adminApi.grantPremium, "admin")
   const revokePremium = useMutation(adminApi.revokePremium, "admin")
@@ -151,7 +196,7 @@ export default function Admin() {
   }
 
   const filteredUsers = (users ?? []).filter(
-    (u: any) =>
+    (u: AdminUser) =>
       u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.displayName?.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -319,7 +364,7 @@ export default function Admin() {
                 {t("admin.recentUsers", lang)}
               </h3>
               <div className="space-y-3">
-                {(users ?? []).slice(0, 5).map((user: any) => (
+                {(users ?? []).slice(0, 5).map((user) => (
                   <div
                     key={user._id}
                     className="flex items-center justify-between rounded-lg bg-white/5 p-3"
@@ -447,7 +492,7 @@ export default function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user: any) => (
+                  {filteredUsers.map((user) => (
                     <tr
                       key={user._id}
                       className="border-b border-white/5 hover:bg-white/5"
@@ -755,7 +800,7 @@ export default function Admin() {
               </button>
             </div>
             <div className="space-y-3">
-              {(challenges ?? []).map((c: any) => (
+              {(challenges ?? []).map((c) => (
                 <div
                   key={c._id}
                   className="flex items-center justify-between p-3 rounded-lg bg-white/5"

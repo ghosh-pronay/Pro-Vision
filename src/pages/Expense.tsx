@@ -26,9 +26,12 @@ const fadeUp = {
 export default function Expense() {
   const { lang } = useLang()
 
-  const transactions = (useQuery(api.transactions.list) ?? []) as any[]
-  const wallets = (useQuery(api.wallets.list) ?? []) as any[]
-  const stats = useQuery(api.transactions.stats) as any
+  const transactions = (useQuery(api.transactions.list) ??
+    []) as ExpenseTransaction[]
+  const wallets = (useQuery(api.wallets.list) ?? []) as WalletType[]
+  const stats = useQuery(api.transactions.stats) as
+    | { totalIncome: number; totalExpense: number }
+    | undefined
   const createTx = useMutation(api.transactions.create, "transactions")
   const removeTx = useMutation(api.transactions.remove, "transactions")
   const createWallet = useMutation(api.wallets.create, "wallets")
@@ -102,7 +105,7 @@ export default function Expense() {
   const netBalance = totalIncome - totalExpense
 
   const filtered = useMemo(() => {
-    const result = (transactions as ExpenseTransaction[]) || []
+    const result = transactions || []
     if (txFilter !== "all") {
       if (txFilter === "transfer") {
         return result

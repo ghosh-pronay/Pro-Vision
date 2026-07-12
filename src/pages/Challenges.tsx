@@ -5,6 +5,18 @@ import { Trophy, Users, Target, Clock, Crown, Award } from "lucide-react"
 import { useQuery, useMutation } from "convex/react"
 import { api } from "../convex/_generated/api"
 import type { Id } from "../convex/_generated/dataModel"
+import type { Challenge, ChallengeParticipant } from "@/types"
+
+type ChallengeWithProgress = Challenge &
+  Pick<ChallengeParticipant, "progress" | "joinedAt">
+
+interface LeaderboardEntry {
+  userId: string
+  name?: string
+  image?: string
+  progress: number
+  joinedAt: number
+}
 
 const CHALLENGE_TYPES = [
   { value: "habits", icon: Target, color: "text-green-500" },
@@ -19,10 +31,10 @@ const fadeUp = {
 
 export default function Challenges() {
   const { lang } = useLang()
-  const challenges = useQuery(api.challenges.listChallenges) as any
-  const myChallenges = useQuery(
+  const challenges = useQuery<Challenge[]>(api.challenges.listChallenges)
+  const myChallenges = useQuery<ChallengeWithProgress[]>(
     (api.challenges as any).listUserChallenges,
-  ) as any
+  )
   const joinChallenge = useMutation(
     (api.challenges as any).joinChallenge,
     "challenges",
@@ -38,12 +50,12 @@ export default function Challenges() {
     selectedChallengeId ??
     (myChallenges?.[0]?._id as Id<"challenges"> | undefined)
 
-  const leaderboard = useQuery(
+  const leaderboard = useQuery<LeaderboardEntry[]>(
     api.challenges.getLeaderboard,
-    (leaderboardChallengeId
+    leaderboardChallengeId
       ? { challengeId: leaderboardChallengeId }
-      : undefined) as any,
-  ) as any
+      : undefined,
+  )
 
   const handleJoin = async (challengeId: string) => {
     await joinChallenge({ challengeId: challengeId as Id<"challenges"> })
@@ -140,11 +152,11 @@ export default function Challenges() {
                 </p>
               </div>
             ) : (
-              challenges.map((challenge: any) => {
+              challenges.map((challenge: Challenge) => {
                 const Icon = getChallengeIcon(challenge.type)
                 const daysLeft = getDaysLeft(challenge.endDate)
                 const isJoined = (myChallenges ?? []).some(
-                  (c: any) => c._id === challenge._id,
+                  (c: ChallengeWithProgress) => c._id === challenge._id,
                 )
 
                 return (
@@ -221,7 +233,7 @@ export default function Challenges() {
                 </p>
               </div>
             ) : (
-              myChallenges.map((challenge: any) => {
+              myChallenges.map((challenge: ChallengeWithProgress) => {
                 const Icon = getChallengeIcon(challenge.type)
                 const daysLeft = getDaysLeft(challenge.endDate)
                 const progress = challenge.progress || 0
@@ -289,7 +301,7 @@ export default function Challenges() {
                   }
                   className="text-xs rounded-lg bg-foreground/5 px-2 py-1 border-none outline-none"
                 >
-                  {myChallenges.map((c: any) => (
+                  {myChallenges.map((c: ChallengeWithProgress) => (
                     <option key={c._id} value={c._id}>
                       {c.title}
                     </option>
@@ -317,7 +329,7 @@ export default function Challenges() {
               </div>
             ) : (
               <div className="space-y-3">
-                {leaderboard.map((entry: any, idx: any) => {
+                {leaderboard.map((entry: LeaderboardEntry, idx: number) => {
                   const rank = idx + 1
                   const badge =
                     rank === 1

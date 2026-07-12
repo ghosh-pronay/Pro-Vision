@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useLang } from "@/i18n/LanguageContext"
 import { t, type TranslationKey } from "@/i18n/translations"
 import { useState } from "react"
+import type { GratitudeEntry, ExerciseLog, MoodType } from "@/types"
 import {
   Flame,
   Moon,
@@ -36,6 +37,14 @@ interface BreathingPhase {
   labelBn: string
   seconds: number
   scale: number
+}
+
+interface HealthTrackerExercise {
+  id: string
+  type: "walk" | "run" | "cycle" | "swim" | "yoga" | "gym" | "other"
+  duration: number
+  calories: number
+  timestamp: number
 }
 
 interface Exercise {
@@ -160,12 +169,27 @@ export default function Wellbeing() {
   const [showMeditation, setShowMeditation] = useState(false)
   const [showHealthTracker, setShowHealthTracker] = useState(false)
 
-  const moodStats = useQuery(api.moods.stats) as any
-  const sleepStats = useQuery(api.sleepLogs.stats) as any
-  const gratitudeEntries = useQuery(api.gratitudeEntries.list) as any
-  const gratitudeStats = useQuery(api.gratitudeEntries.stats) as any
-  const exerciseLogs = useQuery(api.exerciseLogs.list) as any
-  const exerciseStats = useQuery(api.exerciseLogs.stats) as any
+  const moodStats = useQuery<{
+    moodStreak: number
+    todayMood: MoodType | null
+    avgMood: number
+  }>(api.moods.stats)
+  const sleepStats = useQuery<{
+    avgHours: number
+    streak: number
+    todayHours: number
+  }>(api.sleepLogs.stats)
+  const gratitudeEntries = useQuery<GratitudeEntry[]>(api.gratitudeEntries.list)
+  const gratitudeStats = useQuery<{
+    total: number
+    thisWeek: number
+  }>(api.gratitudeEntries.stats)
+  const exerciseLogs = useQuery<ExerciseLog[]>(api.exerciseLogs.list)
+  const exerciseStats = useQuery<{
+    totalMinutes: number
+    totalCalories: number
+    thisWeek: number
+  }>(api.exerciseLogs.stats)
 
   const createMood = useMutation(api.moods.create, "moods")
   const createSleepLog = useMutation(api.sleepLogs.create, "sleepLogs")
@@ -652,7 +676,7 @@ export default function Wellbeing() {
 
         {gratitudeEntries && gratitudeEntries.length > 0 && (
           <div className="space-y-2">
-            {gratitudeEntries.slice(0, 5).map((entry: any) => (
+            {gratitudeEntries.slice(0, 5).map((entry) => (
               <motion.div
                 key={entry._id}
                 initial={{ opacity: 0, y: 8 }}
@@ -665,7 +689,7 @@ export default function Wellbeing() {
                       {entry.content}
                     </p>
                     <div className="text-xs text-muted-foreground mt-1.5">
-                      {new Date(entry.createdAt).toLocaleDateString(
+                      {new Date(entry.createdAt ?? 0).toLocaleDateString(
                         lang === "bn" ? "bn-BD" : "en-US",
                         {
                           month: "short",
@@ -861,7 +885,7 @@ export default function Wellbeing() {
 
         {exerciseLogs && exerciseLogs.length > 0 && (
           <div className="space-y-2">
-            {exerciseLogs.slice(0, 5).map((log: any) => {
+            {exerciseLogs.slice(0, 5).map((log) => {
               const et = EXERCISE_TYPES.find((e) => e.type === log.type)
               return (
                 <motion.div
@@ -882,7 +906,7 @@ export default function Wellbeing() {
                       </div>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {new Date(log.createdAt).toLocaleDateString(
+                      {new Date(log.createdAt ?? 0).toLocaleDateString(
                         lang === "bn" ? "bn-BD" : "en-US",
                         { month: "short", day: "numeric" },
                       )}
@@ -963,18 +987,21 @@ export default function Wellbeing() {
           <HealthTracker
             waterGoal={2500}
             waterIntakes={(exerciseLogs ?? [])
-              .filter((log: any) => log.type === "Water")
-              .map((log: any) => ({
+              .filter((log) => log.type === "Water")
+              .map((log) => ({
                 amount: log.duration,
-                timestamp: log.createdAt,
+                timestamp: log.createdAt ?? log.date,
               }))}
-            exercises={(exerciseLogs ?? []).map((log: any) => ({
-              id: log._id,
-              type: log.type?.toLowerCase() ?? "other",
-              duration: log.duration,
-              calories: log.calories ?? 0,
-              timestamp: log.createdAt,
-            }))}
+            exercises={(exerciseLogs ?? []).map(
+              (log): HealthTrackerExercise => ({
+                id: log._id,
+                type: (log.type?.toLowerCase() ??
+                  "other") as HealthTrackerExercise["type"],
+                duration: log.duration,
+                calories: log.calories ?? 0,
+                timestamp: log.createdAt ?? log.date,
+              }),
+            )}
             onAddWater={(amount) => {
               createExerciseLog({
                 type: "Water",

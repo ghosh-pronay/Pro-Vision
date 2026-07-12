@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Id } from "../convex/_generated/dataModel"
+import type { Goal, Milestone, GoalStatus } from "@/types"
 
 const CATEGORIES = [
   "All",
@@ -34,7 +35,7 @@ const fadeUp = {
 export default function Goals() {
   const { t } = useI18n()
 
-  const goals = useQuery(api.goals.list) as any
+  const goals = useQuery<Goal[]>(api.goals.list)
   const createGoal = useMutation(api.goals.create, "goals")
   const updateGoal = useMutation(api.goals.update, "goals")
   const removeGoal = useMutation(api.goals.remove, "goals")
@@ -51,21 +52,16 @@ export default function Goals() {
     milestones: [] as { title: string; completed: boolean }[],
   })
 
-  type GoalItem = (typeof goals)[number]
-  const allGoals: GoalItem[] = goals ?? ([] as GoalItem[])
+  const allGoals: Goal[] = goals ?? []
   const filteredGoals =
     selectedCategory === "All"
       ? allGoals
-      : allGoals.filter((g: GoalItem) => g.category === selectedCategory)
+      : allGoals.filter((g) => g.category === selectedCategory)
 
-  const activeGoals = allGoals.filter(
-    (g: GoalItem) => g.status === "active",
-  ).length
-  const completedGoals = allGoals.filter(
-    (g: GoalItem) => g.status === "completed",
-  ).length
+  const activeGoals = allGoals.filter((g) => g.status === "active").length
+  const completedGoals = allGoals.filter((g) => g.status === "completed").length
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: GoalStatus) => {
     switch (status) {
       case "completed":
         return "text-green-500 bg-green-500/20"
@@ -76,7 +72,7 @@ export default function Goals() {
     }
   }
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: GoalStatus) => {
     switch (status) {
       case "completed":
         return t.goals.status.completed
@@ -112,7 +108,7 @@ export default function Goals() {
     await removeGoal({ id: id as Id<"goals"> })
   }
 
-  const handleToggleStatus = async (goal: GoalItem) => {
+  const handleToggleStatus = async (goal: Goal) => {
     const nextStatus = goal.status === "active" ? "completed" : "active"
     await updateGoal({
       id: goal._id,
@@ -121,15 +117,12 @@ export default function Goals() {
     })
   }
 
-  const handleToggleMilestone = async (
-    goal: GoalItem,
-    milestoneIndex: number,
-  ) => {
-    const updatedMilestones = goal.milestones.map((m: any, i: number) =>
+  const handleToggleMilestone = async (goal: Goal, milestoneIndex: number) => {
+    const updatedMilestones = goal.milestones.map((m: Milestone, i: number) =>
       i === milestoneIndex ? { ...m, completed: !m.completed } : m,
     )
     const completedCount = updatedMilestones.filter(
-      (m: any) => m.completed,
+      (m: Milestone) => m.completed,
     ).length
     const newProgress =
       updatedMilestones.length > 0
@@ -142,7 +135,7 @@ export default function Goals() {
     })
   }
 
-  const handleAddMilestoneToGoal = async (goal: GoalItem) => {
+  const handleAddMilestoneToGoal = async (goal: Goal) => {
     if (!newMilestoneTitle.trim()) return
     const updatedMilestones = [
       ...goal.milestones,
@@ -267,7 +260,7 @@ export default function Goals() {
         {filteredGoals.map((goal, i) => {
           const isExpanded = expandedGoalId === goal._id
           const completedMilestones =
-            goal.milestones?.filter((m: any) => m.completed).length ?? 0
+            goal.milestones?.filter((m: Milestone) => m.completed).length ?? 0
           const totalMilestones = goal.milestones?.length ?? 0
 
           return (
@@ -359,10 +352,7 @@ export default function Goals() {
                         {totalMilestones})
                       </p>
                       {goal.milestones.map(
-                        (
-                          milestone: { title: string; completed: boolean },
-                          idx: number,
-                        ) => (
+                        (milestone: Milestone, idx: number) => (
                           <button
                             key={idx}
                             onClick={() => handleToggleMilestone(goal, idx)}

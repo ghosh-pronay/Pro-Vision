@@ -2,6 +2,15 @@ import { Suspense, lazy, useMemo } from "react"
 import { motion } from "framer-motion"
 import { useI18n } from "@/hooks/use-i18n"
 import { CheckCircle, Target, Timer, Heart, Wallet, Trophy } from "lucide-react"
+import type {
+  UserProfile,
+  Task,
+  FocusSession,
+  Transaction,
+  Mood,
+  Habit,
+  SleepLog,
+} from "@/types"
 const DailyInspiration = lazy(() => import("@/components/DailyInspiration"))
 import SmartInsights from "@/components/SmartInsights"
 import SectionSuggestion from "@/components/SectionSuggestion"
@@ -86,12 +95,13 @@ export default function Dashboard() {
       : 0
 
   const greeting = getTimeBasedGreeting(new Date().getHours())
+  const typedProfile = profile as UserProfile | undefined
   const nameWithTitle = getNameWithTitle(
-    (profile as any)?.displayName,
-    (profile as any)?.gender,
+    typedProfile?.displayName,
+    typedProfile?.gender,
     lang,
   )
-  const userAvatar = (profile as any)?.avatar || "👋"
+  const userAvatar = typedProfile?.avatar || "👋"
   const upcomingHolidays = useMemo(() => {
     const holidays = getUpcomingHolidays()
     const now = new Date()
@@ -188,12 +198,12 @@ export default function Dashboard() {
   const recentActivity = useMemo(
     () =>
       buildRecentActivity(
-        tasks as any,
-        focusSessions as any,
-        transactions as any,
-        moods as any,
-        habits as any,
-        sleepLogs as any,
+        tasks as Task[] | undefined,
+        focusSessions as FocusSession[] | undefined,
+        transactions as Transaction[] | undefined,
+        moods as Mood[] | undefined,
+        habits as Habit[] | undefined,
+        sleepLogs as SleepLog[] | undefined,
       ),
     [tasks, focusSessions, transactions, moods, habits, sleepLogs],
   )
@@ -208,12 +218,11 @@ export default function Dashboard() {
         hasCurrency: false,
       }
     return {
-      hasAge: !!(profile as any).dateOfBirth,
-      hasGender: !!(profile as any).gender,
-      hasGoals: goals !== undefined && (goals as any)?.length > 0,
+      hasAge: !!typedProfile?.dateOfBirth,
+      hasGender: !!typedProfile?.gender,
+      hasGoals: goals !== undefined && goals.length > 0,
       hasBudget: false,
-      hasCurrency:
-        !!(profile as any).currency && (profile as any).currency !== "BDT",
+      hasCurrency: !!typedProfile?.currency && typedProfile?.currency !== "BDT",
     }
   }, [profile, goals])
 
@@ -302,12 +311,12 @@ export default function Dashboard() {
 
       <Suspense fallback={<SectionSkeleton className="h-40" />}>
         <SmartInsights
-          tasks={tasks as any}
-          habits={habits as any}
-          transactions={transactions as any}
-          focusSessions={focusSessions as any}
-          moods={moods as any}
-          sleepLogs={sleepLogs as any}
+          tasks={tasks}
+          habits={habits}
+          transactions={transactions}
+          focusSessions={focusSessions}
+          moods={moods}
+          sleepLogs={sleepLogs}
         />
       </Suspense>
 
@@ -324,7 +333,7 @@ export default function Dashboard() {
                 habitStats={habitStats}
                 focusStats={focusStats}
                 moodStats={moodStats}
-                transactions={transactions as any}
+                transactions={transactions}
                 goalStats={goalStats}
                 profileFlags={profileFlags}
               />
