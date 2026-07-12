@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo, useCallback } from "react"
 import {
   Sun,
   Coffee,
@@ -9,18 +9,18 @@ import {
   TrendingUp,
   Calendar,
   CheckCircle,
-} from "lucide-react";
+} from "lucide-react"
 
 interface DailyCheckin {
-  _id: string;
-  date: number;
-  mood: string;
-  energy: number;
-  topGoal?: string;
-  notes?: string;
+  _id: string
+  date: number
+  mood: string
+  energy: number
+  topGoal?: string
+  notes?: string
 }
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 const MOODS = [
   { value: "great", emoji: "😄", label: "Great", color: "text-green-500" },
@@ -28,16 +28,16 @@ const MOODS = [
   { value: "okay", emoji: "😐", label: "Okay", color: "text-yellow-500" },
   { value: "bad", emoji: "😔", label: "Bad", color: "text-orange-500" },
   { value: "terrible", emoji: "😢", label: "Terrible", color: "text-red-500" },
-];
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function DailyCheckin() {
-  const { lang } = useLang();
-  const [showCheckin, setShowCheckin] = useState(true);
+  const { lang } = useLang()
+  const [showCheckin, setShowCheckin] = useState(true)
   const [checkins, setCheckins] = useState<DailyCheckin[]>([
     {
       _id: "1",
@@ -53,53 +53,53 @@ export default function DailyCheckin() {
       energy: 5,
       topGoal: lang === "bn" ? "ব্যায়াম করুন" : "Exercise",
     },
-  ]);
+  ])
 
   const [formData, setFormData] = useState({
     mood: "good",
     energy: 3,
     topGoal: "",
     notes: "",
-  });
+  })
+
+  const calculateStreak = useCallback(() => {
+    let streak = 0
+    const currentDate = new Date()
+    currentDate.setHours(0, 0, 0, 0)
+
+    for (let i = 0; i < 365; i++) {
+      const hasCheckin = checkins.some((c) => {
+        const checkinDate = new Date(c.date)
+        checkinDate.setHours(0, 0, 0, 0)
+        return checkinDate.getTime() === currentDate.getTime()
+      })
+
+      if (hasCheckin) {
+        streak++
+      } else if (i > 0) {
+        break
+      }
+
+      currentDate.setDate(currentDate.getDate() - 1)
+    }
+
+    return streak
+  }, [checkins])
 
   const stats = useMemo(() => {
-    if (checkins.length === 0) return null;
+    if (checkins.length === 0) return null
     const avgEnergy =
-      checkins.reduce((sum, c) => sum + c.energy, 0) / checkins.length;
+      checkins.reduce((sum, c) => sum + c.energy, 0) / checkins.length
     const greatDays = checkins.filter(
       (c) => c.mood === "great" || c.mood === "good",
-    ).length;
+    ).length
     return {
       totalCheckins: checkins.length,
       avgEnergy: avgEnergy.toFixed(1),
       greatDays,
       streak: calculateStreak(),
-    };
-  }, [checkins]);
-
-  const calculateStreak = () => {
-    let streak = 0;
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    for (let i = 0; i < 365; i++) {
-      const hasCheckin = checkins.some((c) => {
-        const checkinDate = new Date(c.date);
-        checkinDate.setHours(0, 0, 0, 0);
-        return checkinDate.getTime() === currentDate.getTime();
-      });
-
-      if (hasCheckin) {
-        streak++;
-      } else if (i > 0) {
-        break;
-      }
-
-      currentDate.setDate(currentDate.getDate() - 1);
     }
-
-    return streak;
-  };
+  }, [checkins, calculateStreak])
 
   const handleCheckin = () => {
     const newCheckin: DailyCheckin = {
@@ -109,20 +109,20 @@ export default function DailyCheckin() {
       energy: formData.energy,
       topGoal: formData.topGoal || undefined,
       notes: formData.notes || undefined,
-    };
-    setCheckins([newCheckin, ...checkins]);
-    setShowCheckin(false);
-    setFormData({ mood: "good", energy: 3, topGoal: "", notes: "" });
-  };
+    }
+    setCheckins([newCheckin, ...checkins])
+    setShowCheckin(false)
+    setFormData({ mood: "good", energy: 3, topGoal: "", notes: "" })
+  }
 
   const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp)
     return date.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   return (
     <motion.div
@@ -318,7 +318,7 @@ export default function DailyCheckin() {
         <div className="space-y-3">
           {checkins.map((checkin) => {
             const moodConfig =
-              MOODS.find((m) => m.value === checkin.mood) || MOODS[1];
+              MOODS.find((m) => m.value === checkin.mood) || MOODS[1]
             return (
               <motion.div
                 key={checkin._id}
@@ -358,10 +358,10 @@ export default function DailyCheckin() {
                   </div>
                 </div>
               </motion.div>
-            );
+            )
           })}
         </div>
       </motion.div>
     </motion.div>
-  );
+  )
 }

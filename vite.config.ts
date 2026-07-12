@@ -63,6 +63,10 @@ export default defineConfig({
     minify: "esbuild",
     cssMinify: "esbuild",
   },
+  esbuild: {
+    drop: ["debugger"],
+    pure: ["console.log", "console.info"],
+  },
   optimizeDeps: {
     include: ["react", "react-dom", "react-router"],
   },

@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo, useCallback } from "react"
 import {
   Heart,
   Plus,
@@ -11,35 +11,35 @@ import {
   Smile,
   Frown,
   Meh,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { toastSuccess } from "@/lib/toast-helpers";
-import { sanitizeInput } from "@/lib/input-sanitizer";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { toastSuccess } from "@/lib/toast-helpers"
+import { sanitizeInput } from "@/lib/input-sanitizer"
 
 interface GratitudeEntry {
-  _id: string;
-  content: string;
-  mood?: string;
-  date: number;
+  _id: string
+  content: string
+  mood?: string
+  date: number
 }
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 const MOODS = [
   { value: "happy", icon: Smile, color: "text-yellow-500", label: "Happy" },
   { value: "neutral", icon: Meh, color: "text-gray-500", label: "Neutral" },
   { value: "sad", icon: Frown, color: "text-blue-500", label: "Sad" },
-];
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function GratitudeJar() {
-  const { lang } = useLang();
-  const [showAddModal, setShowAddModal] = useState(false);
+  const { lang } = useLang()
+  const [showAddModal, setShowAddModal] = useState(false)
   const [entries, setEntries] = useState<GratitudeEntry[]>([
     {
       _id: "1",
@@ -61,50 +61,50 @@ export default function GratitudeJar() {
       mood: "neutral",
       date: NOW - 3 * 24 * 60 * 60 * 1000,
     },
-  ]);
+  ])
 
   const [formData, setFormData] = useState({
     content: "",
     mood: "happy",
-  });
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  })
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+
+  const calculateStreak = useCallback(() => {
+    if (entries.length === 0) return 0
+    const sorted = [...entries].sort((a, b) => b.date - a.date)
+    let streak = 0
+    const currentDate = new Date()
+    currentDate.setHours(0, 0, 0, 0)
+
+    for (let i = 0; i < 365; i++) {
+      const hasEntry = sorted.some((e) => {
+        const entryDate = new Date(e.date)
+        entryDate.setHours(0, 0, 0, 0)
+        return entryDate.getTime() === currentDate.getTime()
+      })
+
+      if (hasEntry) {
+        streak++
+      } else if (i > 0) {
+        break
+      }
+
+      currentDate.setDate(currentDate.getDate() - 1)
+    }
+
+    return streak
+  }, [entries])
 
   const stats = useMemo(() => {
-    if (entries.length === 0) return null;
-    const happyCount = entries.filter((e) => e.mood === "happy").length;
-    const streak = calculateStreak();
+    if (entries.length === 0) return null
+    const happyCount = entries.filter((e) => e.mood === "happy").length
+    const streak = calculateStreak()
     return {
       totalEntries: entries.length,
       happyCount,
       streak,
-    };
-  }, [entries]);
-
-  const calculateStreak = () => {
-    if (entries.length === 0) return 0;
-    const sorted = [...entries].sort((a, b) => b.date - a.date);
-    let streak = 0;
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    for (let i = 0; i < 365; i++) {
-      const hasEntry = sorted.some((e) => {
-        const entryDate = new Date(e.date);
-        entryDate.setHours(0, 0, 0, 0);
-        return entryDate.getTime() === currentDate.getTime();
-      });
-
-      if (hasEntry) {
-        streak++;
-      } else if (i > 0) {
-        break;
-      }
-
-      currentDate.setDate(currentDate.getDate() - 1);
     }
-
-    return streak;
-  };
+  }, [entries, calculateStreak])
 
   const handleAdd = () => {
     const newEntry: GratitudeEntry = {
@@ -112,26 +112,26 @@ export default function GratitudeJar() {
       content: sanitizeInput(formData.content),
       mood: formData.mood,
       date: Date.now(),
-    };
-    setEntries([newEntry, ...entries]);
-    setShowAddModal(false);
-    setFormData({ content: "", mood: "happy" });
-    toastSuccess(lang === "bn" ? "কৃতজ্ঞতা যোগ হয়েছে" : "Gratitude added");
-  };
+    }
+    setEntries([newEntry, ...entries])
+    setShowAddModal(false)
+    setFormData({ content: "", mood: "happy" })
+    toastSuccess(lang === "bn" ? "কৃতজ্ঞতা যোগ হয়েছে" : "Gratitude added")
+  }
 
   const handleDelete = (id: string) => {
-    setEntries(entries.filter((e) => e._id !== id));
-    toastSuccess(lang === "bn" ? "এন্ট্রি মুছে ফেলা হয়েছে" : "Entry deleted");
-  };
+    setEntries(entries.filter((e) => e._id !== id))
+    toastSuccess(lang === "bn" ? "এন্ট্রি মুছে ফেলা হয়েছে" : "Entry deleted")
+  }
 
   const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp)
     return date.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   return (
     <motion.div
@@ -206,8 +206,8 @@ export default function GratitudeJar() {
         ) : (
           entries.map((entry) => {
             const moodConfig =
-              MOODS.find((m) => m.value === entry.mood) || MOODS[1];
-            const MoodIcon = moodConfig.icon;
+              MOODS.find((m) => m.value === entry.mood) || MOODS[1]
+            const MoodIcon = moodConfig.icon
 
             return (
               <motion.div
@@ -237,7 +237,7 @@ export default function GratitudeJar() {
                   </button>
                 </div>
               </motion.div>
-            );
+            )
           })
         )}
       </motion.div>
@@ -286,7 +286,7 @@ export default function GratitudeJar() {
                 </label>
                 <div className="flex gap-2">
                   {MOODS.map((mood) => {
-                    const MoodIcon = mood.icon;
+                    const MoodIcon = mood.icon
                     return (
                       <button
                         key={mood.value}
@@ -302,7 +302,7 @@ export default function GratitudeJar() {
                         <MoodIcon className={`h-5 w-5 ${mood.color}`} />
                         <span className="text-sm">{mood.label}</span>
                       </button>
-                    );
+                    )
                   })}
                 </div>
               </div>
@@ -321,8 +321,8 @@ export default function GratitudeJar() {
       <ConfirmDialog
         open={deleteConfirmId !== null}
         onConfirm={() => {
-          if (deleteConfirmId) handleDelete(deleteConfirmId);
-          setDeleteConfirmId(null);
+          if (deleteConfirmId) handleDelete(deleteConfirmId)
+          setDeleteConfirmId(null)
         }}
         onCancel={() => setDeleteConfirmId(null)}
         title={lang === "bn" ? "এন্ট্রি মুছুন?" : "Delete entry?"}
@@ -333,5 +333,5 @@ export default function GratitudeJar() {
         }
       />
     </motion.div>
-  );
+  )
 }
