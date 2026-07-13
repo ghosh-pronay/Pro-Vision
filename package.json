@@ -13,6 +13,9 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:functions": "vitest run --config vitest.functions.config.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
     "typecheck": "tsc -b",
     "verify": "npm run lint && npm run typecheck && npm test",
     "prepare": "husky"
@@ -42,6 +45,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/vite": "^4.1.17",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
