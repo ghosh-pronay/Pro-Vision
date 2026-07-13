@@ -16,9 +16,10 @@ import {
 import { format, subDays, startOfDay } from "date-fns"
 import { ChartCard } from "./Charts"
 import type { Period } from "./PeriodSelector"
+import type { Task } from "@/types"
 
 export function TasksTab({ period }: { period: Period }) {
-  const tasks = useQuery(api.tasks.list)
+  const tasks = useQuery(api.tasks.list) as Task[] | undefined
   const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
   const statusData = useMemo(() => {
@@ -42,13 +43,13 @@ export function TasksTab({ period }: { period: Period }) {
   const createdPerDay = useMemo(() => {
     if (!Array.isArray(tasks)) return []
     const cutoff = subDays(new Date(), days).getTime()
-    const recent = tasks.filter((t: any) => t.createdAt >= cutoff)
+    const recent = tasks.filter((t) => t.createdAt >= cutoff)
     const dayMap: Record<string, number> = {}
     for (let i = days - 1; i >= 0; i--) {
       const d = startOfDay(subDays(new Date(), i))
       dayMap[format(d, "MMM dd")] = 0
     }
-    recent.forEach((t: any) => {
+    recent.forEach((t) => {
       const key = format(new Date(t.createdAt), "MMM dd")
       if (key in dayMap) dayMap[key]++
     })

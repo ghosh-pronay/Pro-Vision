@@ -16,6 +16,7 @@ import {
 import { subDays } from "date-fns"
 import { ChartCard } from "./Charts"
 import type { Period } from "./PeriodSelector"
+import type { Mood, SleepLog } from "@/types"
 
 const CHART_COLORS = [
   "#6366f1",
@@ -37,16 +38,16 @@ const MOOD_EMOJI: Record<string, string> = {
 }
 
 export function WellbeingTab({ period }: { period: Period }) {
-  const moods = useQuery(api.moods.list)
-  const sleepLogs = useQuery(api.sleepLogs.list)
+  const moods = useQuery(api.moods.list) as Mood[] | undefined
+  const sleepLogs = useQuery(api.sleepLogs.list) as SleepLog[] | undefined
   const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
   const moodData = useMemo(() => {
     if (!Array.isArray(moods)) return []
     const cutoff = subDays(new Date(), days).getTime()
     const recent = moods
-      .filter((m: any) => m.date >= cutoff)
-      .sort((a: any, b: any) => a.date - b.date)
+      .filter((m) => m.date >= cutoff)
+      .sort((a, b) => a.date - b.date)
     const dayMap: Record<string, { sum: number; count: number }> = {}
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date()
@@ -81,8 +82,8 @@ export function WellbeingTab({ period }: { period: Period }) {
     if (!Array.isArray(sleepLogs)) return []
     const cutoff = subDays(new Date(), days).getTime()
     const recent = sleepLogs
-      .filter((s: any) => s.date >= cutoff)
-      .sort((a: any, b: any) => a.date - b.date)
+      .filter((s) => s.date >= cutoff)
+      .sort((a, b) => a.date - b.date)
     const dayMap: Record<string, number> = {}
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date()
@@ -94,7 +95,7 @@ export function WellbeingTab({ period }: { period: Period }) {
       })
       dayMap[key] = 0
     }
-    recent.forEach((s: any) => {
+    recent.forEach((s) => {
       const d = new Date(s.date)
       const key = d.toLocaleDateString("en-US", {
         month: "short",
@@ -110,7 +111,7 @@ export function WellbeingTab({ period }: { period: Period }) {
   const moodDistribution = useMemo(() => {
     if (!Array.isArray(moods)) return []
     const cutoff = subDays(new Date(), days).getTime()
-    const recent = moods.filter((m: any) => m.date >= cutoff)
+    const recent = moods.filter((m) => m.date >= cutoff)
     const counts: Record<string, number> = {
       great: 0,
       good: 0,
@@ -118,7 +119,7 @@ export function WellbeingTab({ period }: { period: Period }) {
       bad: 0,
       terrible: 0,
     }
-    recent.forEach((m: any) => {
+    recent.forEach((m) => {
       if (m.mood in counts) counts[m.mood]++
     })
     return Object.entries(counts)

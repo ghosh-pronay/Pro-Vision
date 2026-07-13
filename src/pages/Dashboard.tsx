@@ -191,7 +191,6 @@ export default function Dashboard() {
       habitScore,
       focusScore,
       wellbeingScore,
-      transactionStats.expenseScore,
     ],
   )
 
@@ -224,7 +223,7 @@ export default function Dashboard() {
       hasBudget: false,
       hasCurrency: !!typedProfile?.currency && typedProfile?.currency !== "BDT",
     }
-  }, [profile, goals])
+  }, [profile, typedProfile, goals])
 
   return (
     <motion.div

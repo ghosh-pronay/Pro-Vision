@@ -64,7 +64,6 @@ describe("Convex shim", () => {
 
     it("updates when args change", async () => {
       let callCount = 0
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const countingFn = (..._args: unknown[]) => {
         callCount++
         return [{ _id: "1", count: callCount }]

@@ -19,18 +19,7 @@ import { useQuery, useMutation } from "convex/react"
 import { api } from "../convex/_generated/api"
 import { toastSuccess } from "@/lib/toast-helpers"
 import { sanitizeInput } from "@/lib/input-sanitizer"
-
-interface JournalEntry {
-  _id: string
-  title: string
-  content: string
-  mood?: string
-  tags?: string[]
-  weather?: string
-  date: number
-  createdAt: number
-  updatedAt: number
-}
+import type { JournalEntry } from "@/types"
 
 const MOODS = [
   { emoji: "😊", label: "Happy", value: "happy" },
@@ -70,7 +59,7 @@ const fadeUp = {
 
 export default function Journal() {
   const { lang } = useLang()
-  const entries = useQuery(api.journal.list) as any[]
+  const entries = useQuery<JournalEntry[]>(api.journal.list)
   const createEntry = useMutation(api.journal.create, "journal")
   const updateEntry = useMutation(api.journal.update, "journal")
   const deleteEntry = useMutation(api.journal.remove, "journal")

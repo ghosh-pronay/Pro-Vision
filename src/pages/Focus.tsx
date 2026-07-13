@@ -14,6 +14,7 @@ import {
   Zap,
 } from "lucide-react"
 import AmbientSounds from "@/components/AmbientSounds"
+import type { FocusSession } from "@/types"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -61,8 +62,12 @@ export default function Focus() {
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const sessions = useQuery(api.focusSessions.list) as any[]
-  const stats = useQuery(api.focusSessions.stats) as any
+  const sessions = useQuery<FocusSession[]>(api.focusSessions.list)
+  const stats = useQuery<{
+    sessions: number
+    totalHours: number
+    todayMinutes: number
+  }>(api.focusSessions.stats)
   const createSession = useMutation(api.focusSessions.create, "focusSessions")
 
   const current = MODES[mode]

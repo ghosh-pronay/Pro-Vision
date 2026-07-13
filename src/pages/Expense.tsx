@@ -26,9 +26,16 @@ const fadeUp = {
 export default function Expense() {
   const { lang } = useLang()
 
-  const transactions = (useQuery(api.transactions.list) ??
-    []) as ExpenseTransaction[]
-  const wallets = (useQuery(api.wallets.list) ?? []) as WalletType[]
+  const rawTransactions = useQuery(api.transactions.list)
+  const transactions = useMemo(
+    () => (rawTransactions ?? []) as ExpenseTransaction[],
+    [rawTransactions],
+  )
+  const rawWallets = useQuery(api.wallets.list)
+  const wallets = useMemo(
+    () => (rawWallets ?? []) as WalletType[],
+    [rawWallets],
+  )
   const stats = useQuery(api.transactions.stats) as
     | { totalIncome: number; totalExpense: number }
     | undefined

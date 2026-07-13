@@ -3,6 +3,9 @@ import { query, mutation, internalAction } from "./_generated/server"
 import { api } from "./_generated/api"
 import type { Doc } from "./_generated/dataModel"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Convex shim internal API requires any cast
+type AnyApi = typeof api & Record<string, any>
+
 // Habits don't store a "streak" field directly — it's derived from
 // completedDates (counts consecutive days up to today/yesterday).
 function currentStreak(completedDates: number[]): number {
@@ -170,7 +173,7 @@ export const generateSuggestions = internalAction({
     const weekAgo = now - 7 * 24 * 60 * 60 * 1000
 
     const transactions = await ctx.runQuery(
-      (api as any).internal.transactions.listByDateRange,
+      (api as AnyApi).internal.transactions.listByDateRange,
       {
         userId: args.userId,
         startDate: weekAgo,
@@ -178,13 +181,19 @@ export const generateSuggestions = internalAction({
       },
     )
 
-    const habits = await ctx.runQuery((api as any).internal.habits.listByUser, {
-      userId: args.userId,
-    })
+    const habits = await ctx.runQuery(
+      (api as AnyApi).internal.habits.listByUser,
+      {
+        userId: args.userId,
+      },
+    )
 
-    const tasks = await ctx.runQuery((api as any).internal.tasks.listByUser, {
-      userId: args.userId,
-    })
+    const tasks = await ctx.runQuery(
+      (api as AnyApi).internal.tasks.listByUser,
+      {
+        userId: args.userId,
+      },
+    )
 
     const suggestions = []
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
+import type { User } from "@/types"
 import { useAuth } from "@/hooks/use-auth"
 import { Shield, LogOut, Users, Activity } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -21,7 +22,7 @@ const ADMIN_TABS: { id: AdminTab; label: string; icon: typeof Shield }[] = [
 export default function AdminPortalDashboard() {
   const navigate = useNavigate()
   const { signOut } = useAuth()
-  const currentUser = useQuery(api.users.currentUser) as any
+  const currentUser = useQuery<User | null>(api.users.currentUser)
   const [activeTab, setActiveTab] = useState<AdminTab>("admin")
 
   const isAdmin = currentUser != null && currentUser.role === "admin"

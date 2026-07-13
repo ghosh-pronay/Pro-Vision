@@ -18,6 +18,25 @@ interface Article {
   source: { name: string; url: string }
 }
 
+const fetchNews = async (_opts?: Record<string, unknown>) => ({
+  articles: [],
+  source: "demo",
+})
+
+const categoryMap: Record<string, string> = {
+  all: "all",
+  World: "world",
+  বিশ্ব: "world",
+  Technology: "technology",
+  প্রযুক্তি: "technology",
+  Sports: "sports",
+  খেলাধুলা: "sports",
+  Business: "business",
+  অর্থনীতি: "business",
+  Science: "science",
+  বিজ্ঞান: "science",
+}
+
 export default function News() {
   const { lang } = useLang()
   const [search, setSearch] = useState("")
@@ -26,30 +45,10 @@ export default function News() {
   const [loading, setLoading] = useState(false)
   const [source, setSource] = useState<string>("")
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const fetchNews = async (_opts?: Record<string, unknown>) => ({
-    articles: [],
-    source: "demo",
-  })
-
   const categories =
     lang === "bn"
       ? ["all", "বিশ্ব", "প্রযুক্তি", "খেলাধুলা", "অর্থনীতি", "বিজ্ঞান"]
       : ["all", "World", "Technology", "Sports", "Business", "Science"]
-
-  const categoryMap: Record<string, string> = {
-    all: "all",
-    World: "world",
-    বিশ্ব: "world",
-    Technology: "technology",
-    প্রযুক্তি: "technology",
-    Sports: "sports",
-    খেলাধুলা: "sports",
-    Business: "business",
-    অর্থনীতি: "business",
-    Science: "science",
-    বিজ্ঞান: "science",
-  }
 
   const loadNewsRef =
     useRef<(query?: string, cat?: string) => Promise<void>>(undefined)
@@ -72,7 +71,7 @@ export default function News() {
         setLoading(false)
       }
     },
-    [fetchNews, lang],
+    [lang],
   )
 
   useEffect(() => {

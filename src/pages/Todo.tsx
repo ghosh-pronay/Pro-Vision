@@ -4,6 +4,7 @@ import { t, type TranslationKey } from "@/i18n/translations"
 import { useState, useMemo } from "react"
 import { useQuery, useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
+import type { Task } from "@/types"
 import type { Id } from "@/convex/_generated/dataModel"
 import {
   Plus,
@@ -156,7 +157,7 @@ const SUGGESTED_TASKS = [
 
 export default function Todo() {
   const { lang } = useLang()
-  const allTasks = useQuery(api.tasks.list) as any[]
+  const allTasks = useQuery<Task[]>(api.tasks.list)
   const createTask = useMutation(api.tasks.create, "tasks")
   const toggleTask = useMutation(api.tasks.toggle, "tasks")
   const removeTask = useMutation(api.tasks.remove, "tasks")

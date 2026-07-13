@@ -16,6 +16,7 @@ import {
 import { subDays } from "date-fns"
 import { ChartCard } from "./Charts"
 import type { Period } from "./PeriodSelector"
+import type { FocusSession } from "@/types"
 
 const CHART_COLORS = [
   "#6366f1",
@@ -29,7 +30,9 @@ const CHART_COLORS = [
 ]
 
 export function FocusTab({ period }: { period: Period }) {
-  const sessions = useQuery(api.focusSessions.list)
+  const sessions = useQuery(api.focusSessions.list) as
+    | FocusSession[]
+    | undefined
   const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
   const sessionsPerDay = useMemo(() => {
@@ -61,9 +64,9 @@ export function FocusTab({ period }: { period: Period }) {
   const modeData = useMemo(() => {
     if (!Array.isArray(sessions)) return []
     const cutoff = subDays(new Date(), days).getTime()
-    const recent = sessions.filter((s: any) => s.createdAt >= cutoff)
+    const recent = sessions.filter((s) => s.createdAt >= cutoff)
     const counts: Record<string, number> = {}
-    recent.forEach((s: any) => {
+    recent.forEach((s) => {
       counts[s.type] = (counts[s.type] || 0) + 1
     })
     return Object.entries(counts)

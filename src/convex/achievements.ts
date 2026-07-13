@@ -282,7 +282,11 @@ export const checkAndUnlockAchievements = mutation({
             .withIndex("by_userId", (q) => q.eq("userId", user._id))
             .collect()
           const maxStreak = habits.reduce(
-            (max, h) => Math.max(max, (h as any).streak || 0),
+            (max, h) =>
+              Math.max(
+                max,
+                ((h as Record<string, unknown>).streak as number) || 0,
+              ),
             0,
           )
           unlocked = maxStreak >= achievement.requirement

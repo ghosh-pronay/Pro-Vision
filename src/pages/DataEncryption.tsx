@@ -883,7 +883,6 @@ export default function DataEncryption() {
             </div>
           ) : (
             <div className="space-y-2">
-              {/* eslint-disable-next-line react-hooks/refs */}
               {encryptionHistory.map((event) => {
                 const ActionIcon = getActionIcon(event.action)
                 const colorClass = getActionColor(event.action)

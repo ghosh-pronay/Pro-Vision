@@ -1,6 +1,9 @@
 import { query, mutation, action } from "./_generated/server"
 import { v } from "convex/values"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Convex shim ctx requires any casts
+type AnyCtx = any
+
 export const list = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
@@ -81,14 +84,14 @@ export const processPayment = action({
     paymentId: v.id("payments"),
   },
   handler: async (ctx, args) => {
-    const payment = await (ctx as any).runQuery("payments:get", {
+    const payment = await (ctx as AnyCtx).runQuery("payments:get", {
       paymentId: args.paymentId,
     })
     if (!payment) throw new Error("Payment not found")
 
     const success = Math.random() > 0.05
 
-    await (ctx as any).runMutation("payments:updateStatus", {
+    await (ctx as AnyCtx).runMutation("payments:updateStatus", {
       paymentId: args.paymentId,
       status: success ? "completed" : "failed",
     })
@@ -102,14 +105,14 @@ export const refundPayment = action({
     paymentId: v.id("payments"),
   },
   handler: async (ctx, args) => {
-    const payment = await (ctx as any).runQuery("payments:get", {
+    const payment = await (ctx as AnyCtx).runQuery("payments:get", {
       paymentId: args.paymentId,
     })
     if (!payment) throw new Error("Payment not found")
     if (payment.status !== "completed")
       throw new Error("Can only refund completed payments")
 
-    await (ctx as any).runMutation("payments:updateStatus", {
+    await (ctx as AnyCtx).runMutation("payments:updateStatus", {
       paymentId: args.paymentId,
       status: "refunded",
     })

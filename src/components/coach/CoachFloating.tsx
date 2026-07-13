@@ -39,6 +39,20 @@ interface Message {
   attachments?: Attachment[]
 }
 
+interface SpeechRecognitionLike {
+  lang: string
+  interimResults: boolean
+  continuous: boolean
+  onresult: (event: {
+    resultIndex: number
+    results: Array<{ isFinal: boolean; 0: { transcript: string } }>
+  }) => void
+  onerror: () => void
+  onend: () => void
+  start: () => void
+  stop: () => void
+}
+
 const ACCEPTED_FILE_TYPES =
   "image/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.xls,.ppt,.pptx,.json"
 
@@ -78,7 +92,7 @@ const CoachFloating = memo(function CoachFloating() {
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
-  const recognitionRef = useRef<{ stop: () => void } | null>(null)
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const isPremium = false
@@ -86,11 +100,12 @@ const CoachFloating = memo(function CoachFloating() {
     useCoachRateLimit(isPremium)
 
   useEffect(() => {
+    const timeout = typingTimeoutRef.current
     return () => {
-      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+      if (timeout) clearTimeout(timeout)
       if (recognitionRef.current) {
         try {
-          ;(recognitionRef.current as { stop: () => void }).stop()
+          recognitionRef.current.stop()
         } catch {
           // Recognition may not be running
         }
@@ -167,7 +182,7 @@ const CoachFloating = memo(function CoachFloating() {
     }
 
     const recognition = new (SpeechRecognitionConstructor as {
-      new (): any
+      new (): SpeechRecognitionLike
     })()
     recognition.lang = "bn-BD"
     recognition.interimResults = true
@@ -279,18 +294,22 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
     }
   }
 
+  const coachStarters = (
+    t.coach as unknown as { starters: Record<string, string> }
+  ).starters
+
   const starters = useMemo(
     () => [
-      (t.coach as any).starters.plan,
-      (t.coach as any).starters.finance,
-      (t.coach as any).starters.habit,
-      (t.coach as any).starters.stress,
+      coachStarters.plan,
+      coachStarters.finance,
+      coachStarters.habit,
+      coachStarters.stress,
     ],
     [
-      (t.coach as any).starters.plan,
-      (t.coach as any).starters.finance,
-      (t.coach as any).starters.habit,
-      (t.coach as any).starters.stress,
+      coachStarters.plan,
+      coachStarters.finance,
+      coachStarters.habit,
+      coachStarters.stress,
     ],
   )
 

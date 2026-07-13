@@ -301,9 +301,13 @@ export const api = {
   challenges: {
     listChallenges: (): StoredRecord[] => localDB.challenges.listChallenges(),
     listActive: (): StoredRecord[] => localDB.challenges.listChallenges(),
+    listUserChallenges: (): StoredRecord[] =>
+      localDB.challenges.listUserChallenges(),
     create: (..._args: unknown[]): StoredRecord =>
       localDB.challenges.create(_args[0] as Record<string, unknown>),
     join: (..._args: unknown[]): void => localDB.challenges.join(),
+    joinChallenge: (..._args: unknown[]): void =>
+      localDB.challenges.joinChallenge(),
     leave: (..._args: unknown[]): void => localDB.challenges.leave(),
     updateProgress: (..._args: unknown[]): void =>
       localDB.challenges.updateProgress(),

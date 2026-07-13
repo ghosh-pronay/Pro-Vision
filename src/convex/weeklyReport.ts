@@ -1,6 +1,7 @@
 import { v } from "convex/values"
 import { internalAction } from "./_generated/server"
 import * as api from "../convex/_generated/api"
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Convex shim internal API requires any cast
 const internal = (api as any).internal ?? {}
 import type { Doc } from "./_generated/dataModel"
 

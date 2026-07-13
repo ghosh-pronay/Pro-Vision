@@ -1,12 +1,15 @@
 import { query, mutation } from "./_generated/server"
 import { v } from "convex/values"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Convex shim ctx.db requires any casts
+type AnyDb = any
+
 export const list = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
-    return await (ctx.db as any)
+    return await (ctx.db as AnyDb)
       .query("paymentMethods")
-      .withIndex("by_user", (q: any) => q.eq("userId", args.userId))
+      .withIndex("by_user", (q: AnyDb) => q.eq("userId", args.userId))
       .collect()
   },
 })
@@ -21,19 +24,20 @@ export const add = mutation({
     metadata: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
+    const db = ctx.db as AnyDb
     if (args.isDefault) {
-      const existing = await (ctx.db as any)
+      const existing = await db
         .query("paymentMethods")
-        .withIndex("by_user", (q: any) => q.eq("userId", args.userId))
+        .withIndex("by_user", (q: AnyDb) => q.eq("userId", args.userId))
         .collect()
       for (const method of existing) {
         if (method.isDefault) {
-          await (ctx.db as any).patch(method._id, { isDefault: false })
+          await db.patch(method._id, { isDefault: false })
         }
       }
     }
 
-    return await (ctx.db as any).insert("paymentMethods", {
+    return await db.insert("paymentMethods", {
       ...args,
       createdAt: Date.now(),
     })
@@ -43,7 +47,7 @@ export const add = mutation({
 export const remove = mutation({
   args: { methodId: v.string() },
   handler: async (ctx, args) => {
-    await (ctx.db as any).delete(args.methodId)
+    await (ctx.db as AnyDb).delete(args.methodId)
     return args.methodId
   },
 })
@@ -51,21 +55,22 @@ export const remove = mutation({
 export const setDefault = mutation({
   args: { methodId: v.string() },
   handler: async (ctx, args) => {
-    const method = await (ctx.db as any).get(args.methodId)
+    const db = ctx.db as AnyDb
+    const method = await db.get(args.methodId)
     if (!method) throw new Error("Payment method not found")
 
-    const existing = await (ctx.db as any)
+    const existing = await db
       .query("paymentMethods")
-      .withIndex("by_user", (q: any) => q.eq("userId", method.userId))
+      .withIndex("by_user", (q: AnyDb) => q.eq("userId", method.userId))
       .collect()
 
     for (const m of existing) {
       if (m.isDefault) {
-        await (ctx.db as any).patch(m._id, { isDefault: false })
+        await db.patch(m._id, { isDefault: false })
       }
     }
 
-    await (ctx.db as any).patch(args.methodId, { isDefault: true })
+    await db.patch(args.methodId, { isDefault: true })
     return args.methodId
   },
 })

@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { useQuery, useMutation } from "convex/react"
 import { api } from "../convex/_generated/api"
+import type { MealLog, WaterLog } from "@/types"
 
 const MEAL_TYPES = [
   { value: "breakfast", icon: Coffee, color: "text-orange-500" },
@@ -33,8 +34,10 @@ const fadeUp = {
 export default function Nutrition() {
   const { lang } = useLang()
   const today = new Date().setHours(0, 0, 0, 0)
-  const meals = useQuery(api.mealLogs.list) as any[]
-  const waterLogs = useQuery(api.waterLogs.listByDate, { date: today }) as any
+  const meals = useQuery<MealLog[]>(api.mealLogs.list)
+  const waterLogs = useQuery<WaterLog[]>(api.waterLogs.listByDate, {
+    date: today,
+  })
   const createMeal = useMutation(api.mealLogs.create, "mealLogs")
   const deleteMeal = useMutation(api.mealLogs.remove, "mealLogs")
   const logWater = useMutation(api.waterLogs.addWater, "waterLogs")
@@ -54,12 +57,14 @@ export default function Nutrition() {
     if (!meals) return []
     return meals
       .filter((m) => new Date(m.date).setHours(0, 0, 0, 0) === today)
-      .sort((a, b) => b.createdAt - a.createdAt)
+      .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0))
   }, [meals, today])
 
   const todayWater = useMemo(() => {
     if (!waterLogs || waterLogs.length === 0) return 0
-    const latest = [...waterLogs].sort((a, b) => b.createdAt - a.createdAt)[0]
+    const latest = [...waterLogs].sort(
+      (a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0),
+    )[0]
     return latest?.glasses || 0
   }, [waterLogs])
 

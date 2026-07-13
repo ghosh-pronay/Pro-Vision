@@ -33,12 +33,9 @@ export default function Challenges() {
   const { lang } = useLang()
   const challenges = useQuery<Challenge[]>(api.challenges.listChallenges)
   const myChallenges = useQuery<ChallengeWithProgress[]>(
-    (api.challenges as any).listUserChallenges,
+    api.challenges.listUserChallenges,
   )
-  const joinChallenge = useMutation(
-    (api.challenges as any).joinChallenge,
-    "challenges",
-  )
+  const joinChallenge = useMutation(api.challenges.joinChallenge, "challenges")
 
   const [activeTab, setActiveTab] = useState<
     "active" | "joined" | "leaderboard"

@@ -14,15 +14,16 @@ import { subDays } from "date-fns"
 import { ChartCard } from "./Charts"
 import { useHeatmap, HeatmapCalendar } from "./Heatmap"
 import type { Period } from "./PeriodSelector"
+import type { Habit } from "@/types"
 
 export function HabitsTab({ period }: { period: Period }) {
-  const habits = useQuery(api.habits.list)
+  const habits = useQuery(api.habits.list) as Habit[] | undefined
   const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
   const completionData = useMemo(() => {
     if (!Array.isArray(habits)) return []
     const cutoff = subDays(new Date(), days).getTime()
-    return habits.map((h: any) => {
+    return habits.map((h) => {
       const recentCheckins = h.completedDates.filter(
         (d: number) => d >= cutoff,
       ).length
@@ -37,7 +38,7 @@ export function HabitsTab({ period }: { period: Period }) {
   const heatmapData = useMemo(() => {
     if (!Array.isArray(habits)) return []
     const entries: { date: number; value?: number }[] = []
-    habits.forEach((h: any) => {
+    habits.forEach((h) => {
       h.completedDates.forEach((d: number) => entries.push({ date: d }))
     })
     return entries

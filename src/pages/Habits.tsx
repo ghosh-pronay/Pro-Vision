@@ -274,7 +274,7 @@ export default function Habits() {
   const [detailTab, setDetailTab] = useState<"history" | "weekly">("history")
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
 
-  const allHabits = habits ?? []
+  const allHabits = useMemo(() => habits ?? [], [habits])
   const stats = habitStats ?? {
     total: 0,
     totalStreak: 0,

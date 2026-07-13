@@ -1,6 +1,9 @@
 import { v } from "convex/values"
 import { query, mutation, internalAction } from "./_generated/server"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Convex shim ctx requires any casts
+type AnyCtx = any
+
 export const list = query({
   args: {},
   handler: async (ctx) => {
@@ -146,24 +149,27 @@ export const processDueRecurring = internalAction({
   args: {},
   handler: async (ctx) => {
     const now = Date.now()
-    const dueRecurring = await (ctx as any).runQuery(
+    const dueRecurring = await (ctx as AnyCtx).runQuery(
       "recurringTransactions:list",
     )
 
     const results = []
 
     const dueItems = Array.isArray(dueRecurring)
-      ? dueRecurring.filter((r: any) => r.isActive && r.nextDate <= now)
+      ? dueRecurring.filter(
+          (r: Record<string, unknown>) =>
+            r.isActive && (r.nextDate as number) <= now,
+        )
       : []
 
     for (const recurring of dueItems) {
       const wallet =
-        (await (ctx as any).runQuery("wallets:get", {
+        (await (ctx as AnyCtx).runQuery("wallets:get", {
           walletId: recurring.walletId,
-        })) ?? (await (ctx as any).db?.get(recurring.walletId))
+        })) ?? (await (ctx as AnyCtx).db?.get(recurring.walletId))
       if (!wallet) continue
 
-      const transactionId = await (ctx as any).runMutation(
+      const transactionId = await (ctx as AnyCtx).runMutation(
         "transactions:create",
         {
           userId: recurring.userId,
@@ -178,12 +184,12 @@ export const processDueRecurring = internalAction({
 
       const balanceChange =
         recurring.type === "income" ? recurring.amount : -recurring.amount
-      await (ctx as any).runMutation("wallets:update", {
+      await (ctx as AnyCtx).runMutation("wallets:update", {
         id: wallet._id,
         balance: wallet.balance + balanceChange,
       })
 
-      let nextDate = recurring.nextDate
+      let nextDate = recurring.nextDate as number
       if (recurring.frequency === "daily") {
         nextDate = now + 24 * 60 * 60 * 1000
       } else if (recurring.frequency === "weekly") {
@@ -198,7 +204,7 @@ export const processDueRecurring = internalAction({
         nextDate = date.getTime()
       }
 
-      await (ctx as any).runMutation("recurringTransactions:update", {
+      await (ctx as AnyCtx).runMutation("recurringTransactions:update", {
         id: recurring._id,
         lastProcessed: now,
         nextDate,

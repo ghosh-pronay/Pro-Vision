@@ -3,6 +3,17 @@ import { useI18n } from "@/hooks/use-i18n"
 import { useState, useMemo } from "react"
 import { Sparkles, BookOpen, Quote } from "lucide-react"
 
+interface DailyTranslations {
+  title: string
+  horoscope: string
+  selectSign: string
+  lucky: string
+  color: string
+  onThisDay: string
+  yearsAgo: string
+  quote: string
+}
+
 interface HoroscopeData {
   sign: string
   prediction: string
@@ -236,7 +247,7 @@ const fadeUp = {
 
 export default function DailyInspiration() {
   const i18n = useI18n()
-  const t = i18n.t as any
+  const t = i18n.t as unknown as { daily: DailyTranslations }
   const [selectedSign, setSelectedSign] = useState<string>("Aries")
   const [showSignPicker, setShowSignPicker] = useState(false)
 

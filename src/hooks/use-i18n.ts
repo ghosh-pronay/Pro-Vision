@@ -7,6 +7,8 @@ interface TranslationNode {
   [key: string]: TranslationNode | string
 }
 
+type TranslationMap = typeof en | typeof bn
+
 function setNested(obj: TranslationNode, path: string, value: string) {
   const parts = path.split(".")
   let cur: TranslationNode = obj
@@ -24,11 +26,12 @@ export function useI18n() {
   const { lang } = useLang()
   const nested = useMemo(() => {
     const obj: TranslationNode = {}
-    const map = lang === "bn" ? bn : en
+    const map: TranslationMap = lang === "bn" ? bn : en
     for (const key of Object.keys(map) as Array<keyof typeof map>) {
       setNested(obj, key, map[key])
     }
     return obj
   }, [lang])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Translation tree is dynamically built
   return { t: nested as any, lang }
 }

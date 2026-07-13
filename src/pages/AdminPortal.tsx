@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { useNavigate } from "react-router"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
+import type { User } from "@/types"
 import {
   Card,
   CardContent,
@@ -16,7 +17,7 @@ import { Shield, Loader2, Lock } from "lucide-react"
 // and routes you to the dashboard or back out.
 export default function AdminPortal() {
   const navigate = useNavigate()
-  const currentUser = useQuery(api.users.currentUser) as any
+  const currentUser = useQuery<User | null>(api.users.currentUser)
 
   useEffect(() => {
     if (currentUser && currentUser.role === "admin") {

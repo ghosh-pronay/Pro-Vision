@@ -22,23 +22,7 @@ import { useQuery, useMutation } from "convex/react"
 import { api } from "../convex/_generated/api"
 import { toastSuccess } from "@/lib/toast-helpers"
 import { sanitizeInput } from "@/lib/input-sanitizer"
-
-interface ReadingItem {
-  _id: string
-  title: string
-  author?: string
-  type: "book" | "article" | "podcast" | "video"
-  status: "want_to_read" | "reading" | "completed"
-  progress: number
-  rating?: number
-  notes?: string
-  url?: string
-  coverUrl?: string
-  totalPages?: number
-  currentPage?: number
-  createdAt: number
-  updatedAt: number
-}
+import type { ReadingItem } from "@/types"
 
 const TYPE_ICONS = {
   book: Book,
@@ -61,7 +45,7 @@ const fadeUp = {
 
 export default function Reading() {
   const { lang } = useLang()
-  const items = useQuery(api.readingList.list) as any[]
+  const items = useQuery<ReadingItem[]>(api.readingList.list)
   const createItem = useMutation(api.readingList.create, "readingList")
   const updateItem = useMutation(api.readingList.update, "readingList")
   const deleteItem = useMutation(api.readingList.remove, "readingList")
@@ -98,7 +82,7 @@ export default function Reading() {
         const matchesFilter = filter === "all" || item.status === filter
         return matchesSearch && matchesFilter
       })
-      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))
   }, [items, search, filter])
 
   const stats = useMemo(() => {
