@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from "react"
 import { AlertTriangle, Copy, Home, RefreshCw } from "lucide-react"
+import { logger } from "@/lib/logger"
 
 interface Props {
   children: ReactNode
@@ -28,8 +29,8 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error, errorId: generateErrorId() }
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ErrorBoundary caught:", error, errorInfo)
+  componentDidCatch(error: Error, _errorInfo: React.ErrorInfo) {
+    logger.error("ErrorBoundary", "ErrorBoundary caught", error)
   }
 
   handleCopyError = async () => {

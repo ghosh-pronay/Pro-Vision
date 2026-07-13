@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useRef, useCallback } from "react";
-import { Link } from "react-router";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useRef, useCallback } from "react"
+import { Link } from "react-router"
 import {
   Share2,
   Download,
@@ -28,27 +28,28 @@ import {
   Sparkles,
   TrendingUp,
   Image,
-} from "lucide-react";
+} from "lucide-react"
 
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react"
+import { logger } from "@/lib/logger"
 
 interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  type: string;
-  icon: LucideIcon;
-  color: string;
-  unlockedAt: number;
-  likes: number;
-  shares: number;
-  recentSharers: string[];
+  id: string
+  name: string
+  description: string
+  type: string
+  icon: LucideIcon
+  color: string
+  unlockedAt: number
+  likes: number
+  shares: number
+  recentSharers: string[]
 }
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 const ACHIEVEMENT_TYPES = [
   {
@@ -93,43 +94,43 @@ const ACHIEVEMENT_TYPES = [
     icon: "🤝",
     color: "#8b5cf6",
   },
-];
+]
 
-const NOW = Date.now();
+const NOW = Date.now()
 
-type CardStyle = "minimal" | "gradient" | "glass" | "dark";
+type CardStyle = "minimal" | "gradient" | "glass" | "dark"
 
 const CARD_STYLES: { id: CardStyle; nameEn: string; nameBn: string }[] = [
   { id: "minimal", nameEn: "Minimal", nameBn: "মিনিমাল" },
   { id: "gradient", nameEn: "Gradient", nameBn: "গ্রেডিয়েন্ট" },
   { id: "glass", nameEn: "Glass", nameBn: "গ্লাস" },
   { id: "dark", nameEn: "Dark", nameBn: "ডার্ক" },
-];
+]
 
 function wrapText(
   ctx: CanvasRenderingContext2D,
   text: string,
   maxWidth: number,
 ): string[] {
-  const words = text.split(" ");
-  const lines: string[] = [];
-  let line = "";
+  const words = text.split(" ")
+  const lines: string[] = []
+  let line = ""
   for (const word of words) {
-    const test = line ? line + " " + word : word;
+    const test = line ? line + " " + word : word
     if (ctx.measureText(test).width > maxWidth && line) {
-      lines.push(line);
-      line = word;
+      lines.push(line)
+      line = word
     } else {
-      line = test;
+      line = test
     }
   }
-  if (line) lines.push(line);
-  return lines;
+  if (line) lines.push(line)
+  return lines
 }
 
 export default function AchievementSharing() {
-  const { lang } = useLang();
-  const previewRef = useRef<HTMLDivElement>(null);
+  const { lang } = useLang()
+  const previewRef = useRef<HTMLDivElement>(null)
 
   const [achievements, setAchievements] = useState<Achievement[]>([
     {
@@ -226,137 +227,135 @@ export default function AchievementSharing() {
       shares: 12,
       recentSharers: ["Shibli", "Meghna"],
     },
-  ]);
+  ])
 
   const [selectedAchievement, setSelectedAchievement] =
-    useState<Achievement | null>(null);
-  const [cardStyle, setCardStyle] = useState<CardStyle>("gradient");
-  const [customMessage, setCustomMessage] = useState("");
-  const [showPreview, setShowPreview] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [timelineExpanded, setTimelineExpanded] = useState(true);
-  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
-  const [customBorder, setCustomBorder] = useState("rounded-2xl");
+    useState<Achievement | null>(null)
+  const [cardStyle, setCardStyle] = useState<CardStyle>("gradient")
+  const [customMessage, setCustomMessage] = useState("")
+  const [showPreview, setShowPreview] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [timelineExpanded, setTimelineExpanded] = useState(true)
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set())
+  const [customBorder, setCustomBorder] = useState("rounded-2xl")
 
   const toggleLike = (id: string) => {
     setLikedIds((prev) => {
-      const next = new Set(prev);
+      const next = new Set(prev)
       if (next.has(id)) {
-        next.delete(id);
+        next.delete(id)
         setAchievements((a) =>
           a.map((x) => (x.id === id ? { ...x, likes: x.likes - 1 } : x)),
-        );
+        )
       } else {
-        next.add(id);
+        next.add(id)
         setAchievements((a) =>
           a.map((x) => (x.id === id ? { ...x, likes: x.likes + 1 } : x)),
-        );
+        )
       }
-      return next;
-    });
-  };
+      return next
+    })
+  }
 
   const getCardStyleClasses = (style: CardStyle): string => {
     switch (style) {
       case "minimal":
-        return "bg-white dark:bg-gray-50 border border-gray-200 dark:border-gray-700 shadow-sm";
+        return "bg-white dark:bg-gray-50 border border-gray-200 dark:border-gray-700 shadow-sm"
       case "gradient":
-        return "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-xl";
+        return "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-xl"
       case "glass":
-        return "glass bg-white/10 backdrop-blur-xl border border-white/20 text-white shadow-xl";
+        return "glass bg-white/10 backdrop-blur-xl border border-white/20 text-white shadow-xl"
       case "dark":
-        return "bg-gray-900 dark:bg-gray-800 text-white border border-gray-700 shadow-xl";
+        return "bg-gray-900 dark:bg-gray-800 text-white border border-gray-700 shadow-xl"
       default:
-        return "";
+        return ""
     }
-  };
+  }
 
   const getPreviewBg = (style: CardStyle): string => {
     switch (style) {
       case "minimal":
-        return "bg-gray-50 dark:bg-gray-900";
+        return "bg-gray-50 dark:bg-gray-900"
       case "gradient":
-        return "bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 dark:from-indigo-900/30 dark:via-purple-900/30 dark:to-pink-900/30";
+        return "bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 dark:from-indigo-900/30 dark:via-purple-900/30 dark:to-pink-900/30"
       case "glass":
-        return "bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30";
+        return "bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30"
       case "dark":
-        return "bg-gray-950 dark:bg-black";
+        return "bg-gray-950 dark:bg-black"
       default:
-        return "bg-gray-50";
+        return "bg-gray-50"
     }
-  };
+  }
 
   const formatDate = (ts: number) => {
-    const d = new Date(ts);
+    const d = new Date(ts)
     return d.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       year: "numeric",
       month: lang === "bn" ? "long" : "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   const buildShareText = (a: Achievement) => {
-    const typeName = ACHIEVEMENT_TYPES.find((t) => t.id === a.type);
+    const typeName = ACHIEVEMENT_TYPES.find((t) => t.id === a.type)
     const typeLabel = typeName
       ? lang === "bn"
         ? typeName.nameBn
         : typeName.nameEn
-      : a.type;
-    let text = `${typeName?.icon || "🏆"} ${a.name}\n${a.description}\n`;
-    if (customMessage) text += `\n"${customMessage}"\n`;
-    text += `\n#ProVision #Achievement #${typeLabel.replace(/\s/g, "")}`;
-    return text;
-  };
+      : a.type
+    let text = `${typeName?.icon || "🏆"} ${a.name}\n${a.description}\n`
+    if (customMessage) text += `\n"${customMessage}"\n`
+    text += `\n#ProVision #Achievement #${typeLabel.replace(/\s/g, "")}`
+    return text
+  }
 
   const handleShare = (platform: string, a: Achievement) => {
-    const text = buildShareText(a);
-    const encoded = encodeURIComponent(text);
-    const url = encodeURIComponent(window.location.href);
-    let shareUrl = "";
+    const text = buildShareText(a)
+    const encoded = encodeURIComponent(text)
+    const url = encodeURIComponent(window.location.href)
+    let shareUrl = ""
 
     switch (platform) {
       case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encoded}`;
-        break;
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encoded}`
+        break
       case "twitter":
-        shareUrl = `https://twitter.com/intent/tweet?text=${encoded}&url=${url}`;
-        break;
+        shareUrl = `https://twitter.com/intent/tweet?text=${encoded}&url=${url}`
+        break
       case "whatsapp":
-        shareUrl = `https://wa.me/?text=${encoded}`;
-        break;
+        shareUrl = `https://wa.me/?text=${encoded}`
+        break
       case "linkedin":
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
-        break;
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`
+        break
       case "copy":
         navigator.clipboard
           .writeText(text)
           .then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
+            setCopied(true)
+            setTimeout(() => setCopied(false), 2000)
           })
-          .catch((e) =>
-            console.error("[AchievementSharing]", "share failed", e),
-          );
-        return;
+          .catch((e) => logger.error("AchievementSharing", "share failed", e))
+        return
       case "instagram":
-        handleDownloadImage(a);
-        return;
+        handleDownloadImage(a)
+        return
     }
 
-    if (shareUrl) window.open(shareUrl, "_blank", "width=600,height=400");
+    if (shareUrl) window.open(shareUrl, "_blank", "width=600,height=400")
 
     setAchievements((prev) =>
       prev.map((x) => (x.id === a.id ? { ...x, shares: x.shares + 1 } : x)),
-    );
-  };
+    )
+  }
 
   const handleDownloadImage = useCallback(
     (a: Achievement) => {
-      const canvas = document.createElement("canvas");
-      canvas.width = 800;
-      canvas.height = 420;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      const canvas = document.createElement("canvas")
+      canvas.width = 800
+      canvas.height = 420
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
 
       const styleConfig: Record<
         CardStyle,
@@ -366,85 +365,85 @@ export default function AchievementSharing() {
         gradient: { bg: "#f3f4f6", fg: "#ffffff", cardBg: "#6366f1" },
         glass: { bg: "#eff6ff", fg: "#ffffff", cardBg: "#6366f1" },
         dark: { bg: "#030712", fg: "#ffffff", cardBg: "#1f2937" },
-      };
+      }
 
-      const cfg = styleConfig[cardStyle];
+      const cfg = styleConfig[cardStyle]
 
-      ctx.fillStyle = cfg.bg;
-      ctx.fillRect(0, 0, 800, 420);
+      ctx.fillStyle = cfg.bg
+      ctx.fillRect(0, 0, 800, 420)
 
-      const rx = 20;
+      const rx = 20
       const cw = 720,
         ch = 340,
         cx = 40,
-        cy = 40;
-      ctx.beginPath();
-      ctx.moveTo(cx + rx, cy);
-      ctx.lineTo(cx + cw - rx, cy);
-      ctx.quadraticCurveTo(cx + cw, cy, cx + cw, cy + rx);
-      ctx.lineTo(cx + cw, cy + ch - rx);
-      ctx.quadraticCurveTo(cx + cw, cy + ch, cx + cw - rx, cy + ch);
-      ctx.lineTo(cx + rx, cy + ch);
-      ctx.quadraticCurveTo(cx, cy + ch, cx, cy + ch - rx);
-      ctx.lineTo(cx, cy + rx);
-      ctx.quadraticCurveTo(cx, cy, cx + rx, cy);
-      ctx.closePath();
+        cy = 40
+      ctx.beginPath()
+      ctx.moveTo(cx + rx, cy)
+      ctx.lineTo(cx + cw - rx, cy)
+      ctx.quadraticCurveTo(cx + cw, cy, cx + cw, cy + rx)
+      ctx.lineTo(cx + cw, cy + ch - rx)
+      ctx.quadraticCurveTo(cx + cw, cy + ch, cx + cw - rx, cy + ch)
+      ctx.lineTo(cx + rx, cy + ch)
+      ctx.quadraticCurveTo(cx, cy + ch, cx, cy + ch - rx)
+      ctx.lineTo(cx, cy + rx)
+      ctx.quadraticCurveTo(cx, cy, cx + rx, cy)
+      ctx.closePath()
 
       if (cardStyle === "gradient") {
-        const grad = ctx.createLinearGradient(cx, cy, cx + cw, cy + ch);
-        grad.addColorStop(0, "#6366f1");
-        grad.addColorStop(0.5, "#a855f7");
-        grad.addColorStop(1, "#ec4899");
-        ctx.fillStyle = grad;
+        const grad = ctx.createLinearGradient(cx, cy, cx + cw, cy + ch)
+        grad.addColorStop(0, "#6366f1")
+        grad.addColorStop(0.5, "#a855f7")
+        grad.addColorStop(1, "#ec4899")
+        ctx.fillStyle = grad
       } else {
-        ctx.fillStyle = cfg.cardBg;
+        ctx.fillStyle = cfg.cardBg
       }
-      ctx.fill();
+      ctx.fill()
 
-      const typeName = ACHIEVEMENT_TYPES.find((t) => t.id === a.type);
+      const typeName = ACHIEVEMENT_TYPES.find((t) => t.id === a.type)
 
-      ctx.fillStyle = cfg.fg;
-      ctx.textAlign = "center";
-      ctx.font = "bold 64px serif";
-      ctx.fillText(typeName?.icon || "🏆", 400, 120);
+      ctx.fillStyle = cfg.fg
+      ctx.textAlign = "center"
+      ctx.font = "bold 64px serif"
+      ctx.fillText(typeName?.icon || "🏆", 400, 120)
 
-      ctx.font = "bold 32px sans-serif";
-      ctx.fillText(a.name, 400, 190);
+      ctx.font = "bold 32px sans-serif"
+      ctx.fillText(a.name, 400, 190)
 
-      ctx.font = "18px sans-serif";
-      ctx.globalAlpha = 0.8;
-      const descLines = wrapText(ctx, a.description, 600);
+      ctx.font = "18px sans-serif"
+      ctx.globalAlpha = 0.8
+      const descLines = wrapText(ctx, a.description, 600)
       descLines.forEach((line, i) => {
-        ctx.fillText(line, 400, 230 + i * 26);
-      });
-      ctx.globalAlpha = 1;
+        ctx.fillText(line, 400, 230 + i * 26)
+      })
+      ctx.globalAlpha = 1
 
       if (customMessage) {
-        ctx.font = "italic 16px sans-serif";
-        ctx.globalAlpha = 0.7;
-        const msgLines = wrapText(ctx, `"${customMessage}"`, 560);
+        ctx.font = "italic 16px sans-serif"
+        ctx.globalAlpha = 0.7
+        const msgLines = wrapText(ctx, `"${customMessage}"`, 560)
         msgLines.forEach((line, i) => {
-          ctx.fillText(line, 400, 300 + i * 22);
-        });
-        ctx.globalAlpha = 1;
+          ctx.fillText(line, 400, 300 + i * 22)
+        })
+        ctx.globalAlpha = 1
       }
 
-      ctx.font = "14px sans-serif";
-      ctx.globalAlpha = 0.5;
-      ctx.fillText("Made with Pro Vision", 400, 370);
-      ctx.globalAlpha = 1;
+      ctx.font = "14px sans-serif"
+      ctx.globalAlpha = 0.5
+      ctx.fillText("Made with Pro Vision", 400, 370)
+      ctx.globalAlpha = 1
 
-      const link = document.createElement("a");
-      link.download = `achievement-${a.id}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+      const link = document.createElement("a")
+      link.download = `achievement-${a.id}.png`
+      link.href = canvas.toDataURL("image/png")
+      link.click()
     },
     [cardStyle, customMessage],
-  );
+  )
 
   const selectedTypeName = selectedAchievement
     ? ACHIEVEMENT_TYPES.find((t) => t.id === selectedAchievement.type)
-    : null;
+    : null
 
   return (
     <div className="min-h-screen p-4 md:p-6 space-y-6">
@@ -481,7 +480,7 @@ export default function AchievementSharing() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {achievements.map((a) => {
-            const typeName = ACHIEVEMENT_TYPES.find((t) => t.id === a.type);
+            const typeName = ACHIEVEMENT_TYPES.find((t) => t.id === a.type)
             return (
               <motion.div
                 key={a.id}
@@ -493,8 +492,8 @@ export default function AchievementSharing() {
                     : ""
                 }`}
                 onClick={() => {
-                  setSelectedAchievement(a);
-                  setShowPreview(true);
+                  setSelectedAchievement(a)
+                  setShowPreview(true)
                 }}
               >
                 <div className="flex items-start justify-between">
@@ -518,8 +517,8 @@ export default function AchievementSharing() {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={(e) => {
-                        e.stopPropagation();
-                        toggleLike(a.id);
+                        e.stopPropagation()
+                        toggleLike(a.id)
                       }}
                       className="flex items-center gap-1 text-xs hover:opacity-80 transition-opacity"
                     >
@@ -538,7 +537,7 @@ export default function AchievementSharing() {
                   </div>
                 </div>
               </motion.div>
-            );
+            )
           })}
         </div>
       </motion.div>
@@ -591,8 +590,8 @@ export default function AchievementSharing() {
               </h2>
               <button
                 onClick={() => {
-                  setShowPreview(false);
-                  setSelectedAchievement(null);
+                  setShowPreview(false)
+                  setSelectedAchievement(null)
                 }}
                 className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
@@ -779,9 +778,9 @@ export default function AchievementSharing() {
                   onClick={() => {
                     navigator.clipboard.writeText(
                       `https://pro-vision.app/achievement/${selectedAchievement.id}`,
-                    );
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
+                    )
+                    setCopied(true)
+                    setTimeout(() => setCopied(false), 2000)
                   }}
                   className="px-4 py-2 rounded-xl bg-indigo-500 text-white hover:bg-indigo-600 transition-colors"
                 >
@@ -828,7 +827,7 @@ export default function AchievementSharing() {
                   .map((a, idx) => {
                     const typeName = ACHIEVEMENT_TYPES.find(
                       (t) => t.id === a.type,
-                    );
+                    )
                     return (
                       <motion.div
                         key={a.id}
@@ -870,7 +869,7 @@ export default function AchievementSharing() {
                           </div>
                         </div>
                       </motion.div>
-                    );
+                    )
                   })}
               </div>
             </motion.div>
@@ -954,5 +953,5 @@ export default function AchievementSharing() {
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

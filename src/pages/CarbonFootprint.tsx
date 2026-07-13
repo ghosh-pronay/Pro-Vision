@@ -17,6 +17,7 @@ import {
   Lightbulb,
   X,
 } from "lucide-react"
+import { logger } from "@/lib/logger"
 import {
   CarbonSummary,
   TRANSPORT_MODES,
@@ -225,12 +226,12 @@ export default function CarbonFootprint() {
     if (navigator.share) {
       navigator
         .share({ text })
-        .catch((e) => console.error("[CarbonFootprint]", "share failed", e))
+        .catch((e) => logger.error("CarbonFootprint", "share failed", e))
     } else {
       navigator.clipboard
         .writeText(text)
         .catch((e) =>
-          console.error("[CarbonFootprint]", "clipboard write failed", e),
+          logger.error("CarbonFootprint", "clipboard write failed", e),
         )
       setShowShareModal(true)
       setTimeout(() => setShowShareModal(false), 2000)

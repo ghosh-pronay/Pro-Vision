@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 import { useLang } from "@/i18n/LanguageContext"
 import { useState, useMemo, useRef, useEffect } from "react"
+import { logger } from "@/lib/logger"
 import {
   QrCode,
   Download,
@@ -252,7 +253,7 @@ export default function QRProfile() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (e) {
-      console.error("[QRProfile]", "clipboard/share failed", e)
+      logger.error("QRProfile", "clipboard/share failed", e)
     }
   }
 
@@ -268,7 +269,7 @@ export default function QRProfile() {
           url: qrUrl,
         })
       } catch (e) {
-        console.error("[QRProfile]", "clipboard/share failed", e)
+        logger.error("QRProfile", "clipboard/share failed", e)
       }
     } else {
       handleCopyLink()

@@ -1,10 +1,11 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
-import { Receipt, Wallet, AlertCircle, TrendingDown } from "lucide-react";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { formatBanglaCurrency } from "@/lib/bangla-numbers";
-import { toastSuccess } from "@/lib/toast-helpers";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
+import { Receipt, Wallet, AlertCircle, TrendingDown } from "lucide-react"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { formatBanglaCurrency } from "@/lib/bangla-numbers"
+import { toastSuccess } from "@/lib/toast-helpers"
+import { logger } from "@/lib/logger"
 import {
   CreateTab,
   HistoryTab,
@@ -12,22 +13,22 @@ import {
   AddFriendModal,
   SettleModal,
   QRCodeModal,
-} from "@/components/bill-split";
+} from "@/components/bill-split"
 import {
   type Bill,
   type Friend,
   type BillStatus,
   fadeUp,
   formatCurrency,
-} from "@/components/bill-split/types";
+} from "@/components/bill-split/types"
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 export default function BillSplit() {
-  const { lang } = useLang();
+  const { lang } = useLang()
   const [activeTab, setActiveTab] = useState<"create" | "history" | "balances">(
     "create",
-  );
+  )
   const [bills, setBills] = useState<Bill[]>([
     {
       _id: "1",
@@ -80,18 +81,18 @@ export default function BillSplit() {
       createdBy: "Rahim",
       paidAmount: 200,
     },
-  ]);
+  ])
   const [friends, setFriends] = useState<Friend[]>([
     { _id: "1", name: "Rahim", phone: "+8801712345678" },
     { _id: "2", name: "Karim", phone: "+8801812345678" },
     { _id: "3", name: "Jamal" },
     { _id: "4", name: "Salam", phone: "+8801912345678" },
-  ]);
-  const [showAddFriend, setShowAddFriend] = useState(false);
-  const [showSettleModal, setShowSettleModal] = useState<string | null>(null);
-  const [showQRCode, setShowQRCode] = useState<string | null>(null);
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const [expandedBill, setExpandedBill] = useState<string | null>(null);
+  ])
+  const [showAddFriend, setShowAddFriend] = useState(false)
+  const [showSettleModal, setShowSettleModal] = useState<string | null>(null)
+  const [showQRCode, setShowQRCode] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [expandedBill, setExpandedBill] = useState<string | null>(null)
 
   const t = (key: string): string => {
     const translations: Record<string, { en: string; bn: string }> = {
@@ -215,59 +216,59 @@ export default function BillSplit() {
         en: "Percentages don't add up to 100%",
         bn: "শতাংশ ১০০% এর সমান নয়",
       },
-    };
-    return translations[key]?.[lang] || translations[key]?.en || key;
-  };
+    }
+    return translations[key]?.[lang] || translations[key]?.en || key
+  }
 
   const stats = useMemo(() => {
-    const totalBills = bills.length;
-    const totalAmount = bills.reduce((sum, b) => sum + b.totalAmount, 0);
-    const unsettled = bills.filter((b) => b.status !== "settled").length;
+    const totalBills = bills.length
+    const totalAmount = bills.reduce((sum, b) => sum + b.totalAmount, 0)
+    const unsettled = bills.filter((b) => b.status !== "settled").length
     const totalOwed = bills.reduce(
       (sum, b) => sum + (b.totalAmount - b.paidAmount),
       0,
-    );
-    return { totalBills, totalAmount, unsettled, totalOwed };
-  }, [bills]);
+    )
+    return { totalBills, totalAmount, unsettled, totalOwed }
+  }, [bills])
 
   const netBalances = useMemo(() => {
-    const net: Record<string, number> = {};
+    const net: Record<string, number> = {}
     bills
       .filter((b) => b.status !== "settled")
       .forEach((bill) => {
         bill.participants.forEach((p) => {
           if (!p.paid) {
-            net[p.name] = (net[p.name] || 0) - p.amount;
+            net[p.name] = (net[p.name] || 0) - p.amount
           }
-        });
+        })
         net[bill.createdBy] =
-          (net[bill.createdBy] || 0) + (bill.totalAmount - bill.paidAmount);
-      });
+          (net[bill.createdBy] || 0) + (bill.totalAmount - bill.paidAmount)
+      })
     const debtors = Object.entries(net)
       .filter(([, v]) => v < 0)
-      .map(([name, amount]) => ({ name, amount: Math.abs(amount) }));
+      .map(([name, amount]) => ({ name, amount: Math.abs(amount) }))
     const creditors = Object.entries(net)
       .filter(([, v]) => v > 0)
-      .map(([name, amount]) => ({ name, amount }));
-    const transactions: { from: string; to: string; amount: number }[] = [];
+      .map(([name, amount]) => ({ name, amount }))
+    const transactions: { from: string; to: string; amount: number }[] = []
     let i = 0,
-      j = 0;
+      j = 0
     while (i < debtors.length && j < creditors.length) {
-      const amount = Math.min(debtors[i].amount, creditors[j].amount);
+      const amount = Math.min(debtors[i].amount, creditors[j].amount)
       if (amount > 0) {
         transactions.push({
           from: debtors[i].name,
           to: creditors[j].name,
           amount,
-        });
+        })
       }
-      debtors[i].amount -= amount;
-      creditors[j].amount -= amount;
-      if (debtors[i].amount === 0) i++;
-      if (creditors[j].amount === 0) j++;
+      debtors[i].amount -= amount
+      creditors[j].amount -= amount
+      if (debtors[i].amount === 0) i++
+      if (creditors[j].amount === 0) j++
     }
-    return transactions;
-  }, [bills]);
+    return transactions
+  }, [bills])
 
   const createBill = (
     billData: Omit<Bill, "_id" | "status" | "paidAmount">,
@@ -277,10 +278,10 @@ export default function BillSplit() {
       _id: Date.now().toString(),
       status: "pending",
       paidAmount: 0,
-    };
-    setBills([newBill, ...bills]);
-    toastSuccess(t("billSplit.billCreated"));
-  };
+    }
+    setBills([newBill, ...bills])
+    toastSuccess(t("billSplit.billCreated"))
+  }
 
   const settleBill = (billId: string) => {
     setBills(
@@ -294,22 +295,22 @@ export default function BillSplit() {
             }
           : b,
       ),
-    );
-    setShowSettleModal(null);
-    toastSuccess(t("billSplit.billSettled"));
-  };
+    )
+    setShowSettleModal(null)
+    toastSuccess(t("billSplit.billSettled"))
+  }
 
   const markParticipantPaid = (billId: string, participantId: string) => {
     setBills(
       bills.map((b) => {
-        if (b._id !== billId) return b;
+        if (b._id !== billId) return b
         const updatedParticipants = b.participants.map((p) =>
           p.id === participantId ? { ...p, paid: !p.paid } : p,
-        );
+        )
         const newPaidAmount = updatedParticipants
           .filter((p) => p.paid)
-          .reduce((sum, p) => sum + p.amount, 0);
-        const allPaid = updatedParticipants.every((p) => p.paid);
+          .reduce((sum, p) => sum + p.amount, 0)
+        const allPaid = updatedParticipants.every((p) => p.paid)
         return {
           ...b,
           participants: updatedParticipants,
@@ -319,43 +320,43 @@ export default function BillSplit() {
             : newPaidAmount > 0
               ? "partial"
               : "pending",
-        };
+        }
       }),
-    );
-  };
+    )
+  }
 
   const deleteBill = (billId: string) => {
-    setBills(bills.filter((b) => b._id !== billId));
-    setDeleteConfirmId(null);
-    toastSuccess(t("billSplit.billDeleted"));
-  };
+    setBills(bills.filter((b) => b._id !== billId))
+    setDeleteConfirmId(null)
+    toastSuccess(t("billSplit.billDeleted"))
+  }
 
   const addFriend = (name: string, phone: string) => {
-    if (!name) return;
+    if (!name) return
     const newFriend: Friend = {
       _id: Date.now().toString(),
       name,
       phone: phone || undefined,
-    };
-    setFriends([...friends, newFriend]);
-    setShowAddFriend(false);
-    toastSuccess(t("billSplit.friendAdded"));
-  };
+    }
+    setFriends([...friends, newFriend])
+    setShowAddFriend(false)
+    toastSuccess(t("billSplit.friendAdded"))
+  }
 
   const deleteFriend = (friendId: string) => {
-    setFriends(friends.filter((f) => f._id !== friendId));
-    toastSuccess(t("billSplit.friendDeleted"));
-  };
+    setFriends(friends.filter((f) => f._id !== friendId))
+    toastSuccess(t("billSplit.friendDeleted"))
+  }
 
   const copyShareLink = (billId: string) => {
-    const link = `${window.location.origin}/bill/${billId}`;
+    const link = `${window.location.origin}/bill/${billId}`
     navigator.clipboard
       .writeText(link)
       .then(() => {
-        toastSuccess(t("billSplit.linkCopied"));
+        toastSuccess(t("billSplit.linkCopied"))
       })
-      .catch((e) => console.error("[BillSplit]", "copy link failed", e));
-  };
+      .catch((e) => logger.error("BillSplit", "copy link failed", e))
+  }
 
   return (
     <motion.div
@@ -505,5 +506,5 @@ export default function BillSplit() {
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }

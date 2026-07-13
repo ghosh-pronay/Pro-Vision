@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { localDB } from "@/lib/store/index"
+import { logger } from "@/lib/logger"
 
 if (import.meta.env.PROD) {
-  console.error(
+  logger.error(
+    "ConvexShim",
     "Convex shim loaded in production! This should use the real Convex backend.",
   )
   if (typeof window !== "undefined") {
@@ -86,7 +88,7 @@ export function useQuery<T = unknown>(
           setData(resolved as T)
         })
       } catch (e) {
-        console.error("[Convex shim] Query listener failed:", e)
+        logger.error("ConvexShim", "Query listener failed", e)
       }
     }
     queryListeners.get(newKey)!.add(listener)
@@ -97,7 +99,7 @@ export function useQuery<T = unknown>(
         setData(resolved as T)
       })
     } catch (e) {
-      console.error("[Convex shim] Initial query failed:", e)
+      logger.error("ConvexShim", "Initial query failed", e)
     }
 
     return () => {

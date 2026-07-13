@@ -1,16 +1,17 @@
-import { useEffect, useRef } from "react";
-import { AD_NETWORKS, type AdPosition } from "./adConfig";
+import { useEffect, useRef } from "react"
+import { logger } from "@/lib/logger"
+import { AD_NETWORKS, type AdPosition } from "./adConfig"
 
 declare global {
   interface Window {
-    adsbygoogle: unknown[];
+    adsbygoogle: unknown[]
   }
 }
 
 interface AdSenseUnitProps {
-  position: AdPosition;
-  slot: string;
-  className?: string;
+  position: AdPosition
+  slot: string
+  className?: string
 }
 
 export default function AdSenseUnit({
@@ -18,31 +19,31 @@ export default function AdSenseUnit({
   slot,
   className,
 }: AdSenseUnitProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { clientId } = AD_NETWORKS.adsense;
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { clientId } = AD_NETWORKS.adsense
 
   useEffect(() => {
-    if (!clientId || !slot) return;
+    if (!clientId || !slot) return
 
-    const scriptId = "adsense-script";
+    const scriptId = "adsense-script"
     if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.async = true;
-      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js`;
-      document.head.appendChild(script);
+      const script = document.createElement("script")
+      script.id = scriptId
+      script.async = true
+      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js`
+      document.head.appendChild(script)
     }
 
     try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
     } catch (e) {
-      console.error("[AdSenseUnit]", "ad load failed", e);
+      logger.error("AdSenseUnit", "ad load failed", e)
     }
-  }, [clientId, slot, position]);
+  }, [clientId, slot, position])
 
-  if (!clientId || !slot) return null;
+  if (!clientId || !slot) return null
 
-  const isInContent = position === "in-content";
+  const isInContent = position === "in-content"
 
   return (
     <div ref={containerRef} className={`ad-sense-unit ${className ?? ""}`}>
@@ -55,5 +56,5 @@ export default function AdSenseUnit({
         data-full-width-responsive={isInContent ? "true" : undefined}
       />
     </div>
-  );
+  )
 }

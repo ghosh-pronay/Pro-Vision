@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t } from "@/i18n/translations";
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t } from "@/i18n/translations"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import {
   Mic,
   Play,
@@ -19,98 +19,99 @@ import {
   Check,
   Globe,
   Headphones,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { toastSuccess, toastError } from "@/lib/toast-helpers";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { toastSuccess, toastError } from "@/lib/toast-helpers"
+import { logger } from "@/lib/logger"
 
 interface SpeechRecognitionResult {
-  isFinal: boolean;
-  length: number;
-  item(index: number): { transcript: string };
-  [index: number]: { transcript: string };
+  isFinal: boolean
+  length: number
+  item(index: number): { transcript: string }
+  [index: number]: { transcript: string }
 }
 
 interface SpeechRecognitionLike {
-  start(): void;
-  stop(): void;
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onstart: (() => void) | null;
+  start(): void
+  stop(): void
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  onstart: (() => void) | null
   onresult:
     | ((event: {
-        resultIndex: number;
-        results: SpeechRecognitionResult[];
+        resultIndex: number
+        results: SpeechRecognitionResult[]
       }) => void)
-    | null;
-  onerror: ((event: { error: string }) => void) | null;
-  onend: (() => void) | null;
+    | null
+  onerror: ((event: { error: string }) => void) | null
+  onend: (() => void) | null
 }
 
 interface VoiceNote {
-  id: string;
-  title: string;
-  transcription: string;
-  audioUrl: string;
-  audioBlob?: Blob;
-  duration: number;
-  language: "bn" | "en";
-  tags: string[];
-  createdAt: number;
+  id: string
+  title: string
+  transcription: string
+  audioUrl: string
+  audioBlob?: Blob
+  duration: number
+  language: "bn" | "en"
+  tags: string[]
+  createdAt: number
 }
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function VoiceNotes() {
-  const { lang } = useLang();
-  const [isRecording, setIsRecording] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [transcription, setTranscription] = useState("");
-  const [notes, setNotes] = useState<VoiceNote[]>([]);
-  const [selectedLanguage, setSelectedLanguage] = useState<"bn" | "en">("bn");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentTime, setCurrentTime] = useState(0);
-  const [playingId, setPlayingId] = useState<string | null>(null);
+  const { lang } = useLang()
+  const [isRecording, setIsRecording] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
+  const [transcription, setTranscription] = useState("")
+  const [notes, setNotes] = useState<VoiceNote[]>([])
+  const [selectedLanguage, setSelectedLanguage] = useState<"bn" | "en">("bn")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [currentTime, setCurrentTime] = useState(0)
+  const [playingId, setPlayingId] = useState<string | null>(null)
 
-  const [noteTitle, setNoteTitle] = useState("");
-  const [noteTags, setNoteTags] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [showSaveForm, setShowSaveForm] = useState(false);
-  const [isRecognizing, setIsRecognizing] = useState(false);
+  const [noteTitle, setNoteTitle] = useState("")
+  const [noteTags, setNoteTags] = useState("")
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [showSaveForm, setShowSaveForm] = useState(false)
+  const [isRecognizing, setIsRecognizing] = useState(false)
 
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const animationRef = useRef<number | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const playingAudioRef = useRef<HTMLAudioElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const animationRef = useRef<number | null>(null)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const playingAudioRef = useRef<HTMLAudioElement | null>(null)
 
   const filteredNotes = useMemo(() => {
-    if (!searchQuery.trim()) return notes;
-    const q = searchQuery.toLowerCase();
+    if (!searchQuery.trim()) return notes
+    const q = searchQuery.toLowerCase()
     return notes.filter(
       (note) =>
         note.title.toLowerCase().includes(q) ||
         note.transcription.toLowerCase().includes(q) ||
         note.tags.some((tag) => tag.toLowerCase().includes(q)),
-    );
-  }, [notes, searchQuery]);
+    )
+  }, [notes, searchQuery])
 
   const formatDuration = useCallback((seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  }, []);
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
+  }, [])
 
   const formatDate = useCallback(
     (timestamp: number) => {
@@ -122,215 +123,215 @@ export default function VoiceNotes() {
           hour: "2-digit",
           minute: "2-digit",
         },
-      );
+      )
     },
     [lang],
-  );
+  )
 
   const drawWaveform = useCallback(() => {
-    if (!analyserRef.current || !canvasRef.current) return;
+    if (!analyserRef.current || !canvasRef.current) return
 
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
 
-    const analyser = analyserRef.current;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+    const analyser = analyserRef.current
+    const bufferLength = analyser.frequencyBinCount
+    const dataArray = new Uint8Array(bufferLength)
 
     const draw = () => {
-      animationRef.current = requestAnimationFrame(draw);
-      analyser.getByteFrequencyData(dataArray);
+      animationRef.current = requestAnimationFrame(draw)
+      analyser.getByteFrequencyData(dataArray)
 
-      ctx.fillStyle = "rgba(0, 0, 0, 0)";
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(0, 0, 0, 0)"
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      const barWidth = (canvas.width / bufferLength) * 2.5;
-      let x = 0;
+      const barWidth = (canvas.width / bufferLength) * 2.5
+      let x = 0
 
       for (let i = 0; i < bufferLength; i++) {
-        const barHeight = (dataArray[i] / 255) * canvas.height;
+        const barHeight = (dataArray[i] / 255) * canvas.height
         const gradient = ctx.createLinearGradient(
           0,
           canvas.height,
           0,
           canvas.height - barHeight,
-        );
-        gradient.addColorStop(0, "rgba(99, 102, 241, 0.8)");
-        gradient.addColorStop(1, "rgba(168, 85, 247, 0.8)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-        x += barWidth + 1;
+        )
+        gradient.addColorStop(0, "rgba(99, 102, 241, 0.8)")
+        gradient.addColorStop(1, "rgba(168, 85, 247, 0.8)")
+        ctx.fillStyle = gradient
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight)
+        x += barWidth + 1
       }
-    };
+    }
 
-    draw();
-  }, []);
+    draw()
+  }, [])
 
   const startSpeechRecognition = useCallback(() => {
     const Win = window as unknown as {
-      SpeechRecognition?: new () => SpeechRecognitionLike;
-      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
-    };
+      SpeechRecognition?: new () => SpeechRecognitionLike
+      webkitSpeechRecognition?: new () => SpeechRecognitionLike
+    }
     const SpeechRecognition =
-      Win.SpeechRecognition || Win.webkitSpeechRecognition;
+      Win.SpeechRecognition || Win.webkitSpeechRecognition
 
     if (!SpeechRecognition) {
-      toastError(t("voiceNotes.browserNotSupported", lang));
-      return;
+      toastError(t("voiceNotes.browserNotSupported", lang))
+      return
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = selectedLanguage === "bn" ? "bn-BD" : "en-US";
+    const recognition = new SpeechRecognition()
+    recognition.continuous = true
+    recognition.interimResults = true
+    recognition.lang = selectedLanguage === "bn" ? "bn-BD" : "en-US"
 
     recognition.onstart = () => {
-      setIsRecognizing(true);
-    };
+      setIsRecognizing(true)
+    }
 
     recognition.onresult = (event) => {
-      let finalTranscript = "";
+      let finalTranscript = ""
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
+        const transcript = event.results[i][0].transcript
         if (event.results[i].isFinal) {
-          finalTranscript += transcript;
+          finalTranscript += transcript
         }
       }
 
       if (finalTranscript) {
         setTranscription((prev) =>
           prev ? prev + " " + finalTranscript : finalTranscript,
-        );
+        )
       }
-    };
+    }
 
     recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event.error);
-      setIsRecognizing(false);
-    };
+      logger.error("VoiceNotes", "Speech recognition error", event.error)
+      setIsRecognizing(false)
+    }
 
     recognition.onend = () => {
-      setIsRecognizing(false);
-    };
+      setIsRecognizing(false)
+    }
 
-    recognitionRef.current = recognition;
-    recognition.start();
-  }, [selectedLanguage, lang]);
+    recognitionRef.current = recognition
+    recognition.start()
+  }, [selectedLanguage, lang])
 
   const stopSpeechRecognition = useCallback(() => {
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      recognitionRef.current = null;
-      setIsRecognizing(false);
+      recognitionRef.current.stop()
+      recognitionRef.current = null
+      setIsRecognizing(false)
     }
-  }, []);
+  }, [])
 
   const startRecording = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
 
-      audioContextRef.current = new AudioContext();
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      source.connect(analyserRef.current);
+      audioContextRef.current = new AudioContext()
+      analyserRef.current = audioContextRef.current.createAnalyser()
+      const source = audioContextRef.current.createMediaStreamSource(stream)
+      source.connect(analyserRef.current)
 
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      audioChunksRef.current = [];
+      mediaRecorderRef.current = new MediaRecorder(stream)
+      audioChunksRef.current = []
 
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
+          audioChunksRef.current.push(event.data)
         }
-      };
+      }
 
       mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        setAudioBlob(blob);
-        stream.getTracks().forEach((track) => track.stop());
-      };
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" })
+        setAudioBlob(blob)
+        stream.getTracks().forEach((track) => track.stop())
+      }
 
-      mediaRecorderRef.current.start(100);
-      setIsRecording(true);
-      setIsPaused(false);
-      setTranscription("");
-      setCurrentTime(0);
+      mediaRecorderRef.current.start(100)
+      setIsRecording(true)
+      setIsPaused(false)
+      setTranscription("")
+      setCurrentTime(0)
 
       timerRef.current = setInterval(() => {
-        setCurrentTime((prev) => prev + 1);
-      }, 1000);
+        setCurrentTime((prev) => prev + 1)
+      }, 1000)
 
-      drawWaveform();
-      startSpeechRecognition();
+      drawWaveform()
+      startSpeechRecognition()
     } catch (error) {
-      console.error("Recording error:", error);
-      toastError(t("voiceNotes.micPermissionDenied", lang));
+      logger.error("VoiceNotes", "Recording error", error)
+      toastError(t("voiceNotes.micPermissionDenied", lang))
     }
-  }, [drawWaveform, startSpeechRecognition, lang]);
+  }, [drawWaveform, startSpeechRecognition, lang])
 
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      setIsPaused(false);
+      mediaRecorderRef.current.stop()
+      setIsRecording(false)
+      setIsPaused(false)
 
       if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+        clearInterval(timerRef.current)
+        timerRef.current = null
       }
 
       if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
+        cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
       }
 
-      stopSpeechRecognition();
-      setShowSaveForm(true);
+      stopSpeechRecognition()
+      setShowSaveForm(true)
     }
-  }, [isRecording, stopSpeechRecognition]);
+  }, [isRecording, stopSpeechRecognition])
 
   const pauseRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {
       if (isPaused) {
-        mediaRecorderRef.current.resume();
-        setIsPaused(false);
+        mediaRecorderRef.current.resume()
+        setIsPaused(false)
         timerRef.current = setInterval(() => {
-          setCurrentTime((prev) => prev + 1);
-        }, 1000);
-        drawWaveform();
+          setCurrentTime((prev) => prev + 1)
+        }, 1000)
+        drawWaveform()
       } else {
-        mediaRecorderRef.current.pause();
-        setIsPaused(true);
+        mediaRecorderRef.current.pause()
+        setIsPaused(true)
         if (timerRef.current) {
-          clearInterval(timerRef.current);
-          timerRef.current = null;
+          clearInterval(timerRef.current)
+          timerRef.current = null
         }
         if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-          animationRef.current = null;
+          cancelAnimationFrame(animationRef.current)
+          animationRef.current = null
         }
       }
     }
-  }, [isRecording, isPaused, drawWaveform]);
+  }, [isRecording, isPaused, drawWaveform])
 
   const saveNote = useCallback(() => {
-    if (!audioBlob) return;
+    if (!audioBlob) return
 
-    const audioUrl = URL.createObjectURL(audioBlob);
+    const audioUrl = URL.createObjectURL(audioBlob)
     const tags = noteTags
       .split(",")
       .map((tag) => tag.trim())
-      .filter(Boolean);
+      .filter(Boolean)
 
     if (editingId) {
       setNotes((prev) =>
         prev.map((note) =>
           note.id === editingId ? { ...note, title: noteTitle, tags } : note,
         ),
-      );
-      setEditingId(null);
-      toastSuccess(t("voiceNotes.saved", lang));
+      )
+      setEditingId(null)
+      toastSuccess(t("voiceNotes.saved", lang))
     } else {
       const newNote: VoiceNote = {
         id: Date.now().toString(),
@@ -343,17 +344,17 @@ export default function VoiceNotes() {
         language: selectedLanguage,
         tags,
         createdAt: Date.now(),
-      };
-      setNotes((prev) => [newNote, ...prev]);
-      toastSuccess(t("voiceNotes.saved", lang));
+      }
+      setNotes((prev) => [newNote, ...prev])
+      toastSuccess(t("voiceNotes.saved", lang))
     }
 
-    setShowSaveForm(false);
-    setNoteTitle("");
-    setNoteTags("");
-    setAudioBlob(null);
-    setTranscription("");
-    setCurrentTime(0);
+    setShowSaveForm(false)
+    setNoteTitle("")
+    setNoteTags("")
+    setAudioBlob(null)
+    setTranscription("")
+    setCurrentTime(0)
   }, [
     audioBlob,
     noteTitle,
@@ -364,91 +365,91 @@ export default function VoiceNotes() {
     selectedLanguage,
     notes.length,
     lang,
-  ]);
+  ])
 
   const stopPlayback = useCallback(() => {
     if (playingAudioRef.current) {
-      playingAudioRef.current.pause();
-      playingAudioRef.current = null;
+      playingAudioRef.current.pause()
+      playingAudioRef.current = null
     }
-    setPlayingId(null);
-  }, []);
+    setPlayingId(null)
+  }, [])
 
   const deleteNote = useCallback(
     (id: string) => {
-      setNotes((prev) => prev.filter((note) => note.id !== id));
-      setDeleteId(null);
+      setNotes((prev) => prev.filter((note) => note.id !== id))
+      setDeleteId(null)
       if (playingId === id) {
-        stopPlayback();
+        stopPlayback()
       }
-      toastSuccess(t("voiceNotes.deleted", lang));
+      toastSuccess(t("voiceNotes.deleted", lang))
     },
     [playingId, lang, stopPlayback],
-  );
+  )
 
   const startPlayback = useCallback((note: VoiceNote) => {
     if (playingAudioRef.current) {
-      playingAudioRef.current.pause();
-      playingAudioRef.current = null;
+      playingAudioRef.current.pause()
+      playingAudioRef.current = null
     }
 
-    const audio = new Audio(note.audioUrl);
-    audioRef.current = audio;
-    playingAudioRef.current = audio;
+    const audio = new Audio(note.audioUrl)
+    audioRef.current = audio
+    playingAudioRef.current = audio
 
     audio.onended = () => {
-      setPlayingId(null);
-    };
+      setPlayingId(null)
+    }
 
-    audio.play();
-    setPlayingId(note.id);
-  }, []);
+    audio.play()
+    setPlayingId(note.id)
+  }, [])
 
   const exportNote = useCallback(
     (note: VoiceNote) => {
-      const text = `${note.title}\n\n${t("voiceNotes.transcription", lang)}:\n${note.transcription}\n\n${t("voiceNotes.tags", lang)}: ${note.tags.join(", ")}\n${t("voiceNotes.duration", lang)}: ${formatDuration(note.duration)}`;
-      const blob = new Blob([text], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${note.title}.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
-      toastSuccess(t("voiceNotes.export", lang));
+      const text = `${note.title}\n\n${t("voiceNotes.transcription", lang)}:\n${note.transcription}\n\n${t("voiceNotes.tags", lang)}: ${note.tags.join(", ")}\n${t("voiceNotes.duration", lang)}: ${formatDuration(note.duration)}`
+      const blob = new Blob([text], { type: "text/plain" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `${note.title}.txt`
+      a.click()
+      URL.revokeObjectURL(url)
+      toastSuccess(t("voiceNotes.export", lang))
     },
     [lang, formatDuration],
-  );
+  )
 
   const shareNote = useCallback(
     (note: VoiceNote) => {
-      const shareText = `${note.title}\n\n${note.transcription}`;
+      const shareText = `${note.title}\n\n${note.transcription}`
       if (navigator.share) {
         navigator.share({
           title: note.title,
           text: shareText,
-        });
+        })
       } else {
-        navigator.clipboard.writeText(shareText);
-        toastSuccess(t("voiceNotes.copied", lang));
+        navigator.clipboard.writeText(shareText)
+        toastSuccess(t("voiceNotes.copied", lang))
       }
     },
     [lang],
-  );
+  )
 
   const startEditing = useCallback((note: VoiceNote) => {
-    setEditingId(note.id);
-    setNoteTitle(note.title);
-    setShowSaveForm(true);
-  }, []);
+    setEditingId(note.id)
+    setNoteTitle(note.title)
+    setShowSaveForm(true)
+  }, [])
 
   useEffect(() => {
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      if (audioContextRef.current) audioContextRef.current.close();
-      if (playingAudioRef.current) playingAudioRef.current.pause();
-    };
-  }, []);
+      if (timerRef.current) clearInterval(timerRef.current)
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+      if (audioContextRef.current) audioContextRef.current.close()
+      if (playingAudioRef.current) playingAudioRef.current.pause()
+    }
+  }, [])
 
   return (
     <motion.div
@@ -638,10 +639,10 @@ export default function VoiceNotes() {
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    setShowSaveForm(false);
-                    setEditingId(null);
-                    setNoteTitle("");
-                    setNoteTags("");
+                    setShowSaveForm(false)
+                    setEditingId(null)
+                    setNoteTitle("")
+                    setNoteTags("")
                   }}
                   className="cursor-pointer flex-1 px-4 py-2 rounded-lg bg-foreground/5 hover:bg-foreground/10 text-sm font-medium transition-colors"
                 >
@@ -779,5 +780,5 @@ export default function VoiceNotes() {
         onConfirm={() => deleteId && deleteNote(deleteId)}
       />
     </motion.div>
-  );
+  )
 }

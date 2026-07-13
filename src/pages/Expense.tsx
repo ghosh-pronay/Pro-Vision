@@ -17,6 +17,7 @@ import {
   WalletManager,
 } from "@/components/expense"
 import type { ExpenseTransaction } from "@/components/expense"
+import { logger } from "@/lib/logger"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -143,7 +144,7 @@ export default function Expense() {
       setShowForm(false)
       toastSuccess(lang === "bn" ? "আয় যোগ হয়েছে!" : "Income added!")
     } catch (error) {
-      console.error("[Expense]", "Failed to add income", error)
+      logger.error("Expense", "Failed to add income", error)
       toastError(lang === "bn" ? "আয় যোগ করতে ব্যর্থ" : "Failed to add income")
     } finally {
       setIsAddingIncome(false)
@@ -169,7 +170,7 @@ export default function Expense() {
       setShowForm(false)
       toastSuccess(lang === "bn" ? "খরচ যোগ হয়েছে!" : "Expense added!")
     } catch (e) {
-      console.error("[Expense]", "Failed to add expense", e)
+      logger.error("Expense", "Failed to add expense", e)
       toastError(
         lang === "bn" ? "খরচ যোগ করতে ব্যর্থ" : "Failed to add expense",
       )
@@ -233,7 +234,7 @@ export default function Expense() {
       setShowForm(false)
       toastSuccess(lang === "bn" ? "স্থানান্তর সম্পন্ন!" : "Transfer complete!")
     } catch (e) {
-      console.error("[Expense]", "Failed to transfer", e)
+      logger.error("Expense", "Failed to transfer", e)
       toastError(lang === "bn" ? "স্থানান্তর ব্যর্থ" : "Transfer failed")
     } finally {
       setIsTransferring(false)
@@ -247,7 +248,7 @@ export default function Expense() {
         lang === "bn" ? "লেনদেন মুছে ফেলা হয়েছে" : "Transaction deleted",
       )
     } catch (e) {
-      console.error("[Expense]", "Failed to delete transaction", e)
+      logger.error("Expense", "Failed to delete transaction", e)
       toastError(
         lang === "bn"
           ? "লেনদেন মুছে ফেলতে ব্যর্থ"
@@ -272,7 +273,7 @@ export default function Expense() {
       setShowAddWalletModal(false)
       toastSuccess(lang === "bn" ? "ওয়ালেট যোগ হয়েছে" : "Wallet added")
     } catch (e) {
-      console.error("[Expense]", "Failed to add wallet", e)
+      logger.error("Expense", "Failed to add wallet", e)
       toastError(
         lang === "bn" ? "ওয়ালেট যোগ করতে ব্যর্থ" : "Failed to add wallet",
       )
@@ -296,7 +297,7 @@ export default function Expense() {
       setEditingWallet(null)
       toastSuccess(lang === "bn" ? "ওয়ালেট আপডেট হয়েছে" : "Wallet updated")
     } catch (e) {
-      console.error("[Expense]", "Failed to update wallet", e)
+      logger.error("Expense", "Failed to update wallet", e)
       toastError(
         lang === "bn" ? "ওয়ালেট আপডেট করতে ব্যর্থ" : "Failed to update wallet",
       )
@@ -311,7 +312,7 @@ export default function Expense() {
         lang === "bn" ? "ওয়ালেট মুছে ফেলা হয়েছে" : "Wallet deleted",
       )
     } catch (e) {
-      console.error("[Expense]", "Failed to delete wallet", e)
+      logger.error("Expense", "Failed to delete wallet", e)
       toastError(
         lang === "bn" ? "ওয়ালেট মুছে ফেলতে ব্যর্থ" : "Failed to delete wallet",
       )
@@ -325,7 +326,7 @@ export default function Expense() {
         lang === "bn" ? "ডিফল্ট ওয়ালেট সেট হয়েছে" : "Default wallet set",
       )
     } catch (e) {
-      console.error("[Expense]", "Failed to set default wallet", e)
+      logger.error("Expense", "Failed to set default wallet", e)
       toastError(lang === "bn" ? "সেট করতে ব্যর্থ" : "Failed to set default")
     }
   }

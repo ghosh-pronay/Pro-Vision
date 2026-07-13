@@ -30,6 +30,7 @@ import { DataBackup } from "@/components/ui/DataBackup"
 import DashboardWidgetCustomizer from "@/components/DashboardWidgetCustomizer"
 import StreakFreeze from "@/components/StreakFreeze"
 import { TIMEZONE_OPTIONS, AVATAR_EMOJIS } from "@/lib/constants"
+import { logger } from "@/lib/logger"
 
 export default function Settings() {
   const { theme, setTheme, language, setLanguage } = useAppStore()
@@ -130,7 +131,7 @@ export default function Settings() {
         theme: newTheme as "light" | "dark" | "oled" | "system",
       })
     } catch (e) {
-      console.error("[Settings]", "operation failed", e)
+      logger.error("Settings", "operation failed", e)
     }
   }
 
@@ -139,7 +140,7 @@ export default function Settings() {
     try {
       await upsertProfile({ language: newLang as "en" | "bn" })
     } catch (e) {
-      console.error("[Settings]", "operation failed", e)
+      logger.error("Settings", "operation failed", e)
     }
   }
 

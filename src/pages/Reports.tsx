@@ -3,6 +3,7 @@ import { useLang } from "@/i18n/LanguageContext"
 import { t } from "@/i18n/translations"
 import { Download, BarChart3 } from "lucide-react"
 import { useState, useRef, useCallback, lazy, Suspense } from "react"
+import { logger } from "@/lib/logger"
 import { useSearchParams } from "react-router"
 
 const PeriodSelector = lazy(() =>
@@ -234,7 +235,7 @@ export default function Reports() {
         `pro-vision-analytics-${tab}-${period}-${new Date().toISOString().slice(0, 10)}.pdf`,
       )
     } catch (err) {
-      console.error("PDF export failed:", err)
+      logger.error("Reports", "PDF export failed", err)
     } finally {
       setExporting(false)
     }

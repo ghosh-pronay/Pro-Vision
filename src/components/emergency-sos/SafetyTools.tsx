@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Zap,
   MapPin,
@@ -7,21 +7,22 @@ import {
   MessageCircle,
   Copy,
   Check,
-} from "lucide-react";
-import { fadeUp } from "./types";
-import { useState, useCallback } from "react";
+} from "lucide-react"
+import { fadeUp } from "./types"
+import { useState, useCallback } from "react"
+import { logger } from "@/lib/logger"
 
 interface SafetyToolsProps {
-  lang: string;
-  sosMessage: string;
-  locationCoords: { lat: number; lng: number } | null;
-  flashOn: boolean;
-  fakeCallActive: boolean;
-  fakeCallTimer: number;
-  onShareLocation: () => void;
-  onToggleFlash: () => void;
-  onStartFakeCall: () => void;
-  onStopFakeCall: () => void;
+  lang: string
+  sosMessage: string
+  locationCoords: { lat: number; lng: number } | null
+  flashOn: boolean
+  fakeCallActive: boolean
+  fakeCallTimer: number
+  onShareLocation: () => void
+  onToggleFlash: () => void
+  onStartFakeCall: () => void
+  onStopFakeCall: () => void
 }
 
 export function SafetyTools({
@@ -36,25 +37,25 @@ export function SafetyTools({
   onStartFakeCall,
   onStopFakeCall,
 }: SafetyToolsProps) {
-  const [locationShared, setLocationShared] = useState(false);
-  const [showQuickMessage, setShowQuickMessage] = useState(false);
-  const [quickMessage, setQuickMessage] = useState("");
-  const [copiedText, setCopiedText] = useState<string | null>(null);
+  const [locationShared, setLocationShared] = useState(false)
+  const [showQuickMessage, setShowQuickMessage] = useState(false)
+  const [quickMessage, setQuickMessage] = useState("")
+  const [copiedText, setCopiedText] = useState<string | null>(null)
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        setCopiedText(text);
-        setTimeout(() => setCopiedText(null), 2000);
+        setCopiedText(text)
+        setTimeout(() => setCopiedText(null), 2000)
       })
-      .catch((e) => console.error("[SafetyTools]", "copy failed", e));
-  }, []);
+      .catch((e) => logger.error("SafetyTools", "copy failed", e))
+  }, [])
 
   const handleShareLocation = () => {
-    onShareLocation();
-    setLocationShared(true);
-  };
+    onShareLocation()
+    setLocationShared(true)
+  }
 
   return (
     <motion.div variants={fadeUp}>
@@ -178,8 +179,8 @@ export function SafetyTools({
               </button>
               <button
                 onClick={() => {
-                  const msg = encodeURIComponent(quickMessage || sosMessage);
-                  window.open(`sms:?body=${msg}`, "_self");
+                  const msg = encodeURIComponent(quickMessage || sosMessage)
+                  window.open(`sms:?body=${msg}`, "_self")
                 }}
                 className="flex items-center gap-1.5 rounded-lg bg-green-500 px-3 py-1.5 text-xs font-medium 
                   text-white hover:bg-green-600 cursor-pointer"
@@ -192,5 +193,5 @@ export function SafetyTools({
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }

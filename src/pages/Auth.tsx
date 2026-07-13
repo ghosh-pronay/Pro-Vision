@@ -12,6 +12,7 @@ import { Link } from "react-router"
 import { useAuth } from "@/hooks/use-auth"
 import logo from "@/assets/logo.png"
 import { useLang } from "@/i18n/LanguageContext"
+import { logger } from "@/lib/logger"
 
 import {
   ArrowRight,
@@ -73,7 +74,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       try {
         await reloadUser()
       } catch (e) {
-        console.error("[Auth]", "operation failed", e)
+        logger.error("Auth", "operation failed", e)
       }
     }, 3000)
     return () => clearInterval(interval)
@@ -99,8 +100,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
         setMode("verify")
       }
     } catch (error) {
-      console.error(
-        "[Auth]",
+      logger.error(
+        "Auth",
         error instanceof Error ? error.message : "Unknown error",
       )
       let message = "Authentication failed. Please try again."
@@ -147,8 +148,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       const redirect = redirectAfterAuth || "/dashboard"
       navigate(redirect)
     } catch (error) {
-      console.error(
-        "[Auth]",
+      logger.error(
+        "Auth",
         error instanceof Error ? error.message : "Guest login failed",
       )
       setError(
@@ -168,8 +169,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       await sendVerificationEmail()
       setResendCooldown(60)
     } catch (error) {
-      console.error(
-        "[Auth]",
+      logger.error(
+        "Auth",
         error instanceof Error ? error.message : "Resend failed",
       )
       setError(

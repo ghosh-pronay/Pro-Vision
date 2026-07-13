@@ -1,15 +1,16 @@
-import { useState, useRef, useCallback, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Volume2, VolumeX, Play, Pause, Square } from "lucide-react";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
-import { toastError } from "@/lib/toast-helpers";
+import { useState, useRef, useCallback, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Volume2, VolumeX, Play, Pause, Square } from "lucide-react"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
+import { toastError } from "@/lib/toast-helpers"
+import { logger } from "@/lib/logger"
 
 interface AmbientSound {
-  id: string;
-  name: { en: string; bn: string };
-  icon: string;
-  category: "nature" | "urban" | "focus";
+  id: string
+  name: { en: string; bn: string }
+  icon: string
+  category: "nature" | "urban" | "focus"
 }
 
 const AMBIENT_SOUNDS: AmbientSound[] = [
@@ -85,31 +86,31 @@ const AMBIENT_SOUNDS: AmbientSound[] = [
     icon: "🎵",
     category: "focus",
   },
-];
+]
 
 interface AmbientSoundsProps {
-  onSoundChange?: (soundId: string | null) => void;
+  onSoundChange?: (soundId: string | null) => void
 }
 
 function createNoiseBuffer(
   ctx: AudioContext,
   type: "white" | "brown" | "pink",
 ): AudioBuffer {
-  const sampleRate = ctx.sampleRate;
-  const length = sampleRate * 4;
-  const buffer = ctx.createBuffer(1, length, sampleRate);
-  const data = buffer.getChannelData(0);
+  const sampleRate = ctx.sampleRate
+  const length = sampleRate * 4
+  const buffer = ctx.createBuffer(1, length, sampleRate)
+  const data = buffer.getChannelData(0)
 
   if (type === "white") {
     for (let i = 0; i < length; i++) {
-      data[i] = Math.random() * 2 - 1;
+      data[i] = Math.random() * 2 - 1
     }
   } else if (type === "brown") {
-    let last = 0;
+    let last = 0
     for (let i = 0; i < length; i++) {
-      const white = Math.random() * 2 - 1;
-      last = (last + 0.02 * white) / 1.02;
-      data[i] = last * 3.5;
+      const white = Math.random() * 2 - 1
+      last = (last + 0.02 * white) / 1.02
+      data[i] = last * 3.5
     }
   } else {
     let b0 = 0,
@@ -118,20 +119,20 @@ function createNoiseBuffer(
       b3 = 0,
       b4 = 0,
       b5 = 0,
-      b6 = 0;
+      b6 = 0
     for (let i = 0; i < length; i++) {
-      const white = Math.random() * 2 - 1;
-      b0 = 0.99886 * b0 + white * 0.0555179;
-      b1 = 0.99332 * b1 + white * 0.0750759;
-      b2 = 0.969 * b2 + white * 0.153852;
-      b3 = 0.8665 * b3 + white * 0.3104856;
-      b4 = 0.55 * b4 + white * 0.5329522;
-      b5 = -0.7616 * b5 - white * 0.016898;
-      data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
-      b6 = white * 0.115926;
+      const white = Math.random() * 2 - 1
+      b0 = 0.99886 * b0 + white * 0.0555179
+      b1 = 0.99332 * b1 + white * 0.0750759
+      b2 = 0.969 * b2 + white * 0.153852
+      b3 = 0.8665 * b3 + white * 0.3104856
+      b4 = 0.55 * b4 + white * 0.5329522
+      b5 = -0.7616 * b5 - white * 0.016898
+      data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11
+      b6 = white * 0.115926
     }
   }
-  return buffer;
+  return buffer
 }
 
 function startSound(
@@ -139,469 +140,469 @@ function startSound(
   gain: GainNode,
   soundId: string,
 ): (() => void) | null {
-  const noiseBuffer = createNoiseBuffer(ctx, "white");
-  const brownBuffer = createNoiseBuffer(ctx, "brown");
-  const pinkBuffer = createNoiseBuffer(ctx, "pink");
+  const noiseBuffer = createNoiseBuffer(ctx, "white")
+  const brownBuffer = createNoiseBuffer(ctx, "brown")
+  const pinkBuffer = createNoiseBuffer(ctx, "pink")
 
   const playBuffer = (buffer: AudioBuffer, loop = true) => {
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = loop;
-    source.connect(gain);
-    source.start();
-    return source;
-  };
+    const source = ctx.createBufferSource()
+    source.buffer = buffer
+    source.loop = loop
+    source.connect(gain)
+    source.start()
+    return source
+  }
 
   const makeFilter = (type: BiquadFilterType, freq: number, q = 1) => {
-    const f = ctx.createBiquadFilter();
-    f.type = type;
-    f.frequency.value = freq;
-    f.Q.value = q;
-    return f;
-  };
+    const f = ctx.createBiquadFilter()
+    f.type = type
+    f.frequency.value = freq
+    f.Q.value = q
+    return f
+  }
 
-  const stopFns: (() => void)[] = [];
+  const stopFns: (() => void)[] = []
 
-  const stopAll = () => stopFns.forEach((fn) => fn());
+  const stopAll = () => stopFns.forEach((fn) => fn())
 
   switch (soundId) {
     case "rain": {
-      const noise = playBuffer(noiseBuffer);
-      const lp = makeFilter("lowpass", 3000);
-      const hp = makeFilter("highpass", 400);
-      noise.disconnect();
-      noise.connect(lp);
-      lp.connect(hp);
-      hp.connect(gain);
+      const noise = playBuffer(noiseBuffer)
+      const lp = makeFilter("lowpass", 3000)
+      const hp = makeFilter("highpass", 400)
+      noise.disconnect()
+      noise.connect(lp)
+      lp.connect(hp)
+      hp.connect(gain)
       stopFns.push(() => {
         try {
-          noise.stop();
+          noise.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
+      })
 
       const drip = () => {
-        if (ctx.state === "closed") return;
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.frequency.value = 800 + Math.random() * 1200;
-        osc.type = "sine";
-        g.gain.setValueAtTime(0.02, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-        osc.connect(g);
-        g.connect(gain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.1);
-        setTimeout(drip, 50 + Math.random() * 200);
-      };
-      drip();
-      return stopAll;
+        if (ctx.state === "closed") return
+        const osc = ctx.createOscillator()
+        const g = ctx.createGain()
+        osc.frequency.value = 800 + Math.random() * 1200
+        osc.type = "sine"
+        g.gain.setValueAtTime(0.02, ctx.currentTime)
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1)
+        osc.connect(g)
+        g.connect(gain)
+        osc.start()
+        osc.stop(ctx.currentTime + 0.1)
+        setTimeout(drip, 50 + Math.random() * 200)
+      }
+      drip()
+      return stopAll
     }
 
     case "forest": {
-      const noise = playBuffer(pinkBuffer);
-      const bp = makeFilter("bandpass", 800, 0.5);
-      noise.disconnect();
-      noise.connect(bp);
-      bp.connect(gain);
+      const noise = playBuffer(pinkBuffer)
+      const bp = makeFilter("bandpass", 800, 0.5)
+      noise.disconnect()
+      noise.connect(bp)
+      bp.connect(gain)
       stopFns.push(() => {
         try {
-          noise.stop();
+          noise.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
+      })
 
       const chirp = () => {
-        if (ctx.state === "closed") return;
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        const baseFreq = 2000 + Math.random() * 2000;
-        osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+        if (ctx.state === "closed") return
+        const osc = ctx.createOscillator()
+        const g = ctx.createGain()
+        const baseFreq = 2000 + Math.random() * 2000
+        osc.frequency.setValueAtTime(baseFreq, ctx.currentTime)
         osc.frequency.linearRampToValueAtTime(
           baseFreq + 500,
           ctx.currentTime + 0.05,
-        );
+        )
         osc.frequency.linearRampToValueAtTime(
           baseFreq - 300,
           ctx.currentTime + 0.1,
-        );
-        osc.type = "sine";
-        g.gain.setValueAtTime(0.015, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-        osc.connect(g);
-        g.connect(gain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.15);
-        setTimeout(chirp, 300 + Math.random() * 1500);
-      };
-      chirp();
-      return stopAll;
+        )
+        osc.type = "sine"
+        g.gain.setValueAtTime(0.015, ctx.currentTime)
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15)
+        osc.connect(g)
+        g.connect(gain)
+        osc.start()
+        osc.stop(ctx.currentTime + 0.15)
+        setTimeout(chirp, 300 + Math.random() * 1500)
+      }
+      chirp()
+      return stopAll
     }
 
     case "ocean": {
-      const noise = playBuffer(brownBuffer);
-      const lp = makeFilter("lowpass", 500);
-      noise.disconnect();
-      noise.connect(lp);
-      lp.connect(gain);
+      const noise = playBuffer(brownBuffer)
+      const lp = makeFilter("lowpass", 500)
+      noise.disconnect()
+      noise.connect(lp)
+      lp.connect(gain)
       stopFns.push(() => {
         try {
-          noise.stop();
+          noise.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
+      })
 
-      const lfo = ctx.createOscillator();
-      const lfoGain = ctx.createGain();
-      lfo.frequency.value = 0.1;
-      lfoGain.gain.value = 300;
-      lfo.connect(lfoGain);
-      lfoGain.connect(lp.frequency);
-      lfo.start();
+      const lfo = ctx.createOscillator()
+      const lfoGain = ctx.createGain()
+      lfo.frequency.value = 0.1
+      lfoGain.gain.value = 300
+      lfo.connect(lfoGain)
+      lfoGain.connect(lp.frequency)
+      lfo.start()
       stopFns.push(() => {
         try {
-          lfo.stop();
+          lfo.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
-      return stopAll;
+      })
+      return stopAll
     }
 
     case "fire": {
-      const noise = playBuffer(noiseBuffer);
-      const bp = makeFilter("bandpass", 1000, 0.3);
-      noise.disconnect();
-      noise.connect(bp);
-      bp.connect(gain);
+      const noise = playBuffer(noiseBuffer)
+      const bp = makeFilter("bandpass", 1000, 0.3)
+      noise.disconnect()
+      noise.connect(bp)
+      bp.connect(gain)
       stopFns.push(() => {
         try {
-          noise.stop();
+          noise.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
+      })
 
       const crackle = () => {
-        if (ctx.state === "closed") return;
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.frequency.value = 2000 + Math.random() * 3000;
-        osc.type = "square";
-        g.gain.setValueAtTime(0.008, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
-        osc.connect(g);
-        g.connect(gain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.02);
-        setTimeout(crackle, 30 + Math.random() * 150);
-      };
-      crackle();
-      return stopAll;
+        if (ctx.state === "closed") return
+        const osc = ctx.createOscillator()
+        const g = ctx.createGain()
+        osc.frequency.value = 2000 + Math.random() * 3000
+        osc.type = "square"
+        g.gain.setValueAtTime(0.008, ctx.currentTime)
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02)
+        osc.connect(g)
+        g.connect(gain)
+        osc.start()
+        osc.stop(ctx.currentTime + 0.02)
+        setTimeout(crackle, 30 + Math.random() * 150)
+      }
+      crackle()
+      return stopAll
     }
 
     case "birds": {
       const chirp = () => {
-        if (ctx.state === "closed") return;
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        const f = 1500 + Math.random() * 2500;
-        osc.frequency.setValueAtTime(f, ctx.currentTime);
-        osc.frequency.linearRampToValueAtTime(f + 800, ctx.currentTime + 0.04);
-        osc.frequency.linearRampToValueAtTime(f - 500, ctx.currentTime + 0.08);
-        osc.frequency.linearRampToValueAtTime(f + 200, ctx.currentTime + 0.12);
-        osc.type = "sine";
-        g.gain.setValueAtTime(0.02, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-        osc.connect(g);
-        g.connect(gain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.15);
+        if (ctx.state === "closed") return
+        const osc = ctx.createOscillator()
+        const g = ctx.createGain()
+        const f = 1500 + Math.random() * 2500
+        osc.frequency.setValueAtTime(f, ctx.currentTime)
+        osc.frequency.linearRampToValueAtTime(f + 800, ctx.currentTime + 0.04)
+        osc.frequency.linearRampToValueAtTime(f - 500, ctx.currentTime + 0.08)
+        osc.frequency.linearRampToValueAtTime(f + 200, ctx.currentTime + 0.12)
+        osc.type = "sine"
+        g.gain.setValueAtTime(0.02, ctx.currentTime)
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15)
+        osc.connect(g)
+        g.connect(gain)
+        osc.start()
+        osc.stop(ctx.currentTime + 0.15)
 
         if (Math.random() > 0.5) {
           setTimeout(() => {
-            if (ctx.state === "closed") return;
-            const osc2 = ctx.createOscillator();
-            const g2 = ctx.createGain();
-            const f2 = f + 300;
-            osc2.frequency.setValueAtTime(f2, ctx.currentTime);
+            if (ctx.state === "closed") return
+            const osc2 = ctx.createOscillator()
+            const g2 = ctx.createGain()
+            const f2 = f + 300
+            osc2.frequency.setValueAtTime(f2, ctx.currentTime)
             osc2.frequency.linearRampToValueAtTime(
               f2 + 600,
               ctx.currentTime + 0.03,
-            );
-            osc2.type = "sine";
-            g2.gain.setValueAtTime(0.015, ctx.currentTime);
-            g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-            osc2.connect(g2);
-            g2.connect(gain);
-            osc2.start();
-            osc2.stop(ctx.currentTime + 0.1);
-          }, 80);
+            )
+            osc2.type = "sine"
+            g2.gain.setValueAtTime(0.015, ctx.currentTime)
+            g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1)
+            osc2.connect(g2)
+            g2.connect(gain)
+            osc2.start()
+            osc2.stop(ctx.currentTime + 0.1)
+          }, 80)
         }
-        setTimeout(chirp, 200 + Math.random() * 2000);
-      };
-      chirp();
-      return stopAll;
+        setTimeout(chirp, 200 + Math.random() * 2000)
+      }
+      chirp()
+      return stopAll
     }
 
     case "thunder": {
-      const noise = playBuffer(brownBuffer);
-      const lp = makeFilter("lowpass", 200);
-      noise.disconnect();
-      noise.connect(lp);
-      lp.connect(gain);
+      const noise = playBuffer(brownBuffer)
+      const lp = makeFilter("lowpass", 200)
+      noise.disconnect()
+      noise.connect(lp)
+      lp.connect(gain)
       stopFns.push(() => {
         try {
-          noise.stop();
+          noise.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
+      })
 
       const rumble = () => {
-        if (ctx.state === "closed") return;
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.frequency.value = 40 + Math.random() * 30;
-        osc.type = "sine";
-        g.gain.setValueAtTime(0.06, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2);
-        osc.connect(g);
-        g.connect(gain);
-        osc.start();
-        osc.stop(ctx.currentTime + 2);
-        setTimeout(rumble, 3000 + Math.random() * 5000);
-      };
-      rumble();
-      return stopAll;
+        if (ctx.state === "closed") return
+        const osc = ctx.createOscillator()
+        const g = ctx.createGain()
+        osc.frequency.value = 40 + Math.random() * 30
+        osc.type = "sine"
+        g.gain.setValueAtTime(0.06, ctx.currentTime)
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2)
+        osc.connect(g)
+        g.connect(gain)
+        osc.start()
+        osc.stop(ctx.currentTime + 2)
+        setTimeout(rumble, 3000 + Math.random() * 5000)
+      }
+      rumble()
+      return stopAll
     }
 
     case "cafe": {
-      const noise = playBuffer(pinkBuffer);
-      const bp = makeFilter("bandpass", 400, 0.8);
-      noise.disconnect();
-      noise.connect(bp);
-      bp.connect(gain);
+      const noise = playBuffer(pinkBuffer)
+      const bp = makeFilter("bandpass", 400, 0.8)
+      noise.disconnect()
+      noise.connect(bp)
+      bp.connect(gain)
       stopFns.push(() => {
         try {
-          noise.stop();
+          noise.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
-      return stopAll;
+      })
+      return stopAll
     }
 
     case "keyboard": {
       const click = () => {
-        if (ctx.state === "closed") return;
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.frequency.value = 3000 + Math.random() * 2000;
-        osc.type = "square";
-        g.gain.setValueAtTime(0.01, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.01);
-        osc.connect(g);
-        g.connect(gain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.015);
-        setTimeout(click, 50 + Math.random() * 200);
-      };
-      click();
-      return stopAll;
+        if (ctx.state === "closed") return
+        const osc = ctx.createOscillator()
+        const g = ctx.createGain()
+        osc.frequency.value = 3000 + Math.random() * 2000
+        osc.type = "square"
+        g.gain.setValueAtTime(0.01, ctx.currentTime)
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.01)
+        osc.connect(g)
+        g.connect(gain)
+        osc.start()
+        osc.stop(ctx.currentTime + 0.015)
+        setTimeout(click, 50 + Math.random() * 200)
+      }
+      click()
+      return stopAll
     }
 
     case "whitenoise": {
-      const noise = playBuffer(noiseBuffer);
-      noise.connect(gain);
+      const noise = playBuffer(noiseBuffer)
+      noise.connect(gain)
       stopFns.push(() => {
         try {
-          noise.stop();
+          noise.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
-      return stopAll;
+      })
+      return stopAll
     }
 
     case "brownnoise": {
-      const noise = playBuffer(brownBuffer);
-      noise.connect(gain);
+      const noise = playBuffer(brownBuffer)
+      noise.connect(gain)
       stopFns.push(() => {
         try {
-          noise.stop();
+          noise.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
-      return stopAll;
+      })
+      return stopAll
     }
 
     case "piano": {
       const notes = [
         261.63, 293.66, 329.63, 349.23, 392.0, 440.0, 493.88, 523.25,
-      ];
+      ]
       const playChord = () => {
-        if (ctx.state === "closed") return;
-        const base = notes[Math.floor(Math.random() * notes.length)];
-        [1, 1.25, 1.5].forEach((mult) => {
-          const osc = ctx.createOscillator();
-          const g = ctx.createGain();
-          osc.frequency.value = base * mult;
-          osc.type = "sine";
-          g.gain.setValueAtTime(0.015, ctx.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3);
-          osc.connect(g);
-          g.connect(gain);
-          osc.start();
-          osc.stop(ctx.currentTime + 3);
-        });
-        setTimeout(playChord, 2000 + Math.random() * 3000);
-      };
-      playChord();
-      return stopAll;
+        if (ctx.state === "closed") return
+        const base = notes[Math.floor(Math.random() * notes.length)]
+        ;[1, 1.25, 1.5].forEach((mult) => {
+          const osc = ctx.createOscillator()
+          const g = ctx.createGain()
+          osc.frequency.value = base * mult
+          osc.type = "sine"
+          g.gain.setValueAtTime(0.015, ctx.currentTime)
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3)
+          osc.connect(g)
+          g.connect(gain)
+          osc.start()
+          osc.stop(ctx.currentTime + 3)
+        })
+        setTimeout(playChord, 2000 + Math.random() * 3000)
+      }
+      playChord()
+      return stopAll
     }
 
     case "lofi": {
-      const noise = playBuffer(pinkBuffer);
-      const lp = makeFilter("lowpass", 800);
-      noise.disconnect();
-      noise.connect(lp);
-      lp.connect(gain);
+      const noise = playBuffer(pinkBuffer)
+      const lp = makeFilter("lowpass", 800)
+      noise.disconnect()
+      noise.connect(lp)
+      lp.connect(gain)
       stopFns.push(() => {
         try {
-          noise.stop();
+          noise.stop()
         } catch (e) {
-          console.error("[AmbientSounds]", "audio operation failed", e);
+          logger.error("AmbientSounds", "audio operation failed", e)
         }
-      });
+      })
 
       const pad = () => {
-        if (ctx.state === "closed") return;
-        const notes = [130.81, 164.81, 196.0, 220.0];
-        const freq = notes[Math.floor(Math.random() * notes.length)];
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.frequency.value = freq;
-        osc.type = "sine";
-        g.gain.setValueAtTime(0.01, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 4);
-        osc.connect(g);
-        g.connect(gain);
-        osc.start();
-        osc.stop(ctx.currentTime + 4);
-        setTimeout(pad, 2500 + Math.random() * 2000);
-      };
-      pad();
-      return stopAll;
+        if (ctx.state === "closed") return
+        const notes = [130.81, 164.81, 196.0, 220.0]
+        const freq = notes[Math.floor(Math.random() * notes.length)]
+        const osc = ctx.createOscillator()
+        const g = ctx.createGain()
+        osc.frequency.value = freq
+        osc.type = "sine"
+        g.gain.setValueAtTime(0.01, ctx.currentTime)
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 4)
+        osc.connect(g)
+        g.connect(gain)
+        osc.start()
+        osc.stop(ctx.currentTime + 4)
+        setTimeout(pad, 2500 + Math.random() * 2000)
+      }
+      pad()
+      return stopAll
     }
 
     default:
-      return null;
+      return null
   }
 }
 
 export default function AmbientSounds({ onSoundChange }: AmbientSoundsProps) {
-  const { lang } = useLang();
-  const [activeSound, setActiveSound] = useState<string | null>(null);
-  const [volume, setVolume] = useState(0.5);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { lang } = useLang()
+  const [activeSound, setActiveSound] = useState<string | null>(null)
+  const [volume, setVolume] = useState(0.5)
+  const [isMuted, setIsMuted] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
 
-  const ctxRef = useRef<AudioContext | null>(null);
-  const gainRef = useRef<GainNode | null>(null);
-  const stopRef = useRef<(() => void) | null>(null);
+  const ctxRef = useRef<AudioContext | null>(null)
+  const gainRef = useRef<GainNode | null>(null)
+  const stopRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
     return () => {
-      stopRef.current?.();
+      stopRef.current?.()
       if (ctxRef.current && ctxRef.current.state !== "closed") {
-        ctxRef.current.close();
+        ctxRef.current.close()
       }
-    };
-  }, []);
+    }
+  }, [])
 
   const toggleSound = useCallback(
     (sound: AmbientSound) => {
       if (activeSound === sound.id) {
         if (isPlaying && ctxRef.current) {
-          ctxRef.current.suspend();
-          setIsPlaying(false);
+          ctxRef.current.suspend()
+          setIsPlaying(false)
         } else if (ctxRef.current) {
-          ctxRef.current.resume();
-          setIsPlaying(true);
+          ctxRef.current.resume()
+          setIsPlaying(true)
         }
-        return;
+        return
       }
 
-      stopRef.current?.();
+      stopRef.current?.()
       if (ctxRef.current && ctxRef.current.state !== "closed") {
-        ctxRef.current.close();
+        ctxRef.current.close()
       }
 
       try {
-        const ctx = new AudioContext();
-        const gain = ctx.createGain();
-        gain.gain.value = isMuted ? 0 : volume;
-        gain.connect(ctx.destination);
+        const ctx = new AudioContext()
+        const gain = ctx.createGain()
+        gain.gain.value = isMuted ? 0 : volume
+        gain.connect(ctx.destination)
 
-        ctxRef.current = ctx;
-        gainRef.current = gain;
+        ctxRef.current = ctx
+        gainRef.current = gain
 
-        const stopFn = startSound(ctx, gain, sound.id);
-        stopRef.current = stopFn;
+        const stopFn = startSound(ctx, gain, sound.id)
+        stopRef.current = stopFn
 
-        setActiveSound(sound.id);
-        setIsPlaying(true);
-        onSoundChange?.(sound.id);
+        setActiveSound(sound.id)
+        setIsPlaying(true)
+        onSoundChange?.(sound.id)
       } catch (err) {
-        console.error("Failed to create audio context:", err);
+        logger.error("AmbientSounds", "Failed to create audio context", err)
         toastError(
           lang === "bn"
             ? "শব্দ চালু করতে ব্যর্থ হয়েছে"
             : "Failed to play sound",
-        );
+        )
       }
     },
     [activeSound, isPlaying, volume, isMuted, onSoundChange, lang],
-  );
+  )
 
   const handleVolumeChange = (newVolume: number) => {
-    setVolume(newVolume);
+    setVolume(newVolume)
     if (gainRef.current) {
-      gainRef.current.gain.value = isMuted ? 0 : newVolume;
+      gainRef.current.gain.value = isMuted ? 0 : newVolume
     }
-  };
+  }
 
   const toggleMute = () => {
-    setIsMuted(!isMuted);
+    setIsMuted(!isMuted)
     if (gainRef.current) {
-      gainRef.current.gain.value = isMuted ? volume : 0;
+      gainRef.current.gain.value = isMuted ? volume : 0
     }
-  };
+  }
 
   const stopSound = () => {
-    stopRef.current?.();
+    stopRef.current?.()
     if (ctxRef.current && ctxRef.current.state !== "closed") {
-      ctxRef.current.close();
+      ctxRef.current.close()
     }
-    ctxRef.current = null;
-    gainRef.current = null;
-    stopRef.current = null;
-    setActiveSound(null);
-    setIsPlaying(false);
-    onSoundChange?.(null);
-  };
+    ctxRef.current = null
+    gainRef.current = null
+    stopRef.current = null
+    setActiveSound(null)
+    setIsPlaying(false)
+    onSoundChange?.(null)
+  }
 
-  const categories = ["nature", "urban", "focus"] as const;
+  const categories = ["nature", "urban", "focus"] as const
   const categoryLabels: Record<string, { en: string; bn: string }> = {
     nature: { en: "Nature", bn: "প্রকৃতি" },
     urban: { en: "Urban", bn: "শহুরে" },
     focus: { en: "Focus", bn: "ফোকাস" },
-  };
+  }
 
   return (
     <div className="glass-strong rounded-2xl p-6">
@@ -655,11 +656,11 @@ export default function AmbientSounds({ onSoundChange }: AmbientSoundsProps) {
             onClick={() => {
               if (ctxRef.current) {
                 if (isPlaying) {
-                  ctxRef.current.suspend();
-                  setIsPlaying(false);
+                  ctxRef.current.suspend()
+                  setIsPlaying(false)
                 } else {
-                  ctxRef.current.resume();
-                  setIsPlaying(true);
+                  ctxRef.current.resume()
+                  setIsPlaying(true)
                 }
               }
             }}
@@ -705,5 +706,5 @@ export default function AmbientSounds({ onSoundChange }: AmbientSoundsProps) {
         </motion.div>
       )}
     </div>
-  );
+  )
 }

@@ -1,6 +1,7 @@
-import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
-import type { Firestore } from "firebase/firestore";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
+import { logger } from "@/lib/logger"
+import { getAuth, type Auth } from "firebase/auth"
+import type { Firestore } from "firebase/firestore"
 
 const requiredEnvVars = [
   "VITE_FIREBASE_API_KEY",
@@ -9,13 +10,14 @@ const requiredEnvVars = [
   "VITE_FIREBASE_STORAGE_BUCKET",
   "VITE_FIREBASE_MESSAGING_SENDER_ID",
   "VITE_FIREBASE_APP_ID",
-] as const;
+] as const
 
-const missing = requiredEnvVars.filter((v) => !import.meta.env[v]);
+const missing = requiredEnvVars.filter((v) => !import.meta.env[v])
 if (missing.length > 0 && import.meta.env.PROD) {
-  console.warn(
-    `[Firebase] Missing environment variables: ${missing.join(", ")}. Firebase features may not work.`,
-  );
+  logger.warn(
+    "Firebase",
+    `Missing environment variables: ${missing.join(", ")}. Firebase features may not work.`,
+  )
 }
 
 const firebaseConfig = {
@@ -26,147 +28,147 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ?? "",
   appId: import.meta.env.VITE_FIREBASE_APP_ID ?? "",
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID ?? "",
-};
+}
 
-const existingApps = getApps();
-let app: FirebaseApp;
+const existingApps = getApps()
+let app: FirebaseApp
 if (existingApps.length > 0) {
-  app = existingApps[0];
+  app = existingApps[0]
 } else {
   try {
-    app = initializeApp(firebaseConfig);
+    app = initializeApp(firebaseConfig)
   } catch (e) {
-    console.error("[Firebase] Failed to initialize app:", e);
+    logger.error("Firebase", "Failed to initialize app", e)
     try {
-      app = initializeApp({ apiKey: "fallback", projectId: "fallback" });
+      app = initializeApp({ apiKey: "fallback", projectId: "fallback" })
     } catch {
-      app = initializeApp({ apiKey: "", projectId: "" });
+      app = initializeApp({ apiKey: "", projectId: "" })
     }
   }
 }
 
-let auth: Auth;
+let auth: Auth
 try {
-  auth = getAuth(app);
+  auth = getAuth(app)
 } catch (e) {
-  console.error("[Firebase] Failed to get auth:", e);
+  logger.error("Firebase", "Failed to get auth", e)
   try {
-    const fallbackApp = initializeApp({ apiKey: "", projectId: "" });
-    auth = getAuth(fallbackApp);
+    const fallbackApp = initializeApp({ apiKey: "", projectId: "" })
+    auth = getAuth(fallbackApp)
   } catch {
-    auth = getAuth(getApps()[0]);
+    auth = getAuth(getApps()[0])
   }
 }
 
-export { auth };
+export { auth }
 
-let dbInstance: Firestore | null = null;
+let dbInstance: Firestore | null = null
 
 export async function getDb(): Promise<Firestore> {
   if (!dbInstance) {
-    const { getFirestore } = await import("firebase/firestore");
-    dbInstance = getFirestore(app);
+    const { getFirestore } = await import("firebase/firestore")
+    dbInstance = getFirestore(app)
   }
-  return dbInstance;
+  return dbInstance
 }
 
-let messaging: unknown = null;
+let messaging: unknown = null
 
 async function loadMessaging() {
-  return import("firebase/messaging");
+  return import("firebase/messaging")
 }
 
 export async function getMessagingInstance() {
-  if (typeof window === "undefined") return null;
+  if (typeof window === "undefined") return null
 
   try {
-    const fm = await loadMessaging();
-    const supported = await fm.isSupported();
-    if (!supported) return null;
+    const fm = await loadMessaging()
+    const supported = await fm.isSupported()
+    if (!supported) return null
 
     if (!messaging) {
-      messaging = fm.getMessaging(app);
+      messaging = fm.getMessaging(app)
     }
-    return messaging;
+    return messaging
   } catch (e) {
-    console.error("[Firebase]", "operation failed", e);
-    return null;
+    logger.error("Firebase", "getMessagingInstance failed", e)
+    return null
   }
 }
 
 export async function requestNotificationPermission(): Promise<boolean> {
   if (typeof window === "undefined" || !("Notification" in window)) {
-    return false;
+    return false
   }
 
   try {
-    const permission = await Notification.requestPermission();
-    return permission === "granted";
+    const permission = await Notification.requestPermission()
+    return permission === "granted"
   } catch (e) {
-    console.error("[Firebase]", "operation failed", e);
-    return false;
+    logger.error("Firebase", "requestNotificationPermission failed", e)
+    return false
   }
 }
 
 export async function getFirebaseToken(): Promise<string | null> {
   try {
-    const m = await getMessagingInstance();
-    if (!m) return null;
+    const m = await getMessagingInstance()
+    if (!m) return null
 
-    const fm = await loadMessaging();
+    const fm = await loadMessaging()
     const currentToken = await fm.getToken(
       m as Parameters<typeof fm.getToken>[0],
       {
         vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || undefined,
       },
-    );
+    )
 
     if (currentToken) {
-      localStorage.setItem("pv-fcm-token", currentToken);
-      return currentToken;
+      localStorage.setItem("pv-fcm-token", currentToken)
+      return currentToken
     }
-    return null;
+    return null
   } catch (e) {
-    console.error("[Firebase]", "operation failed", e);
-    return null;
+    logger.error("Firebase", "getFirebaseToken failed", e)
+    return null
   }
 }
 
 export function onMessageListener(
   callback: (payload: {
-    notification?: { title?: string; body?: string };
-    data?: Record<string, string>;
+    notification?: { title?: string; body?: string }
+    data?: Record<string, string>
   }) => void,
 ): () => void {
-  let unsubscribed = false;
-  let unsubscribeFn: (() => void) | null = null;
+  let unsubscribed = false
+  let unsubscribeFn: (() => void) | null = null
 
   getMessagingInstance()
     .then(async (m) => {
       if (m && !unsubscribed) {
-        const fm = await loadMessaging();
+        const fm = await loadMessaging()
         const unsub = fm.onMessage(
           m as Parameters<typeof fm.onMessage>[0],
           callback,
-        );
+        )
         if (unsubscribed) {
-          unsub();
+          unsub()
         } else {
-          unsubscribeFn = unsub;
+          unsubscribeFn = unsub
         }
       }
     })
-    .catch((e) => console.error("[Firebase]", "operation failed", e));
+    .catch((e) => logger.error("Firebase", "onMessageListener failed", e))
 
   return () => {
-    unsubscribed = true;
-    unsubscribeFn?.();
-  };
+    unsubscribed = true
+    unsubscribeFn?.()
+  }
 }
 
 export function getSavedToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("pv-fcm-token");
+  if (typeof window === "undefined") return null
+  return localStorage.getItem("pv-fcm-token")
 }
 
-export default app;
+export default app

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Download, X, RefreshCw } from "lucide-react"
 import { useLang } from "@/i18n/LanguageContext"
 import { t } from "@/i18n/translations"
+import { logger } from "@/lib/logger"
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -54,7 +55,7 @@ const PWARegister = memo(function PWARegister() {
         })
       })
       .catch((e) => {
-        console.error("[PWARegister]", "service worker registration failed", e)
+        logger.error("PWARegister", "service worker registration failed", e)
       })
   }, [])
 

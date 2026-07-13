@@ -1,24 +1,27 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router";
-import { LanguageProvider } from "@/i18n/LanguageContext";
-import { AccessibilityProvider } from "@/contexts/AccessibilityContext";
-import { AuthProvider } from "@/contexts/AuthContext";
-import App from "./App";
-import "./index.css";
+import React from "react"
+import ReactDOM from "react-dom/client"
+import { BrowserRouter } from "react-router"
+import { LanguageProvider } from "@/i18n/LanguageContext"
+import { AccessibilityProvider } from "@/contexts/AccessibilityContext"
+import { AuthProvider } from "@/contexts/AuthContext"
+import { initSentry, logger } from "@/lib/logger"
+import App from "./App"
+import "./index.css"
+
+initSentry()
 
 class RootErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error: Error | null }
 > {
-  state = { hasError: false, error: null as Error | null };
+  state = { hasError: false, error: null as Error | null }
 
   static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
+    return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error("[RootErrorBoundary]", error, info);
+  componentDidCatch(error: Error, _info: React.ErrorInfo) {
+    logger.error("RootErrorBoundary", "RootErrorBoundary caught", error)
   }
 
   render() {
@@ -61,9 +64,9 @@ class RootErrorBoundary extends React.Component<
             </button>
           </div>
         </div>
-      );
+      )
     }
-    return this.props.children;
+    return this.props.children
   }
 }
 
@@ -81,4 +84,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       </BrowserRouter>
     </React.StrictMode>
   </RootErrorBoundary>,
-);
+)

@@ -3,6 +3,7 @@ import { useLang } from "@/i18n/LanguageContext"
 import { t } from "@/i18n/translations"
 import { useState, useCallback, useEffect, useRef } from "react"
 import { Globe, RefreshCw, ExternalLink, Search, Clock } from "lucide-react"
+import { logger } from "@/lib/logger"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -66,7 +67,7 @@ export default function News() {
         setArticles(result.articles)
         setSource(result.source)
       } catch (err) {
-        console.error("Failed to load news:", err)
+        logger.error("News", "Failed to load news", err)
       } finally {
         setLoading(false)
       }

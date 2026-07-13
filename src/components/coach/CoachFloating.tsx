@@ -17,6 +17,7 @@ import { useAppStore } from "@/store"
 import { useI18n } from "@/hooks/use-i18n"
 import { cn } from "@/lib/utils"
 import { useCoachRateLimit } from "@/hooks/use-coach-rate-limit"
+import { logger } from "@/lib/logger"
 import {
   generateGeminiResponse,
   isAIConfigured,
@@ -130,7 +131,7 @@ const CoachFloating = memo(function CoachFloating() {
       try {
         newAttachments.push(await fileToAttachment(files[i]))
       } catch (e) {
-        console.error("[CoachFloating] Failed to read file:", e)
+        logger.error("CoachFloating", "Failed to read file", e)
       }
     }
     setAttachments((prev) => [...prev, ...newAttachments])
@@ -273,7 +274,7 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
       }
       setMessages((prev) => [...prev, reply])
     } catch (error) {
-      console.error("[CoachFloating]", error)
+      logger.error("CoachFloating", "AI response failed", error)
       const reply: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",

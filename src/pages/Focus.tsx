@@ -14,6 +14,7 @@ import {
   Zap,
 } from "lucide-react"
 import AmbientSounds from "@/components/AmbientSounds"
+import { logger } from "@/lib/logger"
 import type { FocusSession } from "@/types"
 
 const fadeUp = {
@@ -82,7 +83,7 @@ export default function Focus() {
         type: MODES[mode].type,
       })
     } catch (err) {
-      console.error("Failed to save focus session:", err)
+      logger.error("Focus", "Failed to save focus session", err)
     }
     setSessionStartTime(null)
   }, [sessionStartTime, mode, createSession])

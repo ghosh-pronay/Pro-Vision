@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toastSuccess, toastError } from "@/lib/toast-helpers"
+import { logger } from "@/lib/logger"
 import {
   HealthTab,
   ConfigTab,
@@ -110,7 +111,7 @@ export default function AdminAPI() {
       await updateConfig({ endpoint, method, enabled: !currentEnabled })
       toastSuccess(lang === "bn" ? "আপডেট সফল হয়েছে" : "Configuration updated")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to toggle endpoint", e)
+      logger.error("AdminAPI", "Failed to toggle endpoint", e)
       toastError(lang === "bn" ? "আপডেট ব্যর্থ" : "Failed to update")
     }
   }
@@ -123,7 +124,7 @@ export default function AdminAPI() {
     try {
       await updateConfig({ endpoint, method, rateLimit })
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to update rate limit", e)
+      logger.error("AdminAPI", "Failed to update rate limit", e)
       toastError(lang === "bn" ? "আপডেট ব্যর্থ" : "Failed to update rate limit")
     }
   }
@@ -133,7 +134,7 @@ export default function AdminAPI() {
       await createKey({ name, permissions })
       toastSuccess(lang === "bn" ? "API কী তৈরি হয়েছে" : "API key created")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to create API key", e)
+      logger.error("AdminAPI", "Failed to create API key", e)
       toastError(lang === "bn" ? "কী তৈরি ব্যর্থ" : "Failed to create key")
     }
   }
@@ -143,7 +144,7 @@ export default function AdminAPI() {
       await revokeKey({ id })
       toastSuccess(lang === "bn" ? "কী নিষ্ক্রিয় হয়েছে" : "Key revoked")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to revoke key", e)
+      logger.error("AdminAPI", "Failed to revoke key", e)
       toastError(
         lang === "bn" ? "নিষ্ক্রিয়করণ ব্যর্থ" : "Failed to revoke key",
       )
@@ -155,7 +156,7 @@ export default function AdminAPI() {
       await deleteKey({ id })
       toastSuccess(lang === "bn" ? "কী মুছে ফেলা হয়েছে" : "Key deleted")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to delete API key", e)
+      logger.error("AdminAPI", "Failed to delete API key", e)
       toastError(lang === "bn" ? "মুছে ফেলা ব্যর্থ" : "Failed to delete key")
     }
   }
@@ -165,7 +166,7 @@ export default function AdminAPI() {
       await clearLogs()
       toastSuccess(lang === "bn" ? "লগ মুছে ফেলা হয়েছে" : "Logs cleared")
     } catch (e) {
-      console.error("[AdminAPI]", "Failed to clear logs", e)
+      logger.error("AdminAPI", "Failed to clear logs", e)
       toastError(lang === "bn" ? "লগ মুছে ফেলা ব্যর্থ" : "Failed to clear logs")
     }
   }

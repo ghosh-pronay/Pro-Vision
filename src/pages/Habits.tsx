@@ -4,6 +4,7 @@ import { t, type Lang, type TranslationKey } from "@/i18n/translations"
 import { useState, useMemo, useCallback } from "react"
 import { useQuery, useMutation } from "convex/react"
 import { api } from "../convex/_generated/api"
+import { logger } from "@/lib/logger"
 import {
   Flame,
   Plus,
@@ -447,7 +448,7 @@ export default function Habits() {
       setNewCategory("other")
       setShowAdd(false)
     } catch (_error) {
-      console.error("[Habits]", "Failed to add habit", _error)
+      logger.error("Habits", "Failed to add habit", _error)
       toastError(
         lang === "bn" ? "অভ্যাস যোগ করতে ব্যর্থ হয়েছে" : "Failed to add habit",
       )
@@ -468,7 +469,7 @@ export default function Habits() {
       })
       setEditingHabit(null)
     } catch (_error) {
-      console.error("[Habits]", "Failed to save edit", _error)
+      logger.error("Habits", "Failed to save edit", _error)
       toastError(
         lang === "bn" ? "সম্পাদনা সংরক্ষণ করতে ব্যর্থ" : "Failed to save edit",
       )
@@ -500,7 +501,7 @@ export default function Habits() {
     try {
       await applyStreakFreeze({ id: habitId as Id<"habits"> })
     } catch (e) {
-      console.error("[Habits]", "Failed to apply streak freeze", e)
+      logger.error("Habits", "Failed to apply streak freeze", e)
     }
   }
 
@@ -511,7 +512,7 @@ export default function Habits() {
       setDeleteTarget(null)
       toastSuccess(lang === "bn" ? "অভ্যাস মুছে ফেলা হয়েছে" : "Habit deleted")
     } catch (_error) {
-      console.error("[Habits]", "Failed to delete habit", _error)
+      logger.error("Habits", "Failed to delete habit", _error)
       toastError(
         lang === "bn" ? "অভ্যাস মুছে ফেলতে ব্যর্থ" : "Failed to delete habit",
       )
@@ -610,8 +611,8 @@ export default function Habits() {
                         : `"${habit.name[lang]}" added!`,
                     )
                   } catch (_error) {
-                    console.error(
-                      "[Habits]",
+                    logger.error(
+                      "Habits",
                       "Failed to add suggested habit",
                       _error,
                     )

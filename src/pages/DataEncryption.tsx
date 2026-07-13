@@ -30,6 +30,7 @@ import {
   Timer,
 } from "lucide-react"
 import { toastSuccess, toastError } from "@/lib/toast-helpers"
+import { logger } from "@/lib/logger"
 
 const NOW = Date.now()
 const SHARE_RANDOM_ID = Math.random().toString(36).substring(2, 15)
@@ -255,7 +256,7 @@ export default function DataEncryption() {
       toastSuccess(tc("encryption.linkCopied"))
       setTimeout(() => setCopiedLink(false), 2000)
     } catch (e) {
-      console.error("[DataEncryption]", "encryption operation failed", e)
+      logger.error("DataEncryption", "encryption operation failed", e)
       toastError("Failed to copy link")
     }
   }

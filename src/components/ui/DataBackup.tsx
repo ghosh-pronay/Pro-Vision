@@ -5,6 +5,7 @@ import { Button } from "./button"
 import { ConfirmDialog } from "./ConfirmDialog"
 import { useLang } from "@/i18n/LanguageContext"
 import { cn } from "@/lib/utils"
+import { logger } from "@/lib/logger"
 
 interface BackupData {
   version: string
@@ -84,7 +85,7 @@ async function collectIndexedDBData(): Promise<Record<string, unknown>> {
       db.close()
     }
   } catch (e) {
-    console.error("[DataBackup] IndexedDB not available or empty:", e)
+    logger.error("DataBackup", "IndexedDB not available or empty", e)
   }
   return data
 }
@@ -114,7 +115,7 @@ function readFileAsJSON(file: File): Promise<BackupData> {
         }
         resolve(data)
       } catch (e) {
-        console.error("[DataBackup]", "Failed to parse backup JSON", e)
+        logger.error("DataBackup", "Failed to parse backup JSON", e)
         reject(new Error("Invalid JSON"))
       }
     }
@@ -148,7 +149,7 @@ export function DataBackup({ className }: { className?: string }) {
       triggerDownload(backup, filename)
       toast.success(t.exportSuccess, { icon: <CheckCircle /> })
     } catch (e) {
-      console.error("[DataBackup]", "Export failed", e)
+      logger.error("DataBackup", "Export failed", e)
       toast.error(t.exportError, { icon: <AlertCircle /> })
     }
   }
@@ -162,7 +163,7 @@ export function DataBackup({ className }: { className?: string }) {
       setPendingData(data)
       setShowConfirm(true)
     } catch (e) {
-      console.error("[DataBackup]", "Invalid file", e)
+      logger.error("DataBackup", "Invalid file", e)
       toast.error(t.invalidFile, { icon: <AlertCircle /> })
     }
 
@@ -194,7 +195,7 @@ export function DataBackup({ className }: { className?: string }) {
       toast.success(t.importSuccess, { icon: <CheckCircle /> })
       setTimeout(() => window.location.reload(), 800)
     } catch (e) {
-      console.error("[DataBackup]", "Import failed", e)
+      logger.error("DataBackup", "Import failed", e)
       toast.error(t.importError, { icon: <AlertCircle /> })
     }
   }

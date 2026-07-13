@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react"
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -9,23 +9,24 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   type User,
-} from "firebase/auth";
-import { auth, getDb } from "@/lib/firebase";
+} from "firebase/auth"
+import { auth, getDb } from "@/lib/firebase"
+import { logger } from "@/lib/logger"
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
-    let settled = false;
+    let unsubscribe: (() => void) | undefined
+    let settled = false
     const finalize = () => {
       if (!settled) {
-        settled = true;
-        setIsLoading(false);
+        settled = true
+        setIsLoading(false)
       }
-    };
-    const timeout = setTimeout(finalize, 5000);
+    }
+    const timeout = setTimeout(finalize, 5000)
     try {
       unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         try {
@@ -35,22 +36,21 @@ export function useAuth() {
             firebaseUser.email
           ) {
             try {
-              await firebaseUser.reload();
-              setUser({ ...firebaseUser });
+              await firebaseUser.reload()
+              setUser({ ...firebaseUser })
             } catch (e) {
-              console.error("[useAuth]", "operation failed", e);
-              setUser(firebaseUser);
+              logger.error("useAuth", "operation failed", e)
+              setUser(firebaseUser)
             }
           } else {
-            setUser(firebaseUser);
+            setUser(firebaseUser)
           }
           if (firebaseUser?.emailVerified && firebaseUser.email) {
             try {
-              const { doc, getDoc, setDoc } =
-                await import("firebase/firestore");
-              const db = await getDb();
-              const userRef = doc(db, "users", firebaseUser.uid);
-              const snap = await getDoc(userRef);
+              const { doc, getDoc, setDoc } = await import("firebase/firestore")
+              const db = await getDb()
+              const userRef = doc(db, "users", firebaseUser.uid)
+              const snap = await getDoc(userRef)
               if (!snap.exists() || !snap.data().emailVerified) {
                 await setDoc(
                   userRef,
@@ -60,58 +60,59 @@ export function useAuth() {
                     updatedAt: Date.now(),
                   },
                   { merge: true },
-                );
+                )
               }
             } catch (err) {
-              console.error(
-                "[auth] Failed to write emailVerified to Firestore:",
+              logger.error(
+                "useAuth",
+                "Failed to write emailVerified to Firestore",
                 err,
-              );
+              )
             }
           }
         } catch (e) {
-          console.error("[useAuth] Auth state callback error:", e);
+          logger.error("useAuth", "Auth state callback error", e)
         }
-        finalize();
-      });
+        finalize()
+      })
     } catch (e) {
-      console.error("[useAuth] Failed to subscribe to auth state:", e);
-      finalize();
+      logger.error("useAuth", "Failed to subscribe to auth state", e)
+      finalize()
     }
     return () => {
-      clearTimeout(timeout);
-      unsubscribe?.();
-    };
-  }, []);
+      clearTimeout(timeout)
+      unsubscribe?.()
+    }
+  }, [])
 
   const signIn = useCallback(
     async (method: string, credential?: Record<string, string> | FormData) => {
       if (method === "email-otp" && credential instanceof FormData) {
-        const email = credential.get("email") as string;
-        if (!email) throw new Error("Email is required");
+        const email = credential.get("email") as string
+        if (!email) throw new Error("Email is required")
         const actionCodeSettings = {
           url: window.location.origin,
           handleCodeInApp: true,
-        };
-        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-        window.localStorage.setItem("emailForSignIn", email);
-        return;
+        }
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+        window.localStorage.setItem("emailForSignIn", email)
+        return
       }
 
       if (method === "email-otp-link") {
-        const email = window.localStorage.getItem("emailForSignIn");
+        const email = window.localStorage.getItem("emailForSignIn")
         if (!email) {
           throw new Error(
             "Email link expired or invalid. Please request a new link.",
-          );
+          )
         }
-        await signInWithEmailLink(auth, email, window.location.href);
-        window.localStorage.removeItem("emailForSignIn");
-        return;
+        await signInWithEmailLink(auth, email, window.location.href)
+        window.localStorage.removeItem("emailForSignIn")
+        return
       }
 
       if (method === "anonymous") {
-        return signInAnonymously(auth);
+        return signInAnonymously(auth)
       }
 
       if (
@@ -124,56 +125,56 @@ export function useAuth() {
           auth,
           credential.email,
           credential.password,
-        );
+        )
       }
 
-      throw new Error(`Unsupported sign-in method: ${method}`);
+      throw new Error(`Unsupported sign-in method: ${method}`)
     },
     [],
-  );
+  )
 
   const signUp = useCallback(async (email: string, password: string) => {
     const credential = await createUserWithEmailAndPassword(
       auth,
       email,
       password,
-    );
+    )
     try {
       await sendEmailVerification(credential.user, {
         url: window.location.origin,
         handleCodeInApp: true,
-      });
+      })
     } catch (emailErr) {
-      console.error("[auth] sendEmailVerification failed:", emailErr);
+      logger.error("useAuth", "sendEmailVerification failed", emailErr)
     }
-    return credential;
-  }, []);
+    return credential
+  }, [])
 
   const sendVerificationEmail = useCallback(async () => {
-    if (!auth.currentUser) throw new Error("No user logged in");
+    if (!auth.currentUser) throw new Error("No user logged in")
     try {
       await sendEmailVerification(auth.currentUser, {
         url: window.location.origin,
         handleCodeInApp: true,
-      });
+      })
     } catch (emailErr) {
-      console.error("[auth] sendVerificationEmail failed:", emailErr);
-      throw emailErr;
+      logger.error("useAuth", "sendVerificationEmail failed", emailErr)
+      throw emailErr
     }
-  }, []);
+  }, [])
 
   const reloadUser = useCallback(async () => {
-    if (!auth.currentUser) return;
-    await auth.currentUser.reload();
-    setUser({ ...auth.currentUser });
-  }, []);
+    if (!auth.currentUser) return
+    await auth.currentUser.reload()
+    setUser({ ...auth.currentUser })
+  }, [])
 
   const signOut = useCallback(async () => {
-    localStorage.removeItem("pv-fcm-token");
-    return firebaseSignOut(auth);
-  }, []);
+    localStorage.removeItem("pv-fcm-token")
+    return firebaseSignOut(auth)
+  }, [])
 
-  const isEmailVerified = user?.emailVerified ?? false;
+  const isEmailVerified = user?.emailVerified ?? false
 
   return {
     isLoading,
@@ -185,5 +186,5 @@ export function useAuth() {
     signOut,
     sendVerificationEmail,
     reloadUser,
-  };
+  }
 }
