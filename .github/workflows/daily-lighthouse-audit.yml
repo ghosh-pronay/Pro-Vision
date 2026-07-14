@@ -1,0 +1,155 @@
+name: Daily Lighthouse Audit
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # 6 AM UTC daily (12 PM BST)
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run Lighthouse audit
+        uses: treosh/lighthouse-ci-action@b65d53cb99873122d93bfb900d4b505143450c89 # v12.1.0
+        id: lhci
+        with:
+          urls: |
+            https://pro-vision.web.app/
+            https://pro-vision.web.app/todo
+            https://pro-vision.web.app/habits
+            https://pro-vision.web.app/goals
+            https://pro-vision.web.app/journal
+            https://pro-vision.web.app/wellbeing
+          configPath: ./lighthouserc-audit.json
+          uploadArtifacts: false
+
+      - name: Generate HTML report
+        id: report
+        run: |
+          cat <<'SCRIPT' > generate-report.sh
+          #!/bin/bash
+          DATE=$(date +%Y-%m-%d)
+
+          # Find LHCI results
+          RESULT_DIR=$(find . -path "*/.lighthouseci" -type d 2>/dev/null | head -1)
+
+          if [ -z "$RESULT_DIR" ]; then
+            echo "<h2>No Lighthouse results found</h2>" > report.html
+            exit 0
+          fi
+
+          HTML="<html><head><style>"
+          HTML+="
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #0a0a0a; color: #e4e4e7; }
+            h1 { color: #22c55e; border-bottom: 2px solid #22c55e; padding-bottom: 10px; }
+            h2 { color: #a78bfa; margin-top: 30px; }
+            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+            th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #27272a; }
+            th { background: #18181b; color: #a1a1aa; font-weight: 600; }
+            .score { font-weight: bold; font-size: 18px; }
+            .score.good { color: #22c55e; }
+            .score.avg { color: #eab308; }
+            .score.poor { color: #ef4444; }
+            .url { color: #60a5fa; word-break: break-all; font-size: 13px; }
+            .summary-card { background: #18181b; border-radius: 12px; padding: 20px; margin: 15px 0; }
+            .grade { font-size: 48px; font-weight: bold; text-align: center; }
+            .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #27272a; color: #71717a; font-size: 12px; text-align: center; }
+          </style></head><body>"
+          HTML+="<h1>Daily Lighthouse Audit Report</h1>"
+          HTML+="<p style='color:#a1a1aa'>Pro-Vision &mdash; $DATE</p>"
+
+          # Aggregate scores across all URLs
+          TOTAL_PERF=0; TOTAL_A11Y=0; TOTAL_BP=0; TOTAL_SEO=0; COUNT=0
+
+          for json_file in "$RESULT_DIR"/*.json; do
+            [ -f "$json_file" ] || continue
+            # Skip non-report JSONs
+            grep -q '"categories"' "$json_file" || continue
+
+            URL=$(python3 -c "import json; d=json.load(open('$json_file')); print(d.get('finalUrl', d.get('requestedUrl', 'unknown')))" 2>/dev/null || echo "unknown")
+            PERF=$(python3 -c "import json; d=json.load(open('$json_file')); print(int(d['categories']['performance']['score']*100))" 2>/dev/null || echo "N/A")
+            A11Y=$(python3 -c "import json; d=json.load(open('$json_file')); print(int(d['categories']['accessibility']['score']*100))" 2>/dev/null || echo "N/A")
+            BP=$(python3 -c "import json; d=json.load(open('$json_file')); print(int(d['categories']['best-practices']['score']*100))" 2>/dev/null || echo "N/A")
+            SEO=$(python3 -c "import json; d=json.load(open('$json_file')); print(int(d['categories']['seo']['score']*100))" 2>/dev/null || echo "N/A")
+
+            score_class() { [ "$1" = "N/A" ] && echo "avg" || ([ "$1" -ge 90 ] && echo "good" || ([ "$1" -ge 50 ] && echo "avg" || echo "Poor")); }
+
+            HTML+="<div class='summary-card'>"
+            HTML+="<h3 class='url'>$URL</h3>"
+            HTML+="<table><tr><th>Category</th><th>Score</th></tr>"
+            HTML+="<tr><td>Performance</td><td class='score $(score_class $PERF)'>$PERF</td></tr>"
+            HTML+="<tr><td>Accessibility</td><td class='score $(score_class $A11Y)'>$A11Y</td></tr>"
+            HTML+="<tr><td>Best Practices</td><td class='score $(score_class $BP)'>$BP</td></tr>"
+            HTML+="<tr><td>SEO</td><td class='score $(score_class $SEO)'>$SEO</td></tr>"
+            HTML+="</table></div>"
+
+            if [ "$PERF" != "N/A" ]; then TOTAL_PERF=$((TOTAL_PERF + PERF)); fi
+            if [ "$A11Y" != "N/A" ]; then TOTAL_A11Y=$((TOTAL_A11Y + A11Y)); fi
+            if [ "$BP" != "N/A" ]; then TOTAL_BP=$((TOTAL_BP + BP)); fi
+            if [ "$SEO" != "N/A" ]; then TOTAL_SEO=$((TOTAL_SEO + SEO)); fi
+            COUNT=$((COUNT + 1))
+          done
+
+          if [ "$COUNT" -gt 0 ]; then
+            AVG_PERF=$((TOTAL_PERF / COUNT))
+            AVG_A11Y=$((TOTAL_A11Y / COUNT))
+            AVG_BP=$((TOTAL_BP / COUNT))
+            AVG_SEO=$((TOTAL_SEO / COUNT))
+
+            HTML+="<div class='summary-card'>"
+            HTML+="<h2>Average Scores ($COUNT pages)</h2>"
+            HTML+="<table><tr><th>Category</th><th>Avg Score</th></tr>"
+            HTML+="<tr><td>Performance</td><td class='score $(score_class $AVG_PERF)'>$AVG_PERF</td></tr>"
+            HTML+="<tr><td>Accessibility</td><td class='score $(score_class $AVG_A11Y)'>$AVG_A11Y</td></tr>"
+            HTML+="<tr><td>Best Practices</td><td class='score $(score_class $AVG_BP)'>$AVG_BP</td></tr>"
+            HTML+="<tr><td>SEO</td><td class='score $(score_class $AVG_SEO)'>$AVG_SEO</td></tr>"
+            HTML+="</table>"
+
+            # Overall grade
+            OVERALL=$(( (AVG_PERF + AVG_A11Y + AVG_BP + AVG_SEO) / 4 ))
+            if [ "$OVERALL" -ge 90 ]; then GRADE="A+"; GC="#22c55e"
+            elif [ "$OVERALL" -ge 80 ]; then GRADE="A"; GC="#22c55e"
+            elif [ "$OVERALL" -ge 70 ]; then GRADE="B"; GC="#eab308"
+            elif [ "$OVERALL" -ge 60 ]; then GRADE="C"; GC="#f97316"
+            else GRADE="D"; GC="#ef4444"; fi
+
+            HTML+="<div class='grade' style='color:$GC;margin-top:20px;'>Grade: $GRADE ($OVERALL/100)</div>"
+            HTML+="</div>"
+          fi
+
+          HTML+="<div class='footer'>Auto-generated by Pro-Vision Lighthouse CI Bot &bull; github.com/ghosh-pronay/Pro-Vision</div>"
+          HTML+="</body></html>"
+
+          echo "$HTML" > report.html
+          echo "OVERALL=$OVERALL" >> "$GITHUB_OUTPUT"
+          echo "GRADE=$GRADE" >> "$GITHUB_OUTPUT"
+          echo "COUNT=$COUNT" >> "$GITHUB_OUTPUT"
+          SCRIPT
+          chmod +x generate-report.sh
+          bash generate-report.sh
+
+      - name: Send email report
+        uses: dawidd6/action-send-mail@813d4d675672a052132aa69459aba01365134bd3 # v3.7.4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Pro-Vision Audit: Grade ${{ steps.report.outputs.GRADE }} (${{ steps.report.outputs.COUNT }} pages)"
+          to: ${{ secrets.AUDIT_EMAIL }}
+          from: ${{ secrets.SMTP_USERNAME }}
+          html_body: file://report.html
+          priority: normal
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: lighthouse-report-${{ github.run_id }}
+          path: report.html
+          retention-days: 30
