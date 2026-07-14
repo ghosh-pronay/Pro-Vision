@@ -465,6 +465,7 @@ export default function BengaliCalendar() {
                   setSelectedMonth(Number(e.target.value))
                   setSelectedDay(null)
                 }}
+                aria-label="Month"
                 className="bg-transparent text-lg font-bold text-[var(--pv-text)] rounded-lg px-3 py-1 border border-[var(--pv-glass-border)] focus:outline-none focus:ring-2 focus:ring-[var(--pv-primary)]/50"
               >
                 {BENGALI_MONTHS.map((m, i) => (
@@ -483,6 +484,7 @@ export default function BengaliCalendar() {
                   setSelectedYear(Number(e.target.value))
                   setSelectedDay(null)
                 }}
+                aria-label="Year"
                 className="bg-transparent text-lg font-bold text-[var(--pv-text)] rounded-lg px-3 py-1 border border-[var(--pv-glass-border)] focus:outline-none focus:ring-2 focus:ring-[var(--pv-primary)]/50"
               >
                 {Array.from(
@@ -874,6 +876,7 @@ export default function BengaliCalendar() {
                     <select
                       value={convBengaliMonth}
                       onChange={(e) => setConvBengaliMonth(e.target.value)}
+                      aria-label="Bengali month"
                       className="flex-1 bg-[var(--pv-glass)] rounded-xl px-3 py-3 text-[var(--pv-text)] border border-[var(--pv-glass-border)] focus:outline-none focus:ring-2 focus:ring-[var(--pv-primary)]/50"
                     >
                       {BENGALI_MONTHS.map((m, i) => (

@@ -67,6 +67,7 @@ export function AddWalletModal({ lang, onAdd, onClose }: AddWalletModalProps) {
           <button
             onClick={onClose}
             className="cursor-pointer p-1 rounded-lg hover:bg-foreground/5"
+            aria-label="Close"
           >
             <X className="h-5 w-5 text-muted-foreground" />
           </button>

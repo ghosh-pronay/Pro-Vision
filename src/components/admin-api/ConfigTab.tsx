@@ -1,22 +1,22 @@
-import { Search, ToggleRight, ToggleLeft } from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { ApiConfigItem } from "./types";
-import { METHOD_COLORS, CATEGORIES } from "./types";
+import { Search, ToggleRight, ToggleLeft } from "lucide-react"
+import { cn } from "@/lib/utils"
+import type { ApiConfigItem } from "./types"
+import { METHOD_COLORS, CATEGORIES } from "./types"
 
 interface Props {
-  configs: ApiConfigItem[] | undefined;
-  filteredConfigs: ApiConfigItem[];
-  searchQuery: string;
-  categoryFilter: string;
-  t_: (key: string) => string;
-  onSearchChange: (q: string) => void;
-  onCategoryChange: (cat: string) => void;
-  onToggle: (endpoint: string, method: string, enabled: boolean) => void;
+  configs: ApiConfigItem[] | undefined
+  filteredConfigs: ApiConfigItem[]
+  searchQuery: string
+  categoryFilter: string
+  t_: (key: string) => string
+  onSearchChange: (q: string) => void
+  onCategoryChange: (cat: string) => void
+  onToggle: (endpoint: string, method: string, enabled: boolean) => void
   onUpdateRateLimit: (
     endpoint: string,
     method: string,
     rateLimit: number,
-  ) => void;
+  ) => void
 }
 
 export function ConfigTab({
@@ -33,7 +33,7 @@ export function ConfigTab({
   if (!configs) {
     return (
       <div className="text-center py-8 text-white/50">{t_("api.loading")}</div>
-    );
+    )
   }
 
   return (
@@ -46,6 +46,7 @@ export function ConfigTab({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t_("api.searchPlaceholder")}
+            aria-label="Search API configs"
             className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-white/30"
           />
         </div>
@@ -136,5 +137,5 @@ export function ConfigTab({
         </div>
       </div>
     </div>
-  );
+  )
 }

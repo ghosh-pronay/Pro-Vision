@@ -1,17 +1,17 @@
-import { motion } from "framer-motion";
-import { X } from "lucide-react";
-import { MarketItem } from "./types";
-import { useState } from "react";
+import { motion } from "framer-motion"
+import { X } from "lucide-react"
+import { MarketItem } from "./types"
+import { useState } from "react"
 
 interface PriceAlertModalProps {
-  item: MarketItem;
-  lang: string;
-  onClose: () => void;
+  item: MarketItem
+  lang: string
+  onClose: () => void
   onAddAlert: (
     itemId: string,
     targetPrice: number,
     direction: "above" | "below",
-  ) => void;
+  ) => void
 }
 
 export function PriceAlertModal({
@@ -20,8 +20,8 @@ export function PriceAlertModal({
   onClose,
   onAddAlert,
 }: PriceAlertModalProps) {
-  const [targetPrice, setTargetPrice] = useState(item.currentPrice.toString());
-  const [direction, setDirection] = useState<"above" | "below">("above");
+  const [targetPrice, setTargetPrice] = useState(item.currentPrice.toString())
+  const [direction, setDirection] = useState<"above" | "below">("above")
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -37,6 +37,7 @@ export function PriceAlertModal({
           <button
             onClick={onClose}
             className="cursor-pointer p-2 rounded-lg hover:bg-foreground/5"
+            aria-label="Close"
           >
             <X className="h-5 w-5" />
           </button>
@@ -95,8 +96,8 @@ export function PriceAlertModal({
 
           <button
             onClick={() => {
-              const price = parseFloat(targetPrice || "0");
-              onAddAlert(item.id, price, direction);
+              const price = parseFloat(targetPrice || "0")
+              onAddAlert(item.id, price, direction)
             }}
             className="cursor-pointer w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
@@ -105,5 +106,5 @@ export function PriceAlertModal({
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

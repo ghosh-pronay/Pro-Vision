@@ -406,6 +406,7 @@ export default function QRProfile() {
             <button
               onClick={() => setShowHistory(false)}
               className="p-1 hover:bg-white/10 rounded"
+              aria-label="Close"
             >
               <X className="h-4 w-4" />
             </button>
@@ -446,6 +447,7 @@ export default function QRProfile() {
                       onClick={() => handleDeleteHistoryItem(item.id)}
                       className="p-1.5 hover:bg-white/10 rounded text-red-400"
                       title={lang === "bn" ? "মুছুন" : "Delete"}
+                      aria-label="Delete history item"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -467,6 +469,7 @@ export default function QRProfile() {
             <button
               onClick={() => setShowEdit(false)}
               className="p-1 hover:bg-white/10 rounded"
+              aria-label="Close"
             >
               <X className="h-4 w-4" />
             </button>

@@ -1,16 +1,16 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import type { Role } from "./types";
+import { motion, AnimatePresence } from "framer-motion"
+import { X } from "lucide-react"
+import type { Role } from "./types"
 
 interface AddMemberModalProps {
-  open: boolean;
-  onClose: () => void;
-  name: string;
-  role: Role;
-  lang: "en" | "bn";
-  onNameChange: (name: string) => void;
-  onRoleChange: (role: Role) => void;
-  onAdd: () => void;
+  open: boolean
+  onClose: () => void
+  name: string
+  role: Role
+  lang: "en" | "bn"
+  onNameChange: (name: string) => void
+  onRoleChange: (role: Role) => void
+  onAdd: () => void
 }
 
 export function AddMemberModal({
@@ -47,6 +47,7 @@ export function AddMemberModal({
               <button
                 onClick={onClose}
                 className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                aria-label="Close"
               >
                 <X className="size-5" />
               </button>
@@ -99,5 +100,5 @@ export function AddMemberModal({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

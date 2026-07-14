@@ -1,11 +1,11 @@
-import { motion } from "framer-motion";
-import { X } from "lucide-react";
-import { MARKET_ITEMS } from "./types";
-import { toastSuccess } from "@/lib/toast-helpers";
+import { motion } from "framer-motion"
+import { X } from "lucide-react"
+import { MARKET_ITEMS } from "./types"
+import { toastSuccess } from "@/lib/toast-helpers"
 
 interface AddPriceModalProps {
-  lang: string;
-  onClose: () => void;
+  lang: string
+  onClose: () => void
 }
 
 export function AddPriceModal({ lang, onClose }: AddPriceModalProps) {
@@ -23,6 +23,7 @@ export function AddPriceModal({ lang, onClose }: AddPriceModalProps) {
           <button
             onClick={onClose}
             className="cursor-pointer p-2 rounded-lg hover:bg-foreground/5"
+            aria-label="Close"
           >
             <X className="h-5 w-5" />
           </button>
@@ -60,8 +61,8 @@ export function AddPriceModal({ lang, onClose }: AddPriceModalProps) {
             onClick={() => {
               toastSuccess(
                 lang === "bn" ? "মূল্য আপডেট হয়েছে" : "Price updated",
-              );
-              onClose();
+              )
+              onClose()
             }}
             className="cursor-pointer w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
@@ -70,5 +71,5 @@ export function AddPriceModal({ lang, onClose }: AddPriceModalProps) {
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

@@ -1,23 +1,23 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState } from "react";
-import { X } from "lucide-react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState } from "react"
+import { X } from "lucide-react"
 
 interface AddFriendModalProps {
-  t: (key: string) => string;
-  onAdd: (name: string, phone: string) => void;
-  onClose: () => void;
+  t: (key: string) => string
+  onAdd: (name: string, phone: string) => void
+  onClose: () => void
 }
 
 export function AddFriendModal({ t, onAdd, onClose }: AddFriendModalProps) {
-  const { lang } = useLang();
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const { lang } = useLang()
+  const [name, setName] = useState("")
+  const [phone, setPhone] = useState("")
 
   const handleAdd = () => {
-    if (!name) return;
-    onAdd(name, phone);
-  };
+    if (!name) return
+    onAdd(name, phone)
+  }
 
   return (
     <motion.div
@@ -39,6 +39,7 @@ export function AddFriendModal({ t, onAdd, onClose }: AddFriendModalProps) {
           <button
             onClick={onClose}
             className="cursor-pointer p-2 rounded-lg hover:bg-foreground/5"
+            aria-label="Close"
           >
             <X className="h-5 w-5" />
           </button>
@@ -87,5 +88,5 @@ export function AddFriendModal({ t, onAdd, onClose }: AddFriendModalProps) {
         </div>
       </motion.div>
     </motion.div>
-  );
+  )
 }

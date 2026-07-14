@@ -1,13 +1,13 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import type { FamilyGroup } from "./types";
+import { motion, AnimatePresence } from "framer-motion"
+import { X } from "lucide-react"
+import type { FamilyGroup } from "./types"
 
 interface SettingsModalProps {
-  open: boolean;
-  onClose: () => void;
-  familyGroup: FamilyGroup;
-  lang: "en" | "bn";
-  onUpdateGroup: (name: string) => void;
+  open: boolean
+  onClose: () => void
+  familyGroup: FamilyGroup
+  lang: "en" | "bn"
+  onUpdateGroup: (name: string) => void
 }
 
 export function SettingsModal({
@@ -41,6 +41,7 @@ export function SettingsModal({
               <button
                 onClick={onClose}
                 className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                aria-label="Close"
               >
                 <X className="size-5" />
               </button>
@@ -113,5 +114,5 @@ export function SettingsModal({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

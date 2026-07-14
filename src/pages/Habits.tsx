@@ -670,6 +670,7 @@ export default function Habits() {
                 className="w-12 text-center text-xl bg-transparent outline-none"
                 placeholder="💪"
                 maxLength={2}
+                aria-label={lang === "bn" ? "অভ্যাসের আইকন" : "Habit icon"}
               />
               <input
                 value={newName}
@@ -680,6 +681,7 @@ export default function Habits() {
                 }
                 className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
                 autoFocus
+                aria-label={lang === "bn" ? "অভ্যাসের নাম" : "Habit name"}
               />
             </div>
             <input
@@ -691,6 +693,9 @@ export default function Habits() {
                   : "Description (optional)..."
               }
               className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground outline-none"
+              aria-label={
+                lang === "bn" ? "অভ্যাসের বিবরণ" : "Habit description"
+              }
             />
             <div className="flex flex-wrap gap-1.5">
               {CATEGORIES.map((cat) => (
@@ -754,6 +759,9 @@ export default function Habits() {
               <button
                 onClick={() => setEditingHabit(null)}
                 className="text-muted-foreground hover:text-foreground"
+                aria-label={
+                  lang === "bn" ? "সম্পাদনা বন্ধ করুন" : "Close edit habit"
+                }
               >
                 <X className="size-4" />
               </button>
@@ -764,12 +772,18 @@ export default function Habits() {
                 onChange={(e) => setEditIcon(e.target.value)}
                 className="w-12 text-center text-xl bg-transparent outline-none"
                 maxLength={2}
+                aria-label={
+                  lang === "bn" ? "অভ্যাসের আইকন সম্পাদনা" : "Edit habit icon"
+                }
               />
               <input
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && saveEdit()}
                 className="flex-1 bg-transparent text-sm text-foreground outline-none"
+                aria-label={
+                  lang === "bn" ? "অভ্যাসের নাম সম্পাদনা" : "Edit habit name"
+                }
               />
             </div>
             <input
@@ -777,6 +791,11 @@ export default function Habits() {
               onChange={(e) => setEditDescription(e.target.value)}
               placeholder={lang === "bn" ? "বিবরণ..." : "Description..."}
               className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground outline-none"
+              aria-label={
+                lang === "bn"
+                  ? "অভ্যাসের বিবরণ সম্পাদনা"
+                  : "Edit habit description"
+              }
             />
             <div className="flex flex-wrap gap-1.5">
               {CATEGORIES.map((cat) => (
@@ -819,11 +838,15 @@ export default function Habits() {
                 value={editReminder}
                 onChange={(e) => setEditReminder(e.target.value)}
                 className="bg-transparent text-xs text-foreground outline-none"
+                aria-label={lang === "bn" ? "রিমাইন্ডার সময়" : "Reminder time"}
               />
               {editReminder && (
                 <button
                   onClick={() => setEditReminder("")}
                   className="text-muted-foreground hover:text-foreground"
+                  aria-label={
+                    lang === "bn" ? "রিমাইন্ডার মুছুন" : "Clear reminder"
+                  }
                 >
                   <X className="size-3" />
                 </button>
@@ -920,6 +943,7 @@ export default function Habits() {
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortKey)}
             className="appearance-none rounded-lg px-3 py-1.5 text-xs font-medium border border-border/40 text-muted-foreground hover-chip bg-transparent pr-6 outline-none cursor-pointer"
+            aria-label={lang === "bn" ? "সাজানোর পদ্ধতি" : "Sort habits by"}
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -1060,6 +1084,11 @@ export default function Habits() {
                   <button
                     onClick={() => setDetailHabit(null)}
                     className="text-muted-foreground hover:text-foreground"
+                    aria-label={
+                      lang === "bn"
+                        ? "বিস্তারিত বন্ধ করুন"
+                        : "Close habit details"
+                    }
                   >
                     <X className="size-4" />
                   </button>
@@ -1365,6 +1394,9 @@ export default function Habits() {
                             onChange={(e) => setCheckInNote(e.target.value)}
                             placeholder={lang === "bn" ? "নোট..." : "Note..."}
                             className="w-20 text-[10px] bg-transparent border border-border/30 rounded px-1.5 py-0.5 outline-none"
+                            aria-label={
+                              lang === "bn" ? "চেক-ইন নোট" : "Check-in note"
+                            }
                             autoFocus
                             onKeyDown={(e) => {
                               if (e.key === "Enter")
@@ -1411,6 +1443,9 @@ export default function Habits() {
                       <button
                         onClick={() => startEdit(habit)}
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground min-w-[32px] min-h-[32px] flex items-center justify-center"
+                        aria-label={
+                          lang === "bn" ? "অভ্যাস সম্পাদনা" : "Edit habit"
+                        }
                       >
                         <Pencil className="size-3.5" />
                       </button>

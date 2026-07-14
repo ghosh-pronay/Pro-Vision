@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
-import { QrCode, X } from "lucide-react";
+import { motion } from "framer-motion"
+import { QrCode, X } from "lucide-react"
 
 interface QRCodeModalProps {
-  billId: string;
-  onCopyLink: (billId: string) => void;
-  onClose: () => void;
+  billId: string
+  onCopyLink: (billId: string) => void
+  onClose: () => void
 }
 
 export function QRCodeModal({ billId, onCopyLink, onClose }: QRCodeModalProps) {
@@ -28,6 +28,7 @@ export function QRCodeModal({ billId, onCopyLink, onClose }: QRCodeModalProps) {
           <button
             onClick={onClose}
             className="cursor-pointer p-2 rounded-lg hover:bg-foreground/5"
+            aria-label="Close"
           >
             <X className="h-5 w-5" />
           </button>
@@ -49,6 +50,7 @@ export function QRCodeModal({ billId, onCopyLink, onClose }: QRCodeModalProps) {
                 type="text"
                 readOnly
                 value={`${window.location.origin}/bill/${billId}`}
+                aria-label="Email to share"
                 className="flex-1 rounded-xl glass px-3 py-2 text-xs"
               />
               <button
@@ -62,5 +64,5 @@ export function QRCodeModal({ billId, onCopyLink, onClose }: QRCodeModalProps) {
         </div>
       </motion.div>
     </motion.div>
-  );
+  )
 }

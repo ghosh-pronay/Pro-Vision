@@ -1,16 +1,16 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Copy, Check, Zap, MessageCircle, Smartphone } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion"
+import { X, Copy, Check, Zap, MessageCircle, Smartphone } from "lucide-react"
 
 interface InviteModalProps {
-  open: boolean;
-  onClose: () => void;
-  inviteCode: string;
-  copiedCode: boolean;
-  lang: "en" | "bn";
-  onCopy: (text: string) => void;
-  onGenerate: () => void;
-  onShareWhatsApp: () => void;
-  onShareSMS: () => void;
+  open: boolean
+  onClose: () => void
+  inviteCode: string
+  copiedCode: boolean
+  lang: "en" | "bn"
+  onCopy: (text: string) => void
+  onGenerate: () => void
+  onShareWhatsApp: () => void
+  onShareSMS: () => void
 }
 
 export function InviteModal({
@@ -48,6 +48,7 @@ export function InviteModal({
               <button
                 onClick={onClose}
                 className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                aria-label="Close"
               >
                 <X className="size-5" />
               </button>
@@ -116,5 +117,5 @@ export function InviteModal({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

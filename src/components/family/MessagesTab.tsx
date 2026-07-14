@@ -1,16 +1,16 @@
-import { motion } from "framer-motion";
-import { MessageSquare, Send, Trash2 } from "lucide-react";
-import { fadeUp } from "./FamilyConstants";
-import type { FamilyMember, FamilyMessage } from "./FamilyTypes";
+import { motion } from "framer-motion"
+import { MessageSquare, Send, Trash2 } from "lucide-react"
+import { fadeUp } from "./FamilyConstants"
+import type { FamilyMember, FamilyMessage } from "./FamilyTypes"
 
 interface MessagesTabProps {
-  messages: FamilyMessage[];
-  members: FamilyMember[];
-  lang: string;
-  newMessage: string;
-  setNewMessage: (msg: string) => void;
-  onSend: () => void;
-  onDelete: (id: string) => void;
+  messages: FamilyMessage[]
+  members: FamilyMember[]
+  lang: string
+  newMessage: string
+  setNewMessage: (msg: string) => void
+  onSend: () => void
+  onDelete: (id: string) => void
 }
 
 export default function MessagesTab({
@@ -48,7 +48,7 @@ export default function MessagesTab({
             [...messages]
               .sort((a, b) => b.timestamp - a.timestamp)
               .map((msg) => {
-                const author = members.find((m) => m.id === msg.author);
+                const author = members.find((m) => m.id === msg.author)
                 return (
                   <motion.div
                     key={msg.id}
@@ -77,12 +77,13 @@ export default function MessagesTab({
                     </div>
                     <button
                       onClick={() => onDelete(msg.id)}
+                      aria-label="Delete message"
                       className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all mt-2"
                     >
                       <Trash2 className="size-3" />
                     </button>
                   </motion.div>
-                );
+                )
               })
           )}
         </div>
@@ -97,6 +98,7 @@ export default function MessagesTab({
             placeholder={
               lang === "bn" ? "একটি বার্তা লিখুন..." : "Type a message..."
             }
+            aria-label="Type a message"
             className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-pink-500/50 transition-all"
           />
           <button
@@ -109,5 +111,5 @@ export default function MessagesTab({
         </div>
       </div>
     </div>
-  );
+  )
 }

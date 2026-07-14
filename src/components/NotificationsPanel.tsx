@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
 import {
   Bell,
   BellOff,
@@ -13,25 +13,25 @@ import {
   AlertTriangle,
   Info,
   CheckCircle,
-} from "lucide-react";
-import { toastSuccess } from "@/lib/toast-helpers";
+} from "lucide-react"
+import { toastSuccess } from "@/lib/toast-helpers"
 
 interface Notification {
-  id: string;
-  type: "reminder" | "alert" | "achievement" | "info";
-  title: string;
-  message: string;
-  timestamp: number;
-  read: boolean;
+  id: string
+  type: "reminder" | "alert" | "achievement" | "info"
+  title: string
+  message: string
+  timestamp: number
+  read: boolean
 }
 
 interface NotificationPrefs {
-  habitReminders: boolean;
-  taskReminders: boolean;
-  budgetAlerts: boolean;
-  dailyDigest: boolean;
-  quietHoursStart: string;
-  quietHoursEnd: string;
+  habitReminders: boolean
+  taskReminders: boolean
+  budgetAlerts: boolean
+  dailyDigest: boolean
+  quietHoursStart: string
+  quietHoursEnd: string
 }
 
 const DEMO_NOTIFICATIONS: Notification[] = [
@@ -67,18 +67,18 @@ const DEMO_NOTIFICATIONS: Notification[] = [
     timestamp: Date.now() - 1000 * 60 * 60 * 24,
     read: true,
   },
-];
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function NotificationsPanel() {
-  const { lang } = useLang();
+  const { lang } = useLang()
   const [notifications, setNotifications] =
-    useState<Notification[]>(DEMO_NOTIFICATIONS);
-  const [showSettings, setShowSettings] = useState(false);
+    useState<Notification[]>(DEMO_NOTIFICATIONS)
+  const [showSettings, setShowSettings] = useState(false)
   const [prefs, setPrefs] = useState<NotificationPrefs>({
     habitReminders: true,
     taskReminders: true,
@@ -86,70 +86,70 @@ export default function NotificationsPanel() {
     dailyDigest: false,
     quietHoursStart: "22:00",
     quietHoursEnd: "07:00",
-  });
-  const [now, setNow] = useState(() => Date.now());
+  })
+  const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 60000);
-    return () => clearInterval(interval);
-  }, []);
+    const interval = setInterval(() => setNow(Date.now()), 60000)
+    return () => clearInterval(interval)
+  }, [])
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length
 
   const markAsRead = (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
-    toastSuccess(lang === "bn" ? "পঠিত হিসাবে চিহ্নিত" : "Marked as read");
-  };
+    )
+    toastSuccess(lang === "bn" ? "পঠিত হিসাবে চিহ্নিত" : "Marked as read")
+  }
 
   const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+  }
 
   const deleteNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
+    setNotifications((prev) => prev.filter((n) => n.id !== id))
+  }
 
   const clearAll = () => {
-    setNotifications([]);
-  };
+    setNotifications([])
+  }
 
   const togglePref = (
     key: keyof Omit<NotificationPrefs, "quietHoursStart" | "quietHoursEnd">,
   ) => {
-    setPrefs((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+    setPrefs((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
 
   const getTypeIcon = (type: Notification["type"]) => {
     switch (type) {
       case "reminder":
-        return <Clock className="h-4 w-4 text-blue-500" />;
+        return <Clock className="h-4 w-4 text-blue-500" />
       case "alert":
-        return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+        return <AlertTriangle className="h-4 w-4 text-orange-500" />
       case "achievement":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-green-500" />
       case "info":
-        return <Info className="h-4 w-4 text-purple-500" />;
+        return <Info className="h-4 w-4 text-purple-500" />
     }
-  };
+  }
 
   const formatTime = (timestamp: number) => {
-    const diff = now - timestamp;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+    const diff = now - timestamp
+    const minutes = Math.floor(diff / 60000)
+    const hours = Math.floor(minutes / 60)
+    const days = Math.floor(hours / 24)
 
     if (lang === "bn") {
-      if (minutes < 60) return `${minutes} মিনিট আগে`;
-      if (hours < 24) return `${hours} ঘণ্টা আগে`;
-      return `${days} দিন আগে`;
+      if (minutes < 60) return `${minutes} মিনিট আগে`
+      if (hours < 24) return `${hours} ঘণ্টা আগে`
+      return `${days} দিন আগে`
     }
 
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
-  };
+    if (minutes < 60) return `${minutes}m ago`
+    if (hours < 24) return `${hours}h ago`
+    return `${days}d ago`
+  }
 
   return (
     <motion.div variants={fadeUp} className="space-y-4">
@@ -211,6 +211,7 @@ export default function NotificationsPanel() {
               <button
                 onClick={() => setShowSettings(false)}
                 className="cursor-pointer text-muted-foreground hover:text-foreground hover-tab"
+                aria-label="Close"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -341,6 +342,7 @@ export default function NotificationsPanel() {
                   <button
                     onClick={() => deleteNotification(notification.id)}
                     className="cursor-pointer rounded p-1 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                    aria-label="Delete notification"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -351,5 +353,5 @@ export default function NotificationsPanel() {
         </div>
       )}
     </motion.div>
-  );
+  )
 }

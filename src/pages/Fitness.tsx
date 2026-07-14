@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   Dumbbell,
   Plus,
@@ -10,21 +10,21 @@ import {
   Calendar,
   X,
   Trash2,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 
 interface Workout {
-  _id: string;
-  type: string;
-  duration: number;
-  calories?: number;
-  distance?: number;
-  notes?: string;
-  date: number;
+  _id: string
+  type: string
+  duration: number
+  calories?: number
+  distance?: number
+  notes?: string
+  date: number
 }
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 const WORKOUT_TYPES = [
   { value: "running", label: "Running", icon: "🏃" },
@@ -35,16 +35,16 @@ const WORKOUT_TYPES = [
   { value: "yoga", label: "Yoga", icon: "🧘" },
   { value: "hiit", label: "HIIT", icon: "⚡" },
   { value: "sports", label: "Sports", icon: "⚽" },
-];
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function Fitness() {
-  const { lang } = useLang();
-  const [showAddModal, setShowAddModal] = useState(false);
+  const { lang } = useLang()
+  const [showAddModal, setShowAddModal] = useState(false)
   const [workouts, setWorkouts] = useState<Workout[]>([
     {
       _id: "1",
@@ -69,7 +69,7 @@ export default function Fitness() {
       calories: 200,
       date: NOW - 3 * 24 * 60 * 60 * 1000,
     },
-  ]);
+  ])
 
   const [formData, setFormData] = useState({
     type: "running",
@@ -77,28 +77,28 @@ export default function Fitness() {
     calories: "",
     distance: "",
     notes: "",
-  });
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  })
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   const stats = useMemo(() => {
-    if (workouts.length === 0) return null;
-    const totalMinutes = workouts.reduce((sum, w) => sum + w.duration, 0);
+    if (workouts.length === 0) return null
+    const totalMinutes = workouts.reduce((sum, w) => sum + w.duration, 0)
     const totalCalories = workouts.reduce(
       (sum, w) => sum + (w.calories || 0),
       0,
-    );
+    )
     const totalDistance = workouts.reduce(
       (sum, w) => sum + (w.distance || 0),
       0,
-    );
+    )
     return {
       totalWorkouts: workouts.length,
       totalMinutes,
       totalCalories,
       totalDistance,
       avgDuration: Math.round(totalMinutes / workouts.length),
-    };
-  }, [workouts]);
+    }
+  }, [workouts])
 
   const handleAdd = () => {
     const newWorkout: Workout = {
@@ -109,34 +109,34 @@ export default function Fitness() {
       distance: formData.distance ? parseFloat(formData.distance) : undefined,
       notes: formData.notes || undefined,
       date: Date.now(),
-    };
-    setWorkouts([newWorkout, ...workouts]);
-    setShowAddModal(false);
+    }
+    setWorkouts([newWorkout, ...workouts])
+    setShowAddModal(false)
     setFormData({
       type: "running",
       duration: "30",
       calories: "",
       distance: "",
       notes: "",
-    });
-  };
+    })
+  }
 
   const handleDelete = (id: string) => {
-    setWorkouts(workouts.filter((w) => w._id !== id));
-  };
+    setWorkouts(workouts.filter((w) => w._id !== id))
+  }
 
   const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp)
     return date.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   const getWorkoutInfo = (type: string) => {
-    return WORKOUT_TYPES.find((w) => w.value === type) || WORKOUT_TYPES[0];
-  };
+    return WORKOUT_TYPES.find((w) => w.value === type) || WORKOUT_TYPES[0]
+  }
 
   return (
     <motion.div
@@ -220,7 +220,7 @@ export default function Fitness() {
           />
         ) : (
           workouts.map((workout) => {
-            const workoutInfo = getWorkoutInfo(workout.type);
+            const workoutInfo = getWorkoutInfo(workout.type)
             return (
               <motion.div
                 key={workout._id}
@@ -265,7 +265,7 @@ export default function Fitness() {
                   </button>
                 </div>
               </motion.div>
-            );
+            )
           })
         )}
       </motion.div>
@@ -284,6 +284,7 @@ export default function Fitness() {
               <button
                 onClick={() => setShowAddModal(false)}
                 className="cursor-pointer p-1 rounded-lg hover:bg-foreground/5"
+                aria-label="Close"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -381,8 +382,8 @@ export default function Fitness() {
       <ConfirmDialog
         open={deleteConfirmId !== null}
         onConfirm={() => {
-          if (deleteConfirmId) handleDelete(deleteConfirmId);
-          setDeleteConfirmId(null);
+          if (deleteConfirmId) handleDelete(deleteConfirmId)
+          setDeleteConfirmId(null)
         }}
         onCancel={() => setDeleteConfirmId(null)}
         title={lang === "bn" ? "ওয়ার্কআউট মুছুন?" : "Delete workout?"}
@@ -393,5 +394,5 @@ export default function Fitness() {
         }
       />
     </motion.div>
-  );
+  )
 }

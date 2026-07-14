@@ -646,6 +646,7 @@ export default function Payment() {
                   setSelectedMethod(null)
                 }}
                 className="size-8 rounded-lg glass flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Back to plans"
               >
                 <X className="size-4" />
               </button>
@@ -755,12 +756,14 @@ export default function Payment() {
                           selectedPlanData ? getAmount(selectedPlanData) : ""
                         }
                         readOnly
+                        aria-label="Payment amount"
                         className="w-full pl-8 pr-3 py-2.5 rounded-xl glass text-foreground text-sm font-medium border border-border/30 focus:outline-none"
                       />
                     </div>
                     <select
                       value={paymentCurrency}
                       onChange={(e) => setPaymentCurrency(e.target.value)}
+                      aria-label="Payment currency"
                       className="px-3 py-2.5 rounded-xl glass text-foreground text-sm border border-border/30 focus:outline-none bg-transparent"
                     >
                       {CURRENCIES.map((c) => (
@@ -802,6 +805,7 @@ export default function Payment() {
                         value={cardNumber}
                         onChange={(e) => setCardNumber(e.target.value)}
                         placeholder="4242 4242 4242 4242"
+                        aria-label="Card number"
                         className="w-full px-3 py-2.5 rounded-xl glass text-foreground text-sm border border-border/30 focus:outline-none focus:border-[var(--pv-blue)]/50 placeholder:text-muted-foreground/50"
                       />
                     </div>
@@ -815,6 +819,7 @@ export default function Payment() {
                           value={cardExpiry}
                           onChange={(e) => setCardExpiry(e.target.value)}
                           placeholder="MM/YY"
+                          aria-label="Expiry date"
                           className="w-full px-3 py-2.5 rounded-xl glass text-foreground text-sm border border-border/30 focus:outline-none focus:border-[var(--pv-blue)]/50 placeholder:text-muted-foreground/50"
                         />
                       </div>
@@ -827,6 +832,7 @@ export default function Payment() {
                           value={cardCvv}
                           onChange={(e) => setCardCvv(e.target.value)}
                           placeholder="123"
+                          aria-label="CVV"
                           className="w-full px-3 py-2.5 rounded-xl glass text-foreground text-sm border border-border/30 focus:outline-none focus:border-[var(--pv-blue)]/50 placeholder:text-muted-foreground/50"
                         />
                       </div>
@@ -846,6 +852,7 @@ export default function Payment() {
                         type="text"
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
+                        aria-label="Account number"
                         className="w-full px-3 py-2.5 rounded-xl glass text-foreground text-sm border border-border/30 focus:outline-none focus:border-[var(--pv-blue)]/50 placeholder:text-muted-foreground/50"
                       />
                     </div>
@@ -857,6 +864,7 @@ export default function Payment() {
                         type="text"
                         value={routingNumber}
                         onChange={(e) => setRoutingNumber(e.target.value)}
+                        aria-label="Bank name"
                         className="w-full px-3 py-2.5 rounded-xl glass text-foreground text-sm border border-border/30 focus:outline-none focus:border-[var(--pv-blue)]/50 placeholder:text-muted-foreground/50"
                       />
                     </div>

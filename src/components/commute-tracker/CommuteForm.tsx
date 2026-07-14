@@ -1,26 +1,26 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { X, Check, Bookmark } from "lucide-react";
-import { fadeIn, scaleIn, TRANSPORT_MODES } from "./types";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { X, Check, Bookmark } from "lucide-react"
+import { fadeIn, scaleIn, TRANSPORT_MODES } from "./types"
 
 interface CommuteFormProps {
-  selectedMode: string;
+  selectedMode: string
   formData: {
-    from: string;
-    to: string;
-    departure: string;
-    arrival: string;
-    cost: number;
-    distance: number;
-    notes: string;
-  };
-  routeName: string;
-  onSelectMode: (mode: string) => void;
-  onUpdateForm: (data: Partial<CommuteFormProps["formData"]>) => void;
-  onUpdateRouteName: (name: string) => void;
-  onSaveCommute: () => void;
-  onSaveRoute: () => void;
-  onClose: () => void;
+    from: string
+    to: string
+    departure: string
+    arrival: string
+    cost: number
+    distance: number
+    notes: string
+  }
+  routeName: string
+  onSelectMode: (mode: string) => void
+  onUpdateForm: (data: Partial<CommuteFormProps["formData"]>) => void
+  onUpdateRouteName: (name: string) => void
+  onSaveCommute: () => void
+  onSaveRoute: () => void
+  onClose: () => void
 }
 
 export function CommuteForm({
@@ -34,7 +34,7 @@ export function CommuteForm({
   onSaveRoute,
   onClose,
 }: CommuteFormProps) {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   return (
     <motion.div
@@ -59,6 +59,7 @@ export function CommuteForm({
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
+              aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
@@ -201,6 +202,7 @@ export function CommuteForm({
                   ? "এই রুট সংরক্ষণ করুন..."
                   : "Save this route as..."
               }
+              aria-label="Route name"
               className="flex-1 px-3 py-2 rounded-xl bg-muted/50 border border-border/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
             />
             <motion.button
@@ -229,5 +231,5 @@ export function CommuteForm({
         </div>
       </motion.div>
     </motion.div>
-  );
+  )
 }

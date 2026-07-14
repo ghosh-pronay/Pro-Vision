@@ -291,6 +291,7 @@ export function CreateTab({
                 setParticipants([])
               }}
               className="cursor-pointer p-2 rounded-lg hover:bg-foreground/5"
+              aria-label="Close"
             >
               <X className="h-5 w-5" />
             </button>

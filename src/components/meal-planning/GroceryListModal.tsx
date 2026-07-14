@@ -1,14 +1,14 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, X, Check } from "lucide-react";
-import { type GroceryItem, fadeIn, scaleIn } from "./types";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { motion, AnimatePresence } from "framer-motion"
+import { ShoppingCart, X, Check } from "lucide-react"
+import { type GroceryItem, fadeIn, scaleIn } from "./types"
+import { EmptyState } from "@/components/ui/EmptyState"
 
 interface GroceryListModalProps {
-  lang: string;
-  show: boolean;
-  onClose: () => void;
-  groceryList: GroceryItem[];
-  onToggleItem: (index: number) => void;
+  lang: string
+  show: boolean
+  onClose: () => void
+  groceryList: GroceryItem[]
+  onToggleItem: (index: number) => void
 }
 
 export function GroceryListModal({
@@ -43,6 +43,7 @@ export function GroceryListModal({
               <button
                 onClick={onClose}
                 className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
+                aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -106,5 +107,5 @@ export function GroceryListModal({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, RotateCcw, X, Clock } from "lucide-react";
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Play, Pause, RotateCcw, X, Clock } from "lucide-react"
 
 interface MeditationSession {
-  id: string;
-  title: string;
-  description: string;
-  duration: number; // in minutes
-  category: "sleep" | "stress" | "focus" | "morning" | "anxiety";
-  icon: string;
-  color: string;
+  id: string
+  title: string
+  description: string
+  duration: number // in minutes
+  category: "sleep" | "stress" | "focus" | "morning" | "anxiety"
+  icon: string
+  color: string
 }
 
 const MEDITATION_SESSIONS: MeditationSession[] = [
@@ -103,77 +103,78 @@ const MEDITATION_SESSIONS: MeditationSession[] = [
     icon: "🌳",
     color: "#14b8a6",
   },
-];
+]
 
 interface GuidedMeditationProps {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
-  const [selectedSession, setSelectedSession] = useState<MeditationSession | null>(null);
-  const [isActive, setIsActive] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(0);
-  const [phase, setPhase] = useState<"intro" | "meditation" | "outro">("intro");
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [selectedSession, setSelectedSession] =
+    useState<MeditationSession | null>(null)
+  const [isActive, setIsActive] = useState(false)
+  const [timeRemaining, setTimeRemaining] = useState(0)
+  const [phase, setPhase] = useState<"intro" | "meditation" | "outro">("intro")
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+        clearInterval(intervalRef.current)
       }
-    };
-  }, []);
+    }
+  }, [])
 
   useEffect(() => {
-    if (!isActive || !selectedSession) return;
+    if (!isActive || !selectedSession) return
 
     intervalRef.current = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          setIsActive(false);
-          setPhase("outro");
-          return 0;
+          setIsActive(false)
+          setPhase("outro")
+          return 0
         }
-        return prev - 1;
-      });
-    }, 1000);
+        return prev - 1
+      })
+    }, 1000)
 
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+        clearInterval(intervalRef.current)
       }
-    };
-  }, [isActive, selectedSession]);
+    }
+  }, [isActive, selectedSession])
 
   const startSession = (session: MeditationSession) => {
-    setSelectedSession(session);
-    setTimeRemaining(session.duration * 60);
-    setPhase("intro");
-    setIsActive(false);
-  };
+    setSelectedSession(session)
+    setTimeRemaining(session.duration * 60)
+    setPhase("intro")
+    setIsActive(false)
+  }
 
   const togglePlay = () => {
     if (phase === "intro") {
-      setPhase("meditation");
+      setPhase("meditation")
     }
-    setIsActive(!isActive);
-  };
+    setIsActive(!isActive)
+  }
 
   const resetSession = () => {
-    setIsActive(false);
-    setPhase("intro");
+    setIsActive(false)
+    setPhase("intro")
     if (selectedSession) {
-      setTimeRemaining(selectedSession.duration * 60);
+      setTimeRemaining(selectedSession.duration * 60)
     }
-  };
+  }
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, "0")}`
+  }
 
-  const categories = ["sleep", "stress", "focus", "morning", "anxiety"] as const;
+  const categories = ["sleep", "stress", "focus", "morning", "anxiety"] as const
 
   return (
     <motion.div
@@ -190,7 +191,11 @@ export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold">Guided Meditation</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-accent">
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-accent"
+            aria-label="Close"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -207,7 +212,7 @@ export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
               {categories.map((category) => {
                 const sessions = MEDITATION_SESSIONS.filter(
                   (s) => s.category === category,
-                );
+                )
                 return (
                   <div key={category}>
                     <h3 className="text-sm font-medium text-muted-foreground mb-2 capitalize">
@@ -227,7 +232,9 @@ export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
                             {session.icon}
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium text-sm">{session.title}</p>
+                            <p className="font-medium text-sm">
+                              {session.title}
+                            </p>
                             <p className="text-xs text-muted-foreground">
                               {session.description}
                             </p>
@@ -240,7 +247,7 @@ export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
                       ))}
                     </div>
                   </div>
-                );
+                )
               })}
             </motion.div>
           ) : (
@@ -257,7 +264,9 @@ export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
               >
                 {selectedSession.icon}
               </div>
-              <h3 className="text-lg font-semibold mb-1">{selectedSession.title}</h3>
+              <h3 className="text-lg font-semibold mb-1">
+                {selectedSession.title}
+              </h3>
               <p className="text-sm text-muted-foreground mb-6">
                 {selectedSession.description}
               </p>
@@ -283,14 +292,21 @@ export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
                     strokeLinecap="round"
                     strokeDasharray={`${2 * Math.PI * 45}`}
                     strokeDashoffset={`${
-                      2 * Math.PI * 45 * (1 - timeRemaining / (selectedSession.duration * 60))
+                      2 *
+                      Math.PI *
+                      45 *
+                      (1 - timeRemaining / (selectedSession.duration * 60))
                     }`}
                     className="transition-all duration-1000"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-bold">{formatTime(timeRemaining)}</span>
-                  <span className="text-xs text-muted-foreground capitalize">{phase}</span>
+                  <span className="text-3xl font-bold">
+                    {formatTime(timeRemaining)}
+                  </span>
+                  <span className="text-xs text-muted-foreground capitalize">
+                    {phase}
+                  </span>
                 </div>
               </div>
 
@@ -314,11 +330,12 @@ export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
                 </button>
                 <button
                   onClick={() => {
-                    setSelectedSession(null);
-                    setIsActive(false);
-                    setPhase("intro");
+                    setSelectedSession(null)
+                    setIsActive(false)
+                    setPhase("intro")
                   }}
                   className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  aria-label="Close"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -330,7 +347,9 @@ export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-6 text-center"
                 >
-                  <p className="text-lg font-medium text-primary">Session Complete!</p>
+                  <p className="text-lg font-medium text-primary">
+                    Session Complete!
+                  </p>
                   <p className="text-sm text-muted-foreground mt-1">
                     Great job taking time for yourself.
                   </p>
@@ -341,5 +360,5 @@ export default function GuidedMeditation({ onClose }: GuidedMeditationProps) {
         </AnimatePresence>
       </motion.div>
     </motion.div>
-  );
+  )
 }

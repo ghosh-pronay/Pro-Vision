@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion"
 import {
   X,
   Edit3,
@@ -8,26 +8,26 @@ import {
   RotateCcw,
   AlertTriangle,
   FileText,
-} from "lucide-react";
-import { t, type TranslationKey, type Lang } from "@/i18n/translations";
-import { EmptyState } from "@/components/ui/EmptyState";
+} from "lucide-react"
+import { t, type TranslationKey, type Lang } from "@/i18n/translations"
+import { EmptyState } from "@/components/ui/EmptyState"
 import {
   CATEGORY_CONFIG,
   calculateMonthlyCost,
   getDaysUntilRenewal,
   fadeUp,
-} from "./types";
-import type { Subscription } from "./types";
+} from "./types"
+import type { Subscription } from "./types"
 
 interface Props {
-  lang: Lang;
-  now: number;
-  filtered: Subscription[];
-  onDelete: (id: string) => void;
-  onEdit: (sub: Subscription) => void;
-  onToggleCancel: (id: string) => void;
-  onRate: (id: string, rating: number) => void;
-  onAddClick: () => void;
+  lang: Lang
+  now: number
+  filtered: Subscription[]
+  onDelete: (id: string) => void
+  onEdit: (sub: Subscription) => void
+  onToggleCancel: (id: string) => void
+  onRate: (id: string, rating: number) => void
+  onAddClick: () => void
 }
 
 export function SubscriptionList({
@@ -58,11 +58,11 @@ export function SubscriptionList({
             const monthlyCost = calculateMonthlyCost(
               sub.amount,
               sub.billingCycle,
-            );
-            const daysLeft = getDaysUntilRenewal(sub.nextRenewal, now);
+            )
+            const daysLeft = getDaysUntilRenewal(sub.nextRenewal, now)
             const isUpcoming =
-              sub.status === "active" && daysLeft >= 0 && daysLeft <= 30;
-            const isExpired = daysLeft < 0 && sub.status === "active";
+              sub.status === "active" && daysLeft >= 0 && daysLeft <= 30
+            const isExpired = daysLeft < 0 && sub.status === "active"
 
             return (
               <motion.div
@@ -155,6 +155,7 @@ export function SubscriptionList({
                       onClick={() => onEdit(sub)}
                       className="p-2 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition"
                       title={t("subscriptions.edit", lang)}
+                      aria-label="Edit subscription"
                     >
                       <Edit3 className="w-4 h-4" />
                     </button>
@@ -166,6 +167,7 @@ export function SubscriptionList({
                           ? t("subscriptions.markCancelled", lang)
                           : t("subscriptions.reactivated", lang)
                       }
+                      aria-label="Toggle status"
                     >
                       {sub.status === "active" ? (
                         <X className="w-4 h-4" />
@@ -177,16 +179,17 @@ export function SubscriptionList({
                       onClick={() => onDelete(sub._id)}
                       className="p-2 rounded-lg hover:bg-red-500/10 text-white/60 hover:text-red-400 transition"
                       title={t("subscriptions.delete", lang)}
+                      aria-label="Delete subscription"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
               </motion.div>
-            );
+            )
           })
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }

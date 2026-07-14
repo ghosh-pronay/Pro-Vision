@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Users,
   Phone,
@@ -7,20 +7,20 @@ import {
   Trash2,
   Plus,
   X,
-} from "lucide-react";
-import { EmergencyContact, fadeUp } from "./types";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { toastSuccess, toastError } from "@/lib/toast-helpers";
-import { useState } from "react";
+} from "lucide-react"
+import { EmergencyContact, fadeUp } from "./types"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { toastSuccess, toastError } from "@/lib/toast-helpers"
+import { useState } from "react"
 
 interface ContactsSectionProps {
-  lang: string;
-  contacts: EmergencyContact[];
-  sosMessage: string;
-  locationCoords: { lat: number; lng: number } | null;
-  onSetContacts: (contacts: EmergencyContact[]) => void;
-  onDial: (number: string) => void;
+  lang: string
+  contacts: EmergencyContact[]
+  sosMessage: string
+  locationCoords: { lat: number; lng: number } | null
+  onSetContacts: (contacts: EmergencyContact[]) => void
+  onDial: (number: string) => void
 }
 
 export function ContactsSection({
@@ -31,18 +31,18 @@ export function ContactsSection({
   onSetContacts,
   onDial,
 }: ContactsSectionProps) {
-  const [showAddContact, setShowAddContact] = useState(false);
+  const [showAddContact, setShowAddContact] = useState(false)
   const [editingContact, setEditingContact] = useState<EmergencyContact | null>(
     null,
-  );
+  )
   const [contactForm, setContactForm] = useState({
     name: "",
     phone: "",
     relationship: "",
-  });
+  })
   const [deleteTarget, setDeleteTarget] = useState<EmergencyContact | null>(
     null,
-  );
+  )
 
   const handleSaveContact = () => {
     if (!contactForm.name || !contactForm.phone) {
@@ -50,8 +50,8 @@ export function ContactsSection({
         lang === "bn"
           ? "নাম এবং ফোন নম্বর দিন"
           : "Name and phone number required",
-      );
-      return;
+      )
+      return
     }
     if (editingContact) {
       onSetContacts(
@@ -65,48 +65,43 @@ export function ContactsSection({
               }
             : c,
         ),
-      );
-      toastSuccess(
-        lang === "bn" ? "কনট্যাক্ট আপডেট হয়েছে" : "Contact updated",
-      );
+      )
+      toastSuccess(lang === "bn" ? "কনট্যাক্ট আপডেট হয়েছে" : "Contact updated")
     } else {
       onSetContacts([
         ...contacts,
         { _id: Date.now().toString(), ...contactForm },
-      ]);
-      toastSuccess(lang === "bn" ? "কনট্যাক্ট যোগ হয়েছে" : "Contact added");
+      ])
+      toastSuccess(lang === "bn" ? "কনট্যাক্ট যোগ হয়েছে" : "Contact added")
     }
-    setShowAddContact(false);
-    setEditingContact(null);
-    setContactForm({ name: "", phone: "", relationship: "" });
-  };
+    setShowAddContact(false)
+    setEditingContact(null)
+    setContactForm({ name: "", phone: "", relationship: "" })
+  }
 
   const handleEditContact = (contact: EmergencyContact) => {
-    setEditingContact(contact);
+    setEditingContact(contact)
     setContactForm({
       name: contact.name,
       phone: contact.phone,
       relationship: contact.relationship || "",
-    });
-    setShowAddContact(true);
-  };
+    })
+    setShowAddContact(true)
+  }
 
   const handleDeleteContact = () => {
-    if (!deleteTarget) return;
-    onSetContacts(contacts.filter((c) => c._id !== deleteTarget._id));
+    if (!deleteTarget) return
+    onSetContacts(contacts.filter((c) => c._id !== deleteTarget._id))
     toastSuccess(
       lang === "bn" ? "কনট্যাক্ট মুছে ফেলা হয়েছে" : "Contact deleted",
-    );
-    setDeleteTarget(null);
-  };
+    )
+    setDeleteTarget(null)
+  }
 
   const handleSendMessage = (contact: EmergencyContact) => {
-    const msg = `${sosMessage}${locationCoords ? `https://maps.google.com/?q=${locationCoords.lat},${locationCoords.lng}` : "Location unavailable"}`;
-    window.open(
-      `sms:${contact.phone}?body=${encodeURIComponent(msg)}`,
-      "_self",
-    );
-  };
+    const msg = `${sosMessage}${locationCoords ? `https://maps.google.com/?q=${locationCoords.lat},${locationCoords.lng}` : "Location unavailable"}`
+    window.open(`sms:${contact.phone}?body=${encodeURIComponent(msg)}`, "_self")
+  }
 
   return (
     <motion.div variants={fadeUp}>
@@ -117,9 +112,9 @@ export function ContactsSection({
         </h2>
         <button
           onClick={() => {
-            setEditingContact(null);
-            setContactForm({ name: "", phone: "", relationship: "" });
-            setShowAddContact(true);
+            setEditingContact(null)
+            setContactForm({ name: "", phone: "", relationship: "" })
+            setShowAddContact(true)
           }}
           className="flex items-center gap-1.5 rounded-xl bg-primary px-3 py-1.5 text-xs font-medium 
             text-primary-foreground hover:bg-primary/90 cursor-pointer"
@@ -222,6 +217,7 @@ export function ContactsSection({
                 <button
                   onClick={() => setShowAddContact(false)}
                   className="p-1 cursor-pointer hover:bg-foreground/10 rounded transition-colors"
+                  aria-label="Close"
                 >
                   <X className="h-5 w-5 text-muted-foreground" />
                 </button>
@@ -316,5 +312,5 @@ export function ContactsSection({
         }
       />
     </motion.div>
-  );
+  )
 }

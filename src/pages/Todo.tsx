@@ -372,6 +372,7 @@ export default function Todo() {
               placeholder={t("todo.placeholder", lang)}
               className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none mb-3"
               autoFocus
+              aria-label={t("todo.placeholder", lang)}
             />
             <input
               value={newDescription}
@@ -380,6 +381,9 @@ export default function Todo() {
                 lang === "bn" ? "বিবরণ (ঐচ্ছিক)" : "Description (optional)"
               }
               className="w-full bg-transparent text-xs text-muted-foreground placeholder:text-muted-foreground/60 outline-none mb-3"
+              aria-label={
+                lang === "bn" ? "বিবরণ (ঐচ্ছিক)" : "Description (optional)"
+              }
             />
             <div className="flex items-center justify-between">
               <div className="flex gap-2">
@@ -417,6 +421,7 @@ export default function Todo() {
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("todo.search", lang)}
             className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
+            aria-label={t("todo.search", lang)}
           />
         </div>
         <div className="flex glass rounded-xl overflow-hidden">
@@ -671,6 +676,7 @@ export default function Todo() {
               <button
                 onClick={() => handleRemove(task._id)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500 min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2"
+                aria-label="Delete task"
               >
                 <Trash2 className="size-4" />
               </button>

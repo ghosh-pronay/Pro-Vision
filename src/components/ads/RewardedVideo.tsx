@@ -67,6 +67,7 @@ export default function RewardedVideo({
               <button
                 onClick={onClose}
                 className="size-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                aria-label="Close"
               >
                 <X className="size-4" />
               </button>

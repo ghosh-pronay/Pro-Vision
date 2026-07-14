@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { CalendarDays, Plus, X, Trash2 } from "lucide-react";
+import { motion } from "framer-motion"
+import { CalendarDays, Plus, X, Trash2 } from "lucide-react"
 import {
   type MealType,
   type DayOfWeek,
@@ -8,17 +8,17 @@ import {
   DAYS,
   MEAL_TYPES,
   fadeUp,
-} from "./types";
+} from "./types"
 
 interface WeeklyCalendarProps {
-  lang: string;
-  mealPlan: MealPlan;
-  selectedDay: DayOfWeek;
-  onSelectDay: (day: DayOfWeek) => void;
-  onSelectMeal: (day: DayOfWeek, meal: MealType) => void;
-  onDeleteMeal: (day: DayOfWeek, meal: MealType) => void;
-  onResetWeek: () => void;
-  getRecipeById: (id: string) => Recipe | undefined;
+  lang: string
+  mealPlan: MealPlan
+  selectedDay: DayOfWeek
+  onSelectDay: (day: DayOfWeek) => void
+  onSelectMeal: (day: DayOfWeek, meal: MealType) => void
+  onDeleteMeal: (day: DayOfWeek, meal: MealType) => void
+  onResetWeek: () => void
+  getRecipeById: (id: string) => Recipe | undefined
 }
 
 export function WeeklyCalendar({
@@ -79,7 +79,7 @@ export function WeeklyCalendar({
           </thead>
           <tbody>
             {MEAL_TYPES.map((mt) => {
-              const Icon = mt.icon;
+              const Icon = mt.icon
               return (
                 <tr key={mt.key}>
                   <td className="p-2">
@@ -91,8 +91,8 @@ export function WeeklyCalendar({
                     </div>
                   </td>
                   {DAYS.map((day) => {
-                    const recipeId = mealPlan[day.key]?.[mt.key];
-                    const recipe = recipeId ? getRecipeById(recipeId) : null;
+                    const recipeId = mealPlan[day.key]?.[mt.key]
+                    const recipe = recipeId ? getRecipeById(recipeId) : null
                     return (
                       <td key={day.key} className="p-1.5">
                         <motion.div
@@ -114,10 +114,11 @@ export function WeeklyCalendar({
                               </p>
                               <button
                                 onClick={(e) => {
-                                  e.stopPropagation();
-                                  onDeleteMeal(day.key, mt.key);
+                                  e.stopPropagation()
+                                  onDeleteMeal(day.key, mt.key)
                                 }}
                                 className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                aria-label="Delete meal"
                               >
                                 <X className="w-2.5 h-2.5" />
                               </button>
@@ -127,10 +128,10 @@ export function WeeklyCalendar({
                           )}
                         </motion.div>
                       </td>
-                    );
+                    )
                   })}
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
@@ -155,9 +156,9 @@ export function WeeklyCalendar({
         </div>
         <div className="space-y-2">
           {MEAL_TYPES.map((mt) => {
-            const Icon = mt.icon;
-            const recipeId = mealPlan[selectedDay]?.[mt.key];
-            const recipe = recipeId ? getRecipeById(recipeId) : null;
+            const Icon = mt.icon
+            const recipeId = mealPlan[selectedDay]?.[mt.key]
+            const recipe = recipeId ? getRecipeById(recipeId) : null
             return (
               <motion.div
                 key={mt.key}
@@ -193,8 +194,8 @@ export function WeeklyCalendar({
                 {recipe && (
                   <button
                     onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteMeal(selectedDay, mt.key);
+                      e.stopPropagation()
+                      onDeleteMeal(selectedDay, mt.key)
                     }}
                     className="text-muted-foreground hover:text-destructive"
                   >
@@ -202,10 +203,10 @@ export function WeeklyCalendar({
                   </button>
                 )}
               </motion.div>
-            );
+            )
           })}
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

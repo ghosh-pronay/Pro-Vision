@@ -1,56 +1,56 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, X, Calculator } from "lucide-react";
-import { t, type Lang } from "@/i18n/translations";
-import FloatingCalculator from "@/components/finance/FloatingCalculator";
-import type { Wallet as WalletType } from "@/types/wallet";
+import { motion, AnimatePresence } from "framer-motion"
+import { ArrowRight, X, Calculator } from "lucide-react"
+import { t, type Lang } from "@/i18n/translations"
+import FloatingCalculator from "@/components/finance/FloatingCalculator"
+import type { Wallet as WalletType } from "@/types/wallet"
 import {
   CATEGORY_ICONS,
   INCOME_CATEGORIES,
   EXPENSE_CATEGORIES,
-} from "./constants";
+} from "./constants"
 
 interface TransactionFormProps {
-  lang: Lang;
-  activeTab: "income" | "expense" | "transfer";
-  visibleWallets: WalletType[];
-  incomeWallet: string;
-  setIncomeWallet: (v: string) => void;
-  expenseWallet: string;
-  setExpenseWallet: (v: string) => void;
-  setFromWallet: (v: string) => void;
-  setToWallet: (v: string) => void;
-  amount: string;
-  setAmount: (v: string) => void;
-  category: string;
-  setCategory: (v: string) => void;
-  description: string;
-  setDescription: (v: string) => void;
-  date: string;
-  setDate: (v: string) => void;
-  showCalc: boolean;
-  setShowCalc: (v: boolean) => void;
-  effectiveIncomeWallet: string;
-  effectiveExpenseWallet: string;
-  effectiveFromWallet: string;
-  effectiveToWallet: string;
-  transferFee: number;
-  isAddingIncome: boolean;
-  isAddingExpense: boolean;
-  isTransferring: boolean;
-  onClose: () => void;
-  onSubmitIncome: () => void;
-  onSubmitExpense: () => void;
-  onSubmitTransfer: () => void;
+  lang: Lang
+  activeTab: "income" | "expense" | "transfer"
+  visibleWallets: WalletType[]
+  incomeWallet: string
+  setIncomeWallet: (v: string) => void
+  expenseWallet: string
+  setExpenseWallet: (v: string) => void
+  setFromWallet: (v: string) => void
+  setToWallet: (v: string) => void
+  amount: string
+  setAmount: (v: string) => void
+  category: string
+  setCategory: (v: string) => void
+  description: string
+  setDescription: (v: string) => void
+  date: string
+  setDate: (v: string) => void
+  showCalc: boolean
+  setShowCalc: (v: boolean) => void
+  effectiveIncomeWallet: string
+  effectiveExpenseWallet: string
+  effectiveFromWallet: string
+  effectiveToWallet: string
+  transferFee: number
+  isAddingIncome: boolean
+  isAddingExpense: boolean
+  isTransferring: boolean
+  onClose: () => void
+  onSubmitIncome: () => void
+  onSubmitExpense: () => void
+  onSubmitTransfer: () => void
 }
 
 const sanitizeAmount = (val: string) => {
-  const cleaned = val.replace(/[^0-9.]/g, "");
-  const parts = cleaned.split(".");
-  if (parts.length > 2) return cleaned.split(".")[0] + "." + parts[1];
+  const cleaned = val.replace(/[^0-9.]/g, "")
+  const parts = cleaned.split(".")
+  if (parts.length > 2) return cleaned.split(".")[0] + "." + parts[1]
   if (parts[1] && parts[1].length > 2)
-    return parts[0] + "." + parts[1].slice(0, 2);
-  return cleaned;
-};
+    return parts[0] + "." + parts[1].slice(0, 2)
+  return cleaned
+}
 
 export function TransactionForm({
   lang,
@@ -91,7 +91,7 @@ export function TransactionForm({
       {w.balance.toLocaleString()}
       {w.isDefault ? " ★" : ""}
     </option>
-  ));
+  ))
 
   const calcButton = (
     <button
@@ -101,21 +101,21 @@ export function TransactionForm({
     >
       <Calculator className="size-4" />
     </button>
-  );
+  )
 
   const calcOverlay = (
     <AnimatePresence>
       {showCalc && (
         <FloatingCalculator
           onResult={(val) => {
-            setAmount(val);
-            setShowCalc(false);
+            setAmount(val)
+            setShowCalc(false)
           }}
           onClose={() => setShowCalc(false)}
         />
       )}
     </AnimatePresence>
-  );
+  )
 
   return (
     <motion.div
@@ -136,6 +136,7 @@ export function TransactionForm({
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+            aria-label="Close"
           >
             <X className="size-4" />
           </button>
@@ -330,12 +331,12 @@ export function TransactionForm({
               <select
                 value={effectiveFromWallet}
                 onChange={(e) => {
-                  setFromWallet(e.target.value);
+                  setFromWallet(e.target.value)
                   if (e.target.value === effectiveToWallet) {
                     const other = visibleWallets.find(
                       (w: WalletType) => w._id !== e.target.value,
-                    );
-                    if (other) setToWallet(other._id);
+                    )
+                    if (other) setToWallet(other._id)
                   }
                 }}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
@@ -439,5 +440,5 @@ export function TransactionForm({
         )}
       </div>
     </motion.div>
-  );
+  )
 }

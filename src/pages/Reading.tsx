@@ -236,6 +236,7 @@ export default function Reading() {
             }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search reading list"
             className="w-full rounded-xl bg-foreground/5 pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
@@ -390,12 +391,14 @@ export default function Reading() {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleEdit(item)}
+                      aria-label="Edit book"
                       className="cursor-pointer p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
                     >
                       <Edit3 className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => setDeleteConfirmId(item._id)}
+                      aria-label="Delete book"
                       className="cursor-pointer p-2 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -437,6 +440,7 @@ export default function Reading() {
                 </h2>
                 <button
                   onClick={resetEditor}
+                  aria-label="Close editor"
                   className="cursor-pointer p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                 >
                   <X className="h-4 w-4" />
@@ -449,6 +453,7 @@ export default function Reading() {
                   placeholder={lang === "bn" ? "শিরোনাম..." : "Title..."}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  aria-label="Book title"
                   className="w-full rounded-xl bg-foreground/5 px-4 py-3 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
 
@@ -457,6 +462,7 @@ export default function Reading() {
                   placeholder={lang === "bn" ? "লেখক..." : "Author..."}
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
+                  aria-label="Author"
                   className="w-full rounded-xl bg-foreground/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
 
@@ -544,6 +550,7 @@ export default function Reading() {
                         type="number"
                         value={totalPages}
                         onChange={(e) => setTotalPages(e.target.value)}
+                        aria-label="Pages"
                         className="w-full rounded-xl bg-foreground/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
@@ -555,6 +562,7 @@ export default function Reading() {
                         type="number"
                         value={currentPage}
                         onChange={(e) => setCurrentPage(e.target.value)}
+                        aria-label="Pages"
                         className="w-full rounded-xl bg-foreground/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
@@ -571,6 +579,7 @@ export default function Reading() {
                     max="100"
                     value={progress}
                     onChange={(e) => setProgress(parseInt(e.target.value))}
+                    aria-label="Rating"
                     className="w-full"
                   />
                 </div>
@@ -605,6 +614,7 @@ export default function Reading() {
                   }
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
+                  aria-label="Review"
                   className="w-full rounded-xl bg-foreground/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
 
@@ -612,6 +622,7 @@ export default function Reading() {
                   placeholder={lang === "bn" ? "নোট..." : "Notes..."}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
+                  aria-label="Notes"
                   className="w-full rounded-xl bg-foreground/5 px-4 py-3 min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>

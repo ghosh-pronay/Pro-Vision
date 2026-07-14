@@ -177,6 +177,7 @@ export default function FloatingCalculator({
           <button
             onClick={onClose}
             className="p-1 hover:bg-foreground/5 rounded-lg"
+            aria-label="Close"
           >
             <X className="size-3.5 text-muted-foreground" />
           </button>

@@ -86,7 +86,7 @@ export function ConfirmDialog({
             <button
               onClick={onCancel}
               className="absolute right-4 top-4 p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              aria-label={labels.cancel}
+              aria-label={lang === "bn" ? "ডায়ালগ বন্ধ করুন" : "Close dialog"}
             >
               <X className="w-4 h-4" />
             </button>

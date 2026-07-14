@@ -681,6 +681,7 @@ export default function AmbientSounds({ onSoundChange }: AmbientSoundsProps) {
               step="0.05"
               value={volume}
               onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+              aria-label="Volume"
               className="w-full accent-primary"
             />
           </div>

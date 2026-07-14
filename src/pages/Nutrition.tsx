@@ -294,6 +294,7 @@ export default function Nutrition() {
                   </div>
                   <button
                     onClick={() => handleDeleteMeal(meal._id)}
+                    aria-label="Delete meal"
                     className="cursor-pointer p-2 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -368,6 +369,7 @@ export default function Nutrition() {
                   }
                   value={mealName}
                   onChange={(e) => setMealName(e.target.value)}
+                  aria-label="Meal name"
                   className="w-full rounded-xl bg-foreground/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
 
@@ -426,6 +428,7 @@ export default function Nutrition() {
                   placeholder={lang === "bn" ? "নোট..." : "Notes..."}
                   value={mealNotes}
                   onChange={(e) => setMealNotes(e.target.value)}
+                  aria-label="Meal notes"
                   className="w-full rounded-xl bg-foreground/5 px-4 py-3 min-h-[80px] resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>

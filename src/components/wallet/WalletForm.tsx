@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { X } from "lucide-react";
-import type { Wallet } from "@/types/wallet";
+import { useState } from "react"
+import { X } from "lucide-react"
+import type { Wallet } from "@/types/wallet"
 
 const TYPE_OPTIONS = [
   { value: "cash", label: "Cash", labelBn: "নগদ" },
@@ -8,7 +8,7 @@ const TYPE_OPTIONS = [
   { value: "credit", label: "Credit Card", labelBn: "ক্রেডিট কার্ড" },
   { value: "digital", label: "Digital", labelBn: "ডিজিটাল" },
   { value: "other", label: "Other", labelBn: "অন্যান্য" },
-];
+]
 
 const COLOR_OPTIONS = [
   "#22c55e",
@@ -27,7 +27,7 @@ const COLOR_OPTIONS = [
   "#3b82f6",
   "#8b5cf6",
   "#ec4899",
-];
+]
 
 const ICON_OPTIONS = [
   "Banknote",
@@ -38,13 +38,13 @@ const ICON_OPTIONS = [
   "CreditCard",
   "Landmark",
   "MoreHorizontal",
-];
+]
 
 interface WalletFormProps {
-  lang: "en" | "bn";
-  initialData?: Partial<Wallet>;
-  onSubmit: (data: Omit<Wallet, "_id" | "createdAt">) => void;
-  onClose: () => void;
+  lang: "en" | "bn"
+  initialData?: Partial<Wallet>
+  onSubmit: (data: Omit<Wallet, "_id" | "createdAt">) => void
+  onClose: () => void
 }
 
 export function WalletForm({
@@ -53,20 +53,20 @@ export function WalletForm({
   onSubmit,
   onClose,
 }: WalletFormProps) {
-  const [name, setName] = useState(initialData?.name || "");
-  const [nameBn, setNameBn] = useState(initialData?.nameBn || "");
-  const [type, setType] = useState<Wallet["type"]>(initialData?.type || "cash");
+  const [name, setName] = useState(initialData?.name || "")
+  const [nameBn, setNameBn] = useState(initialData?.nameBn || "")
+  const [type, setType] = useState<Wallet["type"]>(initialData?.type || "cash")
   const [balance, setBalance] = useState(
     initialData?.balance?.toString() || "0",
-  );
-  const [currency, setCurrency] = useState(initialData?.currency || "BDT");
-  const [color, setColor] = useState(initialData?.color || "#22c55e");
-  const [icon, setIcon] = useState(initialData?.icon || "Banknote");
-  const [isDefault, setIsDefault] = useState(initialData?.isDefault || false);
+  )
+  const [currency, setCurrency] = useState(initialData?.currency || "BDT")
+  const [color, setColor] = useState(initialData?.color || "#22c55e")
+  const [icon, setIcon] = useState(initialData?.icon || "Banknote")
+  const [isDefault, setIsDefault] = useState(initialData?.isDefault || false)
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
+    e.preventDefault()
+    if (!name.trim()) return
     onSubmit({
       name: name.trim(),
       nameBn: nameBn.trim() || name.trim(),
@@ -77,8 +77,8 @@ export function WalletForm({
       icon,
       isDefault,
       presetId: initialData?.presetId,
-    });
-  };
+    })
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -96,6 +96,7 @@ export function WalletForm({
           type="button"
           onClick={onClose}
           className="cursor-pointer p-1 rounded-lg hover:bg-foreground/5"
+          aria-label="Close"
         >
           <X className="h-5 w-5 text-muted-foreground" />
         </button>
@@ -260,5 +261,5 @@ export function WalletForm({
         </button>
       </div>
     </form>
-  );
+  )
 }

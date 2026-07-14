@@ -852,6 +852,7 @@ export default function SocialChallenges() {
                 <button
                   onClick={() => setShowCheckInModal(null)}
                   className="glass p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                  aria-label="Close"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -934,6 +935,7 @@ export default function SocialChallenges() {
                 <button
                   onClick={() => setShowInviteModal(null)}
                   className="glass p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                  aria-label="Close"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -992,6 +994,7 @@ export default function SocialChallenges() {
                 <button
                   onClick={() => setShowShareModal(false)}
                   className="glass p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                  aria-label="Close"
                 >
                   <X className="w-4 h-4" />
                 </button>

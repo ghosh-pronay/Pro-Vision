@@ -256,6 +256,7 @@ export default function GratitudeJar() {
               <button
                 onClick={() => setShowAddModal(false)}
                 className="cursor-pointer p-1 rounded-lg hover:bg-foreground/5"
+                aria-label="Close"
               >
                 <X className="h-5 w-5" />
               </button>

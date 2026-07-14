@@ -502,6 +502,7 @@ export default function Settings() {
                     checked={darkModeSchedule}
                     onChange={(e) => setDarkModeSchedule(e.target.checked)}
                     className="h-4 w-4"
+                    aria-label="Dark mode schedule"
                   />
                 </div>
                 {darkModeSchedule && (
@@ -515,6 +516,7 @@ export default function Settings() {
                         value={darkModeStart}
                         onChange={(e) => setDarkModeStart(e.target.value)}
                         className="w-full mt-1 rounded-lg border bg-background px-3 py-2 text-sm"
+                        aria-label="Dark mode start time"
                       />
                     </div>
                     <div>
@@ -526,6 +528,7 @@ export default function Settings() {
                         value={darkModeEnd}
                         onChange={(e) => setDarkModeEnd(e.target.value)}
                         className="w-full mt-1 rounded-lg border bg-background px-3 py-2 text-sm"
+                        aria-label="Dark mode end time"
                       />
                     </div>
                   </div>
@@ -551,7 +554,12 @@ export default function Settings() {
                     {t.settings.pushNotificationsDesc}
                   </p>
                 </div>
-                <input type="checkbox" defaultChecked className="h-4 w-4" />
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  className="h-4 w-4"
+                  aria-label="Push notifications"
+                />
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div>
@@ -562,7 +570,12 @@ export default function Settings() {
                     {t.settings.dailyRemindersDesc}
                   </p>
                 </div>
-                <input type="checkbox" defaultChecked className="h-4 w-4" />
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  className="h-4 w-4"
+                  aria-label="Daily reminders"
+                />
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div>
@@ -573,7 +586,11 @@ export default function Settings() {
                     {t.settings.weeklyReportDesc}
                   </p>
                 </div>
-                <input type="checkbox" className="h-4 w-4" />
+                <input
+                  type="checkbox"
+                  className="h-4 w-4"
+                  aria-label="Weekly report"
+                />
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div>
@@ -584,7 +601,12 @@ export default function Settings() {
                     {t.settings.coachSuggestionsDesc}
                   </p>
                 </div>
-                <input type="checkbox" defaultChecked className="h-4 w-4" />
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  className="h-4 w-4"
+                  aria-label="Coach suggestions"
+                />
               </div>
             </div>
           </div>

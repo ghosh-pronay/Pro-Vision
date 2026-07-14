@@ -1,18 +1,18 @@
-import { Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { ApiLogItem, ApiConfigItem } from "./types";
-import { METHOD_COLORS, STATUS_COLORS } from "./types";
+import { Trash2 } from "lucide-react"
+import { cn } from "@/lib/utils"
+import type { ApiLogItem, ApiConfigItem } from "./types"
+import { METHOD_COLORS, STATUS_COLORS } from "./types"
 
 interface Props {
-  logs: ApiLogItem[] | undefined;
-  configs: ApiConfigItem[] | undefined;
-  endpointFilter: string;
-  statusFilter: number | "";
-  t_: (key: string) => string;
-  formatTimestamp: (ts: number) => string;
-  onEndpointFilterChange: (v: string) => void;
-  onStatusFilterChange: (v: number | "") => void;
-  onClearLogs: () => void;
+  logs: ApiLogItem[] | undefined
+  configs: ApiConfigItem[] | undefined
+  endpointFilter: string
+  statusFilter: number | ""
+  t_: (key: string) => string
+  formatTimestamp: (ts: number) => string
+  onEndpointFilterChange: (v: string) => void
+  onStatusFilterChange: (v: number | "") => void
+  onClearLogs: () => void
 }
 
 export function LogsTab({
@@ -29,10 +29,10 @@ export function LogsTab({
   if (!logs) {
     return (
       <div className="text-center py-8 text-white/50">{t_("api.loading")}</div>
-    );
+    )
   }
 
-  const logData = logs as ApiLogItem[];
+  const logData = logs as ApiLogItem[]
 
   return (
     <div className="space-y-4">
@@ -41,6 +41,7 @@ export function LogsTab({
           <select
             value={endpointFilter}
             onChange={(e) => onEndpointFilterChange(e.target.value)}
+            aria-label="Filter by endpoint"
             className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
           >
             <option value="">{t_("api.allEndpoints")}</option>
@@ -60,6 +61,7 @@ export function LogsTab({
                 e.target.value === "" ? "" : parseInt(e.target.value),
               )
             }
+            aria-label="Filter by status"
             className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
           >
             <option value="">{t_("api.allStatuses")}</option>
@@ -74,6 +76,7 @@ export function LogsTab({
         </div>
         <button
           onClick={onClearLogs}
+          aria-label="Clear logs"
           className="flex items-center gap-2 px-3 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg text-sm hover:bg-red-500/20"
         >
           <Trash2 className="w-4 h-4" />
@@ -156,5 +159,5 @@ export function LogsTab({
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -599,6 +599,7 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
                         <button
                           onClick={() => removeAttachment(att.id)}
                           className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white cursor-pointer"
+                          aria-label="Remove attachment"
                         >
                           <X className="h-2.5 w-2.5" />
                         </button>
@@ -674,6 +675,7 @@ Be concise, warm, and encouraging. Use simple language. If the user writes in Be
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder={(t.coach as Record<string, string>).placeholder}
+                  aria-label="Message"
                   rows={1}
                   className="flex-1 resize-none rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm outline-none backdrop-blur-sm placeholder:text-muted-foreground focus:border-[var(--pv-teal)] focus:ring-1 focus:ring-[var(--pv-teal)]/30 min-h-[36px] max-h-[100px]"
                   style={{ lineHeight: "1.4" }}

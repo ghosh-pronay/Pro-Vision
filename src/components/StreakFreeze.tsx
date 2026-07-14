@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
 import {
   Snowflake,
   Calendar,
@@ -10,19 +10,19 @@ import {
   X,
   Plus,
   AlertTriangle,
-} from "lucide-react";
+} from "lucide-react"
 
 interface FreezeRecord {
-  id: string;
-  habitId: string;
-  habitName: string;
-  date: string;
-  usedAt: number;
+  id: string
+  habitId: string
+  habitName: string
+  date: string
+  usedAt: number
 }
 
 interface HabitOption {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 const DEMO_HABITS: HabitOption[] = [
@@ -30,7 +30,7 @@ const DEMO_HABITS: HabitOption[] = [
   { id: "2", name: "Exercise" },
   { id: "3", name: "Reading" },
   { id: "4", name: "Healthy Eating" },
-];
+]
 
 const DEMO_FREEZES: FreezeRecord[] = [
   {
@@ -47,32 +47,32 @@ const DEMO_FREEZES: FreezeRecord[] = [
     date: "2025-01-10",
     usedAt: Date.now() - 1000 * 60 * 60 * 24 * 8,
   },
-];
+]
 
-const MAX_FREEZES = 3;
+const MAX_FREEZES = 3
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function StreakFreeze() {
-  const { lang } = useLang();
-  const [freezes, setFreezes] = useState<FreezeRecord[]>(DEMO_FREEZES);
-  const [showForm, setShowForm] = useState(false);
-  const [selectedHabit, setSelectedHabit] = useState<string>("");
+  const { lang } = useLang()
+  const [freezes, setFreezes] = useState<FreezeRecord[]>(DEMO_FREEZES)
+  const [showForm, setShowForm] = useState(false)
+  const [selectedHabit, setSelectedHabit] = useState<string>("")
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split("T")[0],
-  );
+  )
 
-  const availableFreezes = MAX_FREEZES - freezes.length;
-  const isLow = availableFreezes <= 1;
+  const availableFreezes = MAX_FREEZES - freezes.length
+  const isLow = availableFreezes <= 1
 
   const handleUseFreeze = () => {
-    if (!selectedHabit || !selectedDate || availableFreezes <= 0) return;
+    if (!selectedHabit || !selectedDate || availableFreezes <= 0) return
 
-    const habit = DEMO_HABITS.find((h) => h.id === selectedHabit);
-    if (!habit) return;
+    const habit = DEMO_HABITS.find((h) => h.id === selectedHabit)
+    if (!habit) return
 
     const newFreeze: FreezeRecord = {
       id: Date.now().toString(),
@@ -80,29 +80,29 @@ export default function StreakFreeze() {
       habitName: habit.name,
       date: selectedDate,
       usedAt: Date.now(),
-    };
+    }
 
-    setFreezes((prev) => [...prev, newFreeze]);
-    setShowForm(false);
-    setSelectedHabit("");
-    setSelectedDate(new Date().toISOString().split("T")[0]);
-  };
+    setFreezes((prev) => [...prev, newFreeze])
+    setShowForm(false)
+    setSelectedHabit("")
+    setSelectedDate(new Date().toISOString().split("T")[0])
+  }
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
+    const date = new Date(dateStr)
     if (lang === "bn") {
       return date.toLocaleDateString("bn-BD", {
         year: "numeric",
         month: "long",
         day: "numeric",
-      });
+      })
     }
     return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   return (
     <motion.div variants={fadeUp} className="space-y-4">
@@ -181,6 +181,7 @@ export default function StreakFreeze() {
               <button
                 onClick={() => setShowForm(false)}
                 className="cursor-pointer text-muted-foreground hover:text-foreground hover-tab"
+                aria-label="Close"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -266,5 +267,5 @@ export default function StreakFreeze() {
         </div>
       )}
     </motion.div>
-  );
+  )
 }

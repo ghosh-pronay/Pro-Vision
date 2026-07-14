@@ -255,6 +255,7 @@ export default function Journal() {
             }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search journal"
             className="w-full rounded-xl bg-foreground/5 pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
@@ -348,12 +349,14 @@ export default function Journal() {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleEdit(entry)}
+                    aria-label="Edit entry"
                     className="cursor-pointer p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
                   >
                     <Edit3 className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setDeleteConfirmId(entry._id)}
+                    aria-label="Delete entry"
                     className="cursor-pointer p-2 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -394,6 +397,7 @@ export default function Journal() {
                 </h2>
                 <button
                   onClick={resetEditor}
+                  aria-label="Close editor"
                   className="cursor-pointer p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                 >
                   <X className="h-4 w-4" />
@@ -406,6 +410,7 @@ export default function Journal() {
                   placeholder={lang === "bn" ? "শিরোনাম..." : "Title..."}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  aria-label="Journal title"
                   className="w-full rounded-xl bg-foreground/5 px-4 py-3 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
 
@@ -417,6 +422,7 @@ export default function Journal() {
                   }
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
+                  aria-label="Journal content"
                   className="w-full rounded-xl bg-foreground/5 px-4 py-3 min-h-[200px] resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
 
@@ -507,6 +513,7 @@ export default function Journal() {
                       value={customTag}
                       onChange={(e) => setCustomTag(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && addCustomTag()}
+                      aria-label="Tags"
                       className="flex-1 rounded-xl bg-foreground/5 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                     <button

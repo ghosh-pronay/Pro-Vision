@@ -470,6 +470,7 @@ export default function Admin() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9 pr-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  aria-label="Search users"
                 />
               </div>
             </div>
@@ -505,12 +506,14 @@ export default function Admin() {
                               onChange={(e) => setEditName(e.target.value)}
                               className="w-full px-2 py-1 rounded bg-white/10 text-sm border border-white/10"
                               placeholder="Name"
+                              aria-label="Edit user name"
                             />
                             <input
                               value={editEmail}
                               onChange={(e) => setEditEmail(e.target.value)}
                               className="w-full px-2 py-1 rounded bg-white/10 text-sm border border-white/10"
                               placeholder="Email"
+                              aria-label="Edit user email"
                             />
                           </div>
                         ) : (
@@ -561,6 +564,7 @@ export default function Admin() {
                               <button
                                 onClick={() => setEditingUser(null)}
                                 className="rounded-lg p-1.5 hover:bg-white/10 transition-colors cursor-pointer"
+                                aria-label="Remove tag"
                               >
                                 <X className="h-4 w-4" />
                               </button>
@@ -610,6 +614,7 @@ export default function Admin() {
                                 onClick={() => handleDeleteUser(user._id)}
                                 className="rounded-lg p-1.5 hover:bg-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
                                 title="Delete"
+                                aria-label="Delete user"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -759,6 +764,7 @@ export default function Admin() {
                   }
                   placeholder={t("admin.titlePlaceholder", lang)}
                   className="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-sm"
+                  aria-label="Challenge title"
                 />
                 <input
                   value={newChallenge.description}
@@ -770,6 +776,7 @@ export default function Admin() {
                   }
                   placeholder={t("admin.descPlaceholder", lang)}
                   className="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-sm"
+                  aria-label="Challenge description"
                 />
                 <input
                   type="number"
@@ -782,6 +789,7 @@ export default function Admin() {
                   }
                   placeholder={t("admin.goalPlaceholder", lang)}
                   className="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-sm"
+                  aria-label="Challenge goal value"
                 />
                 <input
                   value={newChallenge.unit}
@@ -790,6 +798,7 @@ export default function Admin() {
                   }
                   placeholder={t("admin.unitPlaceholder", lang)}
                   className="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-sm"
+                  aria-label="Challenge unit"
                 />
               </div>
               <button
@@ -842,6 +851,7 @@ export default function Admin() {
                     <button
                       onClick={() => deleteChallenge({ challengeId: c._id })}
                       className="rounded-lg p-1.5 hover:bg-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
+                      aria-label="Delete challenge"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -881,6 +891,10 @@ export default function Admin() {
                     defaultValue={value}
                     onBlur={(e) => handleSetLimit(key, Number(e.target.value))}
                     className="w-24 px-3 py-1.5 rounded-lg bg-white/10 border border-white/10 text-sm text-right"
+                    aria-label={key
+                      .replace("limits.", "")
+                      .replace(/([A-Z])/g, " $1")
+                      .trim()}
                   />
                 </div>
               ))}
@@ -937,6 +951,7 @@ export default function Admin() {
                     }
                     placeholder={t("admin.bannerPlaceholder", lang)}
                     className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-sm"
+                    aria-label="Announcement banner text"
                   />
                 </div>
               </div>

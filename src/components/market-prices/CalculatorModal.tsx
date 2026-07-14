@@ -1,13 +1,13 @@
-import { motion } from "framer-motion";
-import { X } from "lucide-react";
-import { MarketItem } from "./types";
-import { useState } from "react";
+import { motion } from "framer-motion"
+import { X } from "lucide-react"
+import { MarketItem } from "./types"
+import { useState } from "react"
 
 interface CalculatorModalProps {
-  item: MarketItem;
-  lang: string;
-  onClose: () => void;
-  onAddToList: (itemId: string) => void;
+  item: MarketItem
+  lang: string
+  onClose: () => void
+  onAddToList: (itemId: string) => void
 }
 
 export function CalculatorModal({
@@ -16,7 +16,7 @@ export function CalculatorModal({
   onClose,
   onAddToList,
 }: CalculatorModalProps) {
-  const [quantity, setQuantity] = useState("1");
+  const [quantity, setQuantity] = useState("1")
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -32,6 +32,7 @@ export function CalculatorModal({
           <button
             onClick={onClose}
             className="cursor-pointer p-2 rounded-lg hover:bg-foreground/5"
+            aria-label="Close"
           >
             <X className="h-5 w-5" />
           </button>
@@ -72,8 +73,8 @@ export function CalculatorModal({
 
           <button
             onClick={() => {
-              onAddToList(item.id);
-              onClose();
+              onAddToList(item.id)
+              onClose()
             }}
             className="cursor-pointer w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
@@ -82,5 +83,5 @@ export function CalculatorModal({
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

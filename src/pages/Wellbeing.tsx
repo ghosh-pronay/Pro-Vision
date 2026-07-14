@@ -501,6 +501,7 @@ export default function Wellbeing() {
                   step="0.5"
                   value={sleepHours}
                   onChange={(e) => setSleepHours(parseFloat(e.target.value))}
+                  aria-label="Sleep hours"
                   className="w-full h-2 rounded-full appearance-none cursor-pointer"
                   style={{
                     background: `linear-gradient(to right, var(--pv-blue) ${sliderPct}%, rgba(255,255,255,0.15) ${sliderPct}%)`,
@@ -537,6 +538,7 @@ export default function Wellbeing() {
                     type="time"
                     value={bedtime}
                     onChange={(e) => setBedtime(e.target.value)}
+                    aria-label="Bedtime"
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-foreground outline-none"
                   />
                 </div>
@@ -548,6 +550,7 @@ export default function Wellbeing() {
                     type="time"
                     value={wakeTime}
                     onChange={(e) => setWakeTime(e.target.value)}
+                    aria-label="Wake time"
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-foreground outline-none"
                   />
                 </div>
@@ -639,6 +642,7 @@ export default function Wellbeing() {
               <textarea
                 value={gratitudeText}
                 onChange={(e) => setGratitudeText(e.target.value)}
+                aria-label="Gratitude entry"
                 placeholder={
                   lang === "bn"
                     ? "আজ আপনি কিসের জন্য কৃতজ্ঞ?..."
@@ -824,6 +828,7 @@ export default function Wellbeing() {
                   onChange={(e) =>
                     setExerciseDuration(parseInt(e.target.value))
                   }
+                  aria-label="Exercise duration"
                   className="w-full h-2 rounded-full appearance-none cursor-pointer"
                   style={{
                     background: `linear-gradient(to right, var(--pv-orange) ${((exerciseDuration - 5) / 175) * 100}%, rgba(255,255,255,0.15) ${((exerciseDuration - 5) / 175) * 100}%)`,
@@ -840,6 +845,7 @@ export default function Wellbeing() {
                   value={exerciseCalories}
                   onChange={(e) => setExerciseCalories(e.target.value)}
                   placeholder="0"
+                  aria-label="Calories burned"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-foreground outline-none"
                 />
               </div>
@@ -852,6 +858,7 @@ export default function Wellbeing() {
                   type="text"
                   value={exerciseNotes}
                   onChange={(e) => setExerciseNotes(e.target.value)}
+                  aria-label="Exercise notes"
                   placeholder={
                     lang === "bn" ? "অতিরিক্ত নোট..." : "Any notes..."
                   }

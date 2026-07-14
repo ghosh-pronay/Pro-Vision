@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "framer-motion"
 import {
   Stethoscope,
   Droplets,
@@ -7,25 +7,25 @@ import {
   AlertTriangle,
   Plus,
   X,
-} from "lucide-react";
-import { MedicalInfo, BLOOD_TYPES, fadeUp } from "./types";
-import { useState } from "react";
+} from "lucide-react"
+import { MedicalInfo, BLOOD_TYPES, fadeUp } from "./types"
+import { useState } from "react"
 
 interface MedicalSectionProps {
-  lang: string;
-  medicalInfo: MedicalInfo;
-  onSetMedicalInfo: (info: MedicalInfo) => void;
+  lang: string
+  medicalInfo: MedicalInfo
+  onSetMedicalInfo: (info: MedicalInfo) => void
 }
 
 interface MedicalListProps {
-  title: string;
-  icon: React.ReactNode;
-  items: string[];
-  value: string;
-  onChange: (v: string) => void;
-  onAdd: () => void;
-  onRemove: (index: number) => void;
-  placeholder: string;
+  title: string
+  icon: React.ReactNode
+  items: string[]
+  value: string
+  onChange: (v: string) => void
+  onAdd: () => void
+  onRemove: (index: number) => void
+  placeholder: string
 }
 
 function MedicalList({
@@ -71,6 +71,7 @@ function MedicalList({
               <button
                 onClick={() => onRemove(i)}
                 className="cursor-pointer text-muted-foreground hover:text-red-500"
+                aria-label="Remove item"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -79,7 +80,7 @@ function MedicalList({
         </div>
       )}
     </div>
-  );
+  )
 }
 
 export function MedicalSection({
@@ -87,22 +88,22 @@ export function MedicalSection({
   medicalInfo,
   onSetMedicalInfo,
 }: MedicalSectionProps) {
-  const [newAllergy, setNewAllergy] = useState("");
-  const [newMedication, setNewMedication] = useState("");
-  const [newCondition, setNewCondition] = useState("");
+  const [newAllergy, setNewAllergy] = useState("")
+  const [newMedication, setNewMedication] = useState("")
+  const [newCondition, setNewCondition] = useState("")
 
   const addToList = (
     field: "allergies" | "medications" | "conditions",
     value: string,
     setter: (v: string) => void,
   ) => {
-    if (!value.trim()) return;
+    if (!value.trim()) return
     onSetMedicalInfo({
       ...medicalInfo,
       [field]: [...medicalInfo[field], value.trim()],
-    });
-    setter("");
-  };
+    })
+    setter("")
+  }
 
   const removeFromList = (
     field: "allergies" | "medications" | "conditions",
@@ -111,8 +112,8 @@ export function MedicalSection({
     onSetMedicalInfo({
       ...medicalInfo,
       [field]: medicalInfo[field].filter((_, i) => i !== index),
-    });
-  };
+    })
+  }
 
   return (
     <motion.div variants={fadeUp} className="glass rounded-2xl p-5">
@@ -181,5 +182,5 @@ export function MedicalSection({
         placeholder={lang === "bn" ? "অবস্থা যোগ করুন..." : "Add condition..."}
       />
     </motion.div>
-  );
+  )
 }

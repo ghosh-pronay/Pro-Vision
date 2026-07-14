@@ -1,28 +1,28 @@
-import { motion } from "framer-motion";
-import { X, Repeat, Star } from "lucide-react";
-import { t, type Lang } from "@/i18n/translations";
-import { PAYMENT_METHODS, ALERT_OPTIONS } from "./types";
-import type { BillingCycle, SubCategory } from "./types";
+import { motion } from "framer-motion"
+import { X, Repeat, Star } from "lucide-react"
+import { t, type Lang } from "@/i18n/translations"
+import { PAYMENT_METHODS, ALERT_OPTIONS } from "./types"
+import type { BillingCycle, SubCategory } from "./types"
 
 interface FormData {
-  name: string;
-  amount: string;
-  billingCycle: BillingCycle;
-  category: SubCategory;
-  startDate: string;
-  paymentMethod: string;
-  autoRenew: boolean;
-  alertBefore: number;
-  usageRating: number;
+  name: string
+  amount: string
+  billingCycle: BillingCycle
+  category: SubCategory
+  startDate: string
+  paymentMethod: string
+  autoRenew: boolean
+  alertBefore: number
+  usageRating: number
 }
 
 interface Props {
-  lang: Lang;
-  editingId: string | null;
-  formData: FormData;
-  onChange: (fn: (f: FormData) => FormData) => void;
-  onSubmit: () => void;
-  onClose: () => void;
+  lang: Lang
+  editingId: string | null
+  formData: FormData
+  onChange: (fn: (f: FormData) => FormData) => void
+  onSubmit: () => void
+  onClose: () => void
 }
 
 export function SubscriptionForm({
@@ -59,6 +59,7 @@ export function SubscriptionForm({
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-white/10 text-white/60"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -280,5 +281,5 @@ export function SubscriptionForm({
         </div>
       </motion.div>
     </motion.div>
-  );
+  )
 }

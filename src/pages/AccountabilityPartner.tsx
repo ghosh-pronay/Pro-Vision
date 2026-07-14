@@ -565,6 +565,7 @@ export default function AccountabilityPartner() {
                       <button
                         onClick={() => handleDeclineRequest(request._id)}
                         className="cursor-pointer p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                        aria-label="Decline request"
                       >
                         <X className="h-5 w-5" />
                       </button>
@@ -793,6 +794,7 @@ export default function AccountabilityPartner() {
               <button
                 onClick={() => setShowInviteModal(false)}
                 className="cursor-pointer p-2 rounded-xl hover:bg-foreground/10 transition-colors"
+                aria-label="Close"
               >
                 <X className="h-5 w-5" />
               </button>

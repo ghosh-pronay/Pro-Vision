@@ -1,24 +1,24 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { t, type TranslationKey } from "@/i18n/translations";
-import { useState, useEffect, useCallback } from "react";
-import { Pause, Play, RotateCcw, X } from "lucide-react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { t, type TranslationKey } from "@/i18n/translations"
+import { useState, useEffect, useCallback } from "react"
+import { Pause, Play, RotateCcw, X } from "lucide-react"
 
 interface BreathingPhase {
-  label: string;
-  labelBn: string;
-  seconds: number;
-  scale: number;
+  label: string
+  labelBn: string
+  seconds: number
+  scale: number
 }
 
 interface BreathingExerciseProps {
-  title?: TranslationKey;
-  titleBn?: string;
-  icon?: string;
-  color?: string;
-  phases?: BreathingPhase[];
-  totalDurationMinutes?: number;
-  onClose?: () => void;
+  title?: TranslationKey
+  titleBn?: string
+  icon?: string
+  color?: string
+  phases?: BreathingPhase[]
+  totalDurationMinutes?: number
+  onClose?: () => void
 }
 
 export default function BreathingExercise({
@@ -30,58 +30,58 @@ export default function BreathingExercise({
   totalDurationMinutes = 5,
   onClose,
 }: BreathingExerciseProps) {
-  const { lang } = useLang();
-  const [isActive, setIsActive] = useState(false);
-  const [phaseIdx, setPhaseIdx] = useState(0);
-  const [elapsed, setElapsed] = useState(0);
-  const [done, setDone] = useState(false);
+  const { lang } = useLang()
+  const [isActive, setIsActive] = useState(false)
+  const [phaseIdx, setPhaseIdx] = useState(0)
+  const [elapsed, setElapsed] = useState(0)
+  const [done, setDone] = useState(false)
 
   const exercisePhases: BreathingPhase[] = phases ?? [
     { label: "Inhale", labelBn: "শ্বাস নিন", seconds: 4, scale: 1.5 },
     { label: "Hold", labelBn: "ধরুন", seconds: 4, scale: 1.5 },
     { label: "Exhale", labelBn: "ছেড়ে দিন", seconds: 4, scale: 1 },
     { label: "Hold", labelBn: "ধরুন", seconds: 4, scale: 1 },
-  ];
+  ]
 
-  const currentPhase = exercisePhases[phaseIdx];
-  const totalSeconds = totalDurationMinutes * 60;
+  const currentPhase = exercisePhases[phaseIdx]
+  const totalSeconds = totalDurationMinutes * 60
 
   useEffect(() => {
-    if (!isActive || done) return;
+    if (!isActive || done) return
     const timer = setInterval(() => {
       setElapsed((prev) => {
         if (prev + 1 >= totalSeconds) {
-          setDone(true);
-          setIsActive(false);
-          return totalSeconds;
+          setDone(true)
+          setIsActive(false)
+          return totalSeconds
         }
-        return prev + 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [isActive, done, totalSeconds]);
+        return prev + 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [isActive, done, totalSeconds])
 
   useEffect(() => {
-    if (!isActive || done) return;
+    if (!isActive || done) return
     const timer = setTimeout(() => {
-      setPhaseIdx((prev) => (prev + 1) % exercisePhases.length);
-    }, currentPhase.seconds * 1000);
-    return () => clearTimeout(timer);
-  }, [isActive, phaseIdx, currentPhase.seconds, exercisePhases.length, done]);
+      setPhaseIdx((prev) => (prev + 1) % exercisePhases.length)
+    }, currentPhase.seconds * 1000)
+    return () => clearTimeout(timer)
+  }, [isActive, phaseIdx, currentPhase.seconds, exercisePhases.length, done])
 
   const reset = useCallback(() => {
-    setIsActive(false);
-    setPhaseIdx(0);
-    setElapsed(0);
-    setDone(false);
-  }, []);
+    setIsActive(false)
+    setPhaseIdx(0)
+    setElapsed(0)
+    setDone(false)
+  }, [])
 
-  const progress = (elapsed / totalSeconds) * 100;
-  const remaining = totalSeconds - elapsed;
-  const mins = Math.floor(remaining / 60);
-  const secs = remaining % 60;
+  const progress = (elapsed / totalSeconds) * 100
+  const remaining = totalSeconds - elapsed
+  const mins = Math.floor(remaining / 60)
+  const secs = remaining % 60
 
-  const phaseLabel = lang === "bn" ? currentPhase.labelBn : currentPhase.label;
+  const phaseLabel = lang === "bn" ? currentPhase.labelBn : currentPhase.label
 
   return (
     <div className="glass-strong rounded-2xl p-6 text-center">
@@ -96,6 +96,7 @@ export default function BreathingExercise({
           <button
             onClick={onClose}
             className="p-1.5 rounded-xl hover:bg-foreground/5 transition-colors"
+            aria-label="Close"
           >
             <X className="size-4 text-muted-foreground" />
           </button>
@@ -149,8 +150,8 @@ export default function BreathingExercise({
       <div className="flex justify-center gap-2">
         <button
           onClick={() => {
-            if (done) reset();
-            else setIsActive(!isActive);
+            if (done) reset()
+            else setIsActive(!isActive)
           }}
           className="inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.97]"
           style={{
@@ -174,5 +175,5 @@ export default function BreathingExercise({
         </button>
       </div>
     </div>
-  );
+  )
 }

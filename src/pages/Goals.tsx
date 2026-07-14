@@ -392,6 +392,7 @@ export default function Goals() {
                         e.key === "Enter" && handleAddMilestoneToGoal(goal)
                       }
                       placeholder={t.goals.milestonePlaceholder}
+                      aria-label="Milestone title"
                       className="flex-1 bg-white/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
                     />
                     <button
@@ -414,6 +415,7 @@ export default function Goals() {
                     </button>
                     <button
                       onClick={() => handleDeleteGoal(goal._id)}
+                      aria-label="Delete goal"
                       className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-white/10 px-3 py-2 text-sm min-h-[44px] hover:bg-red-500/20 hover:text-red-400 transition-colors"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -470,6 +472,7 @@ export default function Goals() {
                 </h2>
                 <button
                   onClick={() => setShowAddModal(false)}
+                  aria-label="Close"
                   className="text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px] flex items-center justify-center -mr-1"
                 >
                   <X className="h-5 w-5" />
@@ -481,6 +484,7 @@ export default function Goals() {
                   setNewGoal({ ...newGoal, title: e.target.value })
                 }
                 placeholder={t.goals.goalTitle}
+                aria-label="Goal title"
                 className="w-full bg-white/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
                 autoFocus
               />
@@ -490,6 +494,7 @@ export default function Goals() {
                   setNewGoal({ ...newGoal, description: e.target.value })
                 }
                 placeholder={t.goals.description}
+                aria-label="Goal description"
                 className="w-full bg-white/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
               />
               <select
@@ -497,6 +502,7 @@ export default function Goals() {
                 onChange={(e) =>
                   setNewGoal({ ...newGoal, category: e.target.value })
                 }
+                aria-label="Goal category"
                 className="w-full bg-white/10 rounded-lg px-3 py-2 text-sm text-foreground"
               >
                 {CATEGORIES.filter((c) => c !== "All").map((cat) => (
@@ -511,6 +517,7 @@ export default function Goals() {
                 onChange={(e) =>
                   setNewGoal({ ...newGoal, deadline: e.target.value })
                 }
+                aria-label="Goal deadline"
                 className="w-full bg-white/10 rounded-lg px-3 py-2 text-sm text-foreground"
               />
 
@@ -525,6 +532,7 @@ export default function Goals() {
                     </span>
                     <button
                       onClick={() => handleRemoveMilestoneFromNew(idx)}
+                      aria-label="Delete milestone"
                       className="text-muted-foreground hover:text-red-400 min-w-[44px] min-h-[44px] flex items-center justify-center -mr-1"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -539,6 +547,7 @@ export default function Goals() {
                       e.key === "Enter" && handleAddMilestoneToNew()
                     }
                     placeholder={t.goals.milestonePlaceholder}
+                    aria-label="Milestone title"
                     className="flex-1 bg-white/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
                   />
                   <button

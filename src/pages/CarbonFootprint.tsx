@@ -650,6 +650,7 @@ export default function CarbonFootprint() {
                 <button
                   onClick={() => setShowAddModal(false)}
                   className="cursor-pointer p-2 rounded-full hover:bg-foreground/10"
+                  aria-label="Close"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -788,6 +789,7 @@ export default function CarbonFootprint() {
                 <button
                   onClick={() => setShowGoalModal(false)}
                   className="cursor-pointer p-2 rounded-full hover:bg-foreground/10"
+                  aria-label="Close"
                 >
                   <X className="h-4 w-4" />
                 </button>

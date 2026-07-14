@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { Plus, Trash2, Eye, EyeOff, Copy, AlertTriangle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { toastSuccess } from "@/lib/toast-helpers";
-import type { ApiKeyItem } from "./types";
+import { useState } from "react"
+import { Plus, Trash2, Eye, EyeOff, Copy, AlertTriangle } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { toastSuccess } from "@/lib/toast-helpers"
+import type { ApiKeyItem } from "./types"
 
 interface Props {
-  keys: ApiKeyItem[] | undefined;
-  t_: (key: string) => string;
-  lang: string;
-  formatTimestamp: (ts: number) => string;
-  onCreateKey: (name: string, permissions: string[]) => void;
-  onRevokeKey: (id: string) => void;
-  onDeleteKey: (id: string) => void;
+  keys: ApiKeyItem[] | undefined
+  t_: (key: string) => string
+  lang: string
+  formatTimestamp: (ts: number) => string
+  onCreateKey: (name: string, permissions: string[]) => void
+  onRevokeKey: (id: string) => void
+  onDeleteKey: (id: string) => void
 }
 
 export function KeysTab({
@@ -23,45 +23,43 @@ export function KeysTab({
   onRevokeKey,
   onDeleteKey,
 }: Props) {
-  const [showKeyForm, setShowKeyForm] = useState(false);
-  const [newKeyName, setNewKeyName] = useState("");
-  const [newKeyPermissions, setNewKeyPermissions] = useState<string[]>([
-    "read",
-  ]);
-  const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
+  const [showKeyForm, setShowKeyForm] = useState(false)
+  const [newKeyName, setNewKeyName] = useState("")
+  const [newKeyPermissions, setNewKeyPermissions] = useState<string[]>(["read"])
+  const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set())
   const [confirmDeleteKeyId, setConfirmDeleteKeyId] = useState<string | null>(
     null,
-  );
+  )
 
   if (!keys) {
     return (
       <div className="text-center py-8 text-white/50">{t_("api.loading")}</div>
-    );
+    )
   }
 
-  const keyData = keys as ApiKeyItem[];
+  const keyData = keys as ApiKeyItem[]
 
   const toggleKeyReveal = (keyId: string) => {
     setRevealedKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(keyId)) next.delete(keyId);
-      else next.add(keyId);
-      return next;
-    });
-  };
+      const next = new Set(prev)
+      if (next.has(keyId)) next.delete(keyId)
+      else next.add(keyId)
+      return next
+    })
+  }
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toastSuccess(lang === "bn" ? "কপি হয়েছে" : "Copied to clipboard");
-  };
+    navigator.clipboard.writeText(text)
+    toastSuccess(lang === "bn" ? "কপি হয়েছে" : "Copied to clipboard")
+  }
 
   const handleCreate = () => {
-    if (!newKeyName.trim()) return;
-    onCreateKey(newKeyName, newKeyPermissions);
-    setNewKeyName("");
-    setNewKeyPermissions(["read"]);
-    setShowKeyForm(false);
-  };
+    if (!newKeyName.trim()) return
+    onCreateKey(newKeyName, newKeyPermissions)
+    setNewKeyName("")
+    setNewKeyPermissions(["read"])
+    setShowKeyForm(false)
+  }
 
   return (
     <div className="space-y-4">
@@ -89,6 +87,7 @@ export function KeysTab({
               placeholder={
                 lang === "bn" ? "যেমন: মোবাইল অ্যাপ" : "e.g., Mobile App"
               }
+              aria-label="Search API keys"
               className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-white/30"
             />
           </div>
@@ -105,7 +104,7 @@ export function KeysTab({
                       prev.includes(perm)
                         ? prev.filter((p) => p !== perm)
                         : [...prev, perm],
-                    );
+                    )
                   }}
                   className={cn(
                     "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
@@ -172,6 +171,7 @@ export function KeysTab({
                   </code>
                   <button
                     onClick={() => toggleKeyReveal(k._id)}
+                    aria-label="Reveal/hide API key"
                     className="text-white/40 hover:text-white"
                   >
                     {revealedKeys.has(k._id) ? (
@@ -182,6 +182,7 @@ export function KeysTab({
                   </button>
                   <button
                     onClick={() => copyToClipboard(k.key)}
+                    aria-label="Copy API key"
                     className="text-white/40 hover:text-white"
                   >
                     <Copy className="w-3 h-3" />
@@ -213,6 +214,7 @@ export function KeysTab({
                 ) : (
                   <button
                     onClick={() => setConfirmDeleteKeyId(k._id)}
+                    aria-label="Delete API key"
                     className="px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg text-xs hover:bg-red-500/20"
                   >
                     <Trash2 className="w-3 h-3 inline mr-1" />
@@ -251,8 +253,8 @@ export function KeysTab({
               </button>
               <button
                 onClick={() => {
-                  onDeleteKey(confirmDeleteKeyId);
-                  setConfirmDeleteKeyId(null);
+                  onDeleteKey(confirmDeleteKeyId)
+                  setConfirmDeleteKeyId(null)
                 }}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600"
               >
@@ -263,5 +265,5 @@ export function KeysTab({
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   BookOpen,
   Plus,
@@ -10,21 +10,21 @@ import {
   X,
   Trash2,
   Brain,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { toBanglaNumber } from "@/lib/bangla-numbers";
-import { toastSuccess } from "@/lib/toast-helpers";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { toBanglaNumber } from "@/lib/bangla-numbers"
+import { toastSuccess } from "@/lib/toast-helpers"
 
 interface StudySession {
-  _id: string;
-  subject: string;
-  duration: number;
-  notes?: string;
-  date: number;
+  _id: string
+  subject: string
+  duration: number
+  notes?: string
+  date: number
 }
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 const SUBJECTS = [
   "Mathematics",
@@ -37,16 +37,16 @@ const SUBJECTS = [
   "Geography",
   "Computer Science",
   "Other",
-];
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function StudyTracker() {
-  const { lang } = useLang();
-  const [showAddModal, setShowAddModal] = useState(false);
+  const { lang } = useLang()
+  const [showAddModal, setShowAddModal] = useState(false)
   const [sessions, setSessions] = useState<StudySession[]>([
     {
       _id: "1",
@@ -68,25 +68,25 @@ export default function StudyTracker() {
       duration: 30,
       date: NOW - 2 * 24 * 60 * 60 * 1000,
     },
-  ]);
+  ])
 
   const [formData, setFormData] = useState({
     subject: "Mathematics",
     duration: "45",
     notes: "",
-  });
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  })
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   const stats = useMemo(() => {
-    if (sessions.length === 0) return null;
-    const totalMinutes = sessions.reduce((sum, s) => sum + s.duration, 0);
-    const subjectHours: Record<string, number> = {};
+    if (sessions.length === 0) return null
+    const totalMinutes = sessions.reduce((sum, s) => sum + s.duration, 0)
+    const subjectHours: Record<string, number> = {}
     sessions.forEach((s) => {
-      subjectHours[s.subject] = (subjectHours[s.subject] || 0) + s.duration;
-    });
+      subjectHours[s.subject] = (subjectHours[s.subject] || 0) + s.duration
+    })
     const topSubject = Object.entries(subjectHours).sort(
       (a, b) => b[1] - a[1],
-    )[0];
+    )[0]
 
     return {
       totalSessions: sessions.length,
@@ -94,8 +94,8 @@ export default function StudyTracker() {
       totalHours: (totalMinutes / 60).toFixed(1),
       topSubject: topSubject ? topSubject[0] : "-",
       avgSession: Math.round(totalMinutes / sessions.length),
-    };
-  }, [sessions]);
+    }
+  }, [sessions])
 
   const handleAdd = () => {
     const newSession: StudySession = {
@@ -104,26 +104,26 @@ export default function StudyTracker() {
       duration: parseInt(formData.duration) || 45,
       notes: formData.notes || undefined,
       date: Date.now(),
-    };
-    setSessions([newSession, ...sessions]);
-    setShowAddModal(false);
-    setFormData({ subject: "Mathematics", duration: "45", notes: "" });
-    toastSuccess(lang === "bn" ? "সেশন যোগ হয়েছে" : "Session added");
-  };
+    }
+    setSessions([newSession, ...sessions])
+    setShowAddModal(false)
+    setFormData({ subject: "Mathematics", duration: "45", notes: "" })
+    toastSuccess(lang === "bn" ? "সেশন যোগ হয়েছে" : "Session added")
+  }
 
   const handleDelete = (id: string) => {
-    setSessions(sessions.filter((s) => s._id !== id));
-    toastSuccess(lang === "bn" ? "সেশন মুছে ফেলা হয়েছে" : "Session deleted");
-  };
+    setSessions(sessions.filter((s) => s._id !== id))
+    toastSuccess(lang === "bn" ? "সেশন মুছে ফেলা হয়েছে" : "Session deleted")
+  }
 
   const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp)
     return date.toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   return (
     <motion.div
@@ -265,6 +265,7 @@ export default function StudyTracker() {
               <button
                 onClick={() => setShowAddModal(false)}
                 className="cursor-pointer p-1 rounded-lg hover:bg-foreground/5"
+                aria-label="Close"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -298,6 +299,7 @@ export default function StudyTracker() {
                   onChange={(e) =>
                     setFormData({ ...formData, duration: e.target.value })
                   }
+                  aria-label="Study duration"
                   className="w-full mt-1 rounded-lg border bg-background px-3 py-2 text-sm"
                 />
               </div>
@@ -328,8 +330,8 @@ export default function StudyTracker() {
       <ConfirmDialog
         open={deleteConfirmId !== null}
         onConfirm={() => {
-          if (deleteConfirmId) handleDelete(deleteConfirmId);
-          setDeleteConfirmId(null);
+          if (deleteConfirmId) handleDelete(deleteConfirmId)
+          setDeleteConfirmId(null)
         }}
         onCancel={() => setDeleteConfirmId(null)}
         title={lang === "bn" ? "সেশন মুছুন?" : "Delete session?"}
@@ -340,5 +342,5 @@ export default function StudyTracker() {
         }
       />
     </motion.div>
-  );
+  )
 }

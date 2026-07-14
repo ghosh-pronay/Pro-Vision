@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
 import {
   Navigation,
   DollarSign,
@@ -10,28 +10,28 @@ import {
   Sparkles,
   X,
   Trash2,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { fadeUp, getModeById, type Commute, type SavedRoute } from "./types";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { fadeUp, getModeById, type Commute, type SavedRoute } from "./types"
 
 interface TodayViewProps {
-  todayCommutes: Commute[];
-  savedRoutes: SavedRoute[];
+  todayCommutes: Commute[]
+  savedRoutes: SavedRoute[]
   fastestRoute: {
-    icon: string;
-    nameEn: string;
-    nameBn: string;
-    avgTime: number;
-  } | null;
+    icon: string
+    nameEn: string
+    nameBn: string
+    avgTime: number
+  } | null
   cheapestRoute: {
-    icon: string;
-    nameEn: string;
-    nameBn: string;
-    avgCost: number;
-  } | null;
-  onDeleteCommute: (id: string) => void;
-  onSelectRoute: (route: SavedRoute) => void;
-  onDeleteRoute: (id: string) => void;
+    icon: string
+    nameEn: string
+    nameBn: string
+    avgCost: number
+  } | null
+  onDeleteCommute: (id: string) => void
+  onSelectRoute: (route: SavedRoute) => void
+  onDeleteRoute: (id: string) => void
 }
 
 export function TodayView({
@@ -43,7 +43,7 @@ export function TodayView({
   onSelectRoute,
   onDeleteRoute,
 }: TodayViewProps) {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   const stats = [
     {
@@ -68,14 +68,14 @@ export function TodayView({
       label: lang === "bn" ? "কার্বন" : "Carbon",
       value: `${todayCommutes
         .reduce((s, c) => {
-          const m = getModeById(c.mode);
-          return s + (m ? m.carbon * c.distance : 0);
+          const m = getModeById(c.mode)
+          return s + (m ? m.carbon * c.distance : 0)
         }, 0)
         .toFixed(2)} kg`,
       icon: Leaf,
       color: "text-emerald-500",
     },
-  ];
+  ]
 
   return (
     <motion.div
@@ -125,7 +125,7 @@ export function TodayView({
         ) : (
           <div className="space-y-3">
             {todayCommutes.map((c) => {
-              const mode = getModeById(c.mode);
+              const mode = getModeById(c.mode)
               return (
                 <motion.div
                   key={c.id}
@@ -164,7 +164,7 @@ export function TodayView({
                     </button>
                   </div>
                 </motion.div>
-              );
+              )
             })}
           </div>
         )}
@@ -178,7 +178,7 @@ export function TodayView({
           </h2>
           <div className="flex gap-3 overflow-x-auto pb-2">
             {savedRoutes.map((route) => {
-              const mode = getModeById(route.mode);
+              const mode = getModeById(route.mode)
               return (
                 <motion.div
                   key={route.id}
@@ -200,15 +200,16 @@ export function TodayView({
                   </p>
                   <button
                     onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteRoute(route.id);
+                      e.stopPropagation()
+                      onDeleteRoute(route.id)
                     }}
                     className="absolute top-2 right-2 w-5 h-5 rounded-full bg-destructive/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Delete route"
                   >
                     <X className="w-3 h-3" />
                   </button>
                 </motion.div>
-              );
+              )
             })}
           </div>
         </div>
@@ -264,5 +265,5 @@ export function TodayView({
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

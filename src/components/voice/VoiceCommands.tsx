@@ -239,7 +239,11 @@ const VoiceCommands = memo(function VoiceCommands({
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold">Voice Commands</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-accent">
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-accent"
+            aria-label="Close"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>

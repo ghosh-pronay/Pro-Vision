@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { DollarSign, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion"
+import { DollarSign, X } from "lucide-react"
 import {
   type MealPlan,
   type Recipe,
@@ -8,22 +8,22 @@ import {
   CATEGORIES,
   fadeIn,
   scaleIn,
-} from "./types";
+} from "./types"
 
 interface BudgetModalProps {
-  lang: string;
-  show: boolean;
-  onClose: () => void;
+  lang: string
+  show: boolean
+  onClose: () => void
   weeklyStats: {
-    totalCalories: number;
-    totalProtein: number;
-    totalCarbs: number;
-    totalFat: number;
-    totalCost: number;
-    mealCount: number;
-  };
-  mealPlan: MealPlan;
-  getRecipeById: (id: string) => Recipe | undefined;
+    totalCalories: number
+    totalProtein: number
+    totalCarbs: number
+    totalFat: number
+    totalCost: number
+    mealCount: number
+  }
+  mealPlan: MealPlan
+  getRecipeById: (id: string) => Recipe | undefined
 }
 
 export function BudgetModal({
@@ -59,6 +59,7 @@ export function BudgetModal({
               <button
                 onClick={onClose}
                 className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
+                aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -94,10 +95,10 @@ export function BudgetModal({
                 </h4>
                 {DAYS.map((day) => {
                   const dayCost = MEAL_TYPES.reduce((sum, mt) => {
-                    const recipeId = mealPlan[day.key]?.[mt.key];
-                    const recipe = recipeId ? getRecipeById(recipeId) : null;
-                    return sum + (recipe?.cost || 0);
-                  }, 0);
+                    const recipeId = mealPlan[day.key]?.[mt.key]
+                    const recipe = recipeId ? getRecipeById(recipeId) : null
+                    return sum + (recipe?.cost || 0)
+                  }, 0)
                   return (
                     <div
                       key={day.key}
@@ -108,7 +109,7 @@ export function BudgetModal({
                       </span>
                       <span className="text-sm font-medium">৳{dayCost}</span>
                     </div>
-                  );
+                  )
                 })}
               </div>
 
@@ -117,16 +118,16 @@ export function BudgetModal({
                   {lang === "bn" ? "শ্রেণী অনুযায়ী খরচ" : "Cost by Category"}
                 </h4>
                 {CATEGORIES.map((cat) => {
-                  let catCost = 0;
+                  let catCost = 0
                   DAYS.forEach((day) => {
                     MEAL_TYPES.forEach((mt) => {
-                      const recipeId = mealPlan[day.key]?.[mt.key];
-                      const recipe = recipeId ? getRecipeById(recipeId) : null;
+                      const recipeId = mealPlan[day.key]?.[mt.key]
+                      const recipe = recipeId ? getRecipeById(recipeId) : null
                       if (recipe && recipe.category === cat.key) {
-                        catCost += recipe.cost;
+                        catCost += recipe.cost
                       }
-                    });
-                  });
+                    })
+                  })
                   return (
                     <div
                       key={cat.key}
@@ -137,7 +138,7 @@ export function BudgetModal({
                       </span>
                       <span className="text-sm font-medium">৳{catCost}</span>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -145,5 +146,5 @@ export function BudgetModal({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

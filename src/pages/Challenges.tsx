@@ -296,6 +296,7 @@ export default function Challenges() {
                   onChange={(e) =>
                     setSelectedChallengeId(e.target.value as Id<"challenges">)
                   }
+                  aria-label="Select challenge for leaderboard"
                   className="text-xs rounded-lg bg-foreground/5 px-2 py-1 border-none outline-none"
                 >
                   {myChallenges.map((c: ChallengeWithProgress) => (

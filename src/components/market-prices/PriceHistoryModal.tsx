@@ -1,14 +1,14 @@
-import { motion } from "framer-motion";
-import { X, Trash2 } from "lucide-react";
-import { MarketItem, PriceAlert } from "./types";
-import { renderFullChart } from "./chartUtils";
+import { motion } from "framer-motion"
+import { X, Trash2 } from "lucide-react"
+import { MarketItem, PriceAlert } from "./types"
+import { renderFullChart } from "./chartUtils"
 
 interface PriceHistoryModalProps {
-  item: MarketItem;
-  lang: string;
-  priceAlerts: PriceAlert[];
-  onClose: () => void;
-  onRemoveAlert: (id: string) => void;
+  item: MarketItem
+  lang: string
+  priceAlerts: PriceAlert[]
+  onClose: () => void
+  onRemoveAlert: (id: string) => void
 }
 
 export function PriceHistoryModal({
@@ -18,7 +18,7 @@ export function PriceHistoryModal({
   onClose,
   onRemoveAlert,
 }: PriceHistoryModalProps) {
-  const itemAlerts = priceAlerts.filter((a) => a.itemId === item.id);
+  const itemAlerts = priceAlerts.filter((a) => a.itemId === item.id)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -35,6 +35,7 @@ export function PriceHistoryModal({
           <button
             onClick={onClose}
             className="cursor-pointer p-2 rounded-lg hover:bg-foreground/5"
+            aria-label="Close"
           >
             <X className="h-5 w-5" />
           </button>
@@ -99,5 +100,5 @@ export function PriceHistoryModal({
         ))}
       </motion.div>
     </div>
-  );
+  )
 }

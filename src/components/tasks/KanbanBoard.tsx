@@ -172,6 +172,7 @@ export default function KanbanBoard({
                     <input
                       type="text"
                       defaultValue={task.title}
+                      aria-label="Edit task title"
                       className="w-full bg-white/10 rounded-lg px-2 py-1 text-sm focus:outline-none focus:border-primary"
                       onBlur={(e) =>
                         handleUpdateTask(task.id, { title: e.target.value })
@@ -241,12 +242,14 @@ export default function KanbanBoard({
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => setEditingTask(task.id)}
+                          aria-label="Edit task"
                           className="p-1.5 rounded hover:bg-white/10"
                         >
                           <Edit3 className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                         <button
                           onClick={() => handleDeleteTask(task.id)}
+                          aria-label="Delete task"
                           className="p-1.5 rounded hover:bg-white/10"
                         >
                           <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
@@ -270,6 +273,7 @@ export default function KanbanBoard({
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   placeholder="Task title..."
+                  aria-label="New task title"
                   className="w-full bg-white/10 rounded-lg px-2 py-1 text-sm focus:outline-none focus:border-primary mb-2"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleAddTask(column.id)

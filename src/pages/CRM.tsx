@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState } from "react"
 import {
   Users,
   Plus,
@@ -12,25 +12,25 @@ import {
   Edit3,
   Trash2,
   X,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { validatePhone } from "@/lib/input-sanitizer";
-import { toastSuccess, toastError } from "@/lib/toast-helpers";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { validatePhone } from "@/lib/input-sanitizer"
+import { toastSuccess, toastError } from "@/lib/toast-helpers"
 
-const NOW = Date.now();
+const NOW = Date.now()
 
 interface Contact {
-  _id: string;
-  name: string;
-  phone?: string;
-  email?: string;
-  relationship: string;
-  birthday?: number;
-  lastContacted?: number;
-  notes?: string;
-  strength?: "close" | "friend" | "acquaintance" | "distant";
-  tags?: string[];
+  _id: string
+  name: string
+  phone?: string
+  email?: string
+  relationship: string
+  birthday?: number
+  lastContacted?: number
+  notes?: string
+  strength?: "close" | "friend" | "acquaintance" | "distant"
+  tags?: string[]
 }
 
 const RELATIONSHIPS = [
@@ -41,25 +41,25 @@ const RELATIONSHIPS = [
   "Mentor",
   "Client",
   "Other",
-];
+]
 
 const STRENGTH_COLORS = {
   close: "text-red-500 bg-red-500/10",
   friend: "text-orange-500 bg-orange-500/10",
   acquaintance: "text-yellow-500 bg-yellow-500/10",
   distant: "text-gray-500 bg-gray-500/10",
-};
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+}
 
 export default function CRM() {
-  const { lang } = useLang();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [editingContact, setEditingContact] = useState<Contact | null>(null);
+  const { lang } = useLang()
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [editingContact, setEditingContact] = useState<Contact | null>(null)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -69,8 +69,8 @@ export default function CRM() {
     birthday: "",
     notes: "",
     strength: "friend" as "close" | "friend" | "acquaintance" | "distant",
-  });
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  })
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   const [contacts, setContacts] = useState<Contact[]>([
     {
@@ -102,49 +102,49 @@ export default function CRM() {
       strength: "acquaintance",
       tags: ["work"],
     },
-  ]);
+  ])
 
   const filteredContacts = contacts.filter(
     (c) =>
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.relationship.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  )
 
   const getDaysSinceContact = (lastContacted?: number) => {
-    if (!lastContacted) return null;
-    const diff = NOW - lastContacted;
-    return Math.floor(diff / (1000 * 60 * 60 * 24));
-  };
+    if (!lastContacted) return null
+    const diff = NOW - lastContacted
+    return Math.floor(diff / (1000 * 60 * 60 * 24))
+  }
 
   const getUpcomingBirthdays = () => {
-    const now = new Date();
+    const now = new Date()
     return contacts
       .filter((c) => c.birthday)
       .map((c) => {
-        const bday = new Date(c.birthday!);
+        const bday = new Date(c.birthday!)
         const thisYear = new Date(
           now.getFullYear(),
           bday.getMonth(),
           bday.getDate(),
-        );
+        )
         if (thisYear < now) {
-          thisYear.setFullYear(thisYear.getFullYear() + 1);
+          thisYear.setFullYear(thisYear.getFullYear() + 1)
         }
         const daysUntil = Math.ceil(
           (thisYear.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-        );
-        return { ...c, daysUntil };
+        )
+        return { ...c, daysUntil }
       })
       .filter((c) => c.daysUntil <= 30)
-      .sort((a, b) => a.daysUntil - b.daysUntil);
-  };
+      .sort((a, b) => a.daysUntil - b.daysUntil)
+  }
 
   const handleSave = () => {
     if (formData.phone && !validatePhone(formData.phone)) {
       toastError(
         lang === "bn" ? "বৈধ ফোন নম্বর দিন" : "Enter a valid phone number",
-      );
-      return;
+      )
+      return
     }
 
     const newContact: Contact = {
@@ -159,22 +159,22 @@ export default function CRM() {
       notes: formData.notes || undefined,
       strength: formData.strength,
       lastContacted: Date.now(),
-    };
+    }
 
     if (editingContact) {
       setContacts(
         contacts.map((c) =>
           c._id === editingContact._id ? { ...c, ...newContact } : c,
         ),
-      );
-      toastSuccess(lang === "bn" ? "সম্পর্ক আপডেট হয়েছে" : "Contact updated");
+      )
+      toastSuccess(lang === "bn" ? "সম্পর্ক আপডেট হয়েছে" : "Contact updated")
     } else {
-      setContacts([newContact, ...contacts]);
-      toastSuccess(lang === "bn" ? "সম্পর্ক যোগ হয়েছে" : "Contact added");
+      setContacts([newContact, ...contacts])
+      toastSuccess(lang === "bn" ? "সম্পর্ক যোগ হয়েছে" : "Contact added")
     }
 
-    setShowAddModal(false);
-    setEditingContact(null);
+    setShowAddModal(false)
+    setEditingContact(null)
     setFormData({
       name: "",
       phone: "",
@@ -183,18 +183,16 @@ export default function CRM() {
       birthday: "",
       notes: "",
       strength: "friend",
-    });
-  };
+    })
+  }
 
   const handleDelete = (id: string) => {
-    setContacts(contacts.filter((c) => c._id !== id));
-    toastSuccess(
-      lang === "bn" ? "সম্পর্ক মুছে ফেলা হয়েছে" : "Contact deleted",
-    );
-  };
+    setContacts(contacts.filter((c) => c._id !== id))
+    toastSuccess(lang === "bn" ? "সম্পর্ক মুছে ফেলা হয়েছে" : "Contact deleted")
+  }
 
   const handleEdit = (contact: Contact) => {
-    setEditingContact(contact);
+    setEditingContact(contact)
     setFormData({
       name: contact.name,
       phone: contact.phone || "",
@@ -205,11 +203,11 @@ export default function CRM() {
         : "",
       notes: contact.notes || "",
       strength: contact.strength || "friend",
-    });
-    setShowAddModal(true);
-  };
+    })
+    setShowAddModal(true)
+  }
 
-  const upcomingBirthdays = getUpcomingBirthdays();
+  const upcomingBirthdays = getUpcomingBirthdays()
 
   return (
     <motion.div
@@ -269,7 +267,7 @@ export default function CRM() {
         </div>
         <button
           onClick={() => {
-            setEditingContact(null);
+            setEditingContact(null)
             setFormData({
               name: "",
               phone: "",
@@ -278,8 +276,8 @@ export default function CRM() {
               birthday: "",
               notes: "",
               strength: "friend",
-            });
-            setShowAddModal(true);
+            })
+            setShowAddModal(true)
           }}
           className="cursor-pointer flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
@@ -301,7 +299,7 @@ export default function CRM() {
             action={{
               label: lang === "bn" ? "যোগ করুন" : "Add Contact",
               onClick: () => {
-                setEditingContact(null);
+                setEditingContact(null)
                 setFormData({
                   name: "",
                   phone: "",
@@ -310,14 +308,14 @@ export default function CRM() {
                   birthday: "",
                   notes: "",
                   strength: "friend",
-                });
-                setShowAddModal(true);
+                })
+                setShowAddModal(true)
               },
             }}
           />
         ) : (
           filteredContacts.map((contact) => {
-            const daysSince = getDaysSinceContact(contact.lastContacted);
+            const daysSince = getDaysSinceContact(contact.lastContacted)
             return (
               <motion.div
                 key={contact._id}
@@ -383,12 +381,14 @@ export default function CRM() {
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleEdit(contact)}
+                      aria-label="Edit contact"
                       className="cursor-pointer p-2 rounded-lg hover:bg-foreground/5"
                     >
                       <Edit3 className="h-4 w-4 text-muted-foreground" />
                     </button>
                     <button
                       onClick={() => setDeleteConfirmId(contact._id)}
+                      aria-label="Delete contact"
                       className="cursor-pointer p-2 rounded-lg hover:bg-destructive/10"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
@@ -396,7 +396,7 @@ export default function CRM() {
                   </div>
                 </div>
               </motion.div>
-            );
+            )
           })
         )}
       </motion.div>
@@ -421,6 +421,7 @@ export default function CRM() {
               <button
                 onClick={() => setShowAddModal(false)}
                 className="cursor-pointer p-1 rounded-lg hover:bg-foreground/5"
+                aria-label="Close"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -433,6 +434,7 @@ export default function CRM() {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 placeholder={lang === "bn" ? "নাম *" : "Name *"}
+                aria-label="Contact name"
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               />
               <input
@@ -442,6 +444,7 @@ export default function CRM() {
                   setFormData({ ...formData, phone: e.target.value })
                 }
                 placeholder={lang === "bn" ? "ফোন" : "Phone"}
+                aria-label="Contact phone"
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               />
               <input
@@ -451,6 +454,7 @@ export default function CRM() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 placeholder={lang === "bn" ? "ইমেইল" : "Email"}
+                aria-label="Contact email"
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               />
               <select
@@ -458,6 +462,7 @@ export default function CRM() {
                 onChange={(e) =>
                   setFormData({ ...formData, relationship: e.target.value })
                 }
+                aria-label="Relationship"
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               >
                 {RELATIONSHIPS.map((r) => (
@@ -486,6 +491,7 @@ export default function CRM() {
                       | "distant",
                   })
                 }
+                aria-label="Closeness"
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               >
                 <option value="close">
@@ -507,6 +513,7 @@ export default function CRM() {
                   setFormData({ ...formData, notes: e.target.value })
                 }
                 placeholder={lang === "bn" ? "নোট" : "Notes"}
+                aria-label="Contact notes"
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm min-h-[80px]"
               />
               <button
@@ -530,8 +537,8 @@ export default function CRM() {
       <ConfirmDialog
         open={deleteConfirmId !== null}
         onConfirm={() => {
-          if (deleteConfirmId) handleDelete(deleteConfirmId);
-          setDeleteConfirmId(null);
+          if (deleteConfirmId) handleDelete(deleteConfirmId)
+          setDeleteConfirmId(null)
         }}
         onCancel={() => setDeleteConfirmId(null)}
         title={lang === "bn" ? "সম্পর্ক মুছুন?" : "Delete contact?"}
@@ -542,5 +549,5 @@ export default function CRM() {
         }
       />
     </motion.div>
-  );
+  )
 }

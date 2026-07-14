@@ -1,16 +1,16 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { Bell, Snowflake, Target } from "lucide-react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { Bell, Snowflake, Target } from "lucide-react"
 
 interface SettingsTabProps {
-  reminderTime: string;
-  freezeTokens: number;
-  currentStreak: number;
-  longestStreak: number;
-  totalPointsEarned: number;
-  ownedRewardsCount: number;
-  onReminderTimeChange: (time: string) => void;
-  onUseFreeze: () => void;
+  reminderTime: string
+  freezeTokens: number
+  currentStreak: number
+  longestStreak: number
+  totalPointsEarned: number
+  ownedRewardsCount: number
+  onReminderTimeChange: (time: string) => void
+  onUseFreeze: () => void
 }
 
 export function SettingsTab({
@@ -23,7 +23,7 @@ export function SettingsTab({
   onReminderTimeChange,
   onUseFreeze,
 }: SettingsTabProps) {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   return (
     <motion.div
@@ -54,6 +54,7 @@ export function SettingsTab({
               type="time"
               value={reminderTime}
               onChange={(e) => onReminderTimeChange(e.target.value)}
+              aria-label="Reminder time"
               className="bg-white/10 text-white rounded-lg px-3 py-2 text-sm border border-white/20 focus:outline-none focus:border-white/40"
             />
           </div>
@@ -159,5 +160,5 @@ export function SettingsTab({
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

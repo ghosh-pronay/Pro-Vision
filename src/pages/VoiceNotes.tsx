@@ -577,6 +577,7 @@ export default function VoiceNotes() {
               <button
                 onClick={() => setTranscription("")}
                 className="cursor-pointer p-1 rounded hover:bg-foreground/10"
+                aria-label="Clear transcription"
               >
                 <X className="h-4 w-4" />
               </button>

@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { X, UtensilsCrossed, Flame, Clock, Heart } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion"
+import { X, UtensilsCrossed, Flame, Clock, Heart } from "lucide-react"
 import {
   type MealType,
   type DayOfWeek,
@@ -11,21 +11,21 @@ import {
   DIFFICULTY_COLORS,
   fadeIn,
   scaleIn,
-} from "./types";
+} from "./types"
 
 interface RecipeBrowserModalProps {
-  lang: string;
-  show: boolean;
-  onClose: () => void;
-  selectedDay: DayOfWeek;
-  selectedMealType: MealType;
-  selectedCategory: RecipeCategory;
-  onSelectDay: (day: DayOfWeek) => void;
-  onSelectMealType: (mealType: MealType) => void;
-  onSelectCategory: (category: RecipeCategory) => void;
-  onAddMeal: (recipeId: string) => void;
-  favorites: string[];
-  onToggleFavorite: (recipeId: string) => void;
+  lang: string
+  show: boolean
+  onClose: () => void
+  selectedDay: DayOfWeek
+  selectedMealType: MealType
+  selectedCategory: RecipeCategory
+  onSelectDay: (day: DayOfWeek) => void
+  onSelectMealType: (mealType: MealType) => void
+  onSelectCategory: (category: RecipeCategory) => void
+  onAddMeal: (recipeId: string) => void
+  favorites: string[]
+  onToggleFavorite: (recipeId: string) => void
 }
 
 export function RecipeBrowserModal({
@@ -42,9 +42,7 @@ export function RecipeBrowserModal({
   favorites,
   onToggleFavorite,
 }: RecipeBrowserModalProps) {
-  const filteredRecipes = RECIPES.filter(
-    (r) => r.category === selectedCategory,
-  );
+  const filteredRecipes = RECIPES.filter((r) => r.category === selectedCategory)
 
   return (
     <AnimatePresence>
@@ -71,6 +69,7 @@ export function RecipeBrowserModal({
                 <button
                   onClick={onClose}
                   className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
+                  aria-label="Close"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -101,7 +100,7 @@ export function RecipeBrowserModal({
                 </span>
                 <div className="flex gap-1">
                   {MEAL_TYPES.map((mt) => {
-                    const Icon = mt.icon;
+                    const Icon = mt.icon
                     return (
                       <button
                         key={mt.key}
@@ -115,7 +114,7 @@ export function RecipeBrowserModal({
                         <Icon className="w-3 h-3" />
                         {lang === "bn" ? mt.bn : mt.en}
                       </button>
-                    );
+                    )
                   })}
                 </div>
               </div>
@@ -139,7 +138,7 @@ export function RecipeBrowserModal({
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {filteredRecipes.map((recipe) => {
-                const isFav = favorites.includes(recipe.id);
+                const isFav = favorites.includes(recipe.id)
                 return (
                   <motion.div
                     key={recipe.id}
@@ -198,8 +197,8 @@ export function RecipeBrowserModal({
                       </div>
                       <button
                         onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleFavorite(recipe.id);
+                          e.stopPropagation()
+                          onToggleFavorite(recipe.id)
                         }}
                         className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center shrink-0"
                       >
@@ -213,12 +212,12 @@ export function RecipeBrowserModal({
                       </button>
                     </div>
                   </motion.div>
-                );
+                )
               })}
             </div>
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }
