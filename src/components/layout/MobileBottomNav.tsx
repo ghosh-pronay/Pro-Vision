@@ -1,18 +1,21 @@
-import { NavLink } from "react-router";
-import { useLang } from "@/i18n/LanguageContext";
-import { t } from "@/i18n/translations";
-import { Settings } from "lucide-react";
-import type { NavItem } from "./nav-items";
+import { NavLink } from "react-router"
+import { useLang } from "@/i18n/LanguageContext"
+import { t } from "@/i18n/translations"
+import { Settings } from "lucide-react"
+import type { NavItem } from "./nav-items"
 
 interface MobileBottomNavProps {
-  items: NavItem[];
+  items: NavItem[]
 }
 
 export default function MobileBottomNav({ items }: MobileBottomNavProps) {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-strong border-t border-border/30 safe-area-pb">
+    <nav
+      aria-label="Mobile navigation"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-strong border-t border-border/30 safe-area-pb"
+    >
       <div className="flex items-center justify-around px-2 py-2">
         {items.map(({ path, icon: Icon, labelKey }) => (
           <NavLink
@@ -41,5 +44,5 @@ export default function MobileBottomNav({ items }: MobileBottomNavProps) {
         </NavLink>
       </div>
     </nav>
-  );
+  )
 }

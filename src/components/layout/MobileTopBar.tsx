@@ -1,10 +1,10 @@
-import { Link } from "react-router";
-import { Menu, X } from "lucide-react";
-import logo from "@/assets/logo.png";
+import { Link } from "react-router"
+import { Menu, X } from "lucide-react"
+import logo from "@/assets/logo.png"
 
 interface MobileTopBarProps {
-  sidebarOpen: boolean;
-  onToggleSidebar: () => void;
+  sidebarOpen: boolean
+  onToggleSidebar: () => void
 }
 
 export default function MobileTopBar({
@@ -12,7 +12,7 @@ export default function MobileTopBar({
   onToggleSidebar,
 }: MobileTopBarProps) {
   return (
-    <div className="md:hidden fixed top-0 left-0 right-0 z-50 glass-strong border-b border-border/30">
+    <header className="md:hidden fixed top-0 left-0 right-0 z-50 glass-strong border-b border-border/30">
       <div className="flex items-center justify-between px-4 py-3">
         <Link
           to="/"
@@ -33,10 +33,12 @@ export default function MobileTopBar({
         <button
           onClick={onToggleSidebar}
           className="size-11 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
+          aria-expanded={sidebarOpen}
+          aria-label={sidebarOpen ? "Close menu" : "Open menu"}
         >
           {sidebarOpen ? <X className="size-4" /> : <Menu className="size-4" />}
         </button>
       </div>
-    </div>
-  );
+    </header>
+  )
 }

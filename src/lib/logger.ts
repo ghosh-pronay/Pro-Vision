@@ -10,7 +10,6 @@ export function initSentry() {
   const dsn = import.meta.env.VITE_SENTRY_DSN
   if (!dsn) {
     if (!isDev) {
-      // eslint-disable-next-line no-console
       console.warn(
         "[logger] VITE_SENTRY_DSN not set — errors will only be logged to console",
       )

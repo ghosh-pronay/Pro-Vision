@@ -10,6 +10,13 @@ import "./index.css"
 
 initSentry()
 
+if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  const style = document.createElement("style")
+  style.textContent =
+    "*, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }"
+  document.head.appendChild(style)
+}
+
 class RootErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error: Error | null }
@@ -49,6 +56,7 @@ class RootErrorBoundary extends React.Component<
             </p>
             <button
               onClick={() => window.location.reload()}
+              aria-label="Reload page"
               style={{
                 background: "#1a6fb5",
                 color: "#fff",

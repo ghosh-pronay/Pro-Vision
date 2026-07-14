@@ -1,18 +1,18 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, Info, X } from "lucide-react";
-import { Button } from "./button";
-import { useLang } from "@/i18n/LanguageContext";
-import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion"
+import { AlertTriangle, Info, X } from "lucide-react"
+import { Button } from "./button"
+import { useLang } from "@/i18n/LanguageContext"
+import { cn } from "@/lib/utils"
 
 interface ConfirmDialogProps {
-  open: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-  title: string;
-  description: string;
-  confirmLabel?: string;
-  cancelLabel?: string;
-  variant?: "danger" | "warning" | "info";
+  open: boolean
+  onConfirm: () => void
+  onCancel: () => void
+  title: string
+  description: string
+  confirmLabel?: string
+  cancelLabel?: string
+  variant?: "danger" | "warning" | "info"
 }
 
 const variantConfig = {
@@ -34,12 +34,12 @@ const variantConfig = {
     iconColor: "text-primary",
     confirmBg: "bg-primary text-primary-foreground hover:bg-primary/90",
   },
-};
+}
 
 const defaultLabels = {
   en: { confirm: "Confirm", cancel: "Cancel" },
   bn: { confirm: "নিশ্চিত করুন", cancel: "বাতিল" },
-};
+}
 
 export function ConfirmDialog({
   open,
@@ -51,10 +51,10 @@ export function ConfirmDialog({
   cancelLabel,
   variant = "danger",
 }: ConfirmDialogProps) {
-  const { lang } = useLang();
-  const labels = defaultLabels[lang];
-  const config = variantConfig[variant];
-  const Icon = config.icon;
+  const { lang } = useLang()
+  const labels = defaultLabels[lang]
+  const config = variantConfig[variant]
+  const Icon = config.icon
 
   return (
     <AnimatePresence>
@@ -78,10 +78,15 @@ export function ConfirmDialog({
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="glass-strong rounded-2xl p-6 w-full max-w-sm relative z-10"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-dialog-title"
+            aria-describedby="confirm-dialog-description"
           >
             <button
               onClick={onCancel}
               className="absolute right-4 top-4 p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              aria-label={labels.cancel}
             >
               <X className="w-4 h-4" />
             </button>
@@ -95,10 +100,16 @@ export function ConfirmDialog({
               >
                 <Icon className={cn("w-6 h-6", config.iconColor)} />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
+              <h3
+                id="confirm-dialog-title"
+                className="text-lg font-semibold text-foreground mb-2"
+              >
                 {title}
               </h3>
-              <p className="text-sm text-muted-foreground mb-6">
+              <p
+                id="confirm-dialog-description"
+                className="text-sm text-muted-foreground mb-6"
+              >
                 {description}
               </p>
 
@@ -122,5 +133,5 @@ export function ConfirmDialog({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }
