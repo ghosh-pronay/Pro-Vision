@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import React, { useMemo } from "react"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import {
@@ -37,7 +37,11 @@ const MOOD_EMOJI: Record<string, string> = {
   terrible: "\u{1F622}",
 }
 
-export function WellbeingTab({ period }: { period: Period }) {
+export const WellbeingTab = React.memo(function WellbeingTab({
+  period,
+}: {
+  period: Period
+}) {
   const moods = useQuery(api.moods.list) as Mood[] | undefined
   const sleepLogs = useQuery(api.sleepLogs.list) as SleepLog[] | undefined
   const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
@@ -252,4 +256,4 @@ export function WellbeingTab({ period }: { period: Period }) {
       </ChartCard>
     </div>
   )
-}
+})

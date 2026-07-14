@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useLang } from "@/i18n/LanguageContext"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useDeferredValue } from "react"
 import {
   BookOpen,
   Plus,
@@ -51,6 +51,7 @@ export default function Reading() {
   const deleteItem = useMutation(api.readingList.remove, "readingList")
 
   const [search, setSearch] = useState("")
+  const deferredSearch = useDeferredValue(search)
   const [filter, setFilter] = useState<
     "all" | "want_to_read" | "reading" | "completed"
   >("all")
@@ -77,13 +78,13 @@ export default function Reading() {
     return items
       .filter((item) => {
         const matchesSearch =
-          item.title.toLowerCase().includes(search.toLowerCase()) ||
-          item.author?.toLowerCase().includes(search.toLowerCase())
+          item.title.toLowerCase().includes(deferredSearch.toLowerCase()) ||
+          item.author?.toLowerCase().includes(deferredSearch.toLowerCase())
         const matchesFilter = filter === "all" || item.status === filter
         return matchesSearch && matchesFilter
       })
       .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))
-  }, [items, search, filter])
+  }, [items, deferredSearch, filter])
 
   const stats = useMemo(() => {
     if (!items) return { total: 0, reading: 0, completed: 0, wantToRead: 0 }

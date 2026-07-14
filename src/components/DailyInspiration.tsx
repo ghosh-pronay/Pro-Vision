@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 import { useI18n } from "@/hooks/use-i18n"
-import { useState, useMemo } from "react"
+import React, { useState, useMemo } from "react"
 import { Sparkles, BookOpen, Quote } from "lucide-react"
 
 interface DailyTranslations {
@@ -245,7 +245,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 }
 
-export default function DailyInspiration() {
+function DailyInspiration() {
   const i18n = useI18n()
   const t = i18n.t as unknown as { daily: DailyTranslations }
   const [selectedSign, setSelectedSign] = useState<string>("Aries")
@@ -390,3 +390,5 @@ export default function DailyInspiration() {
     </motion.div>
   )
 }
+
+export default React.memo(DailyInspiration)

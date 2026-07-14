@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import React, { useMemo } from "react"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import {
@@ -16,7 +16,11 @@ import { useHeatmap, HeatmapCalendar } from "./Heatmap"
 import type { Period } from "./PeriodSelector"
 import type { Habit } from "@/types"
 
-export function HabitsTab({ period }: { period: Period }) {
+export const HabitsTab = React.memo(function HabitsTab({
+  period,
+}: {
+  period: Period
+}) {
   const habits = useQuery(api.habits.list) as Habit[] | undefined
   const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
@@ -100,4 +104,4 @@ export function HabitsTab({ period }: { period: Period }) {
       </ChartCard>
     </div>
   )
-}
+})

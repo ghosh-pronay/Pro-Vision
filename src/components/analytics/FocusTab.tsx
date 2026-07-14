@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import React, { useMemo } from "react"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import {
@@ -29,7 +29,11 @@ const CHART_COLORS = [
   "#eab308",
 ]
 
-export function FocusTab({ period }: { period: Period }) {
+export const FocusTab = React.memo(function FocusTab({
+  period,
+}: {
+  period: Period
+}) {
   const sessions = useQuery(api.focusSessions.list) as
     | FocusSession[]
     | undefined
@@ -170,4 +174,4 @@ export function FocusTab({ period }: { period: Period }) {
       </ChartCard>
     </div>
   )
-}
+})

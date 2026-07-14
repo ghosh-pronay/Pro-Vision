@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useDeferredValue } from "react"
 import { useQuery, useMutation } from "convex/react"
 import { useNavigate } from "react-router"
 import { api } from "@/convex/_generated/api"
@@ -134,6 +134,7 @@ export default function Admin() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<Tab>("overview")
   const [searchQuery, setSearchQuery] = useState("")
+  const deferredSearchQuery = useDeferredValue(searchQuery)
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
 
   const adminApi = api.admin
@@ -197,9 +198,9 @@ export default function Admin() {
 
   const filteredUsers = (users ?? []).filter(
     (u: AdminUser) =>
-      u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.displayName?.toLowerCase().includes(searchQuery.toLowerCase()),
+      u.name?.toLowerCase().includes(deferredSearchQuery.toLowerCase()) ||
+      u.email?.toLowerCase().includes(deferredSearchQuery.toLowerCase()) ||
+      u.displayName?.toLowerCase().includes(deferredSearchQuery.toLowerCase()),
   )
 
   const handleToggleConfig = async (key: string, value: boolean | string) => {

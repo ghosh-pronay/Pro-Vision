@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useLang } from "@/i18n/LanguageContext"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useDeferredValue } from "react"
 import {
   BookOpen,
   Plus,
@@ -65,6 +65,7 @@ export default function Journal() {
   const deleteEntry = useMutation(api.journal.remove, "journal")
 
   const [search, setSearch] = useState("")
+  const deferredSearch = useDeferredValue(search)
   const [filter, setFilter] = useState<"all" | "week" | "month">("all")
   const [showEditor, setShowEditor] = useState(false)
   const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null)
@@ -86,8 +87,8 @@ export default function Journal() {
     return entries
       .filter((entry) => {
         const matchesSearch =
-          entry.title.toLowerCase().includes(search.toLowerCase()) ||
-          entry.content.toLowerCase().includes(search.toLowerCase())
+          entry.title.toLowerCase().includes(deferredSearch.toLowerCase()) ||
+          entry.content.toLowerCase().includes(deferredSearch.toLowerCase())
         const matchesFilter =
           filter === "all" ||
           (filter === "week" && entry.date >= weekAgo) ||
@@ -95,7 +96,7 @@ export default function Journal() {
         return matchesSearch && matchesFilter
       })
       .sort((a, b) => b.date - a.date)
-  }, [entries, search, filter])
+  }, [entries, deferredSearch, filter])
 
   const writingStreak = useMemo(() => {
     if (!entries || entries.length === 0) return 0

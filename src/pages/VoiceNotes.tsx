@@ -1,7 +1,14 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useLang } from "@/i18n/LanguageContext"
 import { t } from "@/i18n/translations"
-import { useState, useEffect, useRef, useCallback, useMemo } from "react"
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  useDeferredValue,
+} from "react"
 import {
   Mic,
   Play,
@@ -75,6 +82,7 @@ export default function VoiceNotes() {
   const [notes, setNotes] = useState<VoiceNote[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState<"bn" | "en">("bn")
   const [searchQuery, setSearchQuery] = useState("")
+  const deferredSearchQuery = useDeferredValue(searchQuery)
   const [currentTime, setCurrentTime] = useState(0)
   const [playingId, setPlayingId] = useState<string | null>(null)
 
@@ -97,15 +105,15 @@ export default function VoiceNotes() {
   const playingAudioRef = useRef<HTMLAudioElement | null>(null)
 
   const filteredNotes = useMemo(() => {
-    if (!searchQuery.trim()) return notes
-    const q = searchQuery.toLowerCase()
+    if (!deferredSearchQuery.trim()) return notes
+    const q = deferredSearchQuery.toLowerCase()
     return notes.filter(
       (note) =>
         note.title.toLowerCase().includes(q) ||
         note.transcription.toLowerCase().includes(q) ||
         note.tags.some((tag) => tag.toLowerCase().includes(q)),
     )
-  }, [notes, searchQuery])
+  }, [notes, deferredSearchQuery])
 
   const formatDuration = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60)

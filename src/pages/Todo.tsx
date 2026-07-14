@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 import { useLang } from "@/i18n/LanguageContext"
 import { t, type TranslationKey } from "@/i18n/translations"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useDeferredValue } from "react"
 import { useQuery, useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import type { Task } from "@/types"
@@ -164,6 +164,7 @@ export default function Todo() {
 
   const [filter, setFilter] = useState<FilterTab>("all")
   const [search, setSearch] = useState("")
+  const deferredSearch = useDeferredValue(search)
   const [showAdd, setShowAdd] = useState(false)
   const [newTitle, setNewTitle] = useState("")
   const [newPriority, setNewPriority] = useState<Priority>("medium")
@@ -173,7 +174,10 @@ export default function Todo() {
   const isOffline = false
 
   const filtered = (allTasks ?? []).filter((task) => {
-    if (search && !task.title.toLowerCase().includes(search.toLowerCase()))
+    if (
+      deferredSearch &&
+      !task.title.toLowerCase().includes(deferredSearch.toLowerCase())
+    )
       return false
 
     const now = new Date()

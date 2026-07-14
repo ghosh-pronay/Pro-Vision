@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 import { useI18n } from "@/hooks/use-i18n"
-import { useMemo, type ElementType } from "react"
+import React, { useMemo, type ElementType } from "react"
 import {
   TrendingUp,
   TrendingDown,
@@ -73,7 +73,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 }
 
-export default function SmartInsights({
+function SmartInsights({
   tasks,
   habits,
   transactions,
@@ -274,3 +274,5 @@ export default function SmartInsights({
     </motion.div>
   )
 }
+
+export default React.memo(SmartInsights)

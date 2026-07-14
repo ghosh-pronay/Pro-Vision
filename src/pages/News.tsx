@@ -1,7 +1,13 @@
 import { motion } from "framer-motion"
 import { useLang } from "@/i18n/LanguageContext"
 import { t } from "@/i18n/translations"
-import { useState, useCallback, useEffect, useRef } from "react"
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useDeferredValue,
+} from "react"
 import { Globe, RefreshCw, ExternalLink, Search, Clock } from "lucide-react"
 import { logger } from "@/lib/logger"
 
@@ -41,6 +47,7 @@ const categoryMap: Record<string, string> = {
 export default function News() {
   const { lang } = useLang()
   const [search, setSearch] = useState("")
+  const deferredSearch = useDeferredValue(search)
   const [category, setCategory] = useState("all")
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(false)
@@ -95,9 +102,9 @@ export default function News() {
 
   const filtered = articles.filter((a) => {
     if (
-      search &&
-      !a.title.toLowerCase().includes(search.toLowerCase()) &&
-      !a.description?.toLowerCase().includes(search.toLowerCase())
+      deferredSearch &&
+      !a.title.toLowerCase().includes(deferredSearch.toLowerCase()) &&
+      !a.description?.toLowerCase().includes(deferredSearch.toLowerCase())
     )
       return false
     return true

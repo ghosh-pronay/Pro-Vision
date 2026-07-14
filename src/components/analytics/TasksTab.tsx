@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import React, { useMemo } from "react"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import {
@@ -18,7 +18,11 @@ import { ChartCard } from "./Charts"
 import type { Period } from "./PeriodSelector"
 import type { Task } from "@/types"
 
-export function TasksTab({ period }: { period: Period }) {
+export const TasksTab = React.memo(function TasksTab({
+  period,
+}: {
+  period: Period
+}) {
   const tasks = useQuery(api.tasks.list) as Task[] | undefined
   const days = period === "7d" ? 7 : period === "30d" ? 30 : 90
 
@@ -117,4 +121,4 @@ export function TasksTab({ period }: { period: Period }) {
       </ChartCard>
     </div>
   )
-}
+})
