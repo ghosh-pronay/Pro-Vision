@@ -162,6 +162,7 @@ export function BalancesTab({
                 <button
                   onClick={() => onDeleteFriend(friend._id)}
                   className="cursor-pointer p-2 rounded-lg hover:bg-destructive/10"
+                  aria-label="Delete friend"
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </button>

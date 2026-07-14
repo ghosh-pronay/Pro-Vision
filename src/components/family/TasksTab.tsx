@@ -1,26 +1,26 @@
-import { ListChecks, Plus, Trash2, Clock } from "lucide-react";
-import type { FamilyMember, FamilyTask, TaskStatus } from "./FamilyTypes";
+import { ListChecks, Plus, Trash2, Clock } from "lucide-react"
+import type { FamilyMember, FamilyTask, TaskStatus } from "./FamilyTypes"
 
 interface TasksTabProps {
-  tasks: FamilyTask[];
-  members: FamilyMember[];
-  lang: string;
-  onAddClick: () => void;
-  onDelete: (id: string) => void;
-  onUpdateStatus: (taskId: string, newStatus: TaskStatus) => void;
+  tasks: FamilyTask[]
+  members: FamilyMember[]
+  lang: string
+  onAddClick: () => void
+  onDelete: (id: string) => void
+  onUpdateStatus: (taskId: string, newStatus: TaskStatus) => void
   tasksByStatus: {
-    todo: FamilyTask[];
-    "in-progress": FamilyTask[];
-    done: FamilyTask[];
-  };
+    todo: FamilyTask[]
+    "in-progress": FamilyTask[]
+    done: FamilyTask[]
+  }
 }
 
 function getMemberName(members: FamilyMember[], id: string) {
-  return members.find((m) => m.id === id)?.name || "Unknown";
+  return members.find((m) => m.id === id)?.name || "Unknown"
 }
 
 function getMemberAvatar(members: FamilyMember[], id: string) {
-  return members.find((m) => m.id === id)?.avatar || "🧑";
+  return members.find((m) => m.id === id)?.avatar || "🧑"
 }
 
 export default function TasksTab({
@@ -83,6 +83,7 @@ export default function TasksTab({
                       <button
                         onClick={() => onDelete(task.id)}
                         className="opacity-0 group-hover:opacity-100 text-red-500"
+                        aria-label="Delete task"
                       >
                         <Trash2 className="size-3" />
                       </button>
@@ -144,6 +145,7 @@ export default function TasksTab({
                       <button
                         onClick={() => onDelete(task.id)}
                         className="opacity-0 group-hover:opacity-100 text-red-500"
+                        aria-label="Delete task"
                       >
                         <Trash2 className="size-3" />
                       </button>
@@ -188,6 +190,7 @@ export default function TasksTab({
                     <button
                       onClick={() => onDelete(task.id)}
                       className="opacity-0 group-hover:opacity-100 text-red-500"
+                      aria-label="Delete task"
                     >
                       <Trash2 className="size-3" />
                     </button>
@@ -199,5 +202,5 @@ export default function TasksTab({
         </div>
       </div>
     </div>
-  );
+  )
 }

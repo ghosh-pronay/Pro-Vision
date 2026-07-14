@@ -1,16 +1,16 @@
-import { motion } from "framer-motion";
-import { Wallet, Plus, Edit3, Star, Trash2 } from "lucide-react";
-import { t, type Lang } from "@/i18n/translations";
-import type { Wallet as WalletType } from "@/types/wallet";
-import { fadeUp } from "./constants";
+import { motion } from "framer-motion"
+import { Wallet, Plus, Edit3, Star, Trash2 } from "lucide-react"
+import { t, type Lang } from "@/i18n/translations"
+import type { Wallet as WalletType } from "@/types/wallet"
+import { fadeUp } from "./constants"
 
 interface WalletManagerProps {
-  lang: Lang;
-  visibleWallets: WalletType[];
-  onAdd: () => void;
-  onEdit: (wallet: WalletType) => void;
-  onDelete: (id: string) => void;
-  onSetDefault: (wallet: WalletType) => void;
+  lang: Lang
+  visibleWallets: WalletType[]
+  onAdd: () => void
+  onEdit: (wallet: WalletType) => void
+  onDelete: (id: string) => void
+  onSetDefault: (wallet: WalletType) => void
 }
 
 export function WalletManager({
@@ -67,14 +67,14 @@ export function WalletManager({
                 <button
                   onClick={() => onEdit(w)}
                   className="cursor-pointer p-1 rounded hover:bg-foreground/5"
-                  title={lang === "bn" ? "সম্পাদনা" : "Edit"}
+                  aria-label="Edit wallet"
                 >
                   <Edit3 className="size-3 text-muted-foreground" />
                 </button>
                 <button
                   onClick={() => onDelete(w._id)}
                   className="cursor-pointer p-1 rounded hover:bg-destructive/10"
-                  title={lang === "bn" ? "মুছুন" : "Delete"}
+                  aria-label="Delete wallet"
                 >
                   <Trash2 className="size-3 text-destructive" />
                 </button>
@@ -87,5 +87,5 @@ export function WalletManager({
         ))}
       </div>
     </motion.div>
-  );
+  )
 }

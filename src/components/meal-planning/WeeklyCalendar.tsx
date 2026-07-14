@@ -198,6 +198,7 @@ export function WeeklyCalendar({
                       onDeleteMeal(selectedDay, mt.key)
                     }}
                     className="text-muted-foreground hover:text-destructive"
+                    aria-label="Delete meal"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

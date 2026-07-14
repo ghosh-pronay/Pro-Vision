@@ -1,16 +1,16 @@
-import { Trash2 } from "lucide-react";
-import { t, type TranslationKey, type Lang } from "@/i18n/translations";
-import type { ExpenseTransaction } from "./types";
-import { CATEGORY_ICONS } from "./types";
-import type { Wallet as WalletType } from "@/types/wallet";
+import { Trash2 } from "lucide-react"
+import { t, type TranslationKey, type Lang } from "@/i18n/translations"
+import type { ExpenseTransaction } from "./types"
+import { CATEGORY_ICONS } from "./types"
+import type { Wallet as WalletType } from "@/types/wallet"
 
 interface Props {
-  lang: Lang;
-  filtered: ExpenseTransaction[];
-  wallets: WalletType[];
-  txFilter: "all" | "income" | "expense" | "transfer";
-  onFilterChange: (f: "all" | "income" | "expense" | "transfer") => void;
-  onDelete: (id: string) => void;
+  lang: Lang
+  filtered: ExpenseTransaction[]
+  wallets: WalletType[]
+  txFilter: "all" | "income" | "expense" | "transfer"
+  onFilterChange: (f: "all" | "income" | "expense" | "transfer") => void
+  onDelete: (id: string) => void
 }
 
 export function TransactionsList({
@@ -21,24 +21,24 @@ export function TransactionsList({
   onFilterChange,
   onDelete,
 }: Props) {
-  const t_ = (key: string) => t(key as TranslationKey, lang);
+  const t_ = (key: string) => t(key as TranslationKey, lang)
 
   const formatDate = (ts: number) => {
     return new Date(ts).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   const getWalletName = (walletId: string) => {
-    const w = wallets.find((w: WalletType) => w._id === walletId);
-    return w ? (lang === "bn" && w.nameBn ? w.nameBn : w.name) : "";
-  };
+    const w = wallets.find((w: WalletType) => w._id === walletId)
+    return w ? (lang === "bn" && w.nameBn ? w.nameBn : w.name) : ""
+  }
 
   const getWalletIcon = (walletId: string) => {
-    const w = wallets.find((w: WalletType) => w._id === walletId);
-    return w?.color || "#6b7280";
-  };
+    const w = wallets.find((w: WalletType) => w._id === walletId)
+    return w?.color || "#6b7280"
+  }
 
   return (
     <div>
@@ -108,6 +108,7 @@ export function TransactionsList({
             <button
               onClick={() => onDelete(tx._id)}
               className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500 min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2"
+              aria-label="Delete transaction"
             >
               <Trash2 className="size-4" />
             </button>
@@ -115,5 +116,5 @@ export function TransactionsList({
         ))}
       </div>
     </div>
-  );
+  )
 }

@@ -1,11 +1,11 @@
-import { Trophy, PartyPopper, Star, Trash2 } from "lucide-react";
-import { now, getEventEmoji } from "./FamilyConstants";
-import type { FamilyEvent } from "./FamilyTypes";
+import { Trophy, PartyPopper, Star, Trash2 } from "lucide-react"
+import { now, getEventEmoji } from "./FamilyConstants"
+import type { FamilyEvent } from "./FamilyTypes"
 
 interface CelebrationsTabProps {
-  events: FamilyEvent[];
-  lang: string;
-  onDelete: (id: string) => void;
+  events: FamilyEvent[]
+  lang: string
+  onDelete: (id: string) => void
 }
 
 export default function CelebrationsTab({
@@ -15,13 +15,13 @@ export default function CelebrationsTab({
 }: CelebrationsTabProps) {
   const upcomingEvents = [...events]
     .filter((e) => e.date > now)
-    .sort((a, b) => a.date - b.date);
+    .sort((a, b) => a.date - b.date)
 
-  const nextCelebration = upcomingEvents[0];
+  const nextCelebration = upcomingEvents[0]
 
   const daysLeft = nextCelebration
     ? Math.ceil((nextCelebration.date - now) / (24 * 60 * 60 * 1000))
-    : null;
+    : null
 
   return (
     <div className="space-y-4">
@@ -69,7 +69,7 @@ export default function CelebrationsTab({
             .map((event) => {
               const daysUntil = Math.ceil(
                 (event.date - now) / (24 * 60 * 60 * 1000),
-              );
+              )
               return (
                 <div
                   key={event.id}
@@ -98,11 +98,12 @@ export default function CelebrationsTab({
                   <button
                     onClick={() => onDelete(event.id)}
                     className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all"
+                    aria-label="Delete event"
                   >
                     <Trash2 className="size-4" />
                   </button>
                 </div>
-              );
+              )
             })}
         </div>
       </div>
@@ -164,5 +165,5 @@ export default function CelebrationsTab({
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -439,7 +439,7 @@ export default function QRProfile() {
                     <button
                       onClick={() => handleRestoreFromHistory(item)}
                       className="p-1.5 hover:bg-white/10 rounded text-indigo-400"
-                      title={lang === "bn" ? "পুনরুদ্ধার" : "Restore"}
+                      aria-label="Restore"
                     >
                       <Eye className="h-4 w-4" />
                     </button>

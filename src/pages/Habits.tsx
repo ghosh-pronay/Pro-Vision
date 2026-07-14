@@ -1454,6 +1454,15 @@ export default function Habits() {
                           archiveHabit({ id: habit._id as Id<"habits"> })
                         }
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-[var(--pv-orange)] min-w-[32px] min-h-[32px] flex items-center justify-center"
+                        aria-label={
+                          habit.archived
+                            ? lang === "bn"
+                              ? "পুনরুদ্ধার করুন"
+                              : "Restore habit"
+                            : lang === "bn"
+                              ? "আর্কাইভ করুন"
+                              : "Archive habit"
+                        }
                       >
                         {habit.archived ? (
                           <ArchiveRestore className="size-3.5" />
@@ -1464,6 +1473,7 @@ export default function Habits() {
                       <button
                         onClick={() => setDeleteTarget(habit._id)}
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500 min-w-[32px] min-h-[32px] flex items-center justify-center -mr-1"
+                        aria-label={lang === "bn" ? "মুছুন" : "Delete habit"}
                       >
                         <Trash2 className="size-3.5" />
                       </button>

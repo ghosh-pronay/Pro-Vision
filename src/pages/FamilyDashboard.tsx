@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo } from "react"
 import {
   Users,
   Target,
@@ -12,7 +12,7 @@ import {
   Heart,
   Trophy,
   X,
-} from "lucide-react";
+} from "lucide-react"
 
 import type {
   FamilyMember,
@@ -27,7 +27,7 @@ import type {
   ModalType,
   ActiveSection,
   ModalForm,
-} from "@/components/family/FamilyTypes";
+} from "@/components/family/FamilyTypes"
 
 import {
   AVATARS,
@@ -39,30 +39,30 @@ import {
   INITIAL_EXPENSES,
   INITIAL_TASKS,
   INITIAL_EVENTS,
-} from "@/components/family/FamilyConstants";
+} from "@/components/family/FamilyConstants"
 
-import MembersTab from "@/components/family/MembersTab";
-import GoalsTab from "@/components/family/GoalsTab";
-import ExpensesTab from "@/components/family/ExpensesTab";
-import MealsTab from "@/components/family/MealsTab";
-import CalendarTab from "@/components/family/CalendarTab";
-import TasksTab from "@/components/family/TasksTab";
-import MessagesTab from "@/components/family/MessagesTab";
-import HealthTab from "@/components/family/HealthTab";
-import CelebrationsTab from "@/components/family/CelebrationsTab";
+import MembersTab from "@/components/family/MembersTab"
+import GoalsTab from "@/components/family/GoalsTab"
+import ExpensesTab from "@/components/family/ExpensesTab"
+import MealsTab from "@/components/family/MealsTab"
+import CalendarTab from "@/components/family/CalendarTab"
+import TasksTab from "@/components/family/TasksTab"
+import MessagesTab from "@/components/family/MessagesTab"
+import HealthTab from "@/components/family/HealthTab"
+import CelebrationsTab from "@/components/family/CelebrationsTab"
 
-const now = Date.now();
+const now = Date.now()
 
 export default function FamilyDashboard() {
-  const { lang } = useLang();
+  const { lang } = useLang()
 
-  const [members, setMembers] = useState<FamilyMember[]>(INITIAL_MEMBERS);
+  const [members, setMembers] = useState<FamilyMember[]>(INITIAL_MEMBERS)
 
-  const [goals, setGoals] = useState<FamilyGoal[]>(INITIAL_GOALS);
+  const [goals, setGoals] = useState<FamilyGoal[]>(INITIAL_GOALS)
 
-  const [expenses, setExpenses] = useState<FamilyExpense[]>(INITIAL_EXPENSES);
+  const [expenses, setExpenses] = useState<FamilyExpense[]>(INITIAL_EXPENSES)
 
-  const [tasks, setTasks] = useState<FamilyTask[]>(INITIAL_TASKS);
+  const [tasks, setTasks] = useState<FamilyTask[]>(INITIAL_TASKS)
 
   const [messages, setMessages] = useState<FamilyMessage[]>([
     {
@@ -98,13 +98,13 @@ export default function FamilyDashboard() {
       author: "1",
       timestamp: now - 28800000,
     },
-  ]);
+  ])
 
-  const [events, setEvents] = useState<FamilyEvent[]>(INITIAL_EVENTS);
+  const [events, setEvents] = useState<FamilyEvent[]>(INITIAL_EVENTS)
 
-  const [activeSection, setActiveSection] = useState<ActiveSection>("members");
+  const [activeSection, setActiveSection] = useState<ActiveSection>("members")
 
-  const [showModal, setShowModal] = useState<ModalType>(null);
+  const [showModal, setShowModal] = useState<ModalType>(null)
 
   const [modalForm, setModalForm] = useState<ModalForm>({
     name: "",
@@ -123,16 +123,16 @@ export default function FamilyDashboard() {
     target: 100,
     deadline: "",
     paidBy: "",
-  });
+  })
 
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState("")
 
-  const [budget, setBudget] = useState(50000);
+  const [budget, setBudget] = useState(50000)
 
   const totalExpenses = useMemo(
     () => expenses.reduce((sum, e) => sum + e.amount, 0),
     [expenses],
-  );
+  )
 
   const expensesByCategory = useMemo(() => {
     const map: Record<ExpenseCategory, number> = {
@@ -143,34 +143,34 @@ export default function FamilyDashboard() {
       healthcare: 0,
       transport: 0,
       others: 0,
-    };
+    }
     expenses.forEach((e) => {
-      map[e.category] += e.amount;
-    });
-    return map;
-  }, [expenses]);
+      map[e.category] += e.amount
+    })
+    return map
+  }, [expenses])
 
   const splitAmounts = useMemo(() => {
-    const splits: Record<string, number> = {};
+    const splits: Record<string, number> = {}
     members.forEach((m) => {
-      splits[m.id] = 0;
-    });
+      splits[m.id] = 0
+    })
     expenses.forEach((e) => {
-      const share = e.amount / e.splitWith.length;
+      const share = e.amount / e.splitWith.length
       e.splitWith.forEach((id) => {
-        splits[id] = (splits[id] || 0) + share;
-      });
-    });
-    return splits;
-  }, [expenses, members]);
+        splits[id] = (splits[id] || 0) + share
+      })
+    })
+    return splits
+  }, [expenses, members])
 
   const tasksByStatus = useMemo(() => {
     return {
       todo: tasks.filter((t) => t.status === "todo"),
       "in-progress": tasks.filter((t) => t.status === "in-progress"),
       done: tasks.filter((t) => t.status === "done"),
-    };
-  }, [tasks]);
+    }
+  }, [tasks])
 
   const todayMeals = useMemo(
     () => ({
@@ -188,7 +188,7 @@ export default function FamilyDashboard() {
       },
     }),
     [lang],
-  );
+  )
 
   const resetModalForm = () => {
     setModalForm({
@@ -208,11 +208,11 @@ export default function FamilyDashboard() {
       target: 100,
       deadline: "",
       paidBy: "",
-    });
-  };
+    })
+  }
 
   const handleAddMember = () => {
-    if (!modalForm.name.trim()) return;
+    if (!modalForm.name.trim()) return
     setMembers([
       ...members,
       {
@@ -224,13 +224,13 @@ export default function FamilyDashboard() {
           ? new Date(modalForm.date).getTime()
           : undefined,
       },
-    ]);
-    resetModalForm();
-    setShowModal(null);
-  };
+    ])
+    resetModalForm()
+    setShowModal(null)
+  }
 
   const handleAddGoal = () => {
-    if (!modalForm.title.trim()) return;
+    if (!modalForm.title.trim()) return
     setGoals([
       ...goals,
       {
@@ -244,16 +244,16 @@ export default function FamilyDashboard() {
           ? new Date(modalForm.deadline).getTime()
           : undefined,
       },
-    ]);
-    resetModalForm();
-    setShowModal(null);
-  };
+    ])
+    resetModalForm()
+    setShowModal(null)
+  }
 
   const handleAddExpense = () => {
-    if (!modalForm.title.trim() || modalForm.amount <= 0) return;
+    if (!modalForm.title.trim() || modalForm.amount <= 0) return
     const splitWith = modalForm.paidBy
       ? [modalForm.paidBy]
-      : members.map((m) => m.id);
+      : members.map((m) => m.id)
     setExpenses([
       ...expenses,
       {
@@ -265,13 +265,13 @@ export default function FamilyDashboard() {
         paidBy: modalForm.paidBy || members[0]?.id || "",
         splitWith,
       },
-    ]);
-    resetModalForm();
-    setShowModal(null);
-  };
+    ])
+    resetModalForm()
+    setShowModal(null)
+  }
 
   const handleAddTask = () => {
-    if (!modalForm.title.trim()) return;
+    if (!modalForm.title.trim()) return
     setTasks([
       ...tasks,
       {
@@ -283,13 +283,13 @@ export default function FamilyDashboard() {
           ? new Date(modalForm.deadline).getTime()
           : undefined,
       },
-    ]);
-    resetModalForm();
-    setShowModal(null);
-  };
+    ])
+    resetModalForm()
+    setShowModal(null)
+  }
 
   const handleAddEvent = () => {
-    if (!modalForm.title.trim() || !modalForm.date) return;
+    if (!modalForm.title.trim() || !modalForm.date) return
     setEvents([
       ...events,
       {
@@ -299,13 +299,13 @@ export default function FamilyDashboard() {
         type: modalForm.eventType,
         description: modalForm.description,
       },
-    ]);
-    resetModalForm();
-    setShowModal(null);
-  };
+    ])
+    resetModalForm()
+    setShowModal(null)
+  }
 
   const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim()) return
     setMessages([
       ...messages,
       {
@@ -314,9 +314,9 @@ export default function FamilyDashboard() {
         author: members[0]?.id || "",
         timestamp: Date.now(),
       },
-    ]);
-    setNewMessage("");
-  };
+    ])
+    setNewMessage("")
+  }
 
   const handleDeleteItem = (
     type: "member" | "goal" | "expense" | "task" | "event" | "message",
@@ -324,31 +324,31 @@ export default function FamilyDashboard() {
   ) => {
     switch (type) {
       case "member":
-        setMembers(members.filter((m) => m.id !== id));
-        break;
+        setMembers(members.filter((m) => m.id !== id))
+        break
       case "goal":
-        setGoals(goals.filter((g) => g.id !== id));
-        break;
+        setGoals(goals.filter((g) => g.id !== id))
+        break
       case "expense":
-        setExpenses(expenses.filter((e) => e.id !== id));
-        break;
+        setExpenses(expenses.filter((e) => e.id !== id))
+        break
       case "task":
-        setTasks(tasks.filter((t) => t.id !== id));
-        break;
+        setTasks(tasks.filter((t) => t.id !== id))
+        break
       case "event":
-        setEvents(events.filter((e) => e.id !== id));
-        break;
+        setEvents(events.filter((e) => e.id !== id))
+        break
       case "message":
-        setMessages(messages.filter((m) => m.id !== id));
-        break;
+        setMessages(messages.filter((m) => m.id !== id))
+        break
     }
-  };
+  }
 
   const handleUpdateTaskStatus = (taskId: string, newStatus: TaskStatus) => {
     setTasks(
       tasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)),
-    );
-  };
+    )
+  }
 
   const handleUpdateGoalProgress = (goalId: string, increment: number) => {
     setGoals(
@@ -357,8 +357,8 @@ export default function FamilyDashboard() {
           ? { ...g, progress: Math.min(g.progress + increment, g.target) }
           : g,
       ),
-    );
-  };
+    )
+  }
 
   const sections = [
     {
@@ -406,7 +406,7 @@ export default function FamilyDashboard() {
       icon: Trophy,
       label: lang === "bn" ? "উদযাপন" : "Celebrations",
     },
-  ];
+  ]
 
   return (
     <div className="min-h-screen p-4 md:p-6 space-y-6">
@@ -573,6 +573,7 @@ export default function FamilyDashboard() {
                     <button
                       onClick={() => setShowModal(null)}
                       className="text-muted-foreground hover:text-foreground"
+                      aria-label="Close"
                     >
                       <X className="size-5" />
                     </button>
@@ -676,6 +677,7 @@ export default function FamilyDashboard() {
                     <button
                       onClick={() => setShowModal(null)}
                       className="text-muted-foreground hover:text-foreground"
+                      aria-label="Close"
                     >
                       <X className="size-5" />
                     </button>
@@ -794,6 +796,7 @@ export default function FamilyDashboard() {
                     <button
                       onClick={() => setShowModal(null)}
                       className="text-muted-foreground hover:text-foreground"
+                      aria-label="Close"
                     >
                       <X className="size-5" />
                     </button>
@@ -897,6 +900,7 @@ export default function FamilyDashboard() {
                     <button
                       onClick={() => setShowModal(null)}
                       className="text-muted-foreground hover:text-foreground"
+                      aria-label="Close"
                     >
                       <X className="size-5" />
                     </button>
@@ -978,6 +982,7 @@ export default function FamilyDashboard() {
                     <button
                       onClick={() => setShowModal(null)}
                       className="text-muted-foreground hover:text-foreground"
+                      aria-label="Close"
                     >
                       <X className="size-5" />
                     </button>
@@ -1069,5 +1074,5 @@ export default function FamilyDashboard() {
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }

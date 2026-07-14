@@ -679,6 +679,7 @@ export default function VoiceNotes() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("voiceNotes.search", lang)}
             className="w-full rounded-xl border bg-background pl-10 pr-4 py-2.5 text-sm"
+            aria-label="Search voice notes"
           />
         </div>
       </motion.div>
@@ -749,24 +750,28 @@ export default function VoiceNotes() {
                   <button
                     onClick={() => startEditing(note)}
                     className="cursor-pointer p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                    aria-label="Edit note"
                   >
                     <Edit3 className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setDeleteId(note.id)}
                     className="cursor-pointer p-1.5 rounded-lg hover:bg-foreground/10 transition-colors text-red-500"
+                    aria-label="Delete note"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => exportNote(note)}
                     className="cursor-pointer p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                    aria-label="Export note"
                   >
                     <Download className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => shareNote(note)}
                     className="cursor-pointer p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                    aria-label="Share note"
                   >
                     <Share2 className="h-4 w-4" />
                   </button>

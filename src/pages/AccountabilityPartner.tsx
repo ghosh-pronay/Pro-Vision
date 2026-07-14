@@ -559,6 +559,7 @@ export default function AccountabilityPartner() {
                       <button
                         onClick={() => handleAcceptRequest(request._id)}
                         className="cursor-pointer p-2 rounded-xl bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors"
+                        aria-label="Accept request"
                       >
                         <CheckCircle className="h-5 w-5" />
                       </button>

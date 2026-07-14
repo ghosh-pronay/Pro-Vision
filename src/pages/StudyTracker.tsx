@@ -242,6 +242,7 @@ export default function StudyTracker() {
                 <button
                   onClick={() => setDeleteConfirmId(session._id)}
                   className="cursor-pointer p-2 rounded-lg hover:bg-destructive/10"
+                  aria-label="Delete session"
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </button>

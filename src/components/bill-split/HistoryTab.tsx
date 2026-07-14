@@ -257,6 +257,7 @@ export function HistoryTab({
                             onDelete(bill._id)
                           }}
                           className="cursor-pointer p-1.5 rounded-lg hover:bg-destructive/10"
+                          aria-label="Delete bill"
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </button>

@@ -455,6 +455,7 @@ export default function BengaliCalendar() {
             <button
               onClick={handlePrevMonth}
               className="p-2 rounded-xl hover:bg-[var(--pv-glass)] transition-colors"
+              aria-label="Previous month"
             >
               <ChevronLeft size={20} className="text-[var(--pv-text)]" />
             </button>
@@ -504,6 +505,7 @@ export default function BengaliCalendar() {
             <button
               onClick={handleNextMonth}
               className="p-2 rounded-xl hover:bg-[var(--pv-glass)] transition-colors"
+              aria-label="Next month"
             >
               <ChevronRight size={20} className="text-[var(--pv-text)]" />
             </button>

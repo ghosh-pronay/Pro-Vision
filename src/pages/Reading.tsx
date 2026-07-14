@@ -551,7 +551,7 @@ export default function Reading() {
                         type="number"
                         value={totalPages}
                         onChange={(e) => setTotalPages(e.target.value)}
-                        aria-label="Pages"
+                        aria-label="Total pages"
                         className="w-full rounded-xl bg-foreground/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
@@ -563,7 +563,7 @@ export default function Reading() {
                         type="number"
                         value={currentPage}
                         onChange={(e) => setCurrentPage(e.target.value)}
-                        aria-label="Pages"
+                        aria-label="Current page"
                         className="w-full rounded-xl bg-foreground/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
@@ -615,7 +615,7 @@ export default function Reading() {
                   }
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  aria-label="Review"
+                  aria-label="URL"
                   className="w-full rounded-xl bg-foreground/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
 

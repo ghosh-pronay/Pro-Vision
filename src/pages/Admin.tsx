@@ -559,6 +559,7 @@ export default function Admin() {
                               <button
                                 onClick={() => handleSaveUser(user._id)}
                                 className="rounded-lg p-1.5 hover:bg-green-500/20 hover:text-green-400 transition-colors cursor-pointer"
+                                aria-label="Save user"
                               >
                                 <Save className="h-4 w-4" />
                               </button>
@@ -607,6 +608,7 @@ export default function Admin() {
                                   onClick={() => handleGrantPremium(user._id)}
                                   className="rounded-lg p-1.5 hover:bg-yellow-500/20 hover:text-yellow-400 transition-colors cursor-pointer"
                                   title="Grant Premium"
+                                  aria-label="Grant premium"
                                 >
                                   <Crown className="h-4 w-4" />
                                 </button>
@@ -842,6 +844,11 @@ export default function Admin() {
                         })
                       }
                       className="cursor-pointer hover:bg-foreground/5 rounded transition-colors"
+                      aria-label={
+                        system["system.maintenanceMode"]
+                          ? "Disable maintenance mode"
+                          : "Enable maintenance mode"
+                      }
                     >
                       {c.isActive ? (
                         <ToggleRight className="h-6 w-6 text-green-500" />
@@ -892,10 +899,10 @@ export default function Admin() {
                     defaultValue={value}
                     onBlur={(e) => handleSetLimit(key, Number(e.target.value))}
                     className="w-24 px-3 py-1.5 rounded-lg bg-white/10 border border-white/10 text-sm text-right"
-                    aria-label={key
+                    aria-label={`Limit for ${key
                       .replace("limits.", "")
                       .replace(/([A-Z])/g, " $1")
-                      .trim()}
+                      .trim()}`}
                   />
                 </div>
               ))}

@@ -1,13 +1,13 @@
-import { motion } from "framer-motion";
-import { Users, Trash2, Cake, UserPlus } from "lucide-react";
-import { ROLE_CONFIG, fadeUp } from "./FamilyConstants";
-import type { FamilyMember } from "./FamilyTypes";
+import { motion } from "framer-motion"
+import { Users, Trash2, Cake, UserPlus } from "lucide-react"
+import { ROLE_CONFIG, fadeUp } from "./FamilyConstants"
+import type { FamilyMember } from "./FamilyTypes"
 
 interface MembersTabProps {
-  members: FamilyMember[];
-  lang: string;
-  onAddClick: () => void;
-  onDelete: (id: string) => void;
+  members: FamilyMember[]
+  lang: string
+  onAddClick: () => void
+  onDelete: (id: string) => void
 }
 
 export default function MembersTab({
@@ -67,6 +67,7 @@ export default function MembersTab({
                 <button
                   onClick={() => onDelete(member.id)}
                   className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all"
+                  aria-label="Remove member"
                 >
                   <Trash2 className="size-4" />
                 </button>
@@ -85,5 +86,5 @@ export default function MembersTab({
         </div>
       )}
     </div>
-  );
+  )
 }

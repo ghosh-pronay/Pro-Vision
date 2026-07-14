@@ -159,6 +159,7 @@ export function TodayView({
                     <button
                       onClick={() => onDeleteCommute(c.id)}
                       className="text-muted-foreground hover:text-destructive transition-colors"
+                      aria-label="Delete commute"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

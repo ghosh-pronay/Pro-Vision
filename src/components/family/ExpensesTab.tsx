@@ -1,27 +1,27 @@
-import { motion } from "framer-motion";
-import { Receipt, Plus, Wallet, TrendingUp, Users, Trash2 } from "lucide-react";
-import { EXPENSE_CATEGORIES, getCategoryLabel } from "./FamilyConstants";
+import { motion } from "framer-motion"
+import { Receipt, Plus, Wallet, TrendingUp, Users, Trash2 } from "lucide-react"
+import { EXPENSE_CATEGORIES, getCategoryLabel } from "./FamilyConstants"
 import type {
   FamilyMember,
   FamilyExpense,
   ExpenseCategory,
-} from "./FamilyTypes";
+} from "./FamilyTypes"
 
 interface ExpensesTabProps {
-  expenses: FamilyExpense[];
-  members: FamilyMember[];
-  lang: string;
-  onAddClick: () => void;
-  onDelete: (id: string) => void;
-  budget: number;
-  setBudget: (budget: number) => void;
-  totalExpenses: number;
-  expensesByCategory: Record<ExpenseCategory, number>;
-  splitAmounts: Record<string, number>;
+  expenses: FamilyExpense[]
+  members: FamilyMember[]
+  lang: string
+  onAddClick: () => void
+  onDelete: (id: string) => void
+  budget: number
+  setBudget: (budget: number) => void
+  totalExpenses: number
+  expensesByCategory: Record<ExpenseCategory, number>
+  splitAmounts: Record<string, number>
 }
 
 function getMemberName(members: FamilyMember[], id: string) {
-  return members.find((m) => m.id === id)?.name || "Unknown";
+  return members.find((m) => m.id === id)?.name || "Unknown"
 }
 
 export default function ExpensesTab({
@@ -64,8 +64,8 @@ export default function ExpensesTab({
               const val = prompt(
                 lang === "bn" ? "মাসিক বাজেট সেট করুন:" : "Set monthly budget:",
                 budget.toString(),
-              );
-              if (val && !isNaN(Number(val))) setBudget(Number(val));
+              )
+              if (val && !isNaN(Number(val))) setBudget(Number(val))
             }}
             className="text-xs text-blue-400 hover:text-blue-300"
           >
@@ -111,8 +111,8 @@ export default function ExpensesTab({
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {EXPENSE_CATEGORIES.map((cat) => {
-            const amount = expensesByCategory[cat.key];
-            if (amount === 0) return null;
+            const amount = expensesByCategory[cat.key]
+            if (amount === 0) return null
             return (
               <div key={cat.key} className="bg-white/5 rounded-xl p-3">
                 <div className="flex items-center gap-2 mb-1">
@@ -125,7 +125,7 @@ export default function ExpensesTab({
                   ৳{amount.toLocaleString()}
                 </p>
               </div>
-            );
+            )
           })}
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function ExpensesTab({
           {expenses.slice(0, 5).map((expense) => {
             const catConfig = EXPENSE_CATEGORIES.find(
               (c) => c.key === expense.category,
-            );
+            )
             return (
               <div
                 key={expense.id}
@@ -185,14 +185,15 @@ export default function ExpensesTab({
                 <button
                   onClick={() => onDelete(expense.id)}
                   className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all"
+                  aria-label="Delete expense"
                 >
                   <Trash2 className="size-3" />
                 </button>
               </div>
-            );
+            )
           })}
         </div>
       </div>
     </div>
-  );
+  )
 }

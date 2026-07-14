@@ -665,6 +665,7 @@ export default function AmbientSounds({ onSoundChange }: AmbientSoundsProps) {
               }
             }}
             className="rounded-full bg-primary p-2 text-primary-foreground"
+            aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? (
               <Pause className="h-4 w-4" />

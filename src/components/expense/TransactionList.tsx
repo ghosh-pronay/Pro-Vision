@@ -1,20 +1,20 @@
-import { motion } from "framer-motion";
-import { Trash2 } from "lucide-react";
-import { t, type Lang, type TranslationKey } from "@/i18n/translations";
-import { fadeUp, CATEGORY_ICONS, type ExpenseTransaction } from "./constants";
+import { motion } from "framer-motion"
+import { Trash2 } from "lucide-react"
+import { t, type Lang, type TranslationKey } from "@/i18n/translations"
+import { fadeUp, CATEGORY_ICONS, type ExpenseTransaction } from "./constants"
 
 interface TransactionListProps {
-  lang: Lang;
-  txFilter: "all" | "income" | "expense" | "transfer";
-  setTxFilter: (f: "all" | "income" | "expense" | "transfer") => void;
-  filtered: ExpenseTransaction[];
-  onDeleteTarget: (id: string) => void;
-  getWalletName: (id: string) => string;
-  getWalletColor: (id: string) => string;
-  formatDate: (ts: number) => string;
+  lang: Lang
+  txFilter: "all" | "income" | "expense" | "transfer"
+  setTxFilter: (f: "all" | "income" | "expense" | "transfer") => void
+  filtered: ExpenseTransaction[]
+  onDeleteTarget: (id: string) => void
+  getWalletName: (id: string) => string
+  getWalletColor: (id: string) => string
+  formatDate: (ts: number) => string
 }
 
-const FILTERS = ["all", "income", "expense", "transfer"] as const;
+const FILTERS = ["all", "income", "expense", "transfer"] as const
 
 export function TransactionList({
   lang,
@@ -94,6 +94,7 @@ export function TransactionList({
             <button
               onClick={() => onDeleteTarget(tx._id)}
               className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500 min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2"
+              aria-label="Delete transaction"
             >
               <Trash2 className="size-4" />
             </button>
@@ -101,5 +102,5 @@ export function TransactionList({
         ))}
       </div>
     </motion.div>
-  );
+  )
 }

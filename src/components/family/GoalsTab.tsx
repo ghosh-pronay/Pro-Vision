@@ -1,23 +1,23 @@
-import { motion } from "framer-motion";
-import { Target, Plus, Trash2 } from "lucide-react";
-import { fadeUp } from "./FamilyConstants";
-import type { FamilyMember, FamilyGoal } from "./FamilyTypes";
+import { motion } from "framer-motion"
+import { Target, Plus, Trash2 } from "lucide-react"
+import { fadeUp } from "./FamilyConstants"
+import type { FamilyMember, FamilyGoal } from "./FamilyTypes"
 
 interface GoalsTabProps {
-  goals: FamilyGoal[];
-  members: FamilyMember[];
-  lang: string;
-  onAddClick: () => void;
-  onDelete: (id: string) => void;
-  onUpdateProgress: (goalId: string, increment: number) => void;
+  goals: FamilyGoal[]
+  members: FamilyMember[]
+  lang: string
+  onAddClick: () => void
+  onDelete: (id: string) => void
+  onUpdateProgress: (goalId: string, increment: number) => void
 }
 
 function getMemberName(members: FamilyMember[], id: string) {
-  return members.find((m) => m.id === id)?.name || "Unknown";
+  return members.find((m) => m.id === id)?.name || "Unknown"
 }
 
 function getMemberAvatar(members: FamilyMember[], id: string) {
-  return members.find((m) => m.id === id)?.avatar || "🧑";
+  return members.find((m) => m.id === id)?.avatar || "🧑"
 }
 
 export default function GoalsTab({
@@ -92,6 +92,7 @@ export default function GoalsTab({
                 <button
                   onClick={() => onDelete(goal.id)}
                   className="text-red-500 hover:text-red-400 transition-all"
+                  aria-label="Delete goal"
                 >
                   <Trash2 className="size-4" />
                 </button>
@@ -138,5 +139,5 @@ export default function GoalsTab({
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -260,6 +260,7 @@ export default function Fitness() {
                   <button
                     onClick={() => setDeleteConfirmId(workout._id)}
                     className="cursor-pointer p-2 rounded-lg hover:bg-destructive/10"
+                    aria-label="Delete workout"
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </button>

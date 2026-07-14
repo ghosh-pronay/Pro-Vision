@@ -864,7 +864,7 @@ export default function Payment() {
                         type="text"
                         value={routingNumber}
                         onChange={(e) => setRoutingNumber(e.target.value)}
-                        aria-label="Bank name"
+                        aria-label="Routing number"
                         className="w-full px-3 py-2.5 rounded-xl glass text-foreground text-sm border border-border/30 focus:outline-none focus:border-[var(--pv-blue)]/50 placeholder:text-muted-foreground/50"
                       />
                     </div>

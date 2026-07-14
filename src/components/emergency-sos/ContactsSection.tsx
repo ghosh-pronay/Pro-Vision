@@ -178,7 +178,7 @@ export function ContactsSection({
                 <button
                   onClick={() => setDeleteTarget(contact)}
                   className="p-2 rounded-lg hover:bg-red-500/10 text-red-500 cursor-pointer"
-                  title={lang === "bn" ? "মুছুন" : "Delete"}
+                  aria-label="Delete contact"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

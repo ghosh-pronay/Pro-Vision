@@ -160,6 +160,7 @@ export default function News() {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder={t("news.search", lang)}
             className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
+            aria-label="Search news"
           />
           {search && (
             <button

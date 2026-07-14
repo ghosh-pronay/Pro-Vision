@@ -473,6 +473,7 @@ export default function LearningPaths() {
                     <button
                       onClick={() => handleDeletePath(path.id)}
                       className="cursor-pointer p-2 rounded-lg hover:bg-destructive/10"
+                      aria-label="Delete path"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </button>

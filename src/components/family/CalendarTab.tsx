@@ -1,13 +1,13 @@
-import { motion } from "framer-motion";
-import { CalendarDays, Plus, Trash2 } from "lucide-react";
-import { now, getEventEmoji, fadeUp } from "./FamilyConstants";
-import type { FamilyEvent } from "./FamilyTypes";
+import { motion } from "framer-motion"
+import { CalendarDays, Plus, Trash2 } from "lucide-react"
+import { now, getEventEmoji, fadeUp } from "./FamilyConstants"
+import type { FamilyEvent } from "./FamilyTypes"
 
 interface CalendarTabProps {
-  events: FamilyEvent[];
-  lang: string;
-  onAddClick: () => void;
-  onDelete: (id: string) => void;
+  events: FamilyEvent[]
+  lang: string
+  onAddClick: () => void
+  onDelete: (id: string) => void
 }
 
 export default function CalendarTab({
@@ -18,13 +18,13 @@ export default function CalendarTab({
 }: CalendarTabProps) {
   const upcomingEvents = [...events]
     .filter((e) => e.date > now)
-    .sort((a, b) => a.date - b.date);
+    .sort((a, b) => a.date - b.date)
 
-  const nextCelebration = upcomingEvents[0];
+  const nextCelebration = upcomingEvents[0]
 
   const daysLeft = nextCelebration
     ? Math.ceil((nextCelebration.date - now) / (24 * 60 * 60 * 1000))
-    : null;
+    : null
 
   return (
     <div className="space-y-4">
@@ -89,7 +89,7 @@ export default function CalendarTab({
               .map((event) => {
                 const daysUntil = Math.ceil(
                   (event.date - now) / (24 * 60 * 60 * 1000),
-                );
+                )
                 return (
                   <motion.div
                     key={event.id}
@@ -128,15 +128,16 @@ export default function CalendarTab({
                     <button
                       onClick={() => onDelete(event.id)}
                       className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all"
+                      aria-label="Delete event"
                     >
                       <Trash2 className="size-4" />
                     </button>
                   </motion.div>
-                );
+                )
               })}
           </div>
         )}
       </div>
     </div>
-  );
+  )
 }

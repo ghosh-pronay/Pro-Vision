@@ -93,6 +93,7 @@ export function PriceHistoryModal({
             <button
               onClick={() => onRemoveAlert(alert.id)}
               className="cursor-pointer p-1 hover:bg-destructive/10 rounded"
+              aria-label="Remove alert"
             >
               <Trash2 className="h-4 w-4 text-destructive" />
             </button>

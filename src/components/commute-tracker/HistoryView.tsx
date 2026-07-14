@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { useLang } from "@/i18n/LanguageContext";
-import { useState, useMemo, useCallback } from "react";
+import { motion } from "framer-motion"
+import { useLang } from "@/i18n/LanguageContext"
+import { useState, useMemo, useCallback } from "react"
 import {
   Navigation,
   Route,
@@ -11,70 +11,70 @@ import {
   ChevronLeft,
   ChevronRight,
   Trash2,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
+} from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
 import {
   fadeUp,
   getModeById,
   monthNamesEn,
   monthNamesBn,
   type Commute,
-} from "./types";
+} from "./types"
 
 interface HistoryViewProps {
-  commutes: Commute[];
-  onDeleteCommute: (id: string) => void;
+  commutes: Commute[]
+  onDeleteCommute: (id: string) => void
 }
 
 export function HistoryView({ commutes, onDeleteCommute }: HistoryViewProps) {
-  const { lang } = useLang();
-  const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth());
-  const [calendarYear, setCalendarYear] = useState(new Date().getFullYear());
+  const { lang } = useLang()
+  const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth())
+  const [calendarYear, setCalendarYear] = useState(new Date().getFullYear())
 
   const monthDates = useMemo(() => {
-    const dates: string[] = [];
-    const year = calendarYear;
-    const month = calendarMonth;
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const dates: string[] = []
+    const year = calendarYear
+    const month = calendarMonth
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
     for (let i = 1; i <= daysInMonth; i++) {
-      dates.push(new Date(year, month, i).toISOString().split("T")[0]);
+      dates.push(new Date(year, month, i).toISOString().split("T")[0])
     }
-    return dates;
-  }, [calendarMonth, calendarYear]);
+    return dates
+  }, [calendarMonth, calendarYear])
 
   const monthCommutes = useMemo(
     () => commutes.filter((c) => monthDates.includes(c.date)),
     [commutes, monthDates],
-  );
+  )
 
   const monthlyStats = useMemo(() => {
-    const totalTrips = monthCommutes.length;
-    const totalDistance = monthCommutes.reduce((sum, c) => sum + c.distance, 0);
-    const totalCost = monthCommutes.reduce((sum, c) => sum + c.cost, 0);
+    const totalTrips = monthCommutes.length
+    const totalDistance = monthCommutes.reduce((sum, c) => sum + c.distance, 0)
+    const totalCost = monthCommutes.reduce((sum, c) => sum + c.cost, 0)
     const totalCarbon = monthCommutes.reduce((sum, c) => {
-      const mode = getModeById(c.mode);
-      return sum + (mode ? mode.carbon * c.distance : 0);
-    }, 0);
-    return { totalTrips, totalDistance, totalCost, totalCarbon };
-  }, [monthCommutes]);
+      const mode = getModeById(c.mode)
+      return sum + (mode ? mode.carbon * c.distance : 0)
+    }, 0)
+    return { totalTrips, totalDistance, totalCost, totalCarbon }
+  }, [monthCommutes])
 
   const calendarDays = useMemo(() => {
-    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
-    const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-    const days: (number | null)[] = [];
-    const offset = firstDay === 0 ? 6 : firstDay - 1;
-    for (let i = 0; i < offset; i++) days.push(null);
-    for (let i = 1; i <= daysInMonth; i++) days.push(i);
-    return days;
-  }, [calendarMonth, calendarYear]);
+    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay()
+    const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate()
+    const days: (number | null)[] = []
+    const offset = firstDay === 0 ? 6 : firstDay - 1
+    for (let i = 0; i < offset; i++) days.push(null)
+    for (let i = 1; i <= daysInMonth; i++) days.push(i)
+    return days
+  }, [calendarMonth, calendarYear])
 
   const getCommutesForDate = useCallback(
     (day: number) => {
-      const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-      return commutes.filter((c) => c.date === dateStr);
+      const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+      return commutes.filter((c) => c.date === dateStr)
     },
     [commutes, calendarMonth, calendarYear],
-  );
+  )
 
   return (
     <motion.div
@@ -93,10 +93,10 @@ export function HistoryView({ commutes, onDeleteCommute }: HistoryViewProps) {
             <button
               onClick={() => {
                 if (calendarMonth === 0) {
-                  setCalendarMonth(11);
-                  setCalendarYear((y) => y - 1);
+                  setCalendarMonth(11)
+                  setCalendarYear((y) => y - 1)
                 } else {
-                  setCalendarMonth((m) => m - 1);
+                  setCalendarMonth((m) => m - 1)
                 }
               }}
               className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"
@@ -112,10 +112,10 @@ export function HistoryView({ commutes, onDeleteCommute }: HistoryViewProps) {
             <button
               onClick={() => {
                 if (calendarMonth === 11) {
-                  setCalendarMonth(0);
-                  setCalendarYear((y) => y + 1);
+                  setCalendarMonth(0)
+                  setCalendarYear((y) => y + 1)
                 } else {
-                  setCalendarMonth((m) => m + 1);
+                  setCalendarMonth((m) => m + 1)
                 }
               }}
               className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"
@@ -141,12 +141,12 @@ export function HistoryView({ commutes, onDeleteCommute }: HistoryViewProps) {
 
         <div className="grid grid-cols-7 gap-1">
           {calendarDays.map((day, i) => {
-            if (day === null) return <div key={`empty-${i}`} />;
-            const dayCommutes = getCommutesForDate(day);
+            if (day === null) return <div key={`empty-${i}`} />
+            const dayCommutes = getCommutesForDate(day)
             const isToday =
               calendarYear === new Date().getFullYear() &&
               calendarMonth === new Date().getMonth() &&
-              day === new Date().getDate();
+              day === new Date().getDate()
             return (
               <motion.div
                 key={day}
@@ -167,12 +167,12 @@ export function HistoryView({ commutes, onDeleteCommute }: HistoryViewProps) {
                 {dayCommutes.length > 0 && (
                   <div className="flex gap-0.5 mt-0.5 flex-wrap justify-center">
                     {dayCommutes.slice(0, 3).map((c) => {
-                      const mode = getModeById(c.mode);
+                      const mode = getModeById(c.mode)
                       return (
                         <span key={c.id} className="text-[8px]">
                           {mode?.icon}
                         </span>
-                      );
+                      )
                     })}
                     {dayCommutes.length > 3 && (
                       <span className="text-[8px] text-muted-foreground">
@@ -182,7 +182,7 @@ export function HistoryView({ commutes, onDeleteCommute }: HistoryViewProps) {
                   </div>
                 )}
               </motion.div>
-            );
+            )
           })}
         </div>
       </div>
@@ -249,7 +249,7 @@ export function HistoryView({ commutes, onDeleteCommute }: HistoryViewProps) {
         ) : (
           <div className="space-y-2">
             {commutes.map((c) => {
-              const mode = getModeById(c.mode);
+              const mode = getModeById(c.mode)
               return (
                 <motion.div
                   key={c.id}
@@ -275,15 +275,16 @@ export function HistoryView({ commutes, onDeleteCommute }: HistoryViewProps) {
                   <button
                     onClick={() => onDeleteCommute(c.id)}
                     className="text-muted-foreground hover:text-destructive transition-colors"
+                    aria-label="Delete commute"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </motion.div>
-              );
+              )
             })}
           </div>
         )}
       </div>
     </motion.div>
-  );
+  )
 }

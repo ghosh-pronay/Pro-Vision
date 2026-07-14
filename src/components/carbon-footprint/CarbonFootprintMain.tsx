@@ -1,31 +1,31 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Leaf, Plus, Target, Share2 } from "lucide-react";
-import { CarbonSummary } from "./CarbonSummary";
+import { motion, AnimatePresence } from "framer-motion"
+import { Leaf, Plus, Target, Share2 } from "lucide-react"
+import { CarbonSummary } from "./CarbonSummary"
 import {
   fadeUp,
   AVG_BANGLADESHI_ANNUAL_TONS,
   getItemsForCategory,
-} from "./types";
-import type { CarbonLog } from "./types";
-import { useState } from "react";
-import { generateId } from "@/lib/utils";
+} from "./types"
+import type { CarbonLog } from "./types"
+import { useState } from "react"
+import { generateId } from "@/lib/utils"
 
 interface CarbonFootprintMainProps {
-  lang: string;
-  todayTotal: number;
-  comparisonPercent: number;
-  yesterdayTotal: number;
-  treesNeeded: number;
-  todayLogs: CarbonLog[];
-  selectedCategory: "transport" | "food" | "energy" | "shopping";
+  lang: string
+  todayTotal: number
+  comparisonPercent: number
+  yesterdayTotal: number
+  treesNeeded: number
+  todayLogs: CarbonLog[]
+  selectedCategory: "transport" | "food" | "energy" | "shopping"
   onSetSelectedCategory: (
     cat: "transport" | "food" | "energy" | "shopping",
-  ) => void;
-  onAddLog: (log: CarbonLog) => void;
-  onDeleteLog: (id: string) => void;
-  monthlyGoal: number;
-  onSetMonthlyGoal: (goal: number) => void;
-  onShare: () => void;
+  ) => void
+  onAddLog: (log: CarbonLog) => void
+  onDeleteLog: (id: string) => void
+  monthlyGoal: number
+  onSetMonthlyGoal: (goal: number) => void
+  onShare: () => void
 }
 
 export function CarbonFootprintMain({
@@ -43,13 +43,13 @@ export function CarbonFootprintMain({
   onSetMonthlyGoal,
   onShare,
 }: CarbonFootprintMainProps) {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showGoalModal, setShowGoalModal] = useState(false);
-  const [formAmount, setFormAmount] = useState("");
-  const [formNote, setFormNote] = useState("");
-  const [formSubCategory, setFormSubCategory] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showGoalModal, setShowGoalModal] = useState(false)
+  const [formAmount, setFormAmount] = useState("")
+  const [formNote, setFormNote] = useState("")
+  const [formSubCategory, setFormSubCategory] = useState("")
 
-  const t = (en: string, bn: string) => (lang === "bn" ? bn : en);
+  const t = (en: string, bn: string) => (lang === "bn" ? bn : en)
 
   const categoryConfig = [
     {
@@ -76,15 +76,15 @@ export function CarbonFootprintMain({
       textColor: "text-purple-500",
       label: t("Shopping", "শপিং"),
     },
-  ];
+  ]
 
   const handleAddLog = () => {
-    const amount = parseFloat(formAmount);
-    if (!amount || amount <= 0) return;
-    const items = getItemsForCategory(selectedCategory);
-    const item = items.find((i) => i.key === formSubCategory);
-    if (!item) return;
-    const carbonKg = amount * item.factor;
+    const amount = parseFloat(formAmount)
+    if (!amount || amount <= 0) return
+    const items = getItemsForCategory(selectedCategory)
+    const item = items.find((i) => i.key === formSubCategory)
+    if (!item) return
+    const carbonKg = amount * item.factor
     const newLog: CarbonLog = {
       id: generateId(),
       category: selectedCategory,
@@ -94,13 +94,13 @@ export function CarbonFootprintMain({
       carbonKg,
       date: Date.now(),
       note: formNote.trim() || undefined,
-    };
-    onAddLog(newLog);
-    setFormAmount("");
-    setFormNote("");
-    setFormSubCategory("");
-    setShowAddModal(false);
-  };
+    }
+    onAddLog(newLog)
+    setFormAmount("")
+    setFormNote("")
+    setFormSubCategory("")
+    setShowAddModal(false)
+  }
 
   return (
     <>
@@ -143,10 +143,10 @@ export function CarbonFootprintMain({
             </button>
             <button
               onClick={() => {
-                setFormAmount("");
-                setFormNote("");
-                setFormSubCategory("");
-                setShowAddModal(true);
+                setFormAmount("")
+                setFormNote("")
+                setFormSubCategory("")
+                setShowAddModal(true)
               }}
               className="cursor-pointer flex items-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition-colors"
             >
@@ -181,8 +181,8 @@ export function CarbonFootprintMain({
           ) : (
             <div className="space-y-2">
               {todayLogs.map((log) => {
-                const items = getItemsForCategory(log.category);
-                const item = items.find((i) => i.key === log.subCategory);
+                const items = getItemsForCategory(log.category)
+                const item = items.find((i) => i.key === log.subCategory)
                 return (
                   <div
                     key={log.id}
@@ -207,12 +207,13 @@ export function CarbonFootprintMain({
                       <button
                         onClick={() => onDeleteLog(log.id)}
                         className="cursor-pointer p-1 rounded-lg hover:bg-red-500/10 text-red-500 transition-colors"
+                        aria-label="Delete activity"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           )}
@@ -250,8 +251,8 @@ export function CarbonFootprintMain({
                         onClick={() => {
                           onSetSelectedCategory(
                             cat.key as typeof selectedCategory,
-                          );
-                          setFormSubCategory("");
+                          )
+                          setFormSubCategory("")
                         }}
                         className={`cursor-pointer flex-1 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                           selectedCategory === cat.key
@@ -384,7 +385,7 @@ export function CarbonFootprintMain({
         )}
       </AnimatePresence>
     </>
-  );
+  )
 }
 
-import { Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react"

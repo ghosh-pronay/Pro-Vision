@@ -525,6 +525,7 @@ export function CreateTab({
                         <button
                           onClick={() => removeParticipant(p.id)}
                           className="cursor-pointer p-1.5 rounded-lg hover:bg-destructive/10"
+                          aria-label="Remove participant"
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </button>

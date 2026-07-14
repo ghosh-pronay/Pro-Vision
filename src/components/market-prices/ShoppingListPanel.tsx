@@ -1,13 +1,13 @@
-import { motion } from "framer-motion";
-import { ShoppingCart, Trash2 } from "lucide-react";
-import { ShoppingItem, MarketItem, fadeUp } from "./types";
+import { motion } from "framer-motion"
+import { ShoppingCart, Trash2 } from "lucide-react"
+import { ShoppingItem, MarketItem, fadeUp } from "./types"
 
 interface ShoppingListPanelProps {
-  shoppingList: ShoppingItem[];
-  items: MarketItem[];
-  lang: string;
-  onRemove: (id: string) => void;
-  onUpdateQuantity: (id: string, quantity: number) => void;
+  shoppingList: ShoppingItem[]
+  items: MarketItem[]
+  lang: string
+  onRemove: (id: string) => void
+  onUpdateQuantity: (id: string, quantity: number) => void
 }
 
 export function ShoppingListPanel({
@@ -17,12 +17,12 @@ export function ShoppingListPanel({
   onRemove,
   onUpdateQuantity,
 }: ShoppingListPanelProps) {
-  const getItemById = (id: string) => items.find((i) => i.id === id);
+  const getItemById = (id: string) => items.find((i) => i.id === id)
 
   const total = shoppingList.reduce((sum, item) => {
-    const product = getItemById(item.itemId);
-    return sum + (product?.currentPrice || 0) * item.quantity;
-  }, 0);
+    const product = getItemById(item.itemId)
+    return sum + (product?.currentPrice || 0) * item.quantity
+  }, 0)
 
   return (
     <motion.div variants={fadeUp} className="glass rounded-2xl p-4">
@@ -37,8 +37,8 @@ export function ShoppingListPanel({
       </div>
       <div className="space-y-2">
         {shoppingList.map((item) => {
-          const product = getItemById(item.itemId);
-          if (!product) return null;
+          const product = getItemById(item.itemId)
+          if (!product) return null
           return (
             <div
               key={item.id}
@@ -68,13 +68,14 @@ export function ShoppingListPanel({
               <button
                 onClick={() => onRemove(item.id)}
                 className="cursor-pointer p-1 hover:bg-destructive/10 rounded"
+                aria-label="Remove item"
               >
                 <Trash2 className="h-4 w-4 text-destructive" />
               </button>
             </div>
-          );
+          )
         })}
       </div>
     </motion.div>
-  );
+  )
 }
