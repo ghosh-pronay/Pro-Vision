@@ -119,7 +119,7 @@ export async function generateGeminiResponse(
     logger.error("AI", "Gemini API call failed", error)
 
     if (isQuotaError(error)) {
-      console.log("Gemini quota exhausted, falling back to Groq...")
+      logger.warn("AI", "Gemini quota exhausted, falling back to Groq")
       try {
         return await callGroqChat(messages, systemPrompt)
       } catch (groqError) {
@@ -172,7 +172,7 @@ export async function analyzeImageWithGemini(
     logger.error("AI", "Gemini image analysis failed", error)
 
     if (isQuotaError(error)) {
-      console.log("Gemini quota exhausted, falling back to Groq...")
+      logger.warn("AI", "Gemini quota exhausted, falling back to Groq")
       try {
         return await callGroqProxy(
           [
